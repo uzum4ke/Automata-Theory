@@ -1,0 +1,2630 @@
+\chapter{\texorpdfstring{Derived Polynomial Transposes of Contextual Mealy Execution and Guarded Program Structure}{Derived Polynomial Transposes of Contextual Mealy Execution and Guarded Program Structure}}
+\label{ch:derived-polynomial-contextual-mealy}
+
+\section{Orientation: polynomial transposes of cartesian execution}
+\label{sec:derived-poly-orientation}
+
+The previous derived chapters developed the homotopy-invariant Mealy calculus
+inside the localized homotopy theory
+\[
+\mathcal C
+=
+\mathbf{Cat}(\mathcal E)_{JT,\infty}
+=
+L_{DK}(\mathbf{Cat}(\mathcal E),W_{JT})
+\]
+of internal categories.  A derived Mealy morphism from
+\[
+\mathbb A
+\]
+to
+\[
+\mathbb B
+\]
+was defined as a derived correspondence
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\]
+in
+\[
+\mathcal C.
+\]
+Writing its two components as
+\[
+\pi:\mathbb X\to\mathbb A,
+\qquad
+\Omega:\mathbb X\to\mathbb B,
+\]
+the map
+\[
+\Omega:\mathbb X\to\mathbb B
+\]
+is the derived \(\mathbb B\)-valued output \(1\)-cocycle.
+
+The derived relative chapter showed that a downstream behaviour
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+contextualizes \(\chi\) by the homotopy pullback
+\[
+\mathbb Z
+:=
+\mathsf{Exec}^h_{\chi,\rho}
+=
+\mathbb X\times_{\mathbb B}\mathbb Y.
+\]
+Dynamic proarrow logic is then the logic of endocorrespondences
+\[
+\mathbb Z\nrightarrow\mathbb Z.
+\]
+
+The present chapter explains the polynomial form of this same execution
+semantics in the cartesian part of the derived Mealy calculus.  The polynomial
+transpose is not attached to an arbitrary derived correspondence.  It is
+attached to right-fibrational derived Mealy data, where the input projection
+carries homotopy-coherent contravariant transport along input arrows.
+
+Thus the guiding principle is:
+\[
+\boxed{
+\text{derived polynomial semantics is the dependent-product transpose of
+cartesian contextual Mealy execution.}
+}
+\]
+
+Equivalently:
+\[
+\boxed{
+\text{proarrow semantics is flattened execution semantics, while polynomial
+semantics is curried total-response semantics.}
+}
+\]
+
+The strict polynomial chapter is recovered by choosing split internal
+discrete-fibration presentations and then passing to the objectwise shadow of
+the resulting homotopy-coherent arrow and response objects.  In such split
+presentations, derived right fibrations become ordinary right actions, derived
+cartesian transport becomes the strict action map, and the derived response
+coalgebra has the familiar objectwise formula
+\[
+(x,y)
+\longmapsto
+\left(
+a
+\longmapsto
+\left(
+\omega(a,x),
+\left(
+\delta(a,x),\sigma(\omega(a,x),y)
+\right)
+\right)
+\right).
+\]
+
+\section{Standing hypotheses and levels of structure}
+\label{sec:derived-poly-standing-hypotheses}
+
+Throughout this chapter, let
+\[
+\mathcal E
+\]
+be a Grothendieck topos and let
+\[
+\mathcal C
+=
+\mathbf{Cat}(\mathcal E)_{JT,\infty}
+\]
+be the Joyal--Tierney localized \(\infty\)-category of internal categories.
+
+All pullbacks, products, slices, dependent sums, dependent products, and
+mapping objects below are interpreted in
+\[
+\mathcal C
+\]
+unless explicitly described as point-set or strict representative-level
+constructions.
+
+The chapter uses several layers of structure.
+
+\begin{center}
+\[
+\begin{array}{c|c|c}
+\text{level} & \text{structure} & \text{construction} \\
+\hline
+0 & \text{finite limits in }\mathcal C &
+\text{derived correspondences and contextual execution} \\
+1 & \text{derived arrow objects} &
+\operatorname{Arr}(\mathbb A),\operatorname{Arr}(\mathbb Y),
+\operatorname{Arr}(\mathbb Z) \\
+2 & \text{right fibrations stable under pullback and composition} &
+\text{cartesian contextual transport} \\
+3 & \text{local dependent product }\Pi_{\kappa_\rho} &
+\text{derived response functor }\mathcal M_\rho \\
+4 & \text{regular derived predicate theory} &
+\diamond\text{-modalities and existential response liftings} \\
+5 & \text{first-order Heyting derived predicate theory} &
+\Box\text{-modalities and profile boxes} \\
+6 & \text{coherent finite joins} &
+\text{finite guarded choice} \\
+7 & \text{path-star and }\omega\text{-iterative hypotheses} &
+\text{while programs and }\mu,\nu\text{ comparisons}
+\end{array}
+\]
+\end{center}
+
+The purely polynomial construction uses only the first four rows.  The modal
+and fixed-point sections use the predicate-theoretic hypotheses introduced in
+the previous derived dynamic proarrow-logic chapter.
+
+\begin{remark}[Intrinsic versus objectwise arrow data]
+\label{rem:derived-poly-intrinsic-objectwise-arrow-data}
+The notation
+\[
+\operatorname{Arr}(\mathbb A)
+\]
+denotes a derived arrow category, equivalently a derived internal functor
+category from the walking arrow.  It is not, intrinsically, merely the discrete
+object of arrows of a strict internal category.
+
+Consequently, the dependent products appearing below are homotopy-coherent
+dependent products over derived query categories.  In split strict
+presentations, their objectwise shadows recover the familiar fibrewise
+products over ordinary arrows
+\[
+a:u\to v.
+\]
+The strict fibre formulae in this chapter should therefore be read as
+representative-level objectwise specializations of the intrinsic derived
+construction.
+\end{remark}
+
+\section{Derived arrows and right fibrations}
+\label{sec:derived-poly-right-fibrations}
+
+For a derived internal category
+\[
+\mathbb A\in\mathcal C,
+\]
+write
+\[
+\operatorname{Arr}(\mathbb A)
+\]
+for its derived arrow category.  It comes with source and target maps
+\[
+s_{\mathbb A},t_{\mathbb A}:
+\operatorname{Arr}(\mathbb A)\to\mathbb A.
+\]
+In a strict internal-category presentation, the objectwise shadow of
+\[
+\operatorname{Arr}(\mathbb A)
+\]
+is presented by the ordinary arrow object
+\[
+A_1
+\]
+with source and target maps
+\[
+s_A,t_A:A_1\to A_0.
+\]
+
+\begin{definition}[Derived right fibration]
+\label{def:derived-poly-right-fibration}
+A morphism
+\[
+p:\mathbb E\to\mathbb A
+\]
+in
+\[
+\mathcal C
+\]
+is a \textbf{derived right fibration} if the canonical map
+\[
+\operatorname{Arr}(\mathbb E)
+\longrightarrow
+\operatorname{Arr}(\mathbb A)
+\times_{t_{\mathbb A},\,\mathbb A,\,p}
+\mathbb E
+\]
+is an equivalence in
+\[
+\mathcal C.
+\]
+Equivalently, an arrow
+\[
+a:u\to p(e)
+\]
+of
+\[
+\mathbb A
+\]
+and an object
+\[
+e\in\mathbb E
+\]
+over its target determine a cartesian lift
+\[
+a^\ast e\to e
+\]
+whose space of choices is contractible, and these lifts are
+homotopy-coherently compatible with identities and composition.
+\end{definition}
+
+\begin{remark}[Strict presentations]
+\label{rem:derived-poly-strict-right-fibration-presentations}
+A split internal discrete fibration presents a derived right fibration.  In a
+strict split presentation, the defining equivalence above is represented by
+the ordinary pullback identification
+\[
+E_1
+\cong
+A_1\times_{t_A,A_0,p}E_0.
+\]
+Thus ordinary right actions of internal categories are strict presentations of
+derived right fibrations.
+\end{remark}
+
+\begin{lemma}[Stability of derived right fibrations]
+\label{lem:derived-poly-right-fibration-stability}
+Derived right fibrations are stable under homotopy pullback and under
+composition.
+\end{lemma}
+
+\begin{proof}
+The defining condition says that the arrow object of the total category is
+obtained, up to equivalence, by pulling back the arrow object of the base along
+the target map.  This condition is preserved by base change.  For composites,
+the cartesian lifts are obtained by composing the cartesian lifts for the two
+right fibrations.  Contractibility of the lift spaces and the coherent identity
+and composition laws are inherited from the two factors.
+\end{proof}
+
+\begin{definition}[Right-fibrational derived Mealy data]
+\label{def:derived-poly-right-fibrational-mealy-data}
+A \textbf{right-fibrational derived Mealy morphism}
+\[
+\mathbb A\rightsquigarrow^h\mathbb B
+\]
+is a derived Mealy morphism
+\[
+\chi=(\pi,\Omega):
+\mathbb X\to\mathbb A\times\mathbb B
+\]
+such that
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+is a derived right fibration.
+
+A \textbf{right-fibrational downstream behaviour} over
+\[
+\mathbb B
+\]
+is a downstream behaviour
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+which is a derived right fibration.
+\end{definition}
+
+Thus the input side of a right-fibrational derived Mealy morphism carries
+homotopy-coherent contravariant transport along input arrows, and the
+downstream behaviour carries homotopy-coherent contravariant transport along
+output arrows.
+
+\section{Contextual right fibrations}
+\label{sec:derived-poly-contextual-right-fibration}
+
+Let
+\[
+\chi=(\pi,\Omega):\mathbb X\to\mathbb A\times\mathbb B
+\]
+be a right-fibrational derived Mealy morphism, and let
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+be a right-fibrational downstream behaviour.
+
+Define the contextual execution object by the homotopy pullback
+\[
+\mathbb Z
+:=
+\mathbb X\times_{\mathbb B}\mathbb Y
+\]
+in
+\[
+\mathcal C.
+\]
+It comes with projections
+\[
+\operatorname{pr}_{\mathbb X}:\mathbb Z\to\mathbb X,
+\qquad
+\operatorname{pr}_{\mathbb Y}:\mathbb Z\to\mathbb Y.
+\]
+The contextual input projection is
+\[
+I_{\chi,\rho}:
+\mathbb Z\to\mathbb A,
+\qquad
+I_{\chi,\rho}:=\pi\operatorname{pr}_{\mathbb X}.
+\]
+
+\begin{proposition}[Contextual execution is right-fibrational]
+\label{prop:derived-poly-contextual-right-fibration}
+The morphism
+\[
+I_{\chi,\rho}:\mathbb Z\to\mathbb A
+\]
+is a derived right fibration.
+\end{proposition}
+
+\begin{proof}
+The map
+\[
+\mathbb Z\to\mathbb X
+\]
+is the homotopy pullback of
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+along
+\[
+\Omega:\mathbb X\to\mathbb B.
+\]
+By Lemma~\ref{lem:derived-poly-right-fibration-stability},
+\[
+\mathbb Z\to\mathbb X
+\]
+is a derived right fibration.  Since
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+is a derived right fibration and derived right fibrations are closed under
+composition, the composite
+\[
+I_{\chi,\rho}:\mathbb Z\to\mathbb A
+\]
+is a derived right fibration.
+
+Equivalently, if
+\[
+z=(x,y)\in\mathbb Z
+\]
+and
+\[
+a:u\to I_{\chi,\rho}(z)=\pi(x)
+\]
+is an input arrow, then cartesian transport in
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+gives, up to contractible choice, a lift
+\[
+\xi:x'\to x
+\]
+over
+\[
+a.
+\]
+The output cocycle gives an arrow
+\[
+\Omega(\xi):\Omega(x')\to\Omega(x)
+\]
+of
+\[
+\mathbb B.
+\]
+Since
+\[
+\Omega(x)=\rho(y),
+\]
+cartesian transport in
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+gives, again up to contractible choice, a lift
+\[
+\eta:y'\to y
+\]
+over
+\[
+\Omega(\xi).
+\]
+Then
+\[
+z'=(x',y')
+\]
+lies in
+\[
+\mathbb Z
+\]
+and
+\[
+(\xi,\eta):z'\to z
+\]
+is the cartesian lift of
+\[
+a
+\]
+through
+\[
+I_{\chi,\rho}.
+\]
+\end{proof}
+
+\begin{remark}[Contextual transport]
+\label{rem:derived-poly-contextual-transport}
+The proof describes the one-step contextual execution operation.  A current
+contextual state
+\[
+z=(x,y)
+\]
+and an input arrow
+\[
+a:u\to\pi(x)
+\]
+determine a lifted input execution
+\[
+\xi:x'\to x,
+\]
+a downstream response
+\[
+\eta:y'\to y,
+\]
+and a next contextual state
+\[
+a^\ast z=(x',y').
+\]
+The polynomial response coalgebra below is the dependent-product transpose of
+this cartesian transport operation.
+\end{remark}
+
+\section{The derived interface, queries, and responses}
+\label{sec:derived-poly-interface-queries-responses}
+
+The derived interface is
+\[
+\mathbb J_\rho
+:=
+\mathbb A\times\mathbb Y.
+\]
+The contextual execution object
+\[
+\mathbb Z=\mathbb X\times_{\mathbb B}\mathbb Y
+\]
+maps to
+\[
+\mathbb J_\rho
+\]
+by
+\[
+j_{\chi,\rho}:\mathbb Z\to\mathbb A\times\mathbb Y,
+\]
+whose two components are
+\[
+I_{\chi,\rho}:\mathbb Z\to\mathbb A
+\]
+and
+\[
+\operatorname{pr}_{\mathbb Y}:\mathbb Z\to\mathbb Y.
+\]
+
+\subsection{Input queries}
+
+Define the derived query object by
+\[
+\mathbb Q_\rho
+:=
+\operatorname{Arr}(\mathbb A)
+\times_{t_{\mathbb A},\,\mathbb A,\,\operatorname{pr}_{\mathbb A}}
+\mathbb J_\rho.
+\]
+Thus a query is a derived input arrow whose target is the current input
+component of the interface, together with the current downstream object.
+
+Write
+\[
+\kappa_\rho:\mathbb Q_\rho\to\mathbb J_\rho
+\]
+for the projection to the current interface.  There is also a projection
+\[
+\operatorname{in}:\mathbb Q_\rho\to\operatorname{Arr}(\mathbb A),
+\]
+and the next input component is
+\[
+s_{\mathbb A}\operatorname{in}:\mathbb Q_\rho\to\mathbb A.
+\]
+
+\subsection{Downstream responses}
+
+A response to a query is a downstream arrow whose target is the downstream
+component of the current interface.  Define the response object by
+\[
+\mathbb O_\rho
+:=
+\mathbb Q_\rho
+\times_{\operatorname{pr}_{\mathbb Y}\kappa_\rho,\,\mathbb Y,\,t_{\mathbb Y}}
+\operatorname{Arr}(\mathbb Y).
+\]
+Write
+\[
+r_\rho:\mathbb O_\rho\to\mathbb Q_\rho
+\]
+for the projection.
+
+There are canonical label maps
+\[
+\operatorname{in}:\mathbb O_\rho\to\operatorname{Arr}(\mathbb A),
+\]
+\[
+\operatorname{down}:\mathbb O_\rho\to\operatorname{Arr}(\mathbb Y),
+\]
+and
+\[
+\operatorname{out}:\mathbb O_\rho\to\operatorname{Arr}(\mathbb B),
+\]
+where
+\[
+\operatorname{out}
+=
+\operatorname{Arr}(\rho)\operatorname{down}.
+\]
+
+The continuation-interface map is
+\[
+n_\rho:\mathbb O_\rho\to\mathbb J_\rho=\mathbb A\times\mathbb Y
+\]
+defined by
+\[
+n_\rho
+=
+\left(
+s_{\mathbb A}\operatorname{in},
+s_{\mathbb Y}\operatorname{down}
+\right).
+\]
+
+Thus a response records an input arrow, a downstream response arrow, the raw
+output arrow induced by
+\[
+\rho,
+\]
+and the continuation interface.
+
+\begin{remark}[Strict objectwise reading]
+\label{rem:derived-poly-response-strict-reading}
+In a strict split presentation of a right
+\[
+\mathbb B
+\]
+-action
+\[
+Y\xrightarrow{r}B_0,
+\]
+the derived right fibration
+\[
+Y\rtimes\mathbb B\to\mathbb B
+\]
+has arrows represented objectwise by pairs
+\[
+(\beta,y)
+\]
+where
+\[
+\beta:b'\to r(y),
+\qquad
+y'=\sigma(\beta,y).
+\]
+Thus an arrow
+\[
+\eta:y'\to y
+\]
+in the downstream action category is represented by the output arrow
+\[
+\beta
+\]
+and the current downstream state
+\[
+y.
+\]
+With this representative-level identification, the intrinsic derived response
+object specializes objectwise to the strict response object of the
+non-derived polynomial chapter.
+\end{remark}
+
+\section{The local derived response functor}
+\label{sec:derived-poly-response-polynomial}
+
+The polynomial construction below is local to the query map
+\[
+\kappa_\rho:\mathbb Q_\rho\to\mathbb J_\rho.
+\]
+It is defined whenever the corresponding dependent product exists in the
+derived slice.  The dependent sum
+\[
+\Sigma_{r_\rho}
+\]
+is postcomposition along
+\[
+r_\rho:\mathbb O_\rho\to\mathbb Q_\rho.
+\]
+
+\begin{definition}[Derived contextual response functor]
+\label{def:derived-poly-response-functor}
+The \textbf{derived contextual response functor} associated to
+\[
+(\mathbb A,\rho)
+\]
+is the endofunctor
+\[
+\mathcal M_\rho:
+\mathcal C/\mathbb J_\rho\to\mathcal C/\mathbb J_\rho
+\]
+defined by the local polynomial composite
+\[
+\mathcal M_\rho
+:=
+\Pi_{\kappa_\rho}\Sigma_{r_\rho}n_\rho^\ast,
+\]
+whenever the displayed dependent product exists.
+\end{definition}
+
+For an object
+\[
+X\to\mathbb J_\rho,
+\]
+the object
+\[
+\mathcal M_\rho(X)
+\]
+classifies homotopy-coherent total response profiles: for every input query at
+the current interface, one chooses a downstream response and a continuation
+state over the resulting continuation interface.
+
+In split strict presentations, the objectwise shadow has the familiar
+fibrewise form
+\[
+\mathcal M_\rho(X)_{(v,y)}
+\cong
+\prod_{a:u\to v}
+\sum_{\eta:y'\to y}
+X_{(u,y')}.
+\]
+Equivalently, writing a downstream arrow
+\[
+\eta:y'\to y
+\]
+as a pair
+\[
+(\beta,y)
+\]
+with
+\[
+\beta:b'\to r(y),
+\qquad
+y'=\sigma(\beta,y),
+\]
+one obtains the strict fibre formula
+\[
+\prod_{a:u\to v}
+\sum_{\beta:b'\to r(y)}
+X_{(u,\sigma(\beta,y))}.
+\]
+
+\begin{remark}[Homotopy-coherent profile semantics]
+\label{rem:derived-poly-homotopy-coherent-profiles}
+The displayed product--sum expression is not the intrinsic definition of
+\[
+\mathcal M_\rho.
+\]
+It is the objectwise shadow obtained from a split strict representative.  The
+intrinsic functor
+\[
+\Pi_{\kappa_\rho}\Sigma_{r_\rho}n_\rho^\ast
+\]
+retains the higher morphisms among derived queries and derived responses, and
+therefore should be read as a homotopy-coherent enhancement of the strict
+polynomial response functor.
+\end{remark}
+
+\begin{remark}[Dependence]
+\label{rem:derived-poly-response-functor-dependence}
+The response functor
+\[
+\mathcal M_\rho
+\]
+depends on the input object
+\[
+\mathbb A
+\]
+and the downstream right fibration
+\[
+\rho:\mathbb Y\to\mathbb B.
+\]
+The Mealy morphism
+\[
+\chi
+\]
+enters through the canonical coalgebra
+\[
+c_{\chi,\rho}:\mathbb Z\to\mathcal M_\rho(\mathbb Z),
+\]
+constructed below.
+\end{remark}
+
+\section{The canonical response coalgebra}
+\label{sec:derived-poly-canonical-response-coalgebra}
+
+Let
+\[
+\chi=(\pi,\Omega):\mathbb X\to\mathbb A\times\mathbb B
+\]
+be a right-fibrational derived Mealy morphism, and let
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+be a right-fibrational downstream behaviour.  Let
+\[
+\mathbb Z:=\mathbb X\times_{\mathbb B}\mathbb Y.
+\]
+The map
+\[
+j_{\chi,\rho}:\mathbb Z\to\mathbb J_\rho
+\]
+makes
+\[
+\mathbb Z
+\]
+an object of
+\[
+\mathcal C/\mathbb J_\rho.
+\]
+
+The cartesian transport construction of
+Proposition~\ref{prop:derived-poly-contextual-right-fibration} defines an
+uncurried map over
+\[
+\mathbb Q_\rho:
+\]
+\[
+\widetilde c_{\chi,\rho}:
+\kappa_\rho^\ast\mathbb Z
+\longrightarrow
+\Sigma_{r_\rho}n_\rho^\ast\mathbb Z.
+\]
+Indeed, an object of
+\[
+\kappa_\rho^\ast\mathbb Z
+\]
+is a contextual state
+\[
+z=(x,y)
+\]
+together with an input query
+\[
+a:u\to I_{\chi,\rho}(z).
+\]
+The right fibration
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+transports
+\[
+x
+\]
+along
+\[
+a
+\]
+to a cartesian arrow
+\[
+\xi:x'\to x.
+\]
+The output cocycle gives
+\[
+\Omega(\xi):\Omega(x')\to\Omega(x).
+\]
+The right fibration
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+then transports
+\[
+y
+\]
+along
+\[
+\Omega(\xi)
+\]
+to a cartesian arrow
+\[
+\eta:y'\to y.
+\]
+The result is the downstream response
+\[
+\eta
+\]
+together with the continuation contextual state
+\[
+z'=(x',y').
+\]
+Since the spaces of cartesian lifts are contractible, this construction is
+canonical in the derived sense.
+
+\begin{definition}[Canonical derived response coalgebra]
+\label{def:derived-poly-canonical-response-coalgebra}
+The \textbf{canonical derived response coalgebra} of
+\[
+(\chi,\rho)
+\]
+is the transpose of
+\[
+\widetilde c_{\chi,\rho}
+\]
+under
+\[
+\kappa_\rho^\ast\dashv\Pi_{\kappa_\rho}:
+\]
+\[
+c_{\chi,\rho}:
+\mathbb Z
+\longrightarrow
+\Pi_{\kappa_\rho}\Sigma_{r_\rho}n_\rho^\ast\mathbb Z
+=
+\mathcal M_\rho(\mathbb Z).
+\]
+\end{definition}
+
+\begin{theorem}[Coalgebra as transpose of cartesian execution]
+\label{thm:derived-poly-coalgebra-transpose}
+The coalgebra
+\[
+c_{\chi,\rho}
+\]
+is the dependent-product transpose of contextual cartesian transport through
+\[
+I_{\chi,\rho}:\mathbb Z\to\mathbb A.
+\]
+Equivalently, it is the curried total-response form of the one-step execution
+operation
+\[
+(z,a)
+\longmapsto
+(\eta,a^\ast z),
+\]
+where
+\[
+a^\ast z
+\]
+is obtained by first transporting through
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+and then transporting through
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+along the output arrow induced by
+\[
+\Omega.
+\]
+\end{theorem}
+
+\begin{proof}
+The uncurried operation is precisely the map
+\[
+\widetilde c_{\chi,\rho}:
+\kappa_\rho^\ast\mathbb Z
+\to
+\Sigma_{r_\rho}n_\rho^\ast\mathbb Z.
+\]
+The adjunction
+\[
+\kappa_\rho^\ast\dashv\Pi_{\kappa_\rho}
+\]
+identifies such maps with maps
+\[
+\mathbb Z
+\to
+\Pi_{\kappa_\rho}\Sigma_{r_\rho}n_\rho^\ast\mathbb Z.
+\]
+The transpose is, by definition,
+\[
+c_{\chi,\rho}.
+\]
+\end{proof}
+
+\section{Multiplicativity from cartesian transport}
+\label{sec:derived-poly-multiplicativity}
+
+The strict polynomial chapter described multiplicativity by equations.  In
+the derived setting, the canonical coalgebra is multiplicative because it is
+built from cartesian transport in a right fibration.
+
+\begin{proposition}[Canonical multiplicativity]
+\label{prop:derived-poly-canonical-coalgebra-multiplicative}
+The canonical response coalgebra
+\[
+c_{\chi,\rho}
+\]
+is homotopy-coherently compatible with identity and composite input queries.
+Equivalently, after flattening, the forward execution correspondence
+\[
+\mathbb Z
+\xleftarrow{t_{\mathbb Z}}
+\operatorname{Arr}(\mathbb Z)
+\xrightarrow{s_{\mathbb Z}}
+\mathbb Z
+\]
+carries the monoid structure in
+\[
+\operatorname{Corr}(\mathcal C)(\mathbb Z,\mathbb Z)
+\]
+induced by the opposite-oriented composition of arrows in
+\[
+\mathbb Z.
+\]
+\end{proposition}
+
+\begin{proof}
+The uncurried form of
+\[
+c_{\chi,\rho}
+\]
+is cartesian transport in the derived right fibration
+\[
+I_{\chi,\rho}:\mathbb Z\to\mathbb A.
+\]
+Cartesian transport in a right fibration is compatible with identity arrows
+and composition, coherently up to contractible choice.  Therefore its
+dependent-product transpose is multiplicative in the derived sense.
+
+The arrows of the right-fibrational action have backward orientation
+\[
+a^\ast z\to z.
+\]
+The dynamic execution correspondence reads these arrows in the forward
+direction
+\[
+z\to a^\ast z.
+\]
+Hence the induced monoid structure on the flattened forward correspondence is
+the one obtained from opposite-oriented arrow composition.
+\end{proof}
+
+In split strict presentations, this says the following.  If
+\[
+c(z)(b)=(\eta_b,z_b)
+\]
+and
+\[
+c(z_b)(a)=(\eta_a,z_{ab}),
+\]
+then
+\[
+c(z)(m_A(a,b))
+=
+(m_Y(\eta_a,\eta_b),z_{ab}).
+\]
+Here
+\[
+m_A(a,b)=b\circ a,
+\]
+and
+\[
+m_Y(\eta_a,\eta_b)=\eta_b\circ\eta_a
+\]
+with the composition convention fixed in the previous chapters.
+
+\section{Position objects and flattening}
+\label{sec:derived-poly-position-flattening}
+
+The polynomial coalgebra is the curried form of one-step execution.  Flattening
+recovers the execution correspondence.
+
+Let
+\[
+H_{\mathbb Z}
+:=
+\Sigma_{r_\rho}n_\rho^\ast\mathbb Z
+\]
+as an object of
+\[
+\mathcal C/\mathbb Q_\rho.
+\]
+Then
+\[
+\mathcal M_\rho(\mathbb Z)
+=
+\Pi_{\kappa_\rho}H_{\mathbb Z}.
+\]
+
+\begin{definition}[Position object]
+\label{def:derived-poly-position-object}
+The \textbf{position object} of
+\[
+\mathcal M_\rho
+\]
+at
+\[
+\mathbb Z
+\]
+is
+\[
+\mathrm{Pos}_{\rho}(\mathbb Z)
+:=
+\kappa_\rho^\ast\Pi_{\kappa_\rho}H_{\mathbb Z}.
+\]
+It comes with the projection
+\[
+\rho_{\mathrm{pos}}:
+\mathrm{Pos}_{\rho}(\mathbb Z)
+\to
+\mathcal M_\rho(\mathbb Z),
+\]
+and, by the counit of
+\[
+\kappa_\rho^\ast\dashv\Pi_{\kappa_\rho},
+\]
+an evaluation map
+\[
+\operatorname{ev}:
+\mathrm{Pos}_{\rho}(\mathbb Z)
+\to
+H_{\mathbb Z}.
+\]
+\end{definition}
+
+Unpacking
+\[
+H_{\mathbb Z}=\Sigma_{r_\rho}n_\rho^\ast\mathbb Z,
+\]
+the evaluation map yields canonical maps
+\[
+\operatorname{in}:
+\mathrm{Pos}_{\rho}(\mathbb Z)\to\operatorname{Arr}(\mathbb A),
+\]
+\[
+\operatorname{down}:
+\mathrm{Pos}_{\rho}(\mathbb Z)\to\operatorname{Arr}(\mathbb Y),
+\]
+\[
+\operatorname{out}:
+\mathrm{Pos}_{\rho}(\mathbb Z)\to\operatorname{Arr}(\mathbb B),
+\]
+and
+\[
+\operatorname{next}:
+\mathrm{Pos}_{\rho}(\mathbb Z)\to\mathbb Z.
+\]
+The output label is
+\[
+\operatorname{out}
+=
+\operatorname{Arr}(\rho)\operatorname{down}.
+\]
+
+\begin{definition}[Flattened execution object]
+\label{def:derived-poly-flattened-execution-object}
+The \textbf{flattened execution object} associated to
+\[
+c_{\chi,\rho}
+\]
+is the homotopy pullback
+\[
+\mathbb M_{\chi,\rho}
+:=
+\mathbb Z
+\times_{\mathcal M_\rho(\mathbb Z)}
+\mathrm{Pos}_{\rho}(\mathbb Z).
+\]
+It carries maps
+\[
+s_{\mathrm{for}}:\mathbb M_{\chi,\rho}\to\mathbb Z
+\]
+and
+\[
+t_{\mathrm{for}}:\mathbb M_{\chi,\rho}\to\mathbb Z,
+\]
+where
+\[
+s_{\mathrm{for}}
+\]
+is the projection to the current contextual state and
+\[
+t_{\mathrm{for}}
+\]
+is induced by
+\[
+\operatorname{next}:
+\mathrm{Pos}_{\rho}(\mathbb Z)\to\mathbb Z.
+\]
+Thus flattening gives a forward execution correspondence
+\[
+\mathbf m_{\chi,\rho}
+=
+\left(
+\mathbb Z
+\xleftarrow{s_{\mathrm{for}}}
+\mathbb M_{\chi,\rho}
+\xrightarrow{t_{\mathrm{for}}}
+\mathbb Z
+\right).
+\]
+\end{definition}
+
+\begin{theorem}[Flattening identifies with the arrow object]
+\label{thm:derived-poly-flattening-arrow-object}
+There is a canonical equivalence
+\[
+\mathbb M_{\chi,\rho}
+\simeq
+\operatorname{Arr}(\mathbb Z).
+\]
+Under this equivalence, the flattened forward correspondence is
+\[
+\mathbb Z
+\xleftarrow{t_{\mathbb Z}}
+\operatorname{Arr}(\mathbb Z)
+\xrightarrow{s_{\mathbb Z}}
+\mathbb Z.
+\]
+\end{theorem}
+
+\begin{proof}
+A point of
+\[
+\mathbb M_{\chi,\rho}
+\]
+is a contextual state
+\[
+z
+\]
+together with a chosen input-query position in the response profile
+\[
+c_{\chi,\rho}(z).
+\]
+Equivalently, it is an input arrow
+\[
+a:u\to I_{\chi,\rho}(z)
+\]
+together with the cartesian lift of
+\[
+a
+\]
+through
+\[
+I_{\chi,\rho}:\mathbb Z\to\mathbb A.
+\]
+Because
+\[
+I_{\chi,\rho}
+\]
+is a derived right fibration, such data are canonically equivalent to an arrow
+of
+\[
+\mathbb Z.
+\]
+Thus
+\[
+\mathbb M_{\chi,\rho}
+\simeq
+\operatorname{Arr}(\mathbb Z).
+\]
+
+An arrow of the right-fibrational action is oriented contravariantly:
+\[
+a^\ast z\to z.
+\]
+The forward execution step is read as
+\[
+z\to a^\ast z.
+\]
+Therefore the forward execution correspondence has source
+\[
+t_{\mathbb Z}:\operatorname{Arr}(\mathbb Z)\to\mathbb Z
+\]
+and target
+\[
+s_{\mathbb Z}:\operatorname{Arr}(\mathbb Z)\to\mathbb Z.
+\]
+\end{proof}
+
+\begin{remark}[Orientation]
+\label{rem:derived-poly-orientation-forward-backward}
+The contextual right fibration
+\[
+I_{\chi,\rho}:\mathbb Z\to\mathbb A
+\]
+is contravariant.  Its arrows have backward action orientation
+\[
+a^\ast z\to z.
+\]
+Dynamic programs are read in the forward orientation
+\[
+z\to a^\ast z.
+\]
+Thus the flattened program correspondence uses the opposite-oriented arrow
+span
+\[
+\mathbb Z
+\xleftarrow{t_{\mathbb Z}}
+\operatorname{Arr}(\mathbb Z)
+\xrightarrow{s_{\mathbb Z}}
+\mathbb Z.
+\]
+This is the intrinsic form of the strict comparison
+\[
+(P\rtimes\mathbb A)\times_{\mathbb B}(Y\rtimes\mathbb B)
+\cong
+(\mathsf{Prog}_{\Phi,Y})^{\mathrm{op}}.
+\]
+\end{remark}
+
+\section{Guard loci from intrinsic labels}
+\label{sec:derived-poly-guard-loci}
+
+Let
+\[
+\mathbf m_{\chi,\rho}:\mathbb Z\nrightarrow\mathbb Z
+\]
+be the flattened forward execution correspondence.  Using the equivalence
+\[
+\mathbb M_{\chi,\rho}
+\simeq
+\operatorname{Arr}(\mathbb Z),
+\]
+its apex carries canonical maps
+\[
+\iota_A:
+\operatorname{Arr}(\mathbb Z)\to\operatorname{Arr}(\mathbb A),
+\]
+\[
+\iota_Y:
+\operatorname{Arr}(\mathbb Z)\to\operatorname{Arr}(\mathbb Y),
+\]
+and
+\[
+\iota_B:
+\operatorname{Arr}(\mathbb Z)\to\operatorname{Arr}(\mathbb B).
+\]
+Here
+\[
+\iota_A
+\]
+records the input arrow,
+\[
+\iota_Y
+\]
+records the downstream response arrow, and
+\[
+\iota_B
+=
+\operatorname{Arr}(\rho)\iota_Y
+\]
+records the raw output arrow.
+
+Thus guarded primitive specifications may involve predicates
+\[
+\theta\in\mathrm{Pred}(\mathbb Z),
+\]
+\[
+R\in\mathrm{Pred}(\operatorname{Arr}(\mathbb A)),
+\]
+\[
+O\in\mathrm{Pred}(\operatorname{Arr}(\mathbb B)),
+\]
+\[
+T\in\mathrm{Pred}(\operatorname{Arr}(\mathbb Y)),
+\]
+and
+\[
+\varphi\in\mathrm{Pred}(\mathbb Z),
+\]
+where
+\[
+\mathrm{Pred}
+\]
+is the derived predicate theory fixed in the previous derived proarrow-logic
+chapter.
+
+\begin{remark}[Strict guard predicates]
+\label{rem:derived-poly-strict-guard-predicates}
+The intrinsic guards above live on derived arrow categories.  In a split strict
+representative, the old non-derived guards on
+\[
+A_1,
+\qquad
+B_1,
+\qquad
+(\int_{\mathbb B}Y)_1
+\]
+are recovered by taking representative-level predicates on the objectwise
+arrow parts of
+\[
+\operatorname{Arr}(\mathbb A),
+\qquad
+\operatorname{Arr}(\mathbb B),
+\qquad
+\operatorname{Arr}(\mathbb Y).
+\]
+\end{remark}
+
+\begin{definition}[Guarded primitive contextual program]
+\label{def:derived-poly-guarded-primitive}
+Let
+\[
+\theta\in\mathrm{Pred}(\mathbb Z),
+\quad
+R\in\mathrm{Pred}(\operatorname{Arr}(\mathbb A)),
+\quad
+O\in\mathrm{Pred}(\operatorname{Arr}(\mathbb B)),
+\quad
+T\in\mathrm{Pred}(\operatorname{Arr}(\mathbb Y)).
+\]
+The guarded primitive program
+\[
+\theta;R/O/T
+\]
+is the subcorrespondence of
+\[
+\mathbf m_{\chi,\rho}
+\]
+whose apex predicate is
+\[
+t_{\mathbb Z}^{\ast}\theta
+\wedge
+\iota_A^\ast R
+\wedge
+\iota_B^\ast O
+\wedge
+\iota_Y^\ast T
+\]
+on
+\[
+\operatorname{Arr}(\mathbb Z).
+\]
+Equivalently,
+\[
+\theta;R/O/T
+\]
+is the restricted span
+\[
+\mathbb Z
+\xleftarrow{t_{\mathbb Z}i}
+(\theta;R/O/T)^\sharp
+\xrightarrow{s_{\mathbb Z}i}
+\mathbb Z,
+\]
+where
+\[
+i:(\theta;R/O/T)^\sharp\hookrightarrow\operatorname{Arr}(\mathbb Z)
+\]
+is the displayed subobject.
+\end{definition}
+
+\section{Guarded polynomial response liftings}
+\label{sec:derived-poly-response-liftings}
+
+We now use the regular fragment of the derived predicate theory fixed in the
+previous chapter, so that dependent sums and Beck--Chevalley are available for
+the displayed maps.
+
+Let
+\[
+\rho_{\mathrm{pos}}:
+\mathrm{Pos}_{\rho}(\mathbb Z)
+\to
+\mathcal M_\rho(\mathbb Z)
+\]
+be the position projection.
+
+\begin{definition}[Guarded existential response lifting]
+\label{def:derived-poly-guarded-existential-lifting}
+For predicates
+\[
+R\in\mathrm{Pred}(\operatorname{Arr}(\mathbb A)),
+\]
+\[
+O\in\mathrm{Pred}(\operatorname{Arr}(\mathbb B)),
+\]
+\[
+T\in\mathrm{Pred}(\operatorname{Arr}(\mathbb Y)),
+\]
+and
+\[
+\varphi\in\mathrm{Pred}(\mathbb Z),
+\]
+define the guarded existential response lifting
+\[
+\lambda_{R/O/T}(\varphi)
+\in
+\mathrm{Pred}(\mathcal M_\rho(\mathbb Z))
+\]
+by
+\[
+\lambda_{R/O/T}(\varphi)
+:=
+\Sigma_{\rho_{\mathrm{pos}}}
+\left(
+\operatorname{in}^{\ast}R
+\wedge
+\operatorname{out}^{\ast}O
+\wedge
+\operatorname{down}^{\ast}T
+\wedge
+\operatorname{next}^{\ast}\varphi
+\right).
+\]
+\end{definition}
+
+This predicate says that a total response profile has some input position
+whose input label satisfies
+\[
+R,
+\]
+whose raw output satisfies
+\[
+O,
+\]
+whose downstream response satisfies
+\[
+T,
+\]
+and whose continuation satisfies
+\[
+\varphi.
+\]
+
+\begin{theorem}[Polynomial lifting/span diamond comparison]
+\label{thm:derived-poly-lifting-span-comparison}
+For every state predicate
+\[
+\theta\in\mathrm{Pred}(\mathbb Z)
+\]
+and every postcondition
+\[
+\varphi\in\mathrm{Pred}(\mathbb Z),
+\]
+one has
+\[
+\theta
+\wedge
+c_{\chi,\rho}^{\ast}\lambda_{R/O/T}(\varphi)
+=
+\langle\theta;R/O/T\rangle\varphi.
+\]
+\end{theorem}
+
+\begin{proof}
+By definition,
+\[
+\lambda_{R/O/T}(\varphi)
+=
+\Sigma_{\rho_{\mathrm{pos}}}
+\left(
+\operatorname{in}^{\ast}R
+\wedge
+\operatorname{out}^{\ast}O
+\wedge
+\operatorname{down}^{\ast}T
+\wedge
+\operatorname{next}^{\ast}\varphi
+\right).
+\]
+Pulling back along
+\[
+c_{\chi,\rho}
+\]
+and using Beck--Chevalley identifies the pullback of
+\[
+\rho_{\mathrm{pos}}
+\]
+with
+\[
+\operatorname{Arr}(\mathbb Z)
+\]
+by Theorem~\ref{thm:derived-poly-flattening-arrow-object}.  Under this
+identification,
+\[
+\operatorname{in}=\iota_A,
+\qquad
+\operatorname{out}=\iota_B,
+\qquad
+\operatorname{down}=\iota_Y,
+\qquad
+\operatorname{next}=s_{\mathbb Z}.
+\]
+Therefore
+\[
+c_{\chi,\rho}^{\ast}\lambda_{R/O/T}(\varphi)
+=
+\Sigma_{t_{\mathbb Z}}
+\left(
+\iota_A^\ast R
+\wedge
+\iota_B^\ast O
+\wedge
+\iota_Y^\ast T
+\wedge
+s_{\mathbb Z}^{\ast}\varphi
+\right).
+\]
+By Frobenius reciprocity,
+\[
+\theta
+\wedge
+c_{\chi,\rho}^{\ast}\lambda_{R/O/T}(\varphi)
+=
+\Sigma_{t_{\mathbb Z}}
+\left(
+t_{\mathbb Z}^{\ast}\theta
+\wedge
+\iota_A^\ast R
+\wedge
+\iota_B^\ast O
+\wedge
+\iota_Y^\ast T
+\wedge
+s_{\mathbb Z}^{\ast}\varphi
+\right).
+\]
+This is exactly the diamond of the restricted correspondence
+\[
+\theta;R/O/T.
+\]
+\end{proof}
+
+\begin{remark}[Central comparison]
+\label{rem:derived-poly-central-comparison}
+Theorem~\ref{thm:derived-poly-lifting-span-comparison} is the central bridge
+of the chapter.  The polynomial lifting is a predicate on total response
+profiles.  Pulling it back along the response coalgebra recovers the guarded
+diamond modality of the flattened execution correspondence.
+\end{remark}
+
+\section{Profile boxes}
+\label{sec:derived-poly-profile-boxes}
+
+We now use the first-order Heyting fragment of the same derived predicate
+theory, so that pullback functors have right adjoints satisfying
+Beck--Chevalley.
+
+\begin{definition}[Weak universal profile box]
+\label{def:derived-poly-weak-profile-box}
+For predicates
+\[
+R\in\mathrm{Pred}(\operatorname{Arr}(\mathbb A)),
+\]
+\[
+O\in\mathrm{Pred}(\operatorname{Arr}(\mathbb B)),
+\]
+\[
+T\in\mathrm{Pred}(\operatorname{Arr}(\mathbb Y)),
+\]
+and
+\[
+\varphi\in\mathrm{Pred}(\mathbb Z),
+\]
+define
+\[
+\Box^{\mathrm{prof}}_{R/O/T}(\varphi)
+:=
+\Pi_{\rho_{\mathrm{pos}}}
+\left(
+(
+\operatorname{in}^{\ast}R
+\wedge
+\operatorname{out}^{\ast}O
+\wedge
+\operatorname{down}^{\ast}T
+)
+\Rightarrow
+\operatorname{next}^{\ast}\varphi
+\right).
+\]
+\end{definition}
+
+This says that every position of the response profile satisfying the input,
+output, and downstream guards has a continuation satisfying
+\[
+\varphi.
+\]
+
+\begin{definition}[Strong universal profile box]
+\label{def:derived-poly-strong-profile-box}
+The \textbf{strong universal profile box} is
+\[
+\Box^{\mathrm{prof,strong}}_{R/O/T}(\varphi)
+:=
+\Pi_{\rho_{\mathrm{pos}}}
+\left(
+\operatorname{in}^{\ast}R
+\Rightarrow
+(
+\operatorname{out}^{\ast}O
+\wedge
+\operatorname{down}^{\ast}T
+\wedge
+\operatorname{next}^{\ast}\varphi
+)
+\right).
+\]
+\end{definition}
+
+The strong profile box requires every \(R\)-input position to produce an
+output satisfying
+\[
+O,
+\]
+a downstream response satisfying
+\[
+T,
+\]
+and a continuation satisfying
+\[
+\varphi.
+\]
+
+\begin{theorem}[Weak profile boxes and span boxes]
+\label{thm:derived-poly-weak-profile-box-span-box}
+One has
+\[
+c_{\chi,\rho}^{\ast}
+\Box^{\mathrm{prof}}_{R/O/T}(\varphi)
+=
+[R/O/T]\varphi,
+\]
+where
+\[
+[R/O/T]\varphi
+\]
+denotes the box modality of the primitive span restricted by
+\[
+R,
+\qquad
+O,
+\qquad
+T.
+\]
+More generally, for a state predicate
+\[
+\theta\in\mathrm{Pred}(\mathbb Z),
+\]
+one has
+\[
+\theta\Rightarrow
+c_{\chi,\rho}^{\ast}
+\Box^{\mathrm{prof}}_{R/O/T}(\varphi)
+=
+[\theta;R/O/T]\varphi.
+\]
+\end{theorem}
+
+\begin{proof}
+By Beck--Chevalley for the right adjoints
+\[
+\Pi,
+\]
+pulling the weak profile box back along
+\[
+c_{\chi,\rho}
+\]
+gives
+\[
+\Pi_{t_{\mathbb Z}}
+\left(
+(
+\iota_A^\ast R
+\wedge
+\iota_B^\ast O
+\wedge
+\iota_Y^\ast T
+)
+\Rightarrow
+s_{\mathbb Z}^{\ast}\varphi
+\right).
+\]
+This is exactly the box of the restricted primitive correspondence determined
+by
+\[
+R,
+\qquad
+O,
+\qquad
+T.
+\]
+For the state-guarded version, use the test-prefix law
+\[
+[\theta?;U]\varphi
+=
+\theta\Rightarrow[U]\varphi.
+\]
+\end{proof}
+
+\begin{remark}[Weak and strong profile boxes]
+\label{rem:derived-poly-weak-strong-profile-boxes}
+The weak profile box is precisely the profile-level predicate whose pullback
+along the coalgebra gives the box of the restricted execution span.
+
+The strong profile box is generally stricter.  It requires all inputs
+satisfying
+\[
+R
+\]
+to produce outputs satisfying
+\[
+O,
+\]
+downstream responses satisfying
+\[
+T,
+\]
+and continuations satisfying
+\[
+\varphi.
+\]
+It is therefore genuinely a profile-level condition rather than merely the
+box of a restricted span.
+\end{remark}
+
+\section{Guarded commands, choice, conditionals, and while programs}
+\label{sec:derived-poly-guarded-program-algebra}
+
+The remaining guarded program operations are inherited from the derived
+dynamic proarrow logic of the previous chapter, applied to the flattened
+correspondence
+\[
+\mathbf m_{\chi,\rho}:\mathbb Z\nrightarrow\mathbb Z.
+\]
+
+Let
+\[
+U:\mathbb Z\nrightarrow\mathbb Z
+\]
+be an endoprogram and let
+\[
+\theta\in\mathrm{Pred}(\mathbb Z)
+\]
+be a predicate.  The test span is
+\[
+\theta?
+=
+\left(
+\mathbb Z\xleftarrow{\theta}\Theta\xrightarrow{\theta}\mathbb Z
+\right),
+\]
+and the guarded command is
+\[
+\theta?;U.
+\]
+
+\begin{proposition}[Guard-prefix laws]
+\label{prop:derived-poly-guard-prefix-laws}
+For every endoprogram
+\[
+U:\mathbb Z\nrightarrow\mathbb Z,
+\]
+one has
+\[
+\langle\theta?;U\rangle\varphi
+=
+\theta\wedge\langle U\rangle\varphi.
+\]
+In the first-order Heyting fragment,
+\[
+[\theta?;U]\varphi
+=
+\theta\Rightarrow[U]\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+These are the test laws and functoriality of diamonds and boxes:
+\[
+\langle\theta?\rangle\psi=\theta\wedge\psi,
+\qquad
+[\theta?]\psi=\theta\Rightarrow\psi.
+\]
+\end{proof}
+
+Assume now that the relevant predicate fibres admit coherent finite joins and
+that subprograms are interpreted as predicates on the apex of a fixed ambient
+correspondence.
+
+\begin{proposition}[Finite guarded choice]
+\label{prop:derived-poly-finite-guarded-choice}
+Let
+\[
+U,V\hookrightarrow T
+\]
+be subprograms inside a fixed ambient endocorrespondence
+\[
+T:\mathbb Z\nrightarrow\mathbb Z,
+\]
+and let
+\[
+\theta,\epsilon\in\mathrm{Pred}(\mathbb Z)
+\]
+be state guards.  Then
+\[
+\left\langle
+(\theta?;U)\vee(\epsilon?;V)
+\right\rangle\varphi
+=
+(\theta\wedge\langle U\rangle\varphi)
+\vee
+(\epsilon\wedge\langle V\rangle\varphi).
+\]
+In the first-order Heyting fragment,
+\[
+\left[
+(\theta?;U)\vee(\epsilon?;V)
+\right]\varphi
+=
+(\theta\Rightarrow[U]\varphi)
+\wedge
+(\epsilon\Rightarrow[V]\varphi).
+\]
+\end{proposition}
+
+\begin{proof}
+The diamond statement is finite choice for subprograms inside a common ambient
+correspondence, followed by the guard-prefix diamond law.  The box statement
+uses finite choice for boxes inside a common ambient correspondence and then
+the guard-prefix box law.
+\end{proof}
+
+\begin{definition}[Internal conditional]
+\label{def:derived-poly-internal-conditional}
+Let
+\[
+U,V\hookrightarrow T
+\]
+be subprograms inside a fixed ambient endocorrespondence, and let
+\[
+\theta,\epsilon\in\mathrm{Pred}(\mathbb Z)
+\]
+be complementary guards.  Define
+\[
+\mathbf{if}\ \theta\ \mathbf{then}\ U\ \mathbf{else}\ V
+:=
+(\theta?;U)\vee(\epsilon?;V).
+\]
+In Boolean predicate fibres, one may take
+\[
+\epsilon=\neg\theta.
+\]
+\end{definition}
+
+Using the path-star and fixed-point hypotheses already fixed for derived
+contextual dynamic proarrow logic, one obtains the corresponding while-program
+laws.
+
+\begin{definition}[Guarded while program]
+\label{def:derived-poly-guarded-while}
+The guarded while program with loop guard
+\[
+\theta,
+\]
+body
+\[
+U,
+\]
+and exit guard
+\[
+\epsilon
+\]
+is
+\[
+\mathbf{while}\ \theta\ \mathbf{do}\ U\ \mathbf{exit}\ \epsilon
+:=
+(\theta?;U)^\star_{\mathrm{path}};\epsilon?.
+\]
+\end{definition}
+
+\begin{theorem}[Diamond law for guarded while programs]
+\label{thm:derived-poly-while-diamond}
+In the \(\omega\)-iterative fragment of the derived first-order Heyting
+predicate theory,
+\[
+\left\langle
+(\theta?;U)^\star_{\mathrm{path}};\epsilon?
+\right\rangle\varphi
+=
+\mu X.\bigl(
+\epsilon\wedge\varphi
+\vee
+\theta\wedge\langle U\rangle X
+\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+By functoriality of diamonds,
+\[
+\left\langle
+(\theta?;U)^\star_{\mathrm{path}};\epsilon?
+\right\rangle\varphi
+=
+\left\langle
+(\theta?;U)^\star_{\mathrm{path}}
+\right\rangle
+(\epsilon\wedge\varphi).
+\]
+The path/fixed-point comparison gives
+\[
+\left\langle
+(\theta?;U)^\star_{\mathrm{path}}
+\right\rangle
+(\epsilon\wedge\varphi)
+=
+\mu X.\bigl(
+\epsilon\wedge\varphi
+\vee
+\langle\theta?;U\rangle X
+\bigr).
+\]
+Using
+\[
+\langle\theta?;U\rangle X
+=
+\theta\wedge\langle U\rangle X
+\]
+gives the result.
+\end{proof}
+
+\begin{theorem}[Box law for guarded while programs]
+\label{thm:derived-poly-while-box}
+Under the corresponding box hypotheses,
+\[
+\left[
+(\theta?;U)^\star_{\mathrm{path}};\epsilon?
+\right]\varphi
+=
+\nu X.\bigl(
+(\epsilon\Rightarrow\varphi)
+\wedge
+(\theta\Rightarrow[U]X)
+\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+This is dual to the diamond proof, using the box test law
+\[
+[\epsilon?]\varphi=\epsilon\Rightarrow\varphi
+\]
+and the path/fixed-point comparison for boxes.
+\end{proof}
+
+\section{Domain, antidomain, and guarded automata}
+\label{sec:derived-poly-domain-automata}
+
+Let
+\[
+U:\mathbb Z\nrightarrow\mathbb Z
+\]
+be an endoprogram.  Its domain predicate is
+\[
+\operatorname{dom}(U)
+:=
+\langle U\rangle\top.
+\]
+
+\begin{proposition}[Domain-prefix law]
+\label{prop:derived-poly-domain-prefix}
+For every endoprogram
+\[
+U,
+\]
+one has
+\[
+\langle\operatorname{dom}(U)?;U\rangle\varphi
+=
+\langle U\rangle\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+By the guard-prefix law,
+\[
+\langle\operatorname{dom}(U)?;U\rangle\varphi
+=
+\operatorname{dom}(U)\wedge\langle U\rangle\varphi.
+\]
+Since
+\[
+\langle U\rangle\varphi\le\langle U\rangle\top
+=
+\operatorname{dom}(U),
+\]
+the meet is
+\[
+\langle U\rangle\varphi.
+\]
+\end{proof}
+
+If predicate fibres are Boolean, define
+\[
+\operatorname{adom}(U)
+:=
+\neg\operatorname{dom}(U).
+\]
+
+\begin{proposition}[Antidomain annihilation]
+\label{prop:derived-poly-antidomain-annihilation}
+In Boolean predicate fibres,
+\[
+\langle\operatorname{adom}(U)?;U\rangle\varphi
+=
+\bot.
+\]
+\end{proposition}
+
+\begin{proof}
+By the guard-prefix law,
+\[
+\langle\operatorname{adom}(U)?;U\rangle\varphi
+=
+\operatorname{adom}(U)\wedge\langle U\rangle\varphi.
+\]
+Since
+\[
+\langle U\rangle\varphi\le\operatorname{dom}(U)
+\]
+and
+\[
+\operatorname{adom}(U)=\neg\operatorname{dom}(U),
+\]
+the meet is bottom.
+\end{proof}
+
+\begin{definition}[Derived guarded Mealy automaton]
+\label{def:derived-poly-guarded-mealy-automaton}
+A \textbf{derived guarded Mealy automaton} over
+\[
+(\chi,\rho)
+\]
+is a finite family of guarded primitive subprograms
+\[
+G_i
+=
+(\theta_i;R_i/O_i/T_i)^\sharp
+\hookrightarrow
+\operatorname{Arr}(\mathbb Z)
+\]
+inside the common ambient flattened execution correspondence
+\[
+\mathbf m_{\chi,\rho}.
+\]
+Its one-step program is the finite join
+\[
+G:=\bigvee_{i\in I}G_i.
+\]
+\end{definition}
+
+\begin{proposition}[Diamond semantics of derived guarded Mealy automata]
+\label{prop:derived-poly-guarded-automaton-diamond}
+For a derived guarded Mealy automaton with one-step program
+\[
+G=\bigvee_{i\in I}G_i,
+\]
+one has
+\[
+\langle G\rangle\varphi
+=
+\bigvee_{i\in I}\langle G_i\rangle\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+This is the finite choice law for subprograms inside the common ambient
+execution correspondence.
+\end{proof}
+
+A derived guarded Mealy automaton is \textbf{witness-disjoint} if
+\[
+G_i\wedge G_j=\bot
+\qquad
+(i\ne j).
+\]
+It is \textbf{branch-disjoint} if
+\[
+\operatorname{dom}(G_i)\wedge\operatorname{dom}(G_j)=\bot
+\qquad
+(i\ne j).
+\]
+It is \textbf{guard-total} if
+\[
+\bigvee_{i\in I}\operatorname{dom}(G_i)=\top.
+\]
+When branch-disjointness and guard-totality hold, the branch domains form a
+finite disjoint cover of
+\[
+\mathbb Z.
+\]
+Thus the enabled branch is unique at the level of branch domains, although a
+branch may still contain multiple execution witnesses.
+
+\section{Terminal and stateless specializations}
+\label{sec:derived-poly-terminal-stateless}
+
+\subsection{Terminal trace}
+
+Let
+\[
+\rho=1_{\mathbb B}:\mathbb B\to\mathbb B
+\]
+be the terminal downstream behaviour.  Since the identity map is a derived
+right fibration, the preceding construction applies.
+
+Then
+\[
+\mathbb Z
+=
+\mathbb X\times_{\mathbb B}\mathbb B
+\simeq
+\mathbb X.
+\]
+In a split strict presentation, the objectwise shadow of the derived response
+functor has fibre
+\[
+\mathcal M_{1_{\mathbb B}}(X)_{(v,b)}
+\cong
+\prod_{a:u\to v}
+\sum_{\beta:b'\to b}
+X_{(u,b')}.
+\]
+
+For a strict Mealy presentation
+\[
+(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B,
+\]
+this gives the terminal trace coalgebra
+\[
+c_{\Phi,\mathbf 1_{\mathbb B}}(x)(a)
+=
+(\omega(a,x),\delta(a,x)).
+\]
+
+\subsection{Stateless case}
+
+Let
+\[
+F:\mathbb A\to\mathbb B
+\]
+be a derived internal functor.  It defines a stateless derived Mealy morphism
+\[
+\chi_F:\mathbb A\to\mathbb A\times\mathbb B
+\]
+classified by
+\[
+1_{\mathbb A}:\mathbb A\to\mathbb A
+\]
+and
+\[
+F:\mathbb A\to\mathbb B.
+\]
+
+For a right-fibrational downstream behaviour
+\[
+\rho:\mathbb Y\to\mathbb B,
+\]
+the contextual execution object is
+\[
+\mathbb Z
+=
+\mathbb A\times_{\mathbb B}\mathbb Y.
+\]
+The associated response coalgebra is the dependent-product transpose of
+cartesian restriction of the downstream right fibration along
+\[
+F.
+\]
+
+In strict presentations, if
+\[
+Y\to B_0
+\]
+is a right
+\[
+\mathbb B
+\]
+-action, then
+\[
+c_{F,Y}(v,y)(a)
+=
+\left(
+F_1(a),
+\left(
+s_A(a),
+\sigma(F_1(a),y)
+\right)
+\right)
+\]
+for
+\[
+a:u\to v.
+\]
+For
+\[
+\rho=1_{\mathbb B},
+\]
+this reduces to
+\[
+c_F(v)(a)=(F_1(a),s_A(a)).
+\]
+Under the forward-opposite convention, the recovered program category is
+\[
+\mathbb A^{\mathrm{op}},
+\]
+with output labelling
+\[
+F^{\mathrm{op}}:\mathbb A^{\mathrm{op}}\to\mathbb B^{\mathrm{op}}.
+\]
+
+\section{Strict split presentations}
+\label{sec:derived-poly-strict-presentations}
+
+We now record the comparison with the non-derived polynomial chapter.
+
+Let
+\[
+\Phi=(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a strict Mealy morphism, and let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a strict right
+\[
+\mathbb B
+\]
+-action.
+
+The strict Mealy morphism presents the right-fibrational derived Mealy
+morphism
+\[
+P\rtimes\mathbb A\to\mathbb A\times\mathbb B,
+\]
+and the strict downstream action presents the derived right fibration
+\[
+Y\rtimes\mathbb B\to\mathbb B.
+\]
+
+The derived contextual execution object is presented by
+\[
+(P\rtimes\mathbb A)\times_{\mathbb B}(Y\rtimes\mathbb B),
+\]
+whose object part is
+\[
+S_{\Phi,Y}
+=
+P\times_{q,B_0,r}Y.
+\]
+The object-level interface is
+\[
+A_0\times Y.
+\]
+The object-level query object is
+\[
+A_1\times_{t_A,A_0,\pi_A}(A_0\times Y),
+\]
+and the object-level response object is presented by
+\[
+Q_Y\times_{r\pi_Y\kappa_Y,B_0,t_B}B_1.
+\]
+
+An arrow
+\[
+\eta:y'\to y
+\]
+of
+\[
+Y\rtimes\mathbb B
+\]
+is represented by a pair
+\[
+(\beta,y)
+\]
+with
+\[
+\beta:b'\to r(y),
+\qquad
+y'=\sigma(\beta,y).
+\]
+Consequently the objectwise shadow of the intrinsic response functor has the
+strict fibre
+\[
+\prod_{a:u\to v}
+\sum_{\beta:b'\to r(y)}
+X_{(u,\sigma(\beta,y))}.
+\]
+
+The canonical response coalgebra becomes
+\[
+c_{\Phi,Y}(x,y)(a)
+=
+\left(
+\omega(a,x),
+\left(
+\delta(a,x),
+\sigma(\omega(a,x),y)
+\right)
+\right).
+\]
+
+Flattening identifies with the arrow object of
+\[
+(P\rtimes\mathbb A)\times_{\mathbb B}(Y\rtimes\mathbb B).
+\]
+After applying the forward-opposite convention, its primitive execution span is
+\[
+S_{\Phi,Y}
+\xleftarrow{s_{\Phi,Y}}
+M_{\Phi,Y}
+\xrightarrow{t_{\Phi,Y}}
+S_{\Phi,Y},
+\]
+where
+\[
+M_{\Phi,Y}
+=
+A_1\times_{t_A,A_0,p\pi_P}S_{\Phi,Y},
+\]
+\[
+s_{\Phi,Y}(a,x,y)=(x,y),
+\]
+and
+\[
+t_{\Phi,Y}(a,x,y)
+=
+\left(
+\delta(a,x),
+\sigma(\omega(a,x),y)
+\right).
+\]
+
+The guarded lifting comparison becomes
+\[
+\theta\wedge
+c_{\Phi,Y}^{\ast}\lambda_{R/O/T}(\varphi)
+=
+\langle\theta;R/O/T\rangle\varphi,
+\]
+and the weak profile box comparison becomes
+\[
+c_{\Phi,Y}^{\ast}
+\Box^{\mathrm{prof}}_{R/O/T}(\varphi)
+=
+[R/O/T]\varphi.
+\]
+
+Thus, after choosing split strict representatives and passing to the
+objectwise shadows of the derived arrow and response objects, the non-derived
+polynomial chapter is recovered from the intrinsic homotopy-coherent
+right-fibrational construction.
+
+\section{Main consolidation}
+\label{sec:derived-poly-main-consolidation}
+
+\begin{theorem}[Derived polynomial transposes of contextual Mealy execution]
+\label{thm:derived-poly-main-consolidation}
+Let
+\[
+\mathcal C
+=
+\mathbf{Cat}(\mathcal E)_{JT,\infty}.
+\]
+Let
+\[
+\chi=(\pi,\Omega):\mathbb X\to\mathbb A\times\mathbb B
+\]
+be a right-fibrational derived Mealy morphism, and let
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+be a right-fibrational downstream behaviour.  Suppose that the derived arrow
+objects used above exist, that derived right fibrations are stable under
+homotopy pullback and composition, and that the local dependent product
+\[
+\Pi_{\kappa_\rho}
+\]
+needed to form
+\[
+\mathcal M_\rho
+=
+\Pi_{\kappa_\rho}\Sigma_{r_\rho}n_\rho^\ast
+\]
+exists.
+
+Then:
+
+\begin{enumerate}
+\item The contextual execution object is
+\[
+\mathbb Z=\mathbb X\times_{\mathbb B}\mathbb Y.
+\]
+
+\item The contextual projection
+\[
+I_{\chi,\rho}:\mathbb Z\to\mathbb A
+\]
+is a derived right fibration.
+
+\item The derived interface is
+\[
+\mathbb J_\rho=\mathbb A\times\mathbb Y.
+\]
+
+\item The query object is
+\[
+\mathbb Q_\rho
+=
+\operatorname{Arr}(\mathbb A)
+\times_{t_{\mathbb A},\,\mathbb A,\,\operatorname{pr}_{\mathbb A}}
+\mathbb J_\rho.
+\]
+
+\item The response object is
+\[
+\mathbb O_\rho
+=
+\mathbb Q_\rho
+\times_{\operatorname{pr}_{\mathbb Y}\kappa_\rho,\,\mathbb Y,\,t_{\mathbb Y}}
+\operatorname{Arr}(\mathbb Y).
+\]
+
+\item The raw output label is induced by
+\[
+\operatorname{Arr}(\rho):
+\operatorname{Arr}(\mathbb Y)\to\operatorname{Arr}(\mathbb B).
+\]
+
+\item The derived response functor is
+\[
+\mathcal M_\rho
+=
+\Pi_{\kappa_\rho}\Sigma_{r_\rho}n_\rho^\ast.
+\]
+
+\item Contextual cartesian transport transposes to the canonical response
+coalgebra
+\[
+c_{\chi,\rho}:\mathbb Z\to\mathcal M_\rho(\mathbb Z).
+\]
+
+\item This coalgebra is multiplicative because it is induced by functorial
+cartesian transport.
+
+\item Pulling the position object of
+\[
+\mathcal M_\rho
+\]
+back along
+\[
+c_{\chi,\rho}
+\]
+identifies canonically with
+\[
+\operatorname{Arr}(\mathbb Z).
+\]
+
+\item The flattened forward execution correspondence is
+\[
+\mathbb Z
+\xleftarrow{t_{\mathbb Z}}
+\operatorname{Arr}(\mathbb Z)
+\xrightarrow{s_{\mathbb Z}}
+\mathbb Z.
+\]
+\end{enumerate}
+
+If, in addition, the derived predicate theory has the regular fragment used
+for diamonds, then guarded existential response liftings pull back along
+\[
+c_{\chi,\rho}
+\]
+to guarded span diamonds:
+\[
+\theta
+\wedge
+c_{\chi,\rho}^{\ast}\lambda_{R/O/T}(\varphi)
+=
+\langle\theta;R/O/T\rangle\varphi.
+\]
+
+If the predicate theory has the first-order Heyting fragment used for boxes,
+then weak profile boxes pull back along
+\[
+c_{\chi,\rho}
+\]
+to guarded span boxes:
+\[
+c_{\chi,\rho}^{\ast}
+\Box^{\mathrm{prof}}_{R/O/T}(\varphi)
+=
+[R/O/T]\varphi.
+\]
+
+If the coherent finite-join, path-star, and \(\omega\)-iterative hypotheses of
+the previous derived dynamic proarrow-logic chapter are also imposed, then
+tests, guarded commands, finite guarded choice, conditionals, while programs,
+domain operations, and guarded automata are inherited from the derived dynamic
+proarrow logic of the flattened correspondence.
+
+Finally, the terminal downstream behaviour recovers the derived terminal trace
+polynomial, stateless derived Mealy morphisms classified by derived functors
+\[
+F:\mathbb A\to\mathbb B
+\]
+recover the polynomial transpose of downstream cartesian restriction along
+\[
+F,
+\]
+and split strict presentations recover the non-derived polynomial chapter at
+the objectwise representative level.
+\end{theorem}
+
+\begin{proof}
+Parts (1) and (2) are the definition of contextual execution and
+Proposition~\ref{prop:derived-poly-contextual-right-fibration}.  Parts
+(3)--(6) are the intrinsic interface, query, response, and label constructions
+of Section~\ref{sec:derived-poly-interface-queries-responses}.  Part (7) is
+Definition~\ref{def:derived-poly-response-functor}.  Part (8) is
+Definition~\ref{def:derived-poly-canonical-response-coalgebra} and
+Theorem~\ref{thm:derived-poly-coalgebra-transpose}.  Part (9) is
+Proposition~\ref{prop:derived-poly-canonical-coalgebra-multiplicative}.  Parts
+(10) and (11) are Theorem~\ref{thm:derived-poly-flattening-arrow-object}.
+
+The diamond comparison is Theorem~\ref{thm:derived-poly-lifting-span-comparison}.
+The box comparison is Theorem~\ref{thm:derived-poly-weak-profile-box-span-box}.
+The guarded program operations are the constructions of
+Sections~\ref{sec:derived-poly-guarded-program-algebra}--\ref{sec:derived-poly-domain-automata}.
+The terminal and stateless claims are
+Section~\ref{sec:derived-poly-terminal-stateless}.  The split strict
+comparison is Section~\ref{sec:derived-poly-strict-presentations}.
+\end{proof}
+
+\begin{remark}[Final conceptual summary]
+\label{rem:derived-poly-final-summary}
+The derived polynomial calculus is the intrinsic curried form of
+right-fibrational contextual Mealy execution.
+
+The hierarchy is
+\[
+\text{right-fibrational derived Mealy data}
+\quad\leadsto\quad
+\text{contextual right fibration}
+\quad\leadsto\quad
+\text{cartesian transport}
+\quad\leadsto\quad
+\text{polynomial response coalgebra}
+\quad\leadsto\quad
+\text{flattened proarrow program}.
+\]
+
+The polynomial coalgebra records homotopy-coherent total response profiles.
+Flattening it recovers the forward execution correspondence.  Guarded
+polynomial liftings are profile-level predicates whose pullbacks along the
+coalgebra are precisely the guarded dynamic proarrow modalities of the
+flattened program semantics.
+
+Thus the same homotopy-coherent execution semantics appears in two
+presentations:
+\[
+\boxed{
+\text{polynomial semantics}
+=
+\text{curried total-response semantics}
+}
+\]
+and
+\[
+\boxed{
+\text{proarrow semantics}
+=
+\text{flattened execution semantics}.
+}
+\]
+\end{remark}

@@ -1,0 +1,5261 @@
+\chapter{Internal Categories and Mealy Morphisms in the Bicategory of Spans}
+\label{ch:spans-internal-categories-mealy}
+
+\section{Orientation}
+\label{sec:ch1-orientation}
+
+Let \(\mathcal E\) be a finitely complete category. Since \(\mathcal E\) has pullbacks, one may form the bicategory
+\[
+    \mathbf{Span}(\mathcal E),
+\]
+whose objects are those of \(\mathcal E\), whose 1-cells are spans, and whose 2-cells are maps of spans. In the formal theory of monads, internal categories in \(\mathcal E\) may be identified with monads in this bicategory. More explicitly, an endospan
+\[
+    C_0 \xleftarrow{s} C_1 \xrightarrow{t} C_0
+\]
+equipped with unit and multiplication as a monad in \(\mathbf{Span}(\mathcal E)\) is precisely an internal category in \(\mathcal E\) \cite{BenabouBicategories,StreetFormalTheoryOfMonads,LackCompanion,MirandaInternalCategories}.
+
+The morphisms produced by this bicategorical identification require some care. If \(\mathbb A\) and \(\mathbb B\) are internal categories, regarded as monads in \(\mathbf{Span}(\mathcal E)\), a monad morphism between them is carried by a span
+\[
+    A_0 \xleftarrow{p} P \xrightarrow{q} B_0.
+\]
+By contrast, an internal functor
+\[
+    F:\mathbb A\to\mathbb B
+\]
+has object part a single morphism
+\[
+    F_0:A_0\to B_0.
+\]
+Thus the bicategorical monad-morphism calculus and the ordinary functorial calculus for internal categories produce different kinds of morphism. This distinction is one of the reasons for working with richer ambient structures, such as double categories, in which vertical and horizontal morphisms can be kept separate. In particular, Fiore, Gambino, and Kock develop a formal theory of monads in double categories, extending Street's formal theory and providing a setting in which monads, monad morphisms, and functorial constructions can be organized with this extra variance visible \cite{StreetFormalTheoryOfMonads,FioreGambinoKockMonadsDoubleCategories}. Related bicategorical accounts using companions, conjoints, and framed bicategories also clarify how functorial and profunctorial behaviour coexist in such settings \cite{LackCompanion}.
+
+The present chapter takes the span-carried morphisms themselves as the object of study. We retain the span
+\[
+    A_0 \xleftarrow{p} P \xrightarrow{q} B_0
+\]
+as part of the structure and read it as carrying state. The map \(p\) records the input interface of a state, and \(q\) records its output interface. The oriented monad-morphism structure then supplies a transition-output operation. From this point of view, the span calculus suggests a typed internal form of automata theory: internal categories provide the input and output type systems, while monad morphisms in spans behave as stateful internal functors.
+
+This interpretation is close in spirit to Par\'e's Mealy morphisms of enriched categories. Par\'e introduces Mealy morphisms as morphisms lying between enriched functors and profunctors, with the construction motivated by bicategorical considerations and by the classical Mealy-machine pattern from automata theory \cite{PareMealyMorphisms}. The present chapter develops an internal-categorical version of that idea in the bicategory of spans.
+
+\section{Spans, monads, and internal categories}
+\label{sec:spans-monads-internal-categories}
+
+A span from \(X\) to \(Y\) is written
+\[
+    X \xleftarrow{p} S \xrightarrow{q} Y.
+\]
+The map \(p:S\to X\) is its left leg, and \(q:S\to Y\) is its right leg. We often display this as the diagram
+\[
+    \begin{tikzcd}
+        & 
+            S 
+                \arrow[dl, "p"'] 
+                \arrow[dr, "q"] 
+        & 
+        \\
+            X 
+        &
+        & 
+            Y.
+    \end{tikzcd}
+\]
+
+When the structure maps are determined by context, we suppress them in pullback notation. For example, if
+\[
+    A_1\xrightarrow{t_A}A_0
+    \qquad\text{and}\qquad
+    P\xrightarrow{p}A_0
+\]
+are fixed, we write
+\[
+    A_1\times_{A_0}P
+\]
+for
+\[
+    A_1\times_{t_A,A_0,p}P.
+\]
+Thus \(A_1\times_{A_0}P\) is the pullback object in the square
+\[
+    \begin{tikzcd}
+            A_1\times_{A_0}P
+                \arrow[r, "\pi_P"]
+                \arrow[d, "\pi_{A_1}"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            P
+                \arrow[d, "p"]
+        \\
+            A_1
+                \arrow[r, "t_A"']
+        &
+            A_0.
+    \end{tikzcd}
+\]
+When several maps into the same object occur simultaneously, the relevant structure maps are displayed explicitly.
+
+Let
+\[
+    X \xleftarrow{p} S \xrightarrow{q} Y
+\]
+and
+\[
+    Y \xleftarrow{r} T \xrightarrow{s} Z
+\]
+be spans in \(\mathcal E\). Their composite is obtained by forming the pullback of \(q:S\to Y\) and \(r:T\to Y\):
+\[
+    \begin{tikzcd}
+            S\times_Y T
+                \arrow[r, "\pi_T"]
+                \arrow[d, "\pi_S"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            T
+                \arrow[r, "s"]
+                \arrow[d, "r"]
+        & 
+            Z
+        \\
+            S
+                \arrow[r, "q"']
+                \arrow[d, "p"']
+        &
+            Y 
+        \\
+            X.
+    \end{tikzcd}
+\]
+We write this composite as \(T\circ S\), so \(S\) is performed first and \(T\)
+second.
+
+A map of spans
+\[
+    \alpha:
+    \left(
+        X 
+        \xleftarrow{p} 
+        S 
+        \xrightarrow{q} 
+        Y
+    \right)
+    \Longrightarrow
+    \left(
+        X 
+        \xleftarrow{p'} 
+        S' 
+        \xrightarrow{q'} 
+        Y
+    \right)
+\]
+is a morphism \(\alpha:S\to S'\) in \(\mathcal E\) such that
+\[
+    p'\alpha=p,
+    \qquad
+    q'\alpha=q.
+\]
+Equivalently, it is a commuting diagram
+\[
+    \begin{tikzcd}[column sep=large]
+        & 
+            S 
+                \arrow[dd, "\alpha" description] 
+                \arrow[dl, "p"'] 
+                \arrow[dr, "q"] 
+        & 
+        \\
+            X 
+        &
+        & 
+            Y 
+        \\
+        & 
+            S' 
+                \arrow[ul, "p'"] 
+                \arrow[ur, "q'"'] 
+        &
+    \end{tikzcd}
+\]
+where the two triangular regions commute.
+
+\begin{definition}[Bicategory of spans]
+\label{def:bicategory-of-spans}
+    The \textbf{bicategory of spans} in \(\mathcal E\), denoted
+    \[
+        \mathbf{Span}(\mathcal E),
+    \]
+    has
+    \begin{enumerate}
+        \item objects the objects of \(\mathcal E\);
+
+        \item 1-cells \(X\to Y\) the spans
+        \[
+            X \xleftarrow{} S \xrightarrow{} Y;
+        \]
+
+        \item 2-cells the maps of spans.
+    \end{enumerate}
+    The identity 1-cell on \(X\) is
+    \[
+        X \xleftarrow{1_X} X \xrightarrow{1_X} X.
+    \]
+    Horizontal composition is given by the pullback construction above.
+\end{definition}
+
+\begin{proposition}
+\label{prop:span-is-bicategory}
+    If \(\mathcal E\) has pullbacks, then the data of Definition~\ref{def:bicategory-of-spans} form a bicategory.
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Composition of 2-cells.} Vertical composition is inherited from \(\mathcal E\): a vertical composite of maps of spans is the composite of their apex maps. The defining equations with the left and right legs are preserved by ordinary composition in \(\mathcal E\).
+
+        Horizontal composition is induced by pullback. If
+        \[
+            \alpha:S\to S',
+            \qquad
+            \beta:T\to T'
+        \]
+        are maps of spans over a common middle object \(Y\), then the universal property of the pullback gives a unique map
+        \[
+            \alpha\times_Y\beta:S\times_YT\to S'\times_YT'
+        \]
+        whose projections are \(\alpha\pi_S\) and \(\beta\pi_T\). This is the horizontal composite of \(\alpha\) and \(\beta\).
+
+        \item \textbf{Associators and unitors.}
+        For composable spans with apexes \(S,T,U\), the two possible composite apexes
+        \[
+            (S\times_YT)\times_ZU
+            \qquad\text{and}\qquad
+            S\times_Y(T\times_ZU)
+        \]
+        both represent the object of triples \((s,t,u)\) satisfying the two matching equations. The associator is the canonical isomorphism between these two pullback presentations, uniquely determined by its projections to \(S,T,U\).
+
+        The left and right unitors are the canonical pullback isomorphisms
+        \[
+            X\times_XS\cong S,
+            \qquad
+            S\times_YY\cong S.
+        \]
+
+        \item \textbf{Coherence.} The interchange law, the pentagon identity, and the triangle identity compare canonical maps between objects obtained from the same iterated pullback data. Since all such maps are uniquely determined by their projections to the original apexes, the relevant diagrams commute. Therefore the span data form a bicategory.
+    \end{enumerate}
+\end{proof}
+
+\begin{lemma}[Component calculus for span maps]
+\label{lem:component-calculus-span-maps}
+    Let
+    \[
+        X\xleftarrow{}S\xrightarrow{}Y,
+        \qquad
+        X\xleftarrow{}T\xrightarrow{}Y
+    \]
+    be spans in \(\mathcal E\). A map of spans \(S\to T\) is determined by its apex map, and an equality of maps of spans is an equality of apex maps.
+
+    Moreover, whenever the codomain apex is a pullback, a map into it is determined by its projections. Thus the generalized-element equations used below are equivalently morphism equations out of the pullback object that expresses the displayed typing constraints.
+\end{lemma}
+
+\begin{remark}
+\label{rem:span-bicategory-literature}
+    The construction of \(\mathbf{Span}(\mathcal E)\) is one of the basic examples in bicategory theory following B\'enabou's introduction of bicategories \cite{BenabouBicategories}.
+\end{remark}
+
+Let \(C_0\) be an object of \(\mathcal E\). The hom-category
+\[
+    \mathbf{Span}(\mathcal E)(C_0,C_0)
+\]
+is a monoidal category. Its objects are endospans
+\[
+    C_0\xleftarrow{s}S\xrightarrow{t}C_0,
+\]
+its morphisms are maps of spans, its tensor product is horizontal composition of spans, and its tensor unit is the identity span
+\[
+    C_0\xleftarrow{1_{C_0}}C_0\xrightarrow{1_{C_0}}C_0.
+\]
+We write this monoidal category as
+\[
+    \operatorname{EndSpan}_{\mathcal E}(C_0)
+    :=
+    \mathbf{Span}(\mathcal E)(C_0,C_0).
+\]
+
+With our convention for categorical order, if
+\[
+    C_0\xleftarrow{s}S\xrightarrow{t}C_0,
+    \qquad
+    C_0\xleftarrow{s'}T\xrightarrow{t'}C_0,
+\]
+then
+\[
+    S\otimes T:=T\circ S
+\]
+has apex
+\[
+    S\times_{t,C_0,s'}T.
+\]
+Thus \(S\otimes T\) denotes first \(S\), then \(T\):
+\[
+    \begin{tikzcd}
+        & S \arrow[dl, "s"'] \arrow[dr, "t"] & & T \arrow[dl, "s'"'] \arrow[dr, "t'"] & \\
+        C_0 & & C_0 & & C_0
+    \end{tikzcd}
+    \qquad\leadsto\qquad
+    \begin{tikzcd}
+        & S\times_{C_0}T \arrow[dl, "s\pi_S"']
+                \arrow[dr, "t'\pi_T"] & \\
+        C_0 && C_0
+    \end{tikzcd}
+\]
+
+\begin{remark}
+\label{rem:monads-as-monoids-in-endohom}
+    In any bicategory \(\mathcal B\), a monad on an object \(X\) is equivalently a monoid object in the monoidal category
+    \[
+        \mathcal B(X,X),
+    \]
+    where the monoidal product is horizontal composition and the unit object is \(1_X\). Hence a monad on \(C_0\) in \(\mathbf{Span}(\mathcal E)\) is equivalently a monoid object in
+    \[
+        \operatorname{EndSpan}_{\mathcal E}(C_0).
+    \]
+    This is a basic instance of the formal theory of monads in bicategories \cite{StreetFormalTheoryOfMonads}.
+\end{remark}
+
+Let
+\[
+    C_0 \xleftarrow{s} C_1 \xrightarrow{t} C_0
+\]
+be an endospan. Composing this span with itself requires the pullback of
+\[
+    t:C_1\to C_0
+    \qquad\text{and}\qquad
+    s:C_1\to C_0.
+\]
+We denote this pullback by
+\[
+    C_2:=C_1\times_{t,C_0,s}C_1.
+\]
+Thus \(C_2\) is the object of composable pairs \((a,b)\) satisfying
+\[
+    t(a)=s(b).
+\]
+The defining pullback is
+\[
+    \begin{tikzcd}
+            C_2
+                \arrow[r, "\pi_2"]
+                \arrow[d, "\pi_1"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            C_1
+                \arrow[d, "s"]
+        \\
+            C_1
+                \arrow[r, "t"']
+        &
+            C_0.
+    \end{tikzcd}
+\]
+The composite endospan is
+\[
+    C_0
+    \xleftarrow{s\pi_1}
+    C_2
+    \xrightarrow{t\pi_2}
+    C_0.
+\]
+
+A monoid structure on the endospan
+\[
+    C_0 \xleftarrow{s} C_1 \xrightarrow{t} C_0
+\]
+consists of a unit map of spans
+\[
+    \eta:
+    \left(
+        C_0
+        \xleftarrow{1_{C_0}}
+        C_0
+        \xrightarrow{1_{C_0}}
+        C_0
+    \right)
+    \Longrightarrow
+    \left(
+        C_0
+        \xleftarrow{s}
+        C_1
+        \xrightarrow{t}
+        C_0
+    \right)
+\]
+and a multiplication map of spans
+\[
+    \mu:
+    \left(
+        C_0
+        \xleftarrow{s\pi_1}
+        C_2
+        \xrightarrow{t\pi_2}
+        C_0
+    \right)
+    \Longrightarrow
+    \left(
+        C_0
+        \xleftarrow{s}
+        C_1
+        \xrightarrow{t}
+        C_0
+    \right).
+\]
+Equivalently, the unit is a map
+\[
+    e:C_0\to C_1
+\]
+such that
+\[
+    se=1_{C_0},
+    \qquad
+    te=1_{C_0},
+\]
+as in
+\[
+    \begin{tikzcd}[column sep=large]
+        & 
+            C_0 
+                \arrow[d, "e" description] 
+                \arrow[dl, "1_{C_0}"'] 
+                \arrow[dr, "1_{C_0}"] 
+        & 
+        \\
+            C_0
+        & 
+            C_1 
+                \arrow[l, "s"] 
+                \arrow[r, "t"'] 
+        & 
+            C_0,
+    \end{tikzcd}
+\]
+and the multiplication is a map
+\[
+    m:C_2\to C_1
+\]
+such that
+\[
+    sm=s\pi_1,
+    \qquad
+    tm=t\pi_2,
+\]
+as in
+\[
+    \begin{tikzcd}[column sep=large]
+        & 
+            C_2 
+                \arrow[d, "m" description] 
+                \arrow[dl, "s\pi_1"'] 
+                \arrow[dr, "t\pi_2"] 
+        & 
+        \\
+            C_0 
+        & 
+            C_1 
+                \arrow[l, "s"] 
+                \arrow[r, "t"'] 
+        & 
+            C_0.
+    \end{tikzcd}
+\]
+
+In generalized-element notation, if
+\[
+    a:u\to v,
+    \qquad
+    b:v\to w,
+\]
+then
+\[
+    m(a,b)=b\circ a:u\to w.
+\]
+Thus the two projections from \(C_2\) are read as
+\[
+    \begin{tikzcd}[column sep=large]
+            u
+                \arrow[r, "a"]
+        &
+            v
+                \arrow[r, "b"]
+        &
+            w.
+    \end{tikzcd}
+\]
+
+\begin{definition}[Internal category]
+\label{def:internal-category-as-endospan-monoid}
+    An \textbf{internal category} in \(\mathcal E\) is a tuple
+    \[
+        \mathbb C=(C_0,C_1,s,t,e,m)
+    \]
+    where
+    \[
+        s,t:C_1\to C_0,
+        \qquad
+        e:C_0\to C_1,
+        \qquad
+        m:C_1\times_{t,C_0,s}C_1\to C_1,
+    \]
+    satisfying the source-target equations
+    \[
+        se=1_{C_0},
+        \qquad
+        te=1_{C_0},
+    \]
+    \[
+        sm=s\pi_1,
+        \qquad
+        tm=t\pi_2,
+    \]
+    the identity equations
+    \[
+        m(e s,1_{C_1})=1_{C_1},
+        \qquad
+        m(1_{C_1},e t)=1_{C_1},
+    \]
+    and the associativity equation
+    \[
+        m(m\times 1)=m(1\times m)
+    \]
+    as maps
+    \[
+        C_3\to C_1,
+    \]
+    where
+    \[
+        C_3
+        :=
+        C_1\times_{t,C_0,s}C_1\times_{t,C_0,s}C_1
+    \]
+    is the object of composable triples.
+\end{definition}
+
+\begin{theorem}[Endospan monoids are internal categories]
+\label{thm:endospan-monoids-internal-categories}
+    Let \(\mathcal E\) be a category with pullbacks. To give a monoid object in
+    \[
+        \operatorname{EndSpan}_{\mathcal E}(C_0)
+    \]
+    is equivalently to give an internal category in \(\mathcal E\) with object-of-objects \(C_0\).
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Unpack the monoid data.} A monoid object in \(\operatorname{EndSpan}_{\mathcal E}(C_0)\) is an
+        endospan
+        \[
+            C_0\xleftarrow{s}C_1\xrightarrow{t}C_0
+        \]
+        together with a unit map of spans \(e:C_0\to C_1\) and a multiplication map of spans \(m:C_1\times_{t,C_0,s}C_1\to C_1\). The fact that these are maps of spans is exactly the source-target data
+        \[
+            se=1_{C_0},
+            \qquad
+            te=1_{C_0},
+            \qquad
+            sm=s\pi_1,
+            \qquad
+            tm=t\pi_2.
+        \]
+
+        \item \textbf{Identify the axioms.} The monoid unit axioms say that
+        \[
+            C_1
+                \xrightarrow{\langle es,1\rangle}
+            C_1\times_{C_0}C_1
+                \xrightarrow{m}
+            C_1,
+            \qquad
+            C_1
+                \xrightarrow{\langle 1,et\rangle}
+            C_1\times_{C_0}C_1
+                \xrightarrow{m}
+            C_1
+        \]
+        are both \(1_{C_1}\). These are precisely the internal identity laws. The monoid associativity axiom is the equality of maps \(C_3\to C_1\) which, on a composable triple
+        \[
+            \begin{tikzcd}[column sep=large]
+                    u 
+                        \arrow[r, "a"] 
+                & 
+                    v 
+                        \arrow[r, "b"] 
+                & 
+                    w 
+                        \arrow[r, "c"] 
+                & 
+                    z,
+            \end{tikzcd}
+        \]
+        says
+        \[
+            c\circ(b\circ a)=(c\circ b)\circ a.
+        \]
+        Thus the monoid axioms are exactly the internal-category identity and associativity axioms.
+
+        \item \textbf{Reverse the construction.} Conversely, an internal category \((C_0,C_1,s,t,e,m)\) determines the endospan
+        \[
+            C_0\xleftarrow{s}C_1\xrightarrow{t}C_0
+        \]
+        with unit \(e\) and multiplication \(m\). The internal-category axioms are exactly the monoid axioms just identified. Hence the two structures are equivalent.
+    \end{enumerate}
+\end{proof}
+
+\begin{corollary}[Monads in spans are internal categories]
+\label{cor:monads-in-spans-internal-categories}
+    Let \(\mathcal E\) be a category with pullbacks. To give a monad in \(\mathbf{Span}(\mathcal E)\) on an object \(C_0\) is equivalently to give an internal category in \(\mathcal E\) with object-of-objects \(C_0\).
+\end{corollary}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Move from monads to monoids in an endohom.} By Remark~\ref{rem:monads-as-monoids-in-endohom}, monads on \(C_0\) in \(\mathbf{Span}(\mathcal E)\) are monoid objects in
+        \[
+            \operatorname{EndSpan}_{\mathcal E}(C_0)
+            =
+            \mathbf{Span}(\mathcal E)(C_0,C_0).
+        \]
+
+        \item \textbf{Apply the endospan-monoid identification.} By Theorem~\ref{thm:endospan-monoids-internal-categories}, monoid objects in this endohom category are exactly internal categories in \(\mathcal E\) whose object-of-objects is \(C_0\). This proves the claim.
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}
+\label{rem:internal-categories-monads-literature}
+    The identification of internal categories with monads in spans is a standard feature of the formal theory of internal categories \cite{StreetFormalTheoryOfMonads,LackCompanion,MirandaInternalCategories}. The present chapter uses this identification as the source of the stateful morphisms introduced below.
+\end{remark}
+
+\subsection{Two running specializations}
+\label{subsec:two-running-specializations}
+
+Two special cases will be carried through the chapter.
+
+First, since \(\mathcal E\) is finitely complete, it has a terminal object \(1\) and finite products. With the standing choice of \(1\), binary products are realized as pullbacks over \(1\):
+\[
+    \begin{tikzcd}
+            X\times Y
+                \arrow[r]
+                \arrow[d]
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            Y 
+                \arrow[d, "!"]
+        \\
+            X 
+                \arrow[r, "!"']
+        &
+            1.
+    \end{tikzcd}
+\]
+A one-object internal category means an internal category whose object-of-objects is \(1\). Such an internal category is equivalently a monoid object in \(\mathcal E\).
+
+We shall use the following order convention for this specialization. If
+\[
+    M=(M,e_M,\cdot_M)
+\]
+is a monoid object and multiplication is written by juxtaposition, then the associated one-object internal category
+\[
+    \mathbb M=(1,M,!,!,e_M,m_{\mathbb M})
+\]
+has internal-category composition
+\[
+    m_{\mathbb M}
+    =
+    \cdot_M\circ\tau_{M,M},
+\]
+where \(\tau_{M,M}:M\times M\to M\times M\) is the symmetry. Equivalently, for a composable pair \((a,b)\),
+\[
+    m_{\mathbb M}(a,b)=ba.
+\]
+Thus, in the one-object category,
+\[
+    b\circ a=ba.
+\]
+This convention is chosen so that the target-to-source execution law below becomes the usual right-action law
+\[
+    x\cdot(mn)=(x\cdot m)\cdot n.
+\]
+
+Thus the one-object specialization of the theory below is a theory of internal monoid-indexed Mealy systems.
+
+Second, a morphism
+\[
+    F_0:A_0\to B_0
+\]
+determines a canonical span
+\[
+    \begin{tikzcd}
+        & 
+            A_0 
+                \arrow[dl, "1_{A_0}"'] 
+                \arrow[dr, "F_0"] 
+        & 
+        \\
+            A_0 
+        &
+        & 
+            B_0.
+    \end{tikzcd}
+\]
+It also determines the reverse span
+\[
+    \begin{tikzcd}
+        & 
+            A_0 
+                \arrow[dl, "F_0"'] 
+                \arrow[dr, "1_{A_0}"] 
+        & 
+        \\
+            B_0 
+        &
+        & 
+            A_0.
+    \end{tikzcd}
+\]
+The map-representable part of the theory recovers internal functors.
+
+\begin{definition}[Map-representable span]
+\label{def:representable-span}
+    A span
+    \[
+        A_0\xleftarrow{p}P\xrightarrow{q}B_0
+    \]
+    is called \textbf{map-representable}, or a \textbf{map span}, if it is isomorphic, as a span, to a span of the form
+    \[
+        A_0
+        \xleftarrow{1_{A_0}}
+        A_0
+        \xrightarrow{F_0}
+        B_0
+    \]
+    for some map \(F_0:A_0\to B_0\). Equivalently, the span is map-representable iff \(p\) is an isomorphism. In that case it is isomorphic to
+    \[
+        A_0\xleftarrow{1_{A_0}}A_0\xrightarrow{q p^{-1}}B_0.
+    \]
+    The isomorphism of spans is displayed by
+    \[
+        \begin{tikzcd}[column sep=large]
+            & 
+                P 
+                    \arrow[d, "p" description, "\cong"'] 
+                    \arrow[dl, "p"'] 
+                    \arrow[dr, "q"] 
+            & 
+            \\
+                A_0 
+            & 
+                A_0 
+                    \arrow[l, "1_{A_0}"] 
+                    \arrow[r, "qp^{-1}"'] 
+            & 
+                B_0.
+        \end{tikzcd}
+    \]
+\end{definition}
+
+\begin{proposition}[Canonical adjunction associated to a map]
+\label{prop:canonical-span-adjunction}
+    There is a canonical adjunction
+    \[
+        F_{0!}\dashv F_0^\ast
+    \]
+    in \(\mathbf{Span}(\mathcal E)\).
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Compute the composite \(F_0^\ast\circ F_{0!}\).} The composite
+        \[
+            F_0^\ast\circ F_{0!}:A_0\to A_0
+        \]
+        has apex the pullback of \(F_0\) with itself:
+        \[
+            \begin{tikzcd}
+                    A_0\times_{B_0}A_0
+                        \arrow[r, "\pi_2"]
+                        \arrow[d, "\pi_1"']
+                        \arrow[dr, phantom, "\lrcorner", very near start]
+                &
+                    A_0 
+                        \arrow[d, "F_0"]
+                \\
+                    A_0 
+                        \arrow[r, "F_0"']
+                &
+                    B_0.
+            \end{tikzcd}
+        \]
+        Hence
+        \[
+            F_0^\ast\circ F_{0!}
+            =
+            \left(
+                A_0
+                \xleftarrow{\pi_1}
+                A_0\times_{B_0}A_0
+                \xrightarrow{\pi_2}
+                A_0
+            \right).
+        \]
+
+        \item \textbf{Define the unit.} The unit
+        \[
+            \eta_F:1_{A_0}\Rightarrow F_0^\ast\circ F_{0!}
+        \]
+        is induced by the diagonal map
+        \[
+            \Delta:A_0\to A_0\times_{B_0}A_0.
+        \]
+        The defining diagram is
+        \[
+            \begin{tikzcd}[column sep=large]
+                & 
+                    A_0 
+                        \arrow[d, "\Delta" description] 
+                        \arrow[dl, "1_{A_0}"'] 
+                        \arrow[dr, "1_{A_0}"] 
+                & 
+                \\
+                    A_0
+                &
+                    A_0\times_{B_0}A_0
+                        \arrow[l, "\pi_1"]
+                        \arrow[r, "\pi_2"']
+                &
+                    A_0.
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Compute the composite \(F_{0!}\circ F_0^\ast\).} The composite
+        \[
+            F_{0!}\circ F_0^\ast:B_0\to B_0
+        \]
+        has apex canonically isomorphic to \(A_0\), since the relevant pullback is
+        \[
+            \begin{tikzcd}
+                    A_0\times_{A_0}A_0
+                        \arrow[r]
+                        \arrow[d]
+                        \arrow[dr, phantom, "\lrcorner", very near start]
+                &
+                    A_0 
+                        \arrow[d, "1_{A_0}"]
+                \\
+                    A_0 
+                        \arrow[r, "1_{A_0}"']
+                &
+                    A_0.
+            \end{tikzcd}
+        \]
+        Under this identification,
+        \[
+            F_{0!}\circ F_0^\ast
+            =
+            \left(
+                B_0
+                \xleftarrow{F_0}
+                A_0
+                \xrightarrow{F_0}
+                B_0
+            \right).
+        \]
+
+        \item \textbf{Define the counit.} The counit
+        \[
+            \varepsilon_F:F_{0!}\circ F_0^\ast\Rightarrow 1_{B_0}
+        \]
+        is induced by the map
+        \[
+            F_0:A_0\to B_0.
+        \]
+        It is displayed as
+        \[
+            \begin{tikzcd}[column sep=large]
+                & 
+                    A_0 
+                        \arrow[d, "F_0" description] 
+                        \arrow[dl, "F_0"'] 
+                        \arrow[dr, "F_0"] 
+                & 
+                \\
+                    B_0 
+                & 
+                    B_0 
+                        \arrow[l, "1_{B_0}"] 
+                        \arrow[r, "1_{B_0}"'] 
+                & 
+                    B_0.
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Verify the triangle identities.} The two triangle identities reduce to the equations defining the diagonal and the terminal pullback isomorphisms
+        \[
+            A_0\times_{A_0}A_0\cong A_0.
+        \]
+        Equivalently, both composites are canonical pullback-induced maps with the same projections. By uniqueness in the relevant pullback universal properties, the triangle identities hold.
+    \end{enumerate}
+\end{proof}
+
+\section{Mealy morphisms}
+\label{sec:mealy-morphisms}
+
+Let
+\[
+    \mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A)
+\]
+and
+\[
+    \mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B)
+\]
+be internal categories in \(\mathcal E\), regarded as monads in \(\mathbf{Span}(\mathcal E)\):
+\[
+    \begin{tikzcd}
+        & 
+            A_1 
+                \arrow[dl, "s_A"'] 
+                \arrow[dr, "t_A"] 
+        & 
+        \\
+            A_0 
+        &
+        & 
+            A_0
+    \end{tikzcd}
+    \qquad
+    \begin{tikzcd}
+        & 
+            B_1 
+                \arrow[dl, "s_B"'] 
+                \arrow[dr, "t_B"] 
+        & 
+        \\
+            B_0 
+        &
+        & 
+            B_0.
+    \end{tikzcd}
+\]
+
+Let
+\[
+    A_0\xleftarrow{p}P\xrightarrow{q}B_0
+\]
+be a span:
+\[
+    \begin{tikzcd}
+        & 
+            P 
+                \arrow[dl, "p"'] 
+                \arrow[dr, "q"] 
+        & 
+        \\
+            A_0 
+        &
+        & 
+            B_0.
+    \end{tikzcd}
+\]
+There are two composite spans associated with \(P\), \(A\), and \(B\).
+
+First, the composite \(P\circ A\) is obtained by pulling back
+\[
+    t_A:A_1\to A_0
+    \qquad
+    \text{and}
+    \qquad
+    p:P\to A_0.
+\]
+Thus
+\[
+    \begin{tikzcd}
+            A_1\times_{t_A,A_0,p}P
+                \arrow[r, "\pi_P"]
+                \arrow[d, "\pi_{A_1}"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            P 
+                \arrow[d, "p"]
+        \\
+            A_1 
+                \arrow[r, "t_A"']
+        &
+            A_0,
+    \end{tikzcd}
+\]
+and
+\[
+    P\circ A
+    =
+    \left(
+        A_0
+        \xleftarrow{s_A\pi_{A_1}}
+        A_1\times_{t_A,A_0,p}P
+        \xrightarrow{q\pi_P}
+        B_0
+    \right).
+\]
+
+Second, the composite \(B\circ P\) is obtained by pulling back
+\[
+    q:P\to B_0
+    \qquad
+    \text{and}
+    \qquad
+    s_B:B_1\to B_0.
+\]
+Thus
+\[
+    \begin{tikzcd}
+            P\times_{q,B_0,s_B}B_1
+                \arrow[r, "\pi_{B_1}"]
+                \arrow[d, "\pi_P"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            B_1 
+                \arrow[d, "s_B"]
+        \\
+            P 
+                \arrow[r, "q"']
+        &
+            B_0,
+    \end{tikzcd}
+\]
+and
+\[
+    B\circ P
+    =
+    \left(
+        A_0
+        \xleftarrow{p\pi_P}
+        P\times_{q,B_0,s_B}B_1
+        \xrightarrow{t_B\pi_{B_1}}
+        B_0
+    \right).
+\]
+
+\begin{definition}[Mealy morphism]
+\label{def:mealy-morphism}
+    Let \(\mathbb A\) and \(\mathbb B\) be internal categories. A \textbf{Mealy morphism}
+    \[
+        (P,\Phi):\mathbb A\rightsquigarrow\mathbb B
+    \]
+    consists of a span
+    \[
+        A_0\xleftarrow{p}P\xrightarrow{q}B_0
+    \]
+    and a 2-cell
+    \[
+        \Phi:P\circ A\Rightarrow B\circ P
+    \]
+    in \(\mathbf{Span}(\mathcal E)\), satisfying the unit and multiplication compatibility axioms
+    \begin{align}
+        \Phi\circ(P\eta_A)&=\eta_B P,
+        \label{eq:mealy-unit-abstract}
+        \\
+        \Phi\circ(P\mu_A)
+        &=
+        (\mu_B P)\circ(B\Phi)\circ(\Phi A).
+        \label{eq:mealy-multiplication-abstract}
+    \end{align}
+    The first equation is an equality of 2-cells
+    \[
+        P\Rightarrow B\circ P,
+    \]
+    and the second is an equality of 2-cells
+    \[
+        P\circ A\circ A\Rightarrow B\circ P.
+    \]
+    The equations are read with the canonical associativity and unit isomorphisms of \(\mathbf{Span}(\mathcal E)\) inserted where necessary.
+\end{definition}
+
+The 2-cell
+\[
+    \Phi:P\circ A\Rightarrow B\circ P
+\]
+is a map
+\[
+    \Phi:
+    A_1\times_{t_A,A_0,p}P
+    \longrightarrow
+    P\times_{q,B_0,s_B}B_1
+\]
+making the following span-map diagram commute:
+\[
+    \begin{tikzcd}[column sep=huge]  
+        &
+            A_1\times_{A_0}P
+                \arrow[dl, "s_A\pi_{A_1}"']
+                \arrow[dr, "q\pi_P"]
+                \arrow[d, "\Phi" description]
+        &  
+        \\
+            A_0
+        &
+            P\times_{B_0}B_1
+                \arrow[l, "p\pi_P"]
+                \arrow[r, "t_B\pi_{B_1}"']
+        &
+            B_0.
+    \end{tikzcd}
+\]
+Write
+\[
+    \Phi(a,x)=\bigl(\delta(a,x),\omega(a,x)\bigr).
+\]
+Then the pullback condition says
+\[
+    s_B(\omega(a,x))=q(\delta(a,x)),
+\]
+and the two span-compatibility equations say
+\[
+    p(\delta(a,x))=s_A(a),
+    \qquad
+    t_B(\omega(a,x))=q(x).
+\]
+Equivalently, a Mealy morphism consists of maps
+\[
+    \delta:
+    A_1\times_{t_A,A_0,p}P\to P,
+    \qquad
+    \omega:
+    A_1\times_{t_A,A_0,p}P\to B_1,
+\]
+satisfying
+\begin{align}
+    p\delta&=s_A\pi_{A_1},
+    \label{eq:mealy-definition-pdelta}
+    \\
+    s_B\omega&=q\delta,
+    \label{eq:mealy-definition-source}
+    \\
+    t_B\omega&=q\pi_P.
+    \label{eq:mealy-definition-target}
+\end{align}
+These equations are summarized by the diagram
+\[
+\begin{gathered}
+\begin{tikzcd}[column sep=large, row sep=large]
+        A_1\times_{A_0}P
+            \arrow[r, "\delta"]
+            \arrow[d, "\pi_{A_1}"']
+    &
+        P
+            \arrow[d, "p"]
+    \\
+        A_1
+            \arrow[r, "s_A"']
+    &
+        A_0
+\end{tikzcd}
+\qquad
+\begin{tikzcd}[column sep=large, row sep=large]
+        A_1\times_{A_0}P
+            \arrow[r, "\omega"]
+            \arrow[d, "\delta"']
+    &
+        B_1
+            \arrow[d, "s_B"]
+    \\
+        P
+            \arrow[r, "q"']
+    &
+        B_0
+\end{tikzcd}
+\qquad
+\begin{tikzcd}[column sep=large, row sep=large]
+        A_1\times_{A_0}P
+            \arrow[r, "\omega"]
+            \arrow[d, "\pi_P"']
+    &
+        B_1
+            \arrow[d, "t_B"]
+    \\
+        P
+            \arrow[r, "q"']
+    &
+        B_0.
+\end{tikzcd}
+\end{gathered}
+\]
+More transparently, an input arrow
+\[
+    \begin{tikzcd}[column sep=large]
+            u 
+                \arrow[r, "a"] 
+        & 
+            v
+    \end{tikzcd}
+\]
+admissible at a state \(x\) with \(p(x)=v\) updates the state to one over \(u\), while producing an output arrow
+\[
+\begin{tikzcd}[column sep=huge]
+        {q(\delta(a,x))}
+            \arrow[r, "{\omega(a,x)}"]
+    &
+        {q(x)}.
+\end{tikzcd}
+\]
+Thus the state update and the output arrow follow the target-to-source direction imposed by the structure cell
+\[
+    \Phi:P\circ A\Rightarrow B\circ P.
+\]
+
+\begin{proposition}[The Mealy laws]
+\label{prop:mealy-laws}
+    For a Mealy morphism
+    \[
+        (P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B,
+    \]
+    the abstract unit and multiplication axioms \eqref{eq:mealy-unit-abstract} and \eqref{eq:mealy-multiplication-abstract} are equivalent to the following component equations.
+
+    The unit law is
+    \begin{align}
+        \delta(e_A(p x),x)&=x,
+        \label{eq:delta-unit}
+        \\
+        \omega(e_A(p x),x)&=e_B(qx).
+        \label{eq:omega-unit}
+    \end{align}
+
+    The multiplication law is
+    \begin{align}
+        \delta(b\circ a,x)
+        &=
+        \delta(a,\delta(b,x)),
+        \label{eq:delta-composition}
+        \\
+        \omega(b\circ a,x)
+        &=
+        \omega(b,x)\circ \omega(a,\delta(b,x)),
+        \label{eq:omega-composition}
+    \end{align}
+    for internally composable arrows
+    \[
+        a:u\to v,
+        \qquad
+        b:v\to w,
+    \]
+    and states \(x\in P\) satisfying \(p(x)=w\).
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Unpack the unit input.} The unit of \(\mathbb A\) induces a map
+        \[
+            P\to A_1\times_{A_0}P,
+            \qquad
+            x\mapsto (e_A(px),x).
+        \]
+        This is the map in the pullback diagram
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                P
+                    \arrow[rr, "{\langle e_Ap,1_P\rangle}"]
+                    \arrow[dr, "1_P"']
+                    \arrow[ddr, "e_Ap"', bend right=15]
+                &
+                &
+                A_1\times_{t_A,A_0,p}P
+                    \arrow[dl, "\pi_P"]
+                    \arrow[ddl, "\pi_{A_1}", bend left=15]
+                \\
+                &
+                P
+                    \arrow[d, "p"]
+                \\
+                &
+                A_0
+            \end{tikzcd}
+        \]
+        where \(t_Ae_Ap=p\).
+
+        \item \textbf{Compare the two unit composites.} The unit axiom says that
+        \[
+            P
+            \xrightarrow{(e_Ap,1_P)}
+            A_1\times_{A_0}P
+            \xrightarrow{\Phi}
+            P\times_{B_0}B_1
+        \]
+        equals
+        \[
+            P
+            \xrightarrow{(1_P,e_Bq)}
+            P\times_{B_0}B_1.
+        \]
+        In diagram form:
+        \[
+            \begin{tikzcd}[column sep=large]
+                    P
+                        \arrow[r, "{(e_Ap,1_P)}"]
+                        \arrow[dr, "{(1_P,e_Bq)}"']
+                &
+                    A_1\times_{A_0}P
+                        \arrow[d, "\Phi"]
+                \\
+                &
+                    P\times_{B_0}B_1.
+            \end{tikzcd}
+        \]
+        Comparing the two components of the pullback \(P\times_{B_0}B_1\) gives
+        \[
+            \delta(e_A(px),x)=x,
+            \qquad
+            \omega(e_A(px),x)=e_B(qx).
+        \]
+
+        \item \textbf{Identify the multiplication domain.} For the multiplication axiom, the relevant generalized elements are triples
+        \[
+            (a,b,x)
+        \]
+        satisfying
+        \[
+            t_A(a)=s_A(b),
+            \qquad
+            t_A(b)=p(x).
+        \]
+        They are displayed as
+        \[
+            \begin{tikzcd}[column sep=large]
+                    u 
+                        \arrow[r, "a"] 
+                & 
+                    v 
+                        \arrow[r, "b"] 
+                & 
+                    w
+            \end{tikzcd}
+            \qquad
+            \text{with}\qquad
+            p(x)=w.
+        \]
+        The corresponding pullback object is
+        \[
+            A_1\times_{t_A,A_0,s_A}A_1\times_{t_A,A_0,p}P.
+        \]
+
+        \item \textbf{Compute the left-hand side.} The left-hand side of \eqref{eq:mealy-multiplication-abstract} first composes \(a\) and \(b\) in \(\mathbb A\), then applies \(\Phi\):
+        \[
+            \begin{tikzcd}[column sep=large]
+                    (a,b,x)
+                        \arrow[r, maps to]
+                &
+                    (b\circ a,x)
+                        \arrow[r, maps to]
+                &
+                    \bigl(\delta(b\circ a,x),\omega(b\circ a,x)\bigr).
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Compute the right-hand side.} The right-hand side first applies \(\Phi\) to \((b,x)\):
+        \[
+            (b,x)
+            \longmapsto
+            \bigl(\delta(b,x),\omega(b,x)\bigr).
+        \]
+        Since
+        \[
+            p(\delta(b,x))=s_A(b)=t_A(a),
+        \]
+        the pair \((a,\delta(b,x))\) is admissible. Applying \(\Phi\) again gives
+        \[
+            (a,\delta(b,x))
+            \longmapsto
+            \bigl(\delta(a,\delta(b,x)),\omega(a,\delta(b,x))\bigr).
+        \]
+        The two produced \(\mathbb B\)-arrows are composable:
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    {q(\delta(a,\delta(b,x)))}
+                        \arrow[r, "{\omega(a,\delta(b,x))}"]
+                &
+                    {q(\delta(b,x))}
+                        \arrow[r, "{\omega(b,x)}"]
+                &
+                    {q(x)}.
+            \end{tikzcd}
+        \]
+        Hence their composite is
+        \[
+            \omega(b,x)\circ\omega(a,\delta(b,x)).
+        \]
+
+        \item \textbf{Compare components.} Equality of the two maps into \(P\times_{B_0}B_1\) is equality of the two \(P\)-components and the two \(B_1\)-components. Therefore the multiplication axiom is equivalent to
+        \[
+            \delta(b\circ a,x)
+            =
+            \delta(a,\delta(b,x)),
+        \]
+        and
+        \[
+            \omega(b\circ a,x)
+            =
+            \omega(b,x)\circ \omega(a,\delta(b,x)).
+        \]
+    \end{enumerate}
+\end{proof}
+
+Equivalently, using \(m_A(a,b)=b\circ a\), the multiplication laws may be written
+\begin{align}
+    \delta(m_A(a,b),x)
+    &=
+    \delta(a,\delta(b,x)),
+    \label{eq:delta-composition-m}
+    \\
+    \omega(m_A(a,b),x)
+    &=
+    m_B\bigl(\omega(a,\delta(b,x)),\omega(b,x)\bigr).
+    \label{eq:omega-composition-m}
+\end{align}
+
+\begin{remark}[Contravariant input processing]
+\label{rem:contravariant-input-processing}
+    The input is processed target-to-source. If
+    \[
+        a:u\to v
+    \]
+    and \(p(x)=v\), then
+    \[
+        p(\delta(a,x))=u.
+    \]
+    Operationally, a Mealy morphism may be regarded as a right-action-like contravariant input process on the state span, together with an output cocycle valued in the output category.
+\end{remark}
+
+\subsection{The one-object specialization}
+\label{subsec:one-object-mealy-morphisms}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\). We regard them as one-object internal categories
+\[
+    \mathbb M=(1,M,!,!,e_M,m_{\mathbb M}),
+    \qquad
+    \mathbb N=(1,N,!,!,e_N,m_{\mathbb N}),
+\]
+where
+\[
+    m_{\mathbb M}(a,b)=ba,
+    \qquad
+    m_{\mathbb N}(\alpha,\beta)=\beta\alpha.
+\]
+Equivalently, if monoid multiplication is written by juxtaposition, then the categorical composite in the one-object category is
+\[
+    b\circ a=ba.
+\]
+This convention is represented by
+\[
+    \begin{tikzcd}[column sep=large]
+            M\times M
+                \arrow[r, "\tau"]
+        &
+            M\times M
+                \arrow[r, "\cdot_M"]
+        &
+            M
+    \end{tikzcd}
+    \qquad
+    (a,b)\longmapsto ba.
+\]
+
+A carrier span
+\[
+    1\xleftarrow{}P\xrightarrow{}1
+\]
+is simply an object \(P\) of \(\mathcal E\):
+\[
+    \begin{tikzcd}
+        & 
+            P 
+                \arrow[dl, "!"] 
+                \arrow[dr, "!"] 
+        & 
+        \\
+            1 
+        &
+        & 
+            1.
+    \end{tikzcd}
+\]
+Since all source and target maps to \(1\) are unique, a Mealy morphism
+\[
+    M\rightsquigarrow N
+\]
+consists of maps
+\[
+    \delta:M\times P\to P,
+    \qquad
+    \omega:M\times P\to N.
+\]
+The defining pullbacks reduce to products:
+\[
+    \begin{tikzcd}
+            M\times P
+                \arrow[r]
+                \arrow[d]
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            P 
+                \arrow[d, "!"]
+        \\
+            M 
+                \arrow[r, "!"']
+        &
+            1
+    \end{tikzcd}
+    \qquad
+    \begin{tikzcd}
+            P\times N
+                \arrow[r]
+                \arrow[d]
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            N 
+                \arrow[d, "!"]
+        \\
+            P 
+                \arrow[r, "!"']
+        &
+            1.
+    \end{tikzcd}
+\]
+
+The unit laws are morphism equations
+\[
+    \delta(e_M,x)=x,
+    \qquad
+    \omega(e_M,x)=e_N.
+\]
+The multiplication laws are morphism equations from \(M\times M\times P\):
+\[
+    \delta(mn,x)=\delta(n,\delta(m,x)),
+\]
+and
+\[
+    \omega(mn,x)=\omega(m,x)\omega(n,\delta(m,x)).
+\]
+Indeed, taking \(b=m\) and \(a=n\), the one-object categorical composite is
+\[
+    b\circ a=m\circ n=mn.
+\]
+Thus the general law
+\[
+    \delta(b\circ a,x)=\delta(a,\delta(b,x))
+\]
+becomes the displayed formula.
+
+Equivalently, writing
+\[
+    x\cdot m:=\delta(m,x),
+\]
+the state update is an internal right \(M\)-action:
+\[
+    x\cdot 1=x,
+    \qquad
+    x\cdot(mn)=(x\cdot m)\cdot n.
+\]
+The output map \(\omega\) is the corresponding internal \(N\)-valued output
+cocycle:
+\[
+    \omega(1,x)=1,
+    \qquad
+    \omega(mn,x)=\omega(m,x)\omega(n,x\cdot m).
+\]
+The sequential execution picture is
+\[
+    \begin{tikzcd}[column sep=large]
+            x
+                \arrow[r, "{m/\omega(m,x)}"]
+        &
+            x\cdot m
+                \arrow[r, "{n/\omega(n,x\cdot m)}"]
+        &
+            (x\cdot m)\cdot n.
+    \end{tikzcd}
+\]
+
+\begin{proposition}[One-object Mealy morphisms]
+\label{prop:one-object-mealy-morphisms}
+    Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as one-object internal categories by the convention
+    \[
+        b\circ a=ba.
+    \]
+    A one-object Mealy morphism
+    \[
+        M\rightsquigarrow N
+    \]
+    is equivalently an internal right \(M\)-object \(P\), together with an internal \(N\)-valued output cocycle
+    \[
+        \omega:M\times P\to N
+    \]
+    satisfying
+    \[
+        \omega(1,x)=1,
+        \qquad
+        \omega(mn,x)=\omega(m,x)\omega(n,x\cdot m).
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Specialize the carrier and typing equations.} In the one-object case the carrier span is just an object \(P\), and the pullbacks defining \(P\circ M\) and \(N\circ P\) become \(M\times P\) and \(P\times N\). Since all maps to the terminal object are unique, the interface equations impose no conditions beyond the existence of maps
+        \[
+            \delta:M\times P\to P,
+            \qquad
+            \omega:M\times P\to N.
+        \]
+
+        \item \textbf{Specialize the Mealy laws.} Proposition~\ref{prop:mealy-laws}, together with the convention \(b\circ a=ba\), gives
+        \[
+            x\cdot 1=x,
+            \qquad
+            x\cdot(mn)=(x\cdot m)\cdot n,
+        \]
+        for \(x\cdot m:=\delta(m,x)\), and gives the output equations
+        \[
+            \omega(1,x)=1,
+            \qquad
+            \omega(mn,x)=\omega(m,x)\omega(n,x\cdot m).
+        \]
+        These are exactly the right-action and output-cocycle laws.
+
+        \item \textbf{Reverse the specialization.} Conversely, an internal right \(M\)-object \(P\) and a map \(\omega:M\times P\to N\) satisfying the displayed unit and cocycle equations determine precisely the component form of the Mealy unit and multiplication axioms in the one-object case.
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}[Set-based one-object systems]
+\label{rem:set-one-object-systems}
+    When \(\mathcal E=\mathbf{Set}\), Proposition~\ref{prop:one-object-mealy-morphisms} says that a one-object Mealy morphism is a set with a right action of the input monoid, together with an output cocycle valued in the output monoid. The set-theoretic reading is therefore a specialization of the internal statement, not part of the definition.
+\end{remark}
+
+\subsection{The stateless specialization}
+\label{subsec:stateless-mealy-morphisms}
+
+A Mealy morphism
+\[
+    (P,\Phi):\mathbb A\rightsquigarrow\mathbb B
+\]
+has a state object \(P\). The map-representable case is obtained by taking the canonical carrier
+\[
+    F_{0!}
+    =
+    \left(
+        A_0
+        \xleftarrow{1_{A_0}}
+        A_0
+        \xrightarrow{F_0}
+        B_0
+    \right).
+\]
+The state is then the current input object:
+\[
+    \begin{tikzcd}
+        & 
+            A_0 
+                \arrow[dl, "1_{A_0}"'] 
+                \arrow[dr, "F_0"] 
+        & 
+        \\
+            A_0 
+        &
+        & 
+            B_0.
+    \end{tikzcd}
+\]
+
+Let
+\[
+    F_0:A_0\to B_0
+\]
+be a morphism in \(\mathcal E\). A Mealy structure on \(F_{0!}\) is a 2-cell
+\[
+    \Phi:F_{0!}\circ A\Rightarrow B\circ F_{0!}.
+\]
+First,
+\[
+    F_{0!}\circ A
+    \cong
+    \left(
+        A_0
+        \xleftarrow{s_A}
+        A_1
+        \xrightarrow{F_0t_A}
+        B_0
+    \right).
+\]
+This comes from the pullback
+\[
+    \begin{tikzcd}
+            A_1\times_{t_A,A_0,1_{A_0}}A_0
+                \arrow[r]
+                \arrow[d]
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            A_0 
+                \arrow[d, "1_{A_0}"]
+        \\
+            A_1 
+                \arrow[r, "t_A"']
+        &
+            A_0,
+    \end{tikzcd}
+\]
+which is canonically isomorphic to \(A_1\).
+
+Second,
+\[
+    B\circ F_{0!}
+    =
+    \left(
+        A_0
+        \xleftarrow{\pi_1}
+        A_0\times_{F_0,B_0,s_B}B_1
+        \xrightarrow{t_B\pi_2}
+        B_0
+    \right),
+\]
+where
+\[
+    \begin{tikzcd}
+            A_0\times_{F_0,B_0,s_B}B_1
+                \arrow[r, "\pi_2"]
+                \arrow[d, "\pi_1"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            B_1 
+                \arrow[d, "s_B"]
+        \\
+            A_0 
+                \arrow[r, "F_0"']
+        &
+            B_0.
+    \end{tikzcd}
+\]
+Thus \(\Phi\) is equivalently a map
+\[
+    \Phi:A_1\to A_0\times_{B_0}B_1.
+\]
+Write
+\[
+    \Phi(a)=\bigl(\delta(a),F_1(a)\bigr).
+\]
+The condition that \(\Phi(a)\) lies in the pullback says
+\[
+    F_0(\delta(a))=s_B(F_1(a)).
+\]
+The condition that \(\Phi\) is a map of spans says
+\[
+    \delta(a)=s_A(a),
+    \qquad
+    t_B(F_1(a))=F_0(t_A(a)).
+\]
+Therefore
+\[
+    s_BF_1=F_0s_A,
+    \qquad
+    t_BF_1=F_0t_A.
+\]
+The arrow part is summarized by
+\[
+    \begin{tikzcd}[column sep=large]
+            A_1
+                \arrow[r, "F_1"]
+                \arrow[d, "{(s_A,t_A)}"']
+        &
+            B_1
+                \arrow[d, "{(s_B,t_B)}"]
+        \\
+            A_0\times A_0
+                \arrow[r, "F_0\times F_0"']
+        &
+            B_0\times B_0.
+    \end{tikzcd}
+\]
+
+\begin{definition}[Internal functor]
+\label{def:internal-functor}
+    Let
+    \[
+        \mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A)
+    \]
+    and
+    \[
+        \mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B)
+    \]
+    be internal categories in \(\mathcal E\). An \textbf{internal functor}
+    \[
+        F:\mathbb A\to\mathbb B
+    \]
+    consists of maps
+    \[
+        F_0:A_0\to B_0,
+        \qquad
+        F_1:A_1\to B_1,
+    \]
+    such that
+    \begin{align}
+        s_BF_1&=F_0s_A,
+        \label{eq:internal-functor-source}
+        \\
+        t_BF_1&=F_0t_A,
+        \label{eq:internal-functor-target}
+        \\
+        F_1e_A&=e_BF_0,
+        \label{eq:internal-functor-identity}
+        \\
+        F_1m_A&=m_BF_1^{(2)}.
+        \label{eq:internal-functor-composition}
+    \end{align}
+    Here
+    \[
+        F_1^{(2)}:
+        A_1\times_{t_A,A_0,s_A}A_1
+        \longrightarrow
+        B_1\times_{t_B,B_0,s_B}B_1
+    \]
+    is the unique map induced by the pullback defining the object of composable pairs in \(\mathbb B\), with projections
+    \[
+        \pi_1F_1^{(2)}=F_1\pi_1,
+        \qquad
+        \pi_2F_1^{(2)}=F_1\pi_2.
+    \]
+    It is well-defined because, on
+    \[
+        A_1\times_{t_A,A_0,s_A}A_1,
+    \]
+    one has
+    \[
+        t_BF_1\pi_1
+        =
+        F_0t_A\pi_1
+        =
+        F_0s_A\pi_2
+        =
+        s_BF_1\pi_2.
+    \]
+
+    The source-target equations say that
+    \[
+        \begin{tikzcd}[column sep=large]
+                A_1
+                    \arrow[r, "F_1"]
+                    \arrow[d, "s_A"']
+            &
+                B_1
+                    \arrow[d, "s_B"]
+            \\
+                A_0
+                    \arrow[r, "F_0"']
+            &
+                B_0
+        \end{tikzcd}
+        \qquad
+        \begin{tikzcd}[column sep=large]
+                A_1
+                    \arrow[r, "F_1"]
+                    \arrow[d, "t_A"']
+            &
+                B_1
+                    \arrow[d, "t_B"]
+            \\
+                A_0
+                    \arrow[r, "F_0"']
+            &
+                B_0
+        \end{tikzcd}
+    \]
+    commute, while the identity and composition equations say that
+    \[
+        \begin{tikzcd}[column sep=large]
+                A_0
+                    \arrow[r, "F_0"]
+                    \arrow[d, "e_A"']
+            &
+                B_0
+                    \arrow[d, "e_B"]
+            \\
+                A_1
+                    \arrow[r, "F_1"']
+            &
+                B_1
+        \end{tikzcd}
+    \]
+    commutes and that \(F_1\) preserves composition in the sense that the diagram
+    \[
+        \begin{tikzcd}[column sep=large]
+                A_1\times_{t_A,A_0,s_A}A_1
+                    \arrow[r, "F_1^{(2)}"]
+                    \arrow[d, "m_A"']
+            &
+                B_1\times_{t_B,B_0,s_B}B_1
+                    \arrow[d, "m_B"]
+            \\
+                A_1
+                    \arrow[r, "F_1"']
+            &
+                B_1
+        \end{tikzcd}
+    \]
+    commutes.
+\end{definition}
+
+\begin{theorem}[Stateless Mealy morphisms are internal functors]
+\label{thm:representable-mealy-internal-functor}
+    Let
+    \[
+        \mathbb A,\mathbb B
+    \]
+    be internal categories in \(\mathcal E\), and let
+    \[
+        F_0:A_0\to B_0
+    \]
+    be a morphism in \(\mathcal E\). To give an internal functor
+    \[
+        F:\mathbb A\to\mathbb B
+    \]
+    with object map \(F_0\) is equivalently to give a Mealy morphism
+    \[
+        (F_{0!},\Phi):\mathbb A\rightsquigarrow\mathbb B
+    \]
+    whose carrier is the canonical map-representable span
+    \[
+        F_{0!}
+        =
+        \left(
+            A_0
+            \xleftarrow{1_{A_0}}
+            A_0
+            \xrightarrow{F_0}
+            B_0
+        \right).
+    \]
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Identify the structure cell.} By the calculation preceding the theorem, a 2-cell
+        \[
+            \Phi:F_{0!}\circ A\Rightarrow B\circ F_{0!}
+        \]
+        is equivalently a map
+        \[
+            \Phi:A_1\to A_0\times_{F_0,B_0,s_B}B_1.
+        \]
+        Writing \(\Phi(a)=(s_A(a),F_1(a))\), the span-map and pullback conditions are exactly
+        \[
+            s_BF_1=F_0s_A,
+            \qquad
+            t_BF_1=F_0t_A.
+        \]
+
+        \item \textbf{Identify the laws.} Under this identification, Proposition~\ref{prop:mealy-laws} says that the Mealy unit law is
+        \[
+            F_1e_A=e_BF_0,
+        \]
+        and the Mealy multiplication law is
+        \[
+            F_1(b\circ a)=F_1(b)\circ F_1(a),
+        \]
+        equivalently
+        \[
+            F_1m_A=m_BF_1^{(2)}.
+        \]
+        Hence a stateless Mealy structure on \(F_{0!}\) is exactly an internal functor with object map \(F_0\).
+
+        \item \textbf{Construct the inverse assignment.} Conversely, an internal functor \((F_0,F_1)\) defines
+        \[
+            \Phi(a)=(s_A(a),F_1(a)).
+        \]
+        The source-target equations for \(F_1\) make this a map of spans, and identity and composition preservation are exactly the Mealy unit and multiplication laws. The two constructions are inverse.
+    \end{enumerate}
+\end{proof}
+
+\begin{corollary}[Map-representable Mealy morphisms]
+\label{cor:map-representable-mealy-internal-functor-up-to-iso}
+    Let
+    \[
+        (P,\Phi):\mathbb A\rightsquigarrow\mathbb B
+    \]
+    be a Mealy morphism whose carrier span
+    \[
+        A_0\xleftarrow{p}P\xrightarrow{q}B_0
+    \]
+    is map-representable. Put
+    \[
+        F_0:=q p^{-1}:A_0\to B_0.
+    \]
+    Then \((P,\Phi)\) is isomorphic, as a Mealy morphism, to a canonical map-representable Mealy morphism carried by
+    \[
+        F_{0!}
+        =
+        \left(
+            A_0
+            \xleftarrow{1_{A_0}}
+            A_0
+            \xrightarrow{F_0}
+            B_0
+        \right).
+    \]
+    Equivalently, it determines an internal functor
+    \[
+        F:\mathbb A\to\mathbb B
+    \]
+    with object map \(F_0\).
+\end{corollary}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Choose the canonical representative.} Since the carrier span is map-representable, its left leg \(p:P\to A_0\) is an isomorphism. Hence it is isomorphic, as a span, to
+        \[
+            A_0\xleftarrow{1_{A_0}}A_0\xrightarrow{q p^{-1}}B_0.
+        \]
+
+        \item \textbf{Transport and apply the stateless case.} Transporting \(\Phi\) along this span isomorphism gives a Mealy morphism carried by the canonical map span for \(F_0=qp^{-1}\). By
+        Theorem~\ref{thm:representable-mealy-internal-functor}, this is exactly an internal functor with object map \(F_0\).
+    \end{enumerate}
+\end{proof}
+
+\section{Mealy simulations}
+\label{sec:mealy-simulations}
+\subsection{From strict carrier maps to output-comparison cells}
+\label{subsec:strict-comparisons-output-comparisons}
+
+The previous section identified the 1-cells. The next question is how to compare two such oriented structures.
+
+Let
+\[
+    (P,\Phi),(Q,\Psi):\mathbb A\rightsquigarrow\mathbb B
+\]
+be Mealy morphisms, with carrier spans
+\[
+    A_0\xleftarrow{p_P}P\xrightarrow{q_P}B_0,
+    \qquad
+    A_0\xleftarrow{p_Q}Q\xrightarrow{q_Q}B_0.
+\]
+The first comparison available in the span bicategory is a map of carrier spans. In the direction used below, this is a map
+\[
+    \theta:Q\to P
+\]
+satisfying
+\[
+    p_P\theta=p_Q,
+    \qquad
+    q_P\theta=q_Q.
+\]
+It is displayed as
+\[
+    \begin{tikzcd}[column sep=large]
+        &
+            Q
+                \arrow[d, "\theta" description]
+                \arrow[dl, "p_Q"']
+                \arrow[dr, "q_Q"]
+        &
+        \\
+            A_0
+        &
+            P
+                \arrow[l, "p_P"]
+                \arrow[r, "q_P"']
+        &
+            B_0.
+    \end{tikzcd}
+\]
+Requiring this carrier map to preserve the Mealy structures gives the equations
+\[
+    \theta(\delta_Q(a,y))
+    =
+    \delta_P(a,\theta y),
+    \qquad
+    \omega_Q(a,y)
+    =
+    \omega_P(a,\theta y).
+\]
+Thus a strict comparison preserves the input interface, the output interface, the state transition, and the emitted output arrow.
+
+This gives a valid strict output-preserving comparison. Its behaviour in the map-representable case, however, is too rigid. Let
+\[
+    F,G:\mathbb A\to\mathbb B
+\]
+be internal functors, regarded as Mealy morphisms with canonical carriers
+\[
+    F_{0!}
+    =
+    \left(
+        A_0
+        \xleftarrow{1_{A_0}}
+        A_0
+        \xrightarrow{F_0}
+        B_0
+    \right),
+    \qquad
+    G_{0!}
+    =
+    \left(
+        A_0
+        \xleftarrow{1_{A_0}}
+        A_0
+        \xrightarrow{G_0}
+        B_0
+    \right).
+\]
+A strict carrier map
+\[
+    G_{0!}\to F_{0!}
+\]
+is a map
+\[
+    \theta:A_0\to A_0
+\]
+such that
+\[
+    1_{A_0}\theta=1_{A_0},
+    \qquad
+    F_0\theta=G_0.
+\]
+Hence
+\[
+    \theta=1_{A_0},
+    \qquad
+    F_0=G_0.
+\]
+Strict carrier maps compare functors with identical object maps. The component arrow of an internal natural transformation,
+\[
+    \alpha_x:F_0x\to G_0x,
+\]
+has no place in this strict comparison datum.
+
+This calculation indicates the required enlargement. A comparison from \((P,\Phi)\) to \((Q,\Psi)\) should still send each \(Q\)-state to a \(P\)-state over the same input interface:
+\[
+    \theta:Q\to P,
+    \qquad
+    p_P\theta=p_Q.
+\]
+The equality of output interfaces should be replaced by an arrow in the output category
+\[
+    \alpha_y:q_P(\theta y)\to q_Q(y).
+\]
+In the stateless case this is exactly the shape of a natural-transformation component.
+
+The span calculus already contains the object that stores such data. The composite
+\[
+    B\circ P
+\]
+has apex
+\[
+    P\times_{q_P,B_0,s_B}B_1
+\]
+and is the span
+\[
+    A_0
+    \xleftarrow{p_P\pi_P}
+    P\times_{q_P,B_0,s_B}B_1
+    \xrightarrow{t_B\pi_{B_1}}
+    B_0.
+\]
+The defining pullback is
+\[
+    \begin{tikzcd}
+        P\times_{q_P,B_0,s_B}B_1
+            \arrow[r, "\pi_{B_1}"]
+            \arrow[d, "\pi_P"']
+            \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            B_1
+                \arrow[d, "s_B"]
+        \\
+            P
+                \arrow[r, "q_P"']
+        &
+            B_0.
+    \end{tikzcd}
+\]
+A generalized element of \(B\circ P\) is a pair
+\[
+    (x,\beta)
+\]
+where
+\[
+    x\in P,
+    \qquad
+    \beta:q_P(x)\to b
+\]
+is an arrow of \(\mathbb B\). Therefore a comparison assigning to a \(Q\)-state a \(P\)-state together with an output-comparison arrow is exactly a map of spans
+\[
+    \Theta:Q\Rightarrow B\circ P.
+\]
+It is displayed as
+\[
+    \begin{tikzcd}[column sep=large]
+        &
+            Q
+                \arrow[d, "\Theta" description]
+                \arrow[dl, "p_Q"']
+                \arrow[dr, "q_Q"]
+        &
+        \\
+            A_0
+        &
+            P\times_{B_0}B_1
+                \arrow[l, "p_P\pi_P"]
+                \arrow[r, "t_B\pi_{B_1}"']
+        &
+            B_0.
+    \end{tikzcd}
+\]
+Writing
+\[
+    \Theta(y)=\bigl(\theta(y),\alpha_y\bigr),
+\]
+the span-map and pullback conditions give
+\[
+    p_P\theta=p_Q,
+    \qquad
+    s_B\alpha=q_P\theta,
+    \qquad
+    t_B\alpha=q_Q.
+\]
+Thus each state \(y\in Q\) is compared with a state \(\theta y\in P\) over the same input interface, and the output interfaces are compared by an arrow
+\[
+    \begin{tikzcd}[column sep=large]
+            q_P(\theta y)
+                \arrow[r, "\alpha_y"]
+        &
+            q_Q(y)
+    \end{tikzcd}
+\]
+in \(\mathbb B\).
+
+For canonical map-representable carriers, a map of spans
+\[
+    G_{0!}\Rightarrow B\circ F_{0!}
+\]
+is equivalently a map
+\[
+    \alpha:A_0\to B_1
+\]
+satisfying
+\[
+    s_B\alpha=F_0,
+    \qquad
+    t_B\alpha=G_0.
+\]
+These are precisely the component-typing equations for an internal natural transformation
+\[
+    \alpha:F\Rightarrow G.
+\]
+The remaining compatibility condition should therefore be the internal naturality equation
+\[
+    \alpha_v\circ F_1(a)=G_1(a)\circ\alpha_u
+\]
+for every arrow \(a:u\to v\) of \(\mathbb A\).
+
+Now notice that on the local span category
+\[
+    \mathcal C_{A,B}=\mathbf{Span}(\mathcal E)(A_0,B_0),
+\]
+postcomposition by \(B\) defines an endofunctor
+\[
+    T_B=B\circ-.
+\]
+Its unit attaches an identity output-comparison arrow, and its multiplication composes output-comparison arrows. Thus \(T_B\) is the output-comparison monad.
+A map
+\[
+    Q\to T_B(P)
+\]
+is exactly the comparison cell just described.
+
+In the case of the source category \(\mathbb A\), we also have the supplied the input-processing monad
+\[
+    R_A=-\circ A.
+\]
+The associativity isomorphisms of the span bicategory identify
+\[
+    R_AT_B(P)=(B\circ P)\circ A
+\]
+with
+\[
+    T_BR_A(P)=B\circ(P\circ A),
+\]
+and give a distributive law
+\[
+    R_AT_B\Rightarrow T_BR_A.
+\]
+Consequently \(R_A\) lifts to a monad on the Kleisli category of \(T_B\).
+
+With this organization, a Mealy morphism is an algebra for the lifted input-processing monad, and a Mealy simulation is an oppositely displayed morphism of such algebras. The displayed direction is chosen so that, in the map-representable case, a simulation
+\[
+    F_{0!}\Rightarrow G_{0!}
+\]
+has component arrows
+\[
+    F_0x\to G_0x
+\]
+and hence recovers an internal natural transformation
+\[
+    F\Rightarrow G.
+\]
+
+\subsection{The output-comparison monad}
+\label{subsec:output-comparison-monad}
+
+Fix internal categories
+\[
+    \mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A),
+    \qquad
+    \mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B).
+\]
+Let
+\[
+    \mathcal C_{A,B}:=\mathbf{Span}(\mathcal E)(A_0,B_0)
+\]
+be the local span category. Its objects are spans
+\[
+    A_0\xleftarrow{p}P\xrightarrow{q}B_0,
+\]
+and its morphisms are maps of spans. Thus a morphism
+\[
+    f:P\to Q
+\]
+in \(\mathcal C_{A,B}\) is a commuting diagram
+\[
+    \begin{tikzcd}[column sep=large]
+        & 
+            P 
+                \arrow[d, "f" description] 
+                \arrow[dl, "p_P"'] 
+                \arrow[dr, "q_P"] 
+        & 
+        \\
+            A_0 
+        & 
+            Q 
+                \arrow[l, "p_Q"] 
+                \arrow[r, "q_Q"'] 
+        & 
+            B_0.
+    \end{tikzcd}
+\]
+Equivalently,
+\[
+    p_Qf=p_P,
+    \qquad
+    q_Qf=q_P.
+\]
+
+\begin{lemma}[Local monads induced by endpoint monads]
+\label{lem:local-monads-induced-by-endpoint-monads}
+    Let \(A\) be a monad on an object \(A_0\), and let \(B\) be a monad on an object \(B_0\), in a bicategory \(\mathcal B\). On the hom-category \(\mathcal B(A_0,B_0)\), precomposition by \(A\) defines a monad
+    \[
+        -\circ A,
+    \]
+    and postcomposition by \(B\) defines a monad
+    \[
+        B\circ -.
+    \]
+    Their units and multiplications are obtained by whiskering the units and multiplications of \(A\) and \(B\), with the associativity and unit constraints of \(\mathcal B\) inserted where necessary.
+\end{lemma}
+
+\begin{definition}[The output-comparison endofunctor]
+\label{def:output-comparison-endofunctor}
+    Define an endofunctor
+    \[
+        T_B:\mathcal C_{A,B}\to\mathcal C_{A,B}
+    \]
+    by
+    \[
+        T_B(P):=B\circ P.
+    \]
+    Explicitly, if
+    \[
+        P=
+        \left(
+            A_0
+            \xleftarrow{p}
+            P
+            \xrightarrow{q}
+            B_0
+        \right),
+    \]
+    then \(T_B(P)\) is obtained from the pullback
+    \[
+        \begin{tikzcd}
+                P\times_{q,B_0,s_B}B_1
+                    \arrow[r, "\pi_{B_1}"]
+                    \arrow[d, "\pi_P"']
+                    \arrow[dr, phantom, "\lrcorner", very near start]
+            &
+                B_1 
+                    \arrow[d, "s_B"]
+            \\
+                P 
+                    \arrow[r, "q"']
+            &
+                B_0,
+        \end{tikzcd}
+    \]
+    and is the span
+    \[
+        T_B(P)
+        =
+        \left(
+            A_0
+            \xleftarrow{p\pi_P}
+            P\times_{q,B_0,s_B}B_1
+            \xrightarrow{t_B\pi_{B_1}}
+            B_0
+        \right).
+    \]
+    Thus
+    \[
+        \begin{tikzcd}[column sep=large]
+                A_0
+            &
+                P\times_{B_0}B_1
+                    \arrow[l, "p\pi_P"']
+                    \arrow[r, "t_B\pi_{B_1}"]
+            &
+                B_0
+        \end{tikzcd}
+    \]
+    is the carrier span \(T_B(P)\).
+
+    If
+    \[
+        f:P\to Q
+    \]
+    is a map of spans, then
+    \[
+        T_B(f):T_B(P)\to T_B(Q)
+    \]
+    is induced by
+    \[
+        (x,\beta)\longmapsto(fx,\beta).
+    \]
+    In pullback form, this is the unique map making the diagram
+    \[
+        \begin{tikzcd}[column sep=large]
+                P\times_{B_0}B_1
+                    \arrow[r, "\pi_{B_1}"]
+                    \arrow[d, "\pi_P"']
+                    \arrow[dd, "{T_B(f)}" description]
+            &
+                B_1 
+                    \arrow[d, equal]
+            \\
+                P 
+                    \arrow[r, "q_P"'] 
+                    \arrow[d, "f" description]
+            &
+                B_0 
+                    \arrow[d, equal]
+            \\
+                Q 
+                    \arrow[r, "q_Q"']
+            &
+                B_0
+            \\
+                Q\times_{B_0}B_1
+                    \arrow[u, "\pi_Q"]
+                    \arrow[r, "\pi_{B_1}"']
+            &
+                B_1 
+                    \arrow[u, "s_B"']
+        \end{tikzcd}
+    \]
+    commute through the evident projections.
+\end{definition}
+
+A generalized element of \(T_B(P)\) is a pair
+\[
+    (x,\beta)
+\]
+where \(x\in P\) and
+\[
+    \beta:q(x)\to b
+\]
+is an arrow of \(\mathbb B\). Thus \(T_B(P)\) freely attaches an output comparison arrow to a state:
+\[
+    \begin{tikzcd}[column sep=large]
+            q(x) 
+                \arrow[r, "\beta"] 
+        & 
+            b.
+    \end{tikzcd}
+\]
+
+\begin{proposition}[The output-comparison monad]
+\label{prop:output-comparison-monad}
+    The endofunctor
+    \[
+        T_B=B\circ-
+    \]
+    is a monad on \(\mathcal C_{A,B}\).
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use the endpoint monad.} This is Lemma~\ref{lem:local-monads-induced-by-endpoint-monads} applied in \(\mathbf{Span}(\mathcal E)\) to the monad \(B\) on \(B_0\). Thus postcomposition by \(B\) gives a monad \(T_B=B\circ-\) on \(\mathcal C_{A,B}\).
+
+        \item \textbf{Unpack the unit.} For a carrier span
+        \[
+            P=
+            \left(
+                A_0
+                \xleftarrow{p}
+                P
+                \xrightarrow{q}
+                B_0
+            \right),
+        \]
+        the unit is the span map
+        \[
+            \eta^T_P:P\to T_B(P),
+            \qquad
+            x\longmapsto (x,e_B(qx)).
+        \]
+        It is well-defined because \(s_Be_Bq=q\), and its right leg is \(t_Be_Bq=q\).
+
+        \item \textbf{Unpack the multiplication.} A generalized element of \(T_B^2(P)\) is a state \(x\in P\) together with composable arrows
+        \[
+            \begin{tikzcd}[column sep=large]
+                    q(x) 
+                        \arrow[r, "\beta"] 
+                & 
+                    b 
+                        \arrow[r, "\gamma"] 
+                & 
+                    c.
+            \end{tikzcd}
+        \]
+        The multiplication is
+        \[
+            \mu^T_P(x,\beta,\gamma)=(x,\gamma\circ\beta),
+        \]
+        or equivalently \((x,m_B(\beta,\gamma))\).
+
+        \item \textbf{Monad laws.} The monad unit and associativity axioms are exactly the identity and associativity laws in the internal category \(\mathbb B\), after whiskering by \(P\). Hence \(T_B\) is a monad.
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[The Kleisli category of output comparisons]
+\label{def:kleisli-output-category}
+    The \textbf{output Kleisli category} associated to \(\mathbb B\) over \((A_0,B_0)\) is the Kleisli category
+    \[
+        \operatorname{Kl}(T_B).
+    \]
+    Its objects are carrier spans
+    \[
+        A_0\xleftarrow{}P\xrightarrow{}B_0.
+    \]
+    A Kleisli arrow
+    \[
+        Q\to P
+    \]
+    is a map in \(\mathcal C_{A,B}\)
+    \[
+        Q\to T_B(P)=B\circ P.
+    \]
+\end{definition}
+
+Unpacked, a Kleisli arrow
+\[
+    Q\to P
+\]
+is a pair of maps
+\[
+    \theta:Q\to P,
+    \qquad
+    \alpha:Q\to B_1,
+\]
+satisfying
+\begin{align}
+    p_P\theta&=p_Q,
+    \label{eq:kleisli-arrow-input}
+    \\
+    s_B\alpha&=q_P\theta,
+    \label{eq:kleisli-arrow-source}
+    \\
+    t_B\alpha&=q_Q.
+    \label{eq:kleisli-arrow-target}
+\end{align}
+Equivalently, it is the map of spans
+\[
+    \begin{tikzcd}[column sep=large]
+        & 
+            Q
+                \arrow[d, "{\langle \theta,\alpha\rangle}" description]
+                \arrow[dl, "p_Q"']
+                \arrow[dr, "q_Q"]
+        &
+        \\
+            A_0
+        &
+            P\times_{B_0}B_1
+                \arrow[l, "p_P\pi_P"]
+                \arrow[r, "t_B\pi_{B_1}"']
+        &
+            B_0.
+    \end{tikzcd}
+\]
+Thus a state \(y\in Q\) is sent to a state \(\theta y\in P\) over the same input interface, together with an output-comparison arrow
+\[
+    \begin{tikzcd}[column sep=large]
+            q_P(\theta y) 
+                \arrow[r, "\alpha_y"] 
+        & 
+            q_Q(y).
+    \end{tikzcd}
+\]
+
+Kleisli composition is output-arrow composition. If
+\[
+    (\theta,\alpha):Q\to P,
+    \qquad
+    (\kappa,\beta):R\to Q
+\]
+are Kleisli arrows, then their composite
+\[
+    R\to P
+\]
+is represented by
+\[
+    R
+        \xrightarrow{\langle\kappa,\beta\rangle}
+    T_B(Q)
+        \xrightarrow{T_B\langle\theta,\alpha\rangle}
+    T_B^2(P)
+        \xrightarrow{\mu^T_P}
+    T_B(P).
+\]
+In components, it has state map
+\[
+    \theta\kappa:R\to P
+\]
+and comparison component
+\[
+    \gamma_z=\beta_z\circ\alpha_{\kappa z}.
+\]
+The composite comparison arrow is the path
+\[
+    \begin{tikzcd}[column sep=large]
+            q_P(\theta\kappa z)
+                \arrow[r, "\alpha_{\kappa z}"]
+        &
+            q_Q(\kappa z)
+                \arrow[r, "\beta_z"]
+        &
+            q_R(z).
+    \end{tikzcd}
+\]
+The identity Kleisli arrow on \(P\) is
+\[
+    x\longmapsto (x,e_B(q_Px)).
+\]
+
+\subsection{The input-processing monad and Kleisli algebras}
+\label{subsec:input-monad-kleisli-algebras}
+
+The source internal category \(\mathbb A\) induces a second local monad.
+
+\begin{definition}[The input-processing endofunctor]
+\label{def:input-processing-endofunctor}
+    Define an endofunctor
+    \[
+        R_A:\mathcal C_{A,B}\to\mathcal C_{A,B}
+    \]
+    by
+    \[
+        R_A(P):=P\circ A.
+    \]
+    Explicitly, if
+    \[
+        P=
+        \left(
+            A_0
+            \xleftarrow{p}
+            P
+            \xrightarrow{q}
+            B_0
+        \right),
+    \]
+    then \(R_A(P)\) is obtained from the pullback
+    \[
+        \begin{tikzcd}
+                A_1\times_{t_A,A_0,p}P
+                    \arrow[r, "\pi_P"]
+                    \arrow[d, "\pi_{A_1}"']
+                    \arrow[dr, phantom, "\lrcorner", very near start]
+            &
+                P 
+                    \arrow[d, "p"]
+            \\
+                A_1 
+                    \arrow[r, "t_A"']
+            &
+                A_0,
+        \end{tikzcd}
+    \]
+    and is the span
+    \[
+        R_A(P)
+        =
+        \left(
+            A_0
+            \xleftarrow{s_A\pi_{A_1}}
+            A_1\times_{t_A,A_0,p}P
+            \xrightarrow{q\pi_P}
+            B_0
+        \right).
+    \]
+    Thus
+    \[
+        \begin{tikzcd}[column sep=large]
+                A_0
+            &
+                A_1\times_{A_0}P
+                    \arrow[l, "s_A\pi_{A_1}"']
+                    \arrow[r, "q\pi_P"]
+            &
+                B_0
+        \end{tikzcd}
+    \]
+    is the carrier span \(R_A(P)\).
+
+    If
+    \[
+        f:P\to Q
+    \]
+    is a map of spans, then
+    \[
+        R_A(f):R_A(P)\to R_A(Q)
+    \]
+    is induced by
+    \[
+        (a,x)\longmapsto(a,fx).
+    \]
+    This is well-defined because
+    \[
+        p_Q(fx)=p_P(x)=t_A(a).
+    \]
+\end{definition}
+
+A generalized element of \(R_A(P)\) is a pair
+\[
+    (a,x)
+\]
+where
+\[
+    a:u\to v
+\]
+is an arrow of \(\mathbb A\) and \(p(x)=v\). Thus \(R_A(P)\) is the object of states equipped with an admissible input arrow:
+\[
+    \begin{tikzcd}[column sep=large]
+            u 
+                \arrow[r, "a"] 
+        & 
+            v=p(x).
+    \end{tikzcd}
+\]
+
+\begin{proposition}[The input-processing monad]
+\label{prop:input-processing-monad}
+    The endofunctor
+    \[
+        R_A=-\circ A
+    \]
+    is a monad on \(\mathcal C_{A,B}\).
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use the endpoint monad.} This is Lemma~\ref{lem:local-monads-induced-by-endpoint-monads} applied in \(\mathbf{Span}(\mathcal E)\) to the monad \(A\) on \(A_0\). Thus precomposition by \(A\) gives a monad \(R_A=-\circ A\) on \(\mathcal C_{A,B}\).
+
+        \item \textbf{Unpack the unit.} For a carrier span
+        \[
+            P=
+            \left(
+                A_0
+                \xleftarrow{p}
+                P
+                \xrightarrow{q}
+                B_0
+            \right),
+        \]
+        the unit is the span map
+        \[
+            \eta^R_P:P\to R_A(P),
+            \qquad
+            x\longmapsto(e_A(px),x).
+        \]
+        It is well-defined because \(t_Ae_Ap=p\), and its left leg is \(s_Ae_Ap=p\).
+
+        \item \textbf{Unpack the multiplication.}
+        A generalized element of \(R_A^2(P)\) is a state \(x\in P\) together with composable input arrows
+        \[
+            \begin{tikzcd}[column sep=large]
+                    u 
+                        \arrow[r, "a"] 
+                & 
+                    v 
+                        \arrow[r, "b"] 
+                & 
+                    w=p(x).
+            \end{tikzcd}
+        \]
+        The multiplication is
+        \[
+            \mu^R_P(a,b,x)=(b\circ a,x),
+        \]
+        or equivalently \((m_A(a,b),x)\).
+
+        \item \textbf{Monad laws.} The monad unit and associativity axioms are exactly the identity and associativity laws in the internal category \(\mathbb A\), after whiskering by \(P\). Hence \(R_A\) is a monad.
+    \end{enumerate}
+\end{proof}
+
+The two local monads are related by span associativity. For every carrier span \(P\), there is a canonical isomorphism
+\[
+    R_A T_B(P)
+    =
+    (B\circ P)\circ A
+    \cong
+    B\circ(P\circ A)
+    =
+    T_B R_A(P).
+\]
+On apexes, both sides are canonically isomorphic to the same object of triples
+\[
+    (a,x,\beta)
+\]
+with
+\[
+    t_A(a)=p(x),
+    \qquad
+    s_B(\beta)=q(x).
+\]
+The two pullback presentations are displayed as
+\[
+    \begin{tikzcd}
+            A_1\times_{A_0}(P\times_{B_0}B_1)
+                \arrow[r]
+                \arrow[d]
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            P\times_{B_0}B_1
+                \arrow[d, "p\pi_P"]
+        \\
+            A_1
+                \arrow[r, "t_A"']
+        &
+            A_0
+    \end{tikzcd}
+    \qquad
+    \begin{tikzcd}
+            (A_1\times_{A_0}P)\times_{B_0}B_1
+                \arrow[r]
+                \arrow[d]
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            B_1
+                \arrow[d, "s_B"]
+        \\
+            A_1\times_{A_0}P
+                \arrow[r, "q\pi_P"']
+        &
+            B_0.
+    \end{tikzcd}
+\]
+In generalized-element notation, this isomorphism sends
+\[
+    (a,(x,\beta))
+\]
+to
+\[
+    ((a,x),\beta).
+\]
+
+\begin{lemma}[Endpoint distributive law]
+\label{lem:endpoint-distributive-law}
+    Let \(A\) be a monad on \(A_0\), and let \(B\) be a monad on \(B_0\), in a bicategory \(\mathcal B\). On \(\mathcal B(A_0,B_0)\), the precomposition monad \(-\circ A\) and the postcomposition monad \(B\circ-\) are related by the associativity constraint
+    \[
+        ((B\circ -)\circ A)
+        \cong
+        B\circ((-\circ A)).
+    \]
+    Equivalently, in the notation
+    \[
+        R=-\circ A,
+        \qquad
+        T=B\circ-,
+    \]
+    this gives a distributive law
+    \[
+        \lambda:RT\Rightarrow TR.
+    \]
+    We use the convention that a distributive law \(RT\Rightarrow TR\) lifts the monad \(R\) to the Kleisli category of \(T\).
+\end{lemma}
+
+\begin{proposition}[The canonical distributive law]
+\label{prop:canonical-distributive-law}
+    The associativity constraints of \(\mathbf{Span}(\mathcal E)\) determine a distributive-law isomorphism
+    \[
+        \lambda:R_A T_B\Rightarrow T_B R_A
+    \]
+    of the input-processing monad over the output-comparison monad.
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Define the component.} By Lemma~\ref{lem:endpoint-distributive-law}, the component at a carrier span \(P\) is the span associator
+        \[
+            \lambda_P:
+            (B\circ P)\circ A
+            \xrightarrow{\cong}
+            B\circ(P\circ A).
+        \]
+        On apexes, both sides are canonically pullback presentations of the object of triples \((a,x,\beta)\) satisfying
+        \[
+            t_A(a)=p(x),
+            \qquad
+            s_B(\beta)=q(x),
+        \]
+        and \(\lambda_P\) sends
+        \[
+            (a,(x,\beta))
+            \longmapsto
+            ((a,x),\beta).
+        \]
+
+        \item \textbf{Check naturality.} If \(f:P\to Q\) is a map of carrier spans, both composites in the naturality square send \((a,(x,\beta))\) to \(((a,fx),\beta)\). Hence \(\lambda\) is natural.
+
+        \item \textbf{Check the distributive-law axioms.} The compatibility with the two units inserts either an identity input arrow or an identity output arrow, and the associator leaves the other datum unchanged. The compatibility with the two multiplications says that reassociation commutes with composition in \(\mathbb A\) and \(\mathbb B\). Componentwise, for example, the \(T_B\)-multiplication compatibility sends
+        \[
+            (a,x,\beta,\gamma)
+        \]
+        on both sides to
+        \[
+            ((a,x),\gamma\circ\beta),
+        \]
+        while the \(R_A\)-multiplication compatibility sends
+        \[
+            (a,b,x,\beta)
+        \]
+        on both sides to
+        \[
+            ((b\circ a,x),\beta).
+        \]
+        These are exactly the distributive-law equations for \(R_AT_B\Rightarrow T_BR_A\).
+    \end{enumerate}
+\end{proof}
+
+\begin{corollary}[The lifted input-processing monad]
+\label{cor:lifted-input-monad}
+    The distributive law of Proposition~\ref{prop:canonical-distributive-law} lifts \(R_A\) to a monad
+    \[
+        \overline R_A
+    \]
+    on the Kleisli category
+    \[
+        \operatorname{Kl}(T_B).
+    \]
+\end{corollary}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Apply the Kleisli lifting theorem.} By the standard Kleisli lifting theorem for distributive laws of monads, a distributive law \(RT\Rightarrow TR\) lifts \(R\) to a monad on \(\operatorname{Kl}(T)\). Applying this to \(R_A=-\circ A\), \(T_B=B\circ-\), and Proposition~\ref{prop:canonical-distributive-law} gives the lifted monad \(\overline R_A\).
+
+        \item \textbf{Record the formula.} On objects,
+        \[
+            \overline R_A(P)=R_A(P).
+        \]
+        If a Kleisli arrow \(f:P\to Q\) is represented in \(\mathcal C_{A,B}\) by a map \(f:P\to T_B(Q)\), then \(\overline R_A(f)\) is represented by
+        \[
+            R_A(P)
+            \xrightarrow{R_A f}
+            R_AT_B(Q)
+            \xrightarrow{\lambda_Q}
+            T_BR_A(Q).
+        \]
+        Thus, if \(f(x)=(\theta x,\alpha_x)\), then
+        \[
+            (a,x)
+            \longmapsto
+            ((a,\theta x),\alpha_x).
+        \]
+    \end{enumerate}
+\end{proof}
+
+\begin{theorem}[Mealy morphisms as Kleisli algebras]
+\label{thm:mealy-morphisms-kleisli-algebras}
+    Let \(\mathbb A\) and \(\mathbb B\) be internal categories in \(\mathcal E\). To give a Mealy morphism
+    \[
+        \mathbb A\rightsquigarrow\mathbb B
+    \]
+    is equivalently to give an algebra for the lifted monad
+    \[
+        \overline R_A
+    \]
+    on the Kleisli category
+    \[
+        \operatorname{Kl}(T_B).
+    \]
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Unpack the algebra structure.} An algebra for \(\overline R_A\) on an object \(P\) of \(\operatorname{Kl}(T_B)\) is a Kleisli arrow
+        \[
+            R_A(P)\to P.
+        \]
+        By definition of the Kleisli category, this is a map in \(\mathcal C_{A,B}\)
+        \[
+            R_A(P)\to T_B(P).
+        \]
+        Since
+        \[
+            R_A(P)=P\circ A,
+            \qquad
+            T_B(P)=B\circ P,
+        \]
+        this is exactly a 2-cell
+        \[
+            \Phi:P\circ A\Rightarrow B\circ P
+        \]
+        in \(\mathbf{Span}(\mathcal E)\).
+
+        \item \textbf{Identify the component data.} Writing
+        \[
+            \Phi(a,x)=\bigl(\delta(a,x),\omega(a,x)\bigr),
+        \]
+        the map-of-spans condition gives precisely the typing equations
+        \[
+            p\delta=s_A\pi_{A_1},
+            \qquad
+            s_B\omega=q\delta,
+            \qquad
+            t_B\omega=q\pi_P.
+        \]
+        Thus the algebra structure is exactly the transition-output datum of a Mealy morphism.
+
+        \item \textbf{Identify the laws.} Under this identification, the algebra unit and multiplication axioms are exactly the abstract Mealy axioms
+        \eqref{eq:mealy-unit-abstract} and \eqref{eq:mealy-multiplication-abstract}. Proposition~\ref{prop:mealy-laws} gives their component form, namely the unit equations for \(\delta\) and \(\omega\) and the sequential composition equations.
+
+        \item \textbf{Conclude.} Hence the algebra data and laws are precisely the data and laws of a Mealy morphism \(\mathbb A\rightsquigarrow\mathbb B\), and the constructions are inverse.
+    \end{enumerate}
+\end{proof}
+
+Let
+\[
+    (P,\Phi),(Q,\Psi):\mathbb A\rightsquigarrow\mathbb B
+\]
+be Mealy morphisms. By Theorem~\ref{thm:mealy-morphisms-kleisli-algebras}, they are algebras for \(\overline R_A\) in \(\operatorname{Kl}(T_B)\). The simulation direction used in this chapter is the direction that recovers ordinary internal natural transformations in the stateless case.
+
+The 2-cells used here are not the strict 2-cells between oriented monad morphisms in \(\mathbf{Span}(\mathcal E)\). They are Kleisli output-comparison cells for the monad \(B\circ-\), with the direction reversed so that the stateless case gives ordinary internal natural transformations.
+
+\begin{definition}[Mealy simulation]
+\label{def:mealy-simulation}
+    A \textbf{Mealy simulation}
+    \[
+        (P,\Phi)\Rightarrow(Q,\Psi)
+    \]
+    is a morphism
+    \[
+        (Q,\Psi)\to(P,\Phi)
+    \]
+    of \(\overline R_A\)-algebras in the Kleisli category
+    \[
+        \operatorname{Kl}(T_B).
+    \]
+    Equivalently, it is a map of spans
+    \[
+        \Theta:Q\Rightarrow B\circ P
+    \]
+    satisfying the compatibility equation
+    \begin{equation}
+        (\mu_B P)\circ(B\Phi)\circ(\Theta A)
+        =
+        (\mu_B P)\circ(B\Theta)\circ\Psi.
+        \label{eq:mealy-simulation-abstract}
+    \end{equation}
+    The equation is read with the canonical associativity and unit isomorphisms of \(\mathbf{Span}(\mathcal E)\) inserted where necessary.
+\end{definition}
+
+Writing
+\[
+    \Theta(y)=\bigl(\theta(y),\alpha(y)\bigr),
+\]
+a Mealy simulation consists equivalently of maps
+\[
+    \theta:Q\to P,
+    \qquad
+    \alpha:Q\to B_1,
+\]
+satisfying
+\begin{align}
+    p_P\theta&=p_Q,
+    \label{eq:mealy-simulation-input-interface}
+    \\
+    s_B\alpha&=q_P\theta,
+    \label{eq:mealy-simulation-alpha-source}
+    \\
+    t_B\alpha&=q_Q.
+    \label{eq:mealy-simulation-alpha-target}
+\end{align}
+Thus a state \(y\in Q\) is compared with a state \(\theta y\in P\) over the same input interface, and the output interfaces are compared by an arrow
+\[
+    \alpha_y:q_P(\theta y)\to q_Q(y)
+\]
+in \(\mathbb B\). The data are summarized by
+\[
+    \begin{tikzcd}[column sep=large]
+        &
+            Q
+                \arrow[d, "\theta" description]
+                \arrow[ddl, "p_Q"', bend right=15]
+                \arrow[ddr, "q_Q", bend left=15]
+                \arrow[dr, "\alpha"]
+        &
+        \\
+        &
+            P
+                \arrow[dl, "p_P"]
+                \arrow[dr, "q_P"']
+        &
+            B_1
+                \arrow[d, "s_B"]
+                \arrow[ddr, "t_B", bend left=18]
+        \\
+            A_0
+        &
+        &
+            B_0
+        \\
+        &
+        &
+        &
+            B_0.
+    \end{tikzcd}
+\]
+The equalities
+\[
+    p_P\theta=p_Q,
+    \qquad
+    s_B\alpha=q_P\theta,
+    \qquad
+    t_B\alpha=q_Q
+\]
+are exactly the commutativity conditions encoded in this diagram.
+
+\begin{proposition}[The simulation laws]
+\label{prop:mealy-simulation-laws}
+    The abstract compatibility equation \eqref{eq:mealy-simulation-abstract} is equivalent to the following component equations:
+    \begin{align}
+        \theta(\delta_Q(a,y))
+        &=
+        \delta_P(a,\theta y),
+        \label{eq:mealy-simulation-delta}
+        \\
+        \alpha_y\circ \omega_P(a,\theta y)
+        &=
+        \omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}.
+        \label{eq:mealy-simulation-omega}
+    \end{align}
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Fix the relevant input data.} The relevant generalized elements are pairs
+        \[
+            (a,y)
+        \]
+        satisfying
+        \[
+            t_A(a)=p_Q(y).
+        \]
+        Thus \(a:u\to v\) is an input arrow with \(p_Q(y)=v\).
+
+        \item \textbf{Use preservation of the input interface.} Since
+        \[
+            p_P\theta=p_Q,
+        \]
+        the pair
+        \[
+            (a,\theta y)
+        \]
+        is admissible for \(P\):
+        \[
+            t_A(a)=p_Q(y)=p_P(\theta y).
+        \]
+        Hence \(P\) can execute the same input arrow \(a\) at the compared
+        state \(\theta y\).
+
+        \item \textbf{Compute the left-hand side of the abstract equation.} The left-hand side of \eqref{eq:mealy-simulation-abstract} first compares \(y\) with \(\theta y\), and then executes \(P\) along \(a\). The state part is
+        \[
+            \delta_P(a,\theta y).
+        \]
+        The output arrows form the composite
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    {q_P(\delta_P(a,\theta y))}
+                        \arrow[r, "{\omega_P(a,\theta y)}"]
+                &
+                    {q_P(\theta y)}
+                        \arrow[r, "{\alpha_y}"]
+                &
+                    {q_Q(y)}.
+            \end{tikzcd}
+        \]
+        Therefore the output component is
+        \[
+            \alpha_y\circ\omega_P(a,\theta y).
+        \]
+
+        \item \textbf{Compute the right-hand side of the abstract equation.} The right-hand side first executes \(Q\) along \(a\):
+        \[
+            y
+            \longmapsto
+            \delta_Q(a,y),
+        \]
+        and emits
+        \[
+            \omega_Q(a,y):q_Q(\delta_Q(a,y))\to q_Q(y).
+        \]
+        It then compares the updated \(Q\)-state with \(P\), giving
+        \[
+            \theta(\delta_Q(a,y))
+        \]
+        and
+        \[
+            \alpha_{\delta_Q(a,y)}:
+            q_P(\theta(\delta_Q(a,y)))\to q_Q(\delta_Q(a,y)).
+        \]
+        The output arrows form the composite
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    {q_P(\theta(\delta_Q(a,y)))}
+                        \arrow[r, "{\alpha_{\delta_Q(a,y)}}"]
+                &
+                    {q_Q(\delta_Q(a,y))}
+                        \arrow[r, "{\omega_Q(a,y)}"]
+                &
+                    {q_Q(y)}.
+            \end{tikzcd}
+        \]
+        Therefore the output component is
+        \[
+            \omega_Q(a,y)\circ\alpha_{\delta_Q(a,y)}.
+        \]
+
+        \item \textbf{Compare the state components.} Equality of the state components gives
+        \[
+            \theta(\delta_Q(a,y))
+            =
+            \delta_P(a,\theta y).
+        \]
+
+        \item \textbf{Compare the output components.} Equality of the output components gives
+        \[
+            \alpha_y\circ \omega_P(a,\theta y)
+            =
+            \omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}.
+        \]
+        Hence the abstract algebra-morphism condition is equivalent to the two displayed simulation laws.
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}[Strict simulations]
+\label{rem:strict-mealy-simulations}
+    Suppose
+    \[
+        \theta:Q\to P
+    \]
+    satisfies
+    \[
+        p_P\theta=p_Q,
+        \qquad
+        q_P\theta=q_Q,
+    \]
+    and
+    \[
+        \theta(\delta_Q(a,y))=\delta_P(a,\theta y),
+        \qquad
+        \omega_Q(a,y)=\omega_P(a,\theta y).
+    \]
+    Then \(\theta\) defines a Mealy simulation in the sense of Definition~\ref{def:mealy-simulation} by taking
+    \[
+        \alpha=e_Bq_Q.
+    \]
+    Conversely, if a Mealy simulation has comparison component
+    \[
+        \alpha=e_Bq_Q,
+    \]
+    then the equation
+    \[
+        s_B\alpha=q_P\theta
+    \]
+    forces
+    \[
+        q_P\theta=q_Q,
+    \]
+    and the simulation laws reduce exactly to strict preservation of state transition and output:
+    \[
+        \theta(\delta_Q(a,y))=\delta_P(a,\theta y),
+        \qquad
+        \omega_Q(a,y)=\omega_P(a,\theta y).
+    \]
+\end{remark}
+
+\subsection{One-object simulations}
+\label{subsec:one-object-mealy-simulations}
+
+Let
+\[
+    M,
+    \qquad
+    N
+\]
+be monoid objects in \(\mathcal E\), regarded as one-object internal categories by the convention
+\[
+    b\circ a=ba
+\]
+from Subsection~\ref{subsec:two-running-specializations}. Let
+\[
+    (P,\omega_P),
+    \qquad
+    (Q,\omega_Q)
+\]
+be one-object Mealy morphisms
+\[
+    M\rightsquigarrow N.
+\]
+Thus \(P\) and \(Q\) are internal right \(M\)-objects, and
+\[
+    \omega_P:M\times P\to N,
+    \qquad
+    \omega_Q:M\times Q\to N
+\]
+are output cocycles.
+
+A Mealy simulation
+\[
+    P\Rightarrow Q
+\]
+consists of maps
+\[
+    \theta:Q\to P,
+    \qquad
+    \alpha:Q\to N.
+\]
+The transition equation says that \(\theta\) is \(M\)-equivariant:
+\[
+    \theta(y\cdot m)=\theta(y)\cdot m.
+\]
+The output equation says
+\[
+    \alpha(y)\,\omega_P(m,\theta y)
+    =
+    \omega_Q(m,y)\,\alpha(y\cdot m).
+\]
+The corresponding output-comparison diagram is
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+        {}
+            \arrow[r, "{\omega_P(m,\theta y)}"]
+            \arrow[d, "{\alpha_{y\cdot m}}"']
+        &
+        {}
+            \arrow[d, "{\alpha_y}"]
+        \\
+        {}
+            \arrow[r, "{\omega_Q(m,y)}"']
+        &
+        {}
+    \end{tikzcd}
+\]
+where the labels multiply according to the one-object convention.Thus one-object Mealy simulations compare output cocycles by a state-dependent cochain. When the output monoid is a group, this becomes the usual nonabelian coboundary relation. The strict output-preserving simulations are the special case
+\[
+    \alpha(y)=1
+\]
+for all \(y\).
+
+\begin{proposition}[One-object Mealy simulations]
+\label{prop:one-object-mealy-simulations}
+    Let
+    \[
+        P,Q:M\rightsquigarrow N
+    \]
+    be one-object Mealy morphisms internal to \(\mathcal E\). A Mealy simulation
+    \[
+        P\Rightarrow Q
+    \]
+    is equivalently an \(M\)-equivariant map
+    \[
+        \theta:Q\to P
+    \]
+    together with a map
+    \[
+        \alpha:Q\to N
+    \]
+    satisfying
+    \[
+        \alpha(y)\,\omega_P(m,\theta y)
+        =
+        \omega_Q(m,y)\,\alpha(y\cdot m)
+    \]
+    as a morphism equation \(M\times Q\to N\).
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Specialize the comparison data.} In the one-object case all interface equations are vacuous. Thus a simulation consists of maps
+        \[
+            \theta:Q\to P,
+            \qquad
+            \alpha:Q\to N.
+        \]
+
+        \item \textbf{Specialize the simulation laws.} Proposition~\ref{prop:mealy-simulation-laws} gives
+        \[
+            \theta(y\cdot m)=\theta(y)\cdot m,
+        \]
+        so \(\theta\) is \(M\)-equivariant. Under the one-object convention \(b\circ a=ba\), the output equation becomes
+        \[
+            \alpha(y)\,\omega_P(m,\theta y)
+            =
+            \omega_Q(m,y)\,\alpha(y\cdot m).
+        \]
+
+        \item \textbf{Reverse the specialization.} Conversely, an \(M\)-equivariant map \(\theta\) and a map \(\alpha\) satisfying the displayed equation determine exactly the component data and laws of a one-object Mealy simulation.
+    \end{enumerate}
+\end{proof}
+
+The stateless one-object case is obtained by taking \(P=1\). A Mealy morphism
+\[
+    M\rightsquigarrow N
+\]
+then reduces to a monoid morphism
+\[
+    h:M\to N.
+\]
+A simulation between stateless one-object Mealy morphisms
+\[
+    h,k:M\to N
+\]
+is a global element
+\[
+    \alpha:1\to N
+\]
+satisfying
+\[
+    \alpha\,h(m)=k(m)\,\alpha
+\]
+as a morphism equation \(M\to N\). This is the component form of
+\[
+    \alpha\circ h(m)=k(m)\circ\alpha
+\]
+under the one-object convention \(b\circ a=ba\). In \(\mathbf{Set}\), this is precisely a natural transformation between the corresponding one-object functors.
+
+\subsection{Stateless simulations}
+\label{subsec:stateless-mealy-simulations}
+
+Let
+\[
+    F,G:\mathbb A\to\mathbb B
+\]
+be internal functors, regarded as Mealy morphisms carried by the canonical map-representable spans
+\[
+    F_{0!}
+    =
+    \left(
+        A_0
+        \xleftarrow{1_{A_0}}
+        A_0
+        \xrightarrow{F_0}
+        B_0
+    \right),
+    \qquad
+    G_{0!}
+    =
+    \left(
+        A_0
+        \xleftarrow{1_{A_0}}
+        A_0
+        \xrightarrow{G_0}
+        B_0
+    \right).
+\]
+A Mealy simulation
+\[
+    F_{0!}\Rightarrow G_{0!}
+\]
+is, by definition, a map of spans
+\[
+    G_{0!}\Rightarrow B\circ F_{0!}
+\]
+satisfying the simulation law.
+
+The composite
+\[
+    B\circ F_{0!}:A_0\to B_0
+\]
+has apex
+\[
+    A_0\times_{F_0,B_0,s_B}B_1
+\]
+and is the span
+\[
+    A_0
+    \xleftarrow{\pi_1}
+    A_0\times_{F_0,B_0,s_B}B_1
+    \xrightarrow{t_B\pi_2}
+    B_0.
+\]
+The defining pullback is
+\[
+    \begin{tikzcd}
+            A_0\times_{F_0,B_0,s_B}B_1
+                \arrow[r, "\pi_2"]
+                \arrow[d, "\pi_1"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            B_1 
+                \arrow[d, "s_B"]
+        \\
+            A_0 
+                \arrow[r, "F_0"']
+        &
+            B_0.
+    \end{tikzcd}
+\]
+A map of spans
+\[
+    \bar\alpha:G_{0!}\Rightarrow B\circ F_{0!}
+\]
+is therefore equivalently a map
+\[
+    \bar\alpha:A_0\to A_0\times_{F_0,B_0,s_B}B_1
+\]
+such that
+\[
+    \pi_1\bar\alpha=1_{A_0},
+    \qquad
+    t_B\pi_2\bar\alpha=G_0.
+\]
+The span-map diagram is
+\[
+    \begin{tikzcd}[column sep=large]
+        & 
+            A_0
+                \arrow[d, "\bar\alpha" description]
+                \arrow[dl, "1_{A_0}"']
+                \arrow[dr, "G_0"]
+        &
+        \\
+            A_0
+        &
+            A_0\times_{B_0}B_1
+                \arrow[l, "\pi_1"]
+                \arrow[r, "t_B\pi_2"']
+        &
+            B_0.
+    \end{tikzcd}
+\]
+Writing
+\[
+    \alpha:=\pi_2\bar\alpha,
+\]
+the pullback condition gives
+\[
+    s_B\alpha=F_0,
+\]
+and the right-leg condition gives
+\[
+    t_B\alpha=G_0.
+\]
+Thus a stateless Mealy simulation has components
+\[
+    \alpha_x:F_0x\to G_0x
+\]
+in \(\mathbb B\), displayed as
+\[
+    \begin{tikzcd}[column sep=large]
+            F_0x 
+                \arrow[r, "\alpha_x"] 
+        & 
+            G_0x.
+    \end{tikzcd}
+\]
+
+\begin{definition}[Internal natural transformation]
+\label{def:internal-natural-transformation}
+    Let
+    \[
+        F,G:\mathbb A\to\mathbb B
+    \]
+    be internal functors. An \textbf{internal natural transformation}
+    \[
+        \alpha:F\Rightarrow G
+    \]
+    is a map
+    \[
+        \alpha:A_0\to B_1
+    \]
+    satisfying
+    \[
+        s_B\alpha=F_0,
+        \qquad
+        t_B\alpha=G_0,
+    \]
+        and
+    \[
+        m_B\langle F_1,\alpha t_A\rangle
+        =
+        m_B\langle \alpha s_A,G_1\rangle.
+    \]
+    Here
+    \[
+        \langle F_1,\alpha t_A\rangle:
+        A_1\to B_1\times_{t_B,B_0,s_B}B_1
+    \]
+    is well-defined because
+    \[
+        t_BF_1=F_0t_A=s_B\alpha t_A,
+    \]
+    and
+    \[
+        \langle \alpha s_A,G_1\rangle:
+        A_1\to B_1\times_{t_B,B_0,s_B}B_1
+    \]
+    is well-defined because
+    \[
+        t_B\alpha s_A=G_0s_A=s_BG_1.
+    \]
+    In generalized-element notation, for an arrow \(a:u\to v\), this equation
+    is
+    \[
+        \alpha_v\circ F_1(a)
+        =
+        G_1(a)\circ \alpha_u.
+    \]
+    The naturality square is
+    \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+                F_0u
+                    \arrow[r, "F_1(a)"]
+                    \arrow[d, "\alpha_u"']
+            &
+                F_0v
+                    \arrow[d, "\alpha_v"]
+            \\
+                G_0u
+                    \arrow[r, "G_1(a)"']
+            &
+                G_0v.
+        \end{tikzcd}
+    \]
+\end{definition}
+
+\begin{theorem}[Stateless Mealy simulations are internal natural transformations]
+\label{thm:stateless-mealy-simulations-natural-transformations}
+    Let
+    \[
+        F,G:\mathbb A\to\mathbb B
+    \]
+    be internal functors, regarded as canonical map-representable Mealy morphisms. To give a Mealy simulation
+    \[
+        F_{0!}\Rightarrow G_{0!}
+    \]
+    is equivalently to give an internal natural transformation
+    \[
+        F\Rightarrow G.
+    \]
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Identify the component map.} A Mealy simulation
+        \[
+            F_{0!}\Rightarrow G_{0!}
+        \]
+        is a map of spans
+        \[
+            G_{0!}\Rightarrow B\circ F_{0!}.
+        \]
+        By the calculation preceding the theorem, this is equivalently a map
+        \[
+            \alpha:A_0\to B_1
+        \]
+        satisfying
+        \[
+            s_B\alpha=F_0,
+            \qquad
+            t_B\alpha=G_0.
+        \]
+        These are exactly the source and target equations for the components of an internal natural transformation.
+
+        \item \textbf{Identify naturality.} For the canonical Mealy structures associated to \(F\) and \(G\), an input arrow \(a:u\to v\) emits \(F_1(a):F_0u\to F_0v\) and \(G_1(a):G_0u\to G_0v\), respectively. Proposition~\ref{prop:mealy-simulation-laws} therefore specializes to
+        \[
+            \alpha_v\circ F_1(a)
+            =
+            G_1(a)\circ\alpha_u,
+        \]
+        which is precisely internal naturality.
+
+        \item \textbf{Reverse the construction.} Conversely, an internal natural transformation \(\alpha:F\Rightarrow G\) defines the span map
+        \[
+            \bar\alpha=\langle 1_{A_0},\alpha\rangle:
+            A_0\to A_0\times_{F_0,B_0,s_B}B_1,
+        \]
+        and the naturality equation is exactly the Mealy simulation law. Hence the two notions are equivalent.
+    \end{enumerate}
+\end{proof}
+
+\section{The bicategory of Mealy morphisms}
+\label{sec:bicategory-of-mealy-morphisms}
+
+Mealy morphisms compose by composition of oriented monad morphisms in spans. We first give the explicit formula.
+
+Let
+\[
+    (P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+\]
+and
+\[
+    (Q,\delta_Q,\omega_Q):\mathbb B\rightsquigarrow\mathbb C
+\]
+be Mealy morphisms, with underlying spans
+\[
+    A_0\xleftarrow{p_P}P\xrightarrow{q_P}B_0,
+    \qquad
+    B_0\xleftarrow{p_Q}Q\xrightarrow{q_Q}C_0.
+\]
+Their composite carrier is the composite span
+\[
+    Q\circ P:
+    A_0
+    \xleftarrow{p_P\pi_P}
+    P\times_{q_P,B_0,p_Q}Q
+    \xrightarrow{q_Q\pi_Q}
+    C_0.
+\]
+The defining pullback is
+\[
+    \begin{tikzcd}
+            P\times_{q_P,B_0,p_Q}Q
+                \arrow[r, "\pi_Q"]
+                \arrow[d, "\pi_P"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            Q   
+                \arrow[d, "p_Q"]
+        \\
+            P 
+                \arrow[r, "q_P"']
+        &
+            B_0.
+    \end{tikzcd}
+\]
+Operationally, a composite state is a pair
+\[
+    (x,y)
+\]
+satisfying
+\[
+    q_P(x)=p_Q(y).
+\]
+This is the pipeline diagram
+\[
+    \begin{tikzcd}[column sep=large]
+            A_0
+        &
+            P 
+                \arrow[l, "p_P"'] 
+                \arrow[r, "q_P"]
+        &
+            B_0
+        &
+            Q 
+                \arrow[l, "p_Q"'] 
+                \arrow[r, "q_Q"]
+        &
+            C_0.
+    \end{tikzcd}
+\]
+
+Given an input arrow
+\[
+    a:u\to v
+\]
+of \(\mathbb A\) with
+\[
+    p_P(x)=v,
+\]
+the first machine updates \(x\) to
+\[
+    \delta_P(a,x)
+\]
+and emits a \(\mathbb B\)-arrow
+\[
+    \omega_P(a,x):q_P(\delta_P(a,x))\to q_P(x).
+\]
+Since
+\[
+    q_P(x)=p_Q(y),
+\]
+this emitted arrow is admissible input for the second machine at \(y\). The second machine updates \(y\) to
+\[
+    \delta_Q(\omega_P(a,x),y)
+\]
+and emits
+\[
+    \omega_Q(\omega_P(a,x),y).
+\]
+Thus the composite transition and output are
+\[
+    \delta_{QP}(a,(x,y))
+    =
+    \bigl(
+    \delta_P(a,x),
+    \delta_Q(\omega_P(a,x),y)
+    \bigr),
+\]
+and
+\[
+    \omega_{QP}(a,(x,y))
+    =
+    \omega_Q(\omega_P(a,x),y).
+\]
+The execution picture is
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            x
+                \arrow[r, "{a/\omega_P(a,x)}"]
+        &
+            \delta_P(a,x)
+        \\
+            y
+                \arrow[r, "{\omega_P(a,x)/\omega_Q(\omega_P(a,x),y)}"']
+        &
+            \delta_Q(\omega_P(a,x),y).
+    \end{tikzcd}
+\]
+
+\begin{proposition}[Pipeline composition]
+\label{prop:pipeline-composition-mealy}
+    The formulas above define a Mealy morphism
+    \[
+        Q\circ P:\mathbb A\rightsquigarrow\mathbb C.
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Check that the transition lands in the pullback carrier.} We must show that the two updated states have matching middle interface. By the typing equations for \(Q\),
+        \[
+            p_Q(\delta_Q(\omega_P(a,x),y))
+            =
+            s_B(\omega_P(a,x)).
+        \]
+        By the typing equations for \(P\),
+        \[
+            s_B(\omega_P(a,x))
+            =
+            q_P(\delta_P(a,x)).
+        \]
+        Hence
+        \[
+            p_Q(\delta_Q(\omega_P(a,x),y))
+            =
+            q_P(\delta_P(a,x)),
+        \]
+        so
+        \[
+            \bigl(
+            \delta_P(a,x),
+            \delta_Q(\omega_P(a,x),y)
+            \bigr)
+        \]
+        lies in
+        \[
+            P\times_{B_0}Q.
+        \]
+
+        \item \textbf{Check the output typing.} The output of the composite is
+        \[
+            \omega_Q(\omega_P(a,x),y).
+        \]
+        Since \(Q\) is a Mealy morphism,
+        \[
+            s_C(\omega_Q(\omega_P(a,x),y))
+            =
+            q_Q(\delta_Q(\omega_P(a,x),y)),
+        \]
+        and
+        \[
+            t_C(\omega_Q(\omega_P(a,x),y))
+            =
+            q_Q(y).
+        \]
+        Thus the output arrow has the required type
+        \[
+            q_Q(\delta_Q(\omega_P(a,x),y))\to q_Q(y).
+        \]
+
+        \item \textbf{Verify the unit law.} Let \(x\in P\), \(y\in Q\), and suppose \(q_P(x)=p_Q(y)\). For the identity input arrow \(e_A(p_Px)\), the unit law for \(P\) gives
+        \[
+            \delta_P(e_A(p_Px),x)=x,
+            \qquad
+            \omega_P(e_A(p_Px),x)=e_B(q_Px).
+        \]
+        The unit law for \(Q\) then gives
+        \[
+            \delta_Q(e_B(q_Px),y)=y,
+            \qquad
+            \omega_Q(e_B(q_Px),y)=e_C(q_Qy).
+        \]
+        Hence
+        \[
+            \delta_{QP}(e_A(p_Px),(x,y))=(x,y),
+        \]
+        and
+        \[
+            \omega_{QP}(e_A(p_Px),(x,y))=e_C(q_Qy).
+        \]
+
+        \item \textbf{Prepare the multiplication calculation.} Let
+        \[
+            a:u\to v,
+            \qquad
+            b:v\to w,
+            \qquad
+            p_P(x)=w.
+        \]
+        Put
+        \[
+            \beta_b:=\omega_P(b,x),
+            \qquad
+            \beta_a:=\omega_P(a,\delta_P(b,x)).
+        \]
+        Then
+        \[
+            \beta_a:q_P(\delta_P(a,\delta_P(b,x)))\to q_P(\delta_P(b,x)),
+        \]
+        and
+        \[
+            \beta_b:q_P(\delta_P(b,x))\to q_P(x).
+        \]
+        By the Mealy multiplication law for \(P\),
+        \[
+            \omega_P(b\circ a,x)=\beta_b\circ\beta_a.
+        \]
+
+        \item \textbf{Verify the state part of multiplication.} The state part of executing the composite input \(b\circ a\) is
+        \[
+            \delta_{QP}(b\circ a,(x,y))
+            =
+            \left(
+                \delta_P(b\circ a,x),
+                \delta_Q(\omega_P(b\circ a,x),y)
+            \right).
+        \]
+        By the Mealy multiplication law for \(P\),
+        \[
+            \delta_P(b\circ a,x)=\delta_P(a,\delta_P(b,x)).
+        \]
+        By the Mealy multiplication law for \(Q\), applied to the composite
+        \[
+            \beta_b\circ\beta_a,
+        \]
+        we have
+        \[
+            \delta_Q(\beta_b\circ\beta_a,y)
+            =
+            \delta_Q(\beta_a,\delta_Q(\beta_b,y)).
+        \]
+        This is exactly the \(Q\)-state obtained by first executing \(b\), then executing \(a\), in the composite machine.
+
+        \item \textbf{Verify the output part of multiplication.} The output for the composite input is
+        \[
+            \omega_{QP}(b\circ a,(x,y))
+            =
+            \omega_Q(\omega_P(b\circ a,x),y).
+        \]
+        Since
+        \[
+            \omega_P(b\circ a,x)=\beta_b\circ\beta_a,
+        \]
+        the Mealy multiplication law for \(Q\) gives
+        \[
+            \omega_Q(\beta_b\circ\beta_a,y)
+            =
+            \omega_Q(\beta_b,y)\circ
+            \omega_Q(\beta_a,\delta_Q(\beta_b,y)).
+        \]
+        This is precisely the composite of the outputs produced by first executing \(b\), then executing \(a\), in the pipeline. Hence the multiplication law holds.
+    \end{enumerate}
+\end{proof}
+
+The identity Mealy morphism on \(\mathbb A\) has underlying identity span
+\[
+    A_0\xleftarrow{1_{A_0}}A_0\xrightarrow{1_{A_0}}A_0.
+\]
+At a state \(v\in A_0\), an arrow
+\[
+    a:u\to v
+\]
+is processed by
+\[
+    v
+    \xrightarrow{\;a/a\;}
+    u.
+\]
+Thus the identity Mealy morphism has
+\[
+    \delta(a,v)=s_A(a),
+    \qquad
+    \omega(a,v)=a.
+\]
+The corresponding diagram is
+\[
+    \begin{tikzcd}[column sep=large]
+            u 
+                \arrow[r, "a"] 
+        & 
+            v
+    \end{tikzcd}
+    \qquad\leadsto\qquad
+    \begin{tikzcd}[column sep=large]
+            v 
+                \arrow[r, "{a/a}"] 
+        & 
+            u.
+    \end{tikzcd}
+\]
+
+Recall that the displayed simulation direction is opposite to the underlying Kleisli algebra-morphism direction: a simulation
+\[
+    P\Rightarrow Q
+\]
+has underlying state map
+\[
+    Q\to P.
+\]
+
+\begin{proposition}[Vertical composition of simulations]
+\label{prop:mealy-simulations-vertical-composition}
+    Mealy simulations compose vertically. If
+    \[
+        (\theta,\alpha):P\Rightarrow Q
+    \]
+    and
+    \[
+        (\kappa,\beta):Q\Rightarrow R
+    \]
+    are simulations between Mealy morphisms
+    \[
+        P,Q,R:\mathbb A\rightsquigarrow\mathbb B,
+    \]
+    where
+    \[
+        \theta:Q\to P,
+        \qquad
+        \kappa:R\to Q,
+    \]
+    then their vertical composite
+    \[
+        (\theta,\alpha)\circ(\kappa,\beta):P\Rightarrow R
+    \]
+    has state map
+    \[
+        \theta\kappa:R\to P
+    \]
+    and comparison component
+    \[
+        \gamma_z=\beta_z\circ\alpha_{\kappa z}.
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use Kleisli algebra composition.} A simulation \(P\Rightarrow Q\) is, by definition, a Kleisli algebra morphism \((Q,\Psi)\to(P,\Phi)\). Therefore vertical composition is inherited from the category of \(\overline R_A\)-algebras in \(\operatorname{Kl}(T_B)\).
+
+        \item \textbf{Unpack the Kleisli composite.} The Kleisli composite of
+        \[
+            R\xrightarrow{(\kappa,\beta)}Q
+            \xrightarrow{(\theta,\alpha)}P
+        \]
+        has state map \(\theta\kappa:R\to P\) and comparison component
+        \[
+            \gamma_z=\beta_z\circ\alpha_{\kappa z}.
+        \]
+        This is the output-comparison path
+        \[
+            \begin{tikzcd}[column sep=large]
+                    q_P(\theta\kappa z)
+                        \arrow[r, "\alpha_{\kappa z}"]
+                &
+                    q_Q(\kappa z)
+                        \arrow[r, "\beta_z"]
+                &
+                    q_R(z).
+            \end{tikzcd}
+        \]
+        Since Kleisli algebra morphisms are closed under composition, the resulting pair is again a Mealy simulation.
+    \end{enumerate}
+\end{proof}
+
+\begin{proposition}[Horizontal composition of simulations]
+\label{prop:mealy-simulations-horizontal-composition}
+    Let
+    \[
+        P,P':\mathbb A\rightsquigarrow\mathbb B,
+        \qquad
+        Q,Q':\mathbb B\rightsquigarrow\mathbb C
+    \]
+    be Mealy morphisms. Suppose
+    \[
+        (\theta,\alpha):P\Rightarrow P',
+        \qquad
+        (\kappa,\beta):Q\Rightarrow Q'
+    \]
+    are Mealy simulations, so that
+    \[
+        \theta:P'\to P,
+        \qquad
+        \kappa:Q'\to Q.
+    \]
+    Their horizontal composite
+    \[
+        (\kappa,\beta)\ast(\theta,\alpha):
+        Q\circ P\Rightarrow Q'\circ P'
+    \]
+    has state map
+    \[
+        P'\times_{B_0}Q'
+        \longrightarrow
+        P\times_{B_0}Q
+    \]
+    given by
+    \[
+        (x',y')
+        \longmapsto
+        \bigl(
+            \theta x',
+            \delta_Q(\alpha_{x'},\kappa y')
+        \bigr),
+    \]
+    and comparison component
+    \[
+        \beta_{y'}\circ
+        \omega_Q(\alpha_{x'},\kappa y').
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Check that the state map is defined.} Let \((x',y')\in P'\times_{B_0}Q'\), so
+        \[
+            q_{P'}(x')=p_{Q'}(y').
+        \]
+        Since \(p_Q\kappa=p_{Q'}\), the comparison arrow
+        \[
+            \alpha_{x'}:q_P(\theta x')\to q_{P'}(x')
+        \]
+        is admissible input for \(Q\) at \(\kappa y'\). Hence \(\delta_Q(\alpha_{x'},\kappa y')\) is defined, and its input interface is
+        \[
+            p_Q\delta_Q(\alpha_{x'},\kappa y')
+            =s_B\alpha_{x'}
+            =q_P\theta x'.
+        \]
+        Thus
+        \[
+            \bigl(\theta x',\delta_Q(\alpha_{x'},\kappa y')\bigr)
+        \]
+        lies in \(P\times_{B_0}Q\).
+
+        \item \textbf{Check the comparison arrow.} The output of \(Q\) while processing \(\alpha_{x'}\) at \(\kappa y'\) is
+        \[
+            \omega_Q(\alpha_{x'},\kappa y'):
+            q_Q\delta_Q(\alpha_{x'},\kappa y')
+            \to
+            q_Q\kappa y'.
+        \]
+        Composing with
+        \[
+            \beta_{y'}:q_Q\kappa y'\to q_{Q'}y'
+        \]
+        gives the required comparison arrow
+        \[
+            \beta_{y'}\circ\omega_Q(\alpha_{x'},\kappa y'):
+            q_Q\delta_Q(\alpha_{x'},\kappa y')
+            \to
+            q_{Q'}y'.
+        \]
+
+        \item \textbf{Verify the simulation law.} Let \(a:u\to v\) be an input arrow for \(\mathbb A\), and let \(p_{P'}(x')=v\). Put
+        \[
+            x_1':=\delta_{P'}(a,x'),
+            \qquad
+            \varphi:=\omega_{P'}(a,x'),
+            \qquad
+            y_1':=\delta_{Q'}(\varphi,y').
+        \]
+        The state equation for \((\theta,\alpha)\) gives
+        \[
+            \theta x_1'=\delta_P(a,\theta x').
+        \]
+        The output equation for \((\theta,\alpha)\) gives
+        \[
+            \alpha_{x'}\circ\omega_P(a,\theta x')
+            =
+            \varphi\circ\alpha_{x_1'}.
+        \]
+        Applying the Mealy multiplication law for \(Q\) to this equality and then the state equation for \((\kappa,\beta)\) gives
+        \[
+            \delta_Q\bigl(
+                \omega_P(a,\theta x'),
+                \delta_Q(\alpha_{x'},\kappa y')
+            \bigr)
+            =
+            \delta_Q(\alpha_{x_1'},\kappa y_1').
+        \]
+        Hence the state part of the simulation law holds.
+
+        For the output part, set
+        \[
+            \zeta_{(x',y')}
+            :=
+            \beta_{y'}\circ\omega_Q(\alpha_{x'},\kappa y').
+        \]
+        The required equation is obtained by pasting the output square for \((\theta,\alpha)\), the Mealy multiplication law for \(Q\), and the output square for \((\kappa,\beta)\). Explicitly, the left-hand output composite reduces to
+        \[
+        \begin{aligned}
+            &\beta_{y'}\circ
+            \omega_Q(
+                \alpha_{x'}\circ\omega_P(a,\theta x'),
+                \kappa y'
+            )
+            \\
+            &\qquad=
+            \beta_{y'}\circ
+            \omega_Q(
+                \varphi\circ\alpha_{x_1'},
+                \kappa y'
+            )
+            \\
+            &\qquad=
+            \omega_{Q'}(\varphi,y')\circ
+            \beta_{y_1'}\circ
+            \omega_Q(\alpha_{x_1'},\kappa y_1'),
+        \end{aligned}
+        \]
+        which is
+        \[
+            \omega_{Q'\circ P'}(a,(x',y'))\circ\zeta_{(x_1',y_1')}.
+        \]
+        This is exactly the simulation output equation.
+    \end{enumerate}
+\end{proof}
+
+\begin{proposition}[Functoriality of horizontal composition of simulations]
+\label{prop:mealy-horizontal-composition-functorial}
+    Let
+    \[
+        P,P',P'':\mathbb A\rightsquigarrow\mathbb B,
+        \qquad
+        Q,Q',Q'':\mathbb B\rightsquigarrow\mathbb C
+    \]
+    be Mealy morphisms. Suppose we are given vertically composable Mealy simulations
+    \[
+        (\theta,\alpha):P\Rightarrow P',
+        \qquad
+        (\theta',\alpha'):P'\Rightarrow P'',
+    \]
+    and
+    \[
+        (\kappa,\beta):Q\Rightarrow Q',
+        \qquad
+        (\kappa',\beta'):Q'\Rightarrow Q''.
+    \]
+    Thus
+    \[
+        \theta:P'\to P,
+        \qquad
+        \theta':P''\to P',
+        \qquad
+        \kappa:Q'\to Q,
+        \qquad
+        \kappa':Q''\to Q'
+    \]
+    are the underlying state maps. Horizontal composition of simulations preserves identities and vertical composites. Hence, for every triple of internal categories
+    \[
+        \mathbb A,\mathbb B,\mathbb C,
+    \]
+    pipeline composition defines a functor
+    \[
+        \mathbf{Mly}(\mathcal E)(\mathbb B,\mathbb C)
+        \times
+        \mathbf{Mly}(\mathcal E)(\mathbb A,\mathbb B)
+        \longrightarrow
+        \mathbf{Mly}(\mathcal E)(\mathbb A,\mathbb C).
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Identities.} If both simulations are identity simulations, then
+        \[
+            \theta=1_P,
+            \quad
+            \alpha_x=e_B(q_Px),
+            \qquad
+            \kappa=1_Q,
+            \quad
+            \beta_y=e_C(q_Qy).
+        \]
+        The formula of Proposition~\ref{prop:mealy-simulations-horizontal-composition} sends \((x,y)\in P\times_{B_0}Q\) to
+        \[
+            \bigl(x,\delta_Q(e_B(q_Px),y)\bigr)=(x,y)
+        \]
+        by the Mealy unit law for \(Q\). Its comparison component is
+        \[
+            e_C(q_Qy)\circ\omega_Q(e_B(q_Px),y)=e_C(q_Qy),
+        \]
+        again by the Mealy unit law. Hence horizontal composition preserves identities.
+
+        \item \textbf{Vertical composites.} Consider vertically composable simulations as in the statement. The vertical composites have comparison components
+        \[
+            \gamma_{x''}=\alpha'_{x''}\circ\alpha_{\theta' x''},
+            \qquad
+            \eta_{y''}=\beta'_{y''}\circ\beta_{\kappa' y''}.
+        \]
+        Applying the horizontal-composition formula after taking vertical composites gives the state map
+        \[
+            (x'',y'')
+            \longmapsto
+            \left(
+                \theta\theta' x'',
+                \delta_Q(\gamma_{x''},\kappa\kappa' y'')
+            \right).
+        \]
+        Applying horizontal composition first and then composing vertically gives the same state map because the transition law for \((\kappa,\beta)\) and the Mealy multiplication law for \(Q\) give
+        \[
+            \delta_Q\bigl(
+                \alpha_{\theta' x''},
+                \delta_Q(\alpha'_{x''},\kappa\kappa' y'')
+            \bigr)
+            =
+            \delta_Q(
+                \alpha'_{x''}\circ\alpha_{\theta' x''},
+                \kappa\kappa' y''
+            ).
+        \]
+
+        \item \textbf{Output comparisons.} The two output-comparison components are obtained by composing the same arrows in \(\mathbb C\), with parentheses changed by the Mealy multiplication law for \(Q\), the output law for \((\kappa,\beta)\), and associativity in \(\mathbb C\). Both reduce to
+        \[
+            \eta_{y''}\circ
+            \omega_Q(\gamma_{x''},\kappa\kappa' y'').
+        \]
+        Therefore horizontal composition preserves vertical composites.
+
+        \item \textbf{Conclusion.} Horizontal composition preserves identities and vertical composites, so it defines the stated functor on hom-categories.
+    \end{enumerate}
+\end{proof}
+
+\begin{lemma}[Span coherence is strict Mealy coherence]
+\label{lem:span-coherence-strict-mealy}
+    The canonical associativity and unit isomorphisms of the carrier spans appearing in pipeline composites are strict Mealy simulations, with identity output-comparison component.
+\end{lemma}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Associators.} For composable Mealy morphisms
+        \[
+            P:\mathbb A\rightsquigarrow\mathbb B,
+            \qquad
+            Q:\mathbb B\rightsquigarrow\mathbb C,
+            \qquad
+            R:\mathbb C\rightsquigarrow\mathbb D,
+        \]
+        the two parenthesized carriers are
+        \[
+            (P\times_{B_0}Q)\times_{C_0}R
+            \qquad\text{and}\qquad
+            P\times_{B_0}(Q\times_{C_0}R).
+        \]
+        The canonical pullback associator preserves all projections to \(P,Q,R\). Hence it preserves input and output interfaces strictly. Since both parenthesized pipeline composites execute \(P\), then \(Q\), then \(R\), the transition maps and emitted output arrows agree after this reassociation of pullbacks.
+
+        \item \textbf{Unitors.} The left and right unitors are induced by the canonical pullback isomorphisms
+        \[
+            B_0\times_{B_0}P\cong P,
+            \qquad
+            P\times_{A_0}A_0\cong P.
+        \]
+        These isomorphisms preserve the projection to \(P\). Composing with an identity Mealy morphism only inserts identity arrows and emits the input arrow it receives. The Mealy unit laws therefore imply that the unitors are strict Mealy simulations.
+
+        \item \textbf{Invertibility.} The inverse pullback isomorphisms satisfy the same projection equations. Thus the associators and unitors are invertible strict simulations.
+    \end{enumerate}
+\end{proof}
+
+\begin{theorem}[The Mealy bicategory]
+\label{thm:mealy-bicategory}
+    If \(\mathcal E\) has pullbacks, then there is a bicategory
+    \[
+        \mathbf{Mly}(\mathcal E)
+    \]
+    whose objects are internal categories in \(\mathcal E\), whose 1-cells are Mealy morphisms, and whose 2-cells are Mealy simulations.
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Objects and hom-categories.} The objects are internal categories in \(\mathcal E\), equivalently monads in \(\mathbf{Span}(\mathcal E)\). For internal categories \(\mathbb A\) and \(\mathbb B\), the hom-category \(\mathbf{Mly}(\mathcal E)(\mathbb A,\mathbb B)\) has Mealy morphisms as objects. Its morphisms are Mealy simulations. By Definition~\ref{def:mealy-simulation}, this hom-category is the opposite of the category of \(\overline R_A\)-algebras in \(\operatorname{Kl}(T_B)\). Hence vertical composition and identity 2-cells are inherited from that algebra category, with the component formula of Proposition~\ref{prop:mealy-simulations-vertical-composition}.
+
+        \item \textbf{Horizontal composition.} Horizontal composition of 1-cells is pipeline composition, defined in Proposition~\ref{prop:pipeline-composition-mealy}. Explicitly, for
+        \[
+            P:\mathbb A\rightsquigarrow\mathbb B,
+            \qquad
+            Q:\mathbb B\rightsquigarrow\mathbb C,
+        \]
+        the carrier is
+        \[
+            A_0
+            \xleftarrow{p_P\pi_P}
+            P\times_{q_P,B_0,p_Q}Q
+            \xrightarrow{q_Q\pi_Q}
+            C_0,
+        \]
+        with transition and output
+        \[
+            \delta_{QP}(a,(x,y))
+            =
+            \bigl(\delta_P(a,x),\delta_Q(\omega_P(a,x),y)\bigr),
+        \]
+        \[
+            \omega_{QP}(a,(x,y))
+            =
+            \omega_Q(\omega_P(a,x),y).
+        \]
+        Horizontal composition of 2-cells is the simulation of Proposition~\ref{prop:mealy-simulations-horizontal-composition}. Proposition~\ref{prop:mealy-horizontal-composition-functorial} proves that this composition preserves identities and vertical composites.
+
+        \item \textbf{Identity 1-cells.} The identity 1-cell on \(\mathbb A\) is the identity span
+        \[
+            A_0\xleftarrow{1_{A_0}}A_0\xrightarrow{1_{A_0}}A_0,
+        \]
+        with
+        \[
+            \delta(a,v)=s_A(a),
+            \qquad
+            \omega(a,v)=a.
+        \]
+        Its Mealy laws are the identity and associativity laws of
+        \(\mathbb A\).
+
+        \item \textbf{Associators and unitors.} The associators and unitors are induced by the canonical associativity and unit isomorphisms of the span bicategory. By Lemma~\ref{lem:span-coherence-strict-mealy}, these are invertible strict Mealy simulations.
+
+        \item \textbf{Coherence.} Interchange is exactly the functoriality of horizontal composition proved in Proposition~\ref{prop:mealy-horizontal-composition-functorial}. The pentagon and triangle identities reduce to the corresponding coherence identities in \(\mathbf{Span}(\mathcal E)\): all maps in those diagrams are canonical maps between the same iterated pullback objects and are uniquely determined by their projections. The output-comparison components are identities throughout.
+
+        \item \textbf{Conclusion.} These data define a bicategory
+        \[
+            \mathbf{Mly}(\mathcal E)
+        \]
+        with objects internal categories, 1-cells Mealy morphisms, and 2-cells Mealy simulations.
+    \end{enumerate}
+\end{proof}
+
+\begin{corollary}[The functorial sub-bicategory]
+\label{cor:functorial-sub-bicategory}
+    The locally full bicategorical substructure of
+    \[
+        \mathbf{Mly}(\mathcal E)
+    \]
+    spanned by map-representable 1-cells is biequivalent to the ordinary 2-category of internal categories, internal functors, and internal natural transformations. After identifying the canonical pullbacks arising from maps with their evident representatives, this biequivalence becomes the usual strict 2-categorical calculus.
+\end{corollary}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Identify cells.} Theorem~\ref{thm:representable-mealy-internal-functor} identifies canonical map-representable Mealy morphisms with internal functors, and Theorem~\ref{thm:stateless-mealy-simulations-natural-transformations} identifies simulations between them with internal natural transformations.
+
+        \item \textbf{Compare composition.} Pipeline composition of canonical map-representable carriers agrees with ordinary composition of internal functors up to the canonical pullback isomorphisms arising from spans of maps. Under these same identifications, horizontal composition of simulations is ordinary pasting of internal natural transformations.
+
+        \item \textbf{Conclude.} Therefore the locally full bicategorical substructure spanned by map-representable 1-cells is biequivalent to the ordinary 2-category of internal categories, internal functors, and internal natural transformations. After choosing the evident pullback representatives, this is the usual strict 2-categorical calculus.
+    \end{enumerate}
+\end{proof}
+
+\section{Examples}
+\label{sec:examples-mealy-morphisms}
+
+Unless otherwise stated, the examples in this section are taken in \(\mathcal E=\mathbf{Set}\). Thus internal categories are small categories. Accordingly, all categories appearing below are understood to be small. In particular, when using categories such as finite sets and injections, we use a fixed small skeleton.
+
+The first example records ordinary deterministic Mealy machines as a special case. The following examples exhibit genuinely many-object, stateful instances of the internal-category construction.
+
+\begin{example}[Classical deterministic Mealy machines]
+\label{example:classical-deterministic-mealy-machines}
+    Let \(\Sigma\) be an input alphabet and \(\Gamma\) an output alphabet. Let
+    \[
+        \Sigma^\ast,
+        \qquad
+        \Gamma^\ast
+    \]
+    be the free monoids. Regard them as one-object categories using the one-object convention fixed earlier:
+    \[
+        b\circ a=ba.
+    \]
+    
+    A deterministic Mealy machine consists of a state set \(S\), a transition function
+    \[
+        \tau:S\times\Sigma\to S,
+    \]
+    and an output function
+    \[
+        o:S\times\Sigma\to\Gamma.
+    \]
+    It extends uniquely to functions
+    \[
+        S\times\Sigma^\ast\to S,
+        \qquad
+        \Sigma^\ast\times S\to\Gamma^\ast,
+    \]
+    written
+    \[
+        s\cdot w,
+        \qquad
+        \omega(w,s),
+    \]
+    such that
+    \[
+        s\cdot\varepsilon=s,
+        \qquad
+        \omega(\varepsilon,s)=\varepsilon,
+    \]
+    and
+    \[
+        s\cdot(uv)=(s\cdot u)\cdot v,
+        \qquad
+        \omega(uv,s)=\omega(u,s)\omega(v,s\cdot u).
+    \]
+    The sequential execution diagram is
+    \[
+        \begin{tikzcd}[column sep=large]
+                s
+                    \arrow[r, "{u/\omega(u,s)}"]
+            &
+                s\cdot u
+                    \arrow[r, "{v/\omega(v,s\cdot u)}"]
+            &
+                s\cdot(uv).
+        \end{tikzcd}
+    \]
+    These are precisely the one-object Mealy laws for a Mealy morphism
+    \[
+        \Sigma^\ast\rightsquigarrow\Gamma^\ast.
+    \]
+    
+    There is one minor convention to record. A general one-object Mealy morphism
+    \[
+        \Sigma^\ast\rightsquigarrow\Gamma^\ast
+    \]
+    allows the output on a generator
+    \[
+        a\in\Sigma
+    \]
+    to be an arbitrary word
+    \[
+        \omega(a,s)\in\Gamma^\ast.
+    \]
+    A classical letter-output Mealy machine is the subclass satisfying
+    \[
+        \omega(a,s)\in\Gamma\subseteq\Gamma^\ast
+    \]
+    for every \(a\in\Sigma\) and state \(s\in S\).
+    
+    Thus ordinary deterministic Mealy machines are recovered by passing from alphabets to their free monoids and imposing the generator-level single-letter output condition. The many-object examples below should be read as typed and stateful generalizations of this one-object recovery.
+\end{example}
+
+\begin{example}[\texorpdfstring{The base-\(r\) carry machine}{The base-r carry machine}]
+\label{example:base-r-carry-machine}
+    Let \(r\geq 2\). Let the input monoid be
+    \[
+        M=(\mathbb N,+),
+    \]
+    let the state set be
+    \[
+        P=\{0,1,\dots,r-1\},
+    \]
+    and define a right action by
+    \[
+        x\cdot n=(x+n)\bmod r.
+    \]
+    Let the output monoid also be
+    \[
+        N=(\mathbb N,+).
+    \]
+    Define
+    \[
+        \omega(n,x)=\left\lfloor\frac{x+n}{r}\right\rfloor.
+    \]
+    Then the additive output cocycle law becomes the carry identity
+    \[
+        \left\lfloor\frac{x+m+n}{r}\right\rfloor
+        =
+        \left\lfloor\frac{x+m}{r}\right\rfloor
+        +
+        \left\lfloor
+        \frac{(x+m)\bmod r+n}{r}
+        \right\rfloor.
+    \]
+    Thus a two-step addition has the form
+    \[
+        \begin{tikzcd}[column sep=large]
+                x
+                    \arrow[r, "{m/\left\lfloor (x+m)/r\right\rfloor}"]
+            &
+                (x+m)\bmod r
+                    \arrow[r, "{n/\left\lfloor (((x+m)\bmod r)+n)/r\right\rfloor}"]
+            &
+                (x+m+n)\bmod r.
+        \end{tikzcd}
+    \]
+    Therefore this data defines a Mealy morphism
+    \[
+        (\mathbb N,+)\rightsquigarrow(\mathbb N,+).
+    \]
+    The state records a residue modulo \(r\), and the output records the carry produced by adding the input.
+\end{example}
+
+\begin{example}[Typed Mealy machines from path categories]
+\label{example:typed-mealy-machines-path-categories}  
+    Let \(G\) and \(H\) be small directed graphs, and let
+    \[
+        \mathbb A=\mathbf{Path}(G),
+        \qquad
+        \mathbb B=\mathbf{Path}(H)
+    \]
+    be their free categories. The vertices of \(G\) may be read as input modes, and the edges of \(G\) as typed input symbols. Similarly, the vertices of \(H\) may be read as output modes, and the edges of \(H\) as typed output symbols.
+    
+    A Mealy morphism
+    \[
+        \mathbf{Path}(G)\rightsquigarrow\mathbf{Path}(H)
+    \]
+    assigns to each state \(x\in P\) an input vertex
+    \[
+        p(x)\in G_0
+    \]
+    and an output vertex
+    \[
+        q(x)\in H_0.
+    \]
+    If
+    \[
+        \alpha:u\to v
+    \]
+    is a path in \(G\) and \(p(x)=v\), then execution along \(\alpha\) produces a new state
+    \[
+        \delta(\alpha,x)
+    \]
+    over the source vertex \(u\), together with an output path
+    \[
+        \omega(\alpha,x):q(\delta(\alpha,x))\to q(x)
+    \]
+    in \(H\). The typing diagram is
+    \[
+    \begin{tikzcd}[column sep=huge]
+            {u}
+                \arrow[r, "{\alpha}"]
+        &
+            {v=p(x)}
+    \end{tikzcd}
+    \qquad\leadsto\qquad
+    \begin{tikzcd}[column sep=huge]
+            {q(\delta(\alpha,x))}
+                \arrow[r, "{\omega(\alpha,x)}"]
+        &
+            {q(x)}.
+    \end{tikzcd}
+    \]
+    
+    The multiplication law says that the output path for a concatenated input path is obtained by concatenating the output paths produced by the sequential executions:
+    \[
+    \begin{tikzcd}[column sep=huge]
+            {u}
+                \arrow[r, "{\alpha}"]
+        &
+            {v}
+                \arrow[r, "{\beta}"]
+        &
+            {w=p(x)}
+    \end{tikzcd}
+    \qquad\leadsto\qquad
+    \begin{tikzcd}[column sep=huge]
+            {q(\delta(\alpha,\delta(\beta,x)))}
+                \arrow[r, "{\omega(\alpha,\delta(\beta,x))}"]
+        &
+            {q(\delta(\beta,x))}
+                \arrow[r, "{\omega(\beta,x)}"]
+        &
+            {q(x)}.
+    \end{tikzcd}
+    \]
+    Thus a Mealy morphism between path categories is a typed path-transducer: it reads input paths backwards relative to the chosen orientation and emits output paths in the output graph.
+    
+    The ordinary word-monoid example is recovered when each of \(G\) and \(H\) has one vertex. In the many-object case, the construction records source and target modes explicitly. This is the first genuinely internal-category extension of ordinary Mealy machines: inputs and outputs are no longer words in a single alphabet, but typed paths whose endpoints matter.
+    
+    A Mealy simulation between two such typed path-transducers assigns to each state of the second transducer a state of the first with the same input vertex, together with a path in \(H\) comparing the two output vertices. The simulation law says that these comparison paths commute with the output paths emitted during execution.
+\end{example}
+
+\begin{example}[Context-restriction and register-allocation machines]
+\label{example:context-restriction-register-allocation-machines}
+    This example gives a deterministic computer-science instance whose input and output categories are genuinely many-object and whose carrier is genuinely stateful.
+    
+    Fix two countably infinite sets
+    \[
+        \mathsf{Var}
+        \qquad\text{and}\qquad
+        \mathsf{Reg},
+    \]
+    thought of as source variables and register names. Let
+    \[
+        \mathbf{FinSub}(\mathsf{Var})
+    \]
+    be the small poset category whose objects are finite subsets
+    \[
+        \Gamma\subseteq \mathsf{Var},
+    \]
+    and whose arrows are inclusions
+    \[
+        a:\Gamma'\hookrightarrow \Gamma.
+    \]
+    Similarly, let
+    \[
+        \mathbf{FinSub}(\mathsf{Reg})
+    \]
+    be the small poset category of finite subsets of registers and inclusions.
+    
+    Take
+    \[
+        \mathbb A=\mathbf{FinSub}(\mathsf{Var}),
+        \qquad
+        \mathbb B=\mathbf{FinSub}(\mathsf{Reg}).
+    \]
+    An object \(\Gamma\) of \(\mathbb A\) is read as a finite source context, for example a set of currently live source variables. An arrow
+    \[
+        a:\Gamma'\hookrightarrow \Gamma
+    \]
+    is a context inclusion. With the orientation of this chapter, processing this arrow target-to-source restricts from the larger live context \(\Gamma\) to the smaller live context \(\Gamma'\):
+    \[
+        \begin{tikzcd}[column sep=large]
+                \Gamma'
+                    \arrow[r, hook, "a"]
+            &
+                \Gamma.
+        \end{tikzcd}
+    \]
+    
+    Define a state to be a bijective allocation
+    \[
+        \rho:\Gamma\cong R
+    \]
+    from a finite source context \(\Gamma\subseteq\mathsf{Var}\) to a finite register context \(R\subseteq\mathsf{Reg}\). Let \(P\) be the set of triples
+    \[
+        (\Gamma,R,\rho)
+    \]
+    where
+    \[
+        \Gamma\subseteq\mathsf{Var},
+        \qquad
+        R\subseteq\mathsf{Reg}
+    \]
+    are finite subsets and
+    \[
+        \rho:\Gamma\cong R
+    \]
+    is a bijection. Define
+    \[
+        p(\Gamma,R,\rho)=\Gamma,
+        \qquad
+        q(\Gamma,R,\rho)=R.
+    \]
+    Thus the carrier span records both the source context and the currently chosen register context:
+    \[
+        \begin{tikzcd}
+            &
+                P
+                    \arrow[dl, "p"']
+                    \arrow[dr, "q"]
+            &
+            \\
+                \mathbf{FinSub}(\mathsf{Var})_0
+            &
+            &
+                \mathbf{FinSub}(\mathsf{Reg})_0.
+        \end{tikzcd}
+    \]
+    
+    Now let
+    \[
+        a:\Gamma'\hookrightarrow \Gamma
+    \]
+    be an input arrow and let
+    \[
+        x=(\Gamma,R,\rho)
+    \]
+    be a current allocation state. Define
+    \[
+        R':=\rho(\Gamma')\subseteq R.
+    \]
+    Since the output category has finite subsets of \(\mathsf{Reg}\) as literal objects, \(R'\) is an object of \(\mathbb B\), and the inclusion
+    \[
+        R'\hookrightarrow R
+    \]
+    is a literal arrow of \(\mathbb B\). Define the updated allocation by restriction:
+    \[
+        \rho|_{\Gamma'}:\Gamma'\cong R'.
+    \]
+    Thus set
+    \[
+        \delta(a,(\Gamma,R,\rho))
+        :=
+        (\Gamma',R',\rho|_{\Gamma'}),
+    \]
+    and define the output arrow
+    \[
+        \omega(a,(\Gamma,R,\rho)):R'\hookrightarrow R
+    \]
+    to be the inclusion of finite register subsets.
+    
+    The execution square is
+    \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+                \Gamma'
+                    \arrow[r, hook, "{a}"]
+                    \arrow[d, "{\rho|_{\Gamma'}}"', "\sim"]
+            &
+                \Gamma
+                    \arrow[d, "{\rho}", "\sim"']
+            \\
+                R'
+                    \arrow[r, hook, "{\omega(a,(\Gamma,R,\rho))}"']
+            &
+                R.
+        \end{tikzcd}
+    \]
+    Thus execution restricts a source allocation along a context inclusion and emits the corresponding inclusion of register contexts.
+    
+    The unit law is immediate. Restricting along the identity inclusion
+    \[
+        1_\Gamma:\Gamma\hookrightarrow \Gamma
+    \]
+    leaves the allocation unchanged and emits the identity inclusion:
+    \[
+        \delta(1_\Gamma,(\Gamma,R,\rho))=(\Gamma,R,\rho),
+        \qquad
+        \omega(1_\Gamma,(\Gamma,R,\rho))=1_R.
+    \]
+    
+    The multiplication law says that restriction along a composite inclusion is the same as restriction in two stages. If
+    \[
+        \Gamma''
+            \xrightarrow{b}
+        \Gamma'
+            \xrightarrow{a}
+        \Gamma
+    \]
+    are inclusions, and if
+    \[
+        x=(\Gamma,R,\rho),
+    \]
+    then
+    \[
+        \delta(a\circ b,x)
+        =
+        \delta(b,\delta(a,x)).
+    \]
+    Indeed, both sides are the allocation
+    \[
+        \rho|_{\Gamma''}:\Gamma''\cong \rho(\Gamma'').
+    \]
+    The output arrows also compose strictly. Put
+    \[
+        R'=\rho(\Gamma'),
+        \qquad
+        R''=\rho(\Gamma'').
+    \]
+    Then
+    \[
+        R''\subseteq R'\subseteq R,
+    \]
+    and
+    \[
+        \omega(a\circ b,x)
+        =
+        \omega(a,x)\circ \omega(b,\delta(a,x))
+    \]
+    as inclusions
+    \[
+        R''\hookrightarrow R.
+    \]
+    The two-stage square is
+    \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+                \Gamma''
+                    \arrow[r, hook, "{b}"]
+                    \arrow[d, "{\rho|_{\Gamma''}}"', "\sim"]
+            &
+                \Gamma'
+                    \arrow[r, hook, "{a}"]
+                    \arrow[d, "{\rho|_{\Gamma'}}"', "\sim"]
+            &
+                \Gamma
+                    \arrow[d, "{\rho}", "\sim"']
+            \\
+                R''
+                    \arrow[r, hook]
+            &
+                R'
+                    \arrow[r, hook]
+            &
+                R.
+        \end{tikzcd}
+    \]
+    Therefore this data defines a Mealy morphism
+    \[
+        \mathbf{FinSub}(\mathsf{Var})
+        \rightsquigarrow
+        \mathbf{FinSub}(\mathsf{Reg}).
+    \]
+    
+    This example is not map-representable. For a fixed source context \(\Gamma\), there may be many allocations
+    \[
+        \rho:\Gamma\cong R
+    \]
+    with different choices of register subsets \(R\subseteq\mathsf{Reg}\), or different bijections to the same register subset. Hence the state is not determined by the input interface. The example models deterministic bookkeeping for environment restriction, live-variable restriction, or register-allocation restriction, without adding nondeterministic or probabilistic effects.
+\end{example}
+
+\begin{example}[Posets as internal categories]
+\label{example:posets-as-internal-categories}   
+    Let \(A\) and \(B\) be small posets. Every small poset may be regarded as a small category with a unique arrow
+    \[
+        u\to v
+    \]
+    precisely when
+    \[
+        u\leq v.
+    \]
+    Thus a Mealy morphism between posets \(A\) and \(B\) consists of a state set \(P\) equipped with interface maps
+    \[
+        p:P\to A,
+        \qquad
+        q:P\to B,
+    \]
+    together with a transition operation defined whenever
+    \[
+        u\leq v
+        \qquad
+        \text{and}
+        \qquad
+        p(x)=v.
+    \]
+    The transition produces a new state
+    \[
+        \delta(u\leq v,x)
+    \]
+    with
+    \[
+        p(\delta(u\leq v,x))=u,
+    \]
+    and an output inequality
+    \[
+        q(\delta(u\leq v,x))\leq q(x)
+    \]
+    in \(B\). The operational picture is
+    \[
+        \begin{tikzcd}[column sep=large]
+                u 
+                    \arrow[r, "\leq"] 
+            & 
+                v=p(x)
+        \end{tikzcd}
+        \qquad\leadsto\qquad
+        \begin{tikzcd}[column sep=large]
+                q(\delta(u\leq v,x))
+                    \arrow[r, "\leq"]
+            &
+                q(x).
+        \end{tikzcd}
+    \]
+    
+    The unit law says that the reflexive inequality \(v\leq v\) preserves the state and emits the reflexive inequality \(q(x)\leq q(x)\). The multiplication law says that for
+    \[
+        u\leq v\leq w
+    \]
+    and \(p(x)=w\), executing along the composite inequality
+    \[
+        u\leq w
+    \]
+    is the same as first executing along \(v\leq w\) and then along \(u\leq v\). Thus a Mealy morphism between posets is a stateful refinement process that moves backwards along input refinements while emitting corresponding output refinements.
+    
+    A Mealy simulation
+    \[
+        P\Rightarrow Q
+    \]
+    between such Mealy morphisms consists of a function
+    \[
+        \theta:Q\to P
+    \]
+    over \(A\), together with inequalities
+    \[
+        q_P(\theta y)\leq q_Q(y)
+    \]
+    in \(B\), compatible with execution. The comparison inequality is
+    \[
+        \begin{tikzcd}[column sep=large]
+                q_P(\theta y)
+                    \arrow[r, "\leq"]
+            &
+                q_Q(y).
+        \end{tikzcd}
+    \]
+    The simulation law says that the comparison inequalities commute with the output inequalities emitted by the two machines.
+    
+    A map-representable Mealy morphism between posets is just a monotone map. Indeed, if the carrier is
+    \[
+        A\xleftarrow{1_A}A\xrightarrow{F_0}B,
+    \]
+    then the output inequality associated to \(u\leq v\) is forced to be
+    \[
+        F_0u\leq F_0v.
+    \]
+    A Mealy simulation between map-representable carriers is a pointwise inequality
+    \[
+        F_0x\leq G_0x
+    \]
+    natural with respect to the order. This is the posetal form of an internal natural transformation.
+\end{example}
+
+\begin{example}[Action groupoids]
+\label{example:action-groupoids} 
+Let a group \(G\) act on a set \(X\) on the right, and let a group \(H\) act on
+a set \(Y\) on the right. The corresponding action groupoids
+\[
+    X/\!/G,
+    \qquad
+    Y/\!/H
+\]
+are small categories. Their arrows are
+\[
+    (x,g):x\to xg,
+    \qquad
+    (y,h):y\to yh.
+\]
+A Mealy morphism
+\[
+    X/\!/G\rightsquigarrow Y/\!/H
+\]
+has a state set \(P\) with interface maps
+\[
+    p:P\to X,
+    \qquad
+    q:P\to Y.
+\]
+With the orientation of this chapter, an input arrow
+\[
+    (x,g):x\to xg
+\]
+is processed target-to-source: a state \(z\in P\) with
+\[
+    p(z)=xg
+\]
+is updated to a state
+\[
+    \delta((x,g),z)
+\]
+with
+\[
+    p(\delta((x,g),z))=x.
+\]
+The output is an arrow in the action groupoid \(Y/\!/H\). Therefore it is an
+element
+\[
+    h((x,g),z)\in H
+\]
+such that
+\[
+    q(\delta((x,g),z))\,h((x,g),z)=q(z).
+\]
+The execution diagram is
+\[
+    \begin{tikzcd}[column sep=large]
+        x
+            \arrow[r, "{g}"]
+        &
+        xg=p(z)
+    \end{tikzcd}
+    \qquad\leadsto\qquad
+    \begin{tikzcd}[column sep=large]
+        q(\delta((x,g),z))
+            \arrow[r, "{h((x,g),z)}"]
+        &
+        q(z).
+    \end{tikzcd}
+\]
+
+A Mealy simulation between action-groupoid Mealy morphisms assigns to each
+state of the second system a state of the first system over the same input
+object, together with an \(H\)-label comparing the corresponding output
+objects. If this comparison label is \(\alpha_z\in H\), then it satisfies
+\[
+    q_P(\theta z)\alpha_z=q_Q(z).
+\]
+The simulation law is the groupoid-valued naturality equation saying that
+comparison before execution and comparison after execution yield the same arrow
+in the output action groupoid.
+
+This example is the multi-object groupoid analogue of the one-object
+right-action-plus-cocycle description. The state update is a contravariant
+action along input groupoid arrows, the emitted \(H\)-label is a
+groupoid-valued cocycle, and simulations compare such cocycles by coherent
+state-dependent output arrows.
+\end{example}
+
+\begin{example}[Group-valued coboundary outputs]
+\label{example:group-valued-coboundary-outputs}
+Let \(M\) be a monoid acting on the right on a set \(P\), and let \(G\) be a
+group. Given a function
+\[
+    \lambda:P\to G,
+\]
+define
+\[
+    \omega(m,x)=\lambda(x)^{-1}\lambda(x\cdot m).
+\]
+Then
+\[
+\begin{aligned}
+    \omega(m,x)\omega(n,x\cdot m)
+    &=
+    \lambda(x)^{-1}\lambda(x\cdot m)
+    \lambda(x\cdot m)^{-1}\lambda((x\cdot m)\cdot n)
+    \\
+    &=
+    \lambda(x)^{-1}\lambda(x\cdot(mn)).
+\end{aligned}
+\]
+Hence
+\[
+    \omega(mn,x)=\omega(m,x)\omega(n,x\cdot m),
+\]
+so \(\omega\) is a valid output cocycle. The cancellation diagram is
+\[
+\begin{tikzcd}[column sep=huge]
+    {\lambda(x)}
+        \arrow[r, "{\omega(m,x)}"]
+    &
+    {\lambda(x\cdot m)}
+        \arrow[r, "{\omega(n,x\cdot m)}"]
+    &
+    {\lambda(x\cdot(mn))}.
+\end{tikzcd}
+\]
+This example shows that, for group-valued outputs, the cocycle terminology is
+literal: the output law is a nonabelian cocycle equation over a right action.
+
+The same form describes simulations in the one-object group-valued case. If
+two \(G\)-valued cocycles differ by a state-dependent coboundary, then they are
+connected by a Mealy simulation. For example, when \(P=Q\) and
+\(\theta=1_P\), the simulation equation reads
+\[
+    \alpha(x)\,\omega_P(m,x)
+    =
+    \omega_Q(m,x)\,\alpha(x\cdot m).
+\]
+Equivalently,
+\[
+    \omega_Q(m,x)
+    =
+    \alpha(x)\,\omega_P(m,x)\,\alpha(x\cdot m)^{-1}.
+\]
+Taking \(\omega_P=1\) and \(\alpha(x)=\lambda(x)^{-1}\), the transformed
+cocycle \(\omega_Q\) is
+\[
+    \omega_Q(m,x)=\lambda(x)^{-1}\lambda(x\cdot m).
+\]
+Thus this coboundary cocycle is connected to the trivial cocycle by a
+simulation from the trivial cocycle to the coboundary cocycle.
+\end{example}
+
+\section{Chapter summary}
+\label{sec:chapter-summary}
+
+The constructions of the chapter may be summarized as follows:
+\[
+\begin{array}{c|l}
+\text{structure} & \text{interpretation} \\
+\hline
+\text{internal category}
+&
+\text{monad in }\mathbf{Span}(\mathcal E)
+\\
+\text{Mealy morphism}
+&
+\text{oriented monad morphism }P A\Rightarrow B P
+\\
+T_B=B\circ -
+&
+\text{output-comparison monad}
+\\
+R_A=-\circ A
+&
+\text{input-processing monad}
+\\
+\text{Mealy morphism}
+&
+\overline R_A\text{-algebra in }\operatorname{Kl}(T_B)
+\\
+\text{Mealy simulation}
+&
+\text{oppositely directed Kleisli algebra morphism}
+\\
+\text{strict Mealy simulation}
+&
+\text{identity-output-comparison special case}
+\\
+\text{one-object Mealy morphism}
+&
+\text{internal right monoid action with output cocycle}
+\\
+\text{one-object Mealy simulation}
+&
+\text{equivariant map with coherent cocycle comparison}
+\\
+\text{map-representable Mealy morphism}
+&
+\text{internal functor, up to canonical carrier isomorphism}
+\\
+\text{map-representable Mealy simulation}
+&
+\text{internal natural transformation, up to canonical carrier isomorphism.}
+\end{array}
+\]
+
+The main structural result is the bicategory
+\[
+    \mathbf{Mly}(\mathcal E),
+\]
+whose objects are internal categories, whose 1-cells are Mealy morphisms, and
+whose 2-cells are Mealy simulations. The one-object specialization is internal
+under the standing finite-limit assumptions: it recovers right actions of
+monoid objects equipped with output cocycles. In \(\mathbf{Set}\), the free
+word-monoid case recovers classical deterministic Mealy machines after imposing
+the usual single-letter output condition on generators. The map-representable
+specialization recovers the ordinary 2-category of internal categories,
+internal functors, and internal natural transformations up to the canonical
+pullback isomorphisms inherent in the span bicategory.
+
+The operational calculus gives a formal judgemental presentation of the same
+structure. Its one-step, identity, sequential, pipeline, and simulation rules
+are sound respectively by the typing equations, unit laws, multiplication laws,
+pipeline-composition formula, and simulation laws of Mealy morphisms. The
+examples show that the many-object case is not merely formal: path categories
+give typed Mealy machines, posets give stateful refinement systems, action
+groupoids give groupoid-indexed stateful cocycles, and the
+context-restriction/register-allocation construction gives a deterministic
+computer-science example whose state is genuinely span-valued rather than
+map-representable.

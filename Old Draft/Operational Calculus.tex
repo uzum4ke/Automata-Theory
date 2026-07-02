@@ -1,0 +1,660 @@
+\section{Operational calculus}
+\label{sec:operational-calculus-mealy}
+
+The component description of a Mealy morphism can be presented as a formal
+typed operational calculus. This section records that calculus in
+definition--proposition--theorem form. The purpose is not to introduce new
+structure, but to give a precise judgemental presentation of the data and laws
+already defined.
+
+Fix a Mealy morphism
+\[
+    (P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B.
+\]
+We use context objects
+\[
+    \Gamma\in\mathcal E
+\]
+to make the generalized-element notation formal.
+
+\begin{definition}[Judgements]
+\label{def:mealy-operational-judgements}
+    The operational calculus has the following judgement forms.
+
+    \begin{enumerate}
+        \item An input-object judgement
+        \[
+            \Gamma\vdash u:A_0
+        \]
+        is interpreted as a morphism \(u:\Gamma\to A_0\).
+
+        \item An input-arrow judgement
+        \[
+            \Gamma\vdash a:u\to_{\mathbb A}v
+        \]
+        is interpreted as a morphism \(a:\Gamma\to A_1\) such that
+        \[
+            s_Aa=u,
+            \qquad
+            t_Aa=v.
+        \]
+        Diagrammatically,
+\[
+\begin{tikzcd}[column sep=large, row sep=large]
+    &
+    \Gamma
+        \arrow[d, "a" description]
+        \arrow[dl, "u"']
+        \arrow[dr, "v"]
+    &
+    \\
+    A_0
+    &
+    A_1
+        \arrow[l, "s_A"]
+        \arrow[r, "t_A"']
+    &
+    A_0 .
+\end{tikzcd}
+\]
+        records the equations \(s_Aa=u\) and \(t_Aa=v\).
+
+        \item An output-object judgement
+        \[
+            \Gamma\vdash y:B_0
+        \]
+        is interpreted as a morphism \(y:\Gamma\to B_0\).
+
+        \item An output-arrow judgement
+        \[
+            \Gamma\vdash \beta:y'\to_{\mathbb B}y
+        \]
+        is interpreted as a morphism \(\beta:\Gamma\to B_1\) such that
+        \[
+            s_B\beta=y',
+            \qquad
+            t_B\beta=y.
+        \]
+
+        \item A state judgement
+        \[
+            \Gamma\vdash x:u\leadsto y
+        \]
+        is interpreted as a morphism \(x:\Gamma\to P\) such that
+        \[
+            px=u,
+            \qquad
+            qx=y.
+        \]
+        Thus \(x\) is a generalized state whose input interface is \(u\) and
+        whose output interface is \(y\):
+ \[
+\begin{tikzcd}[column sep=large, row sep=large]
+    &
+    \Gamma
+        \arrow[d, "x" description]
+        \arrow[dl, "u"']
+        \arrow[dr, "y"]
+    &
+    \\
+    A_0
+    &
+    P
+        \arrow[l, "p"]
+        \arrow[r, "q"']
+    &
+    B_0 .
+\end{tikzcd}
+\]    \end{enumerate}
+\end{definition}
+
+\begin{definition}[One-step execution]
+\label{def:one-step-execution}
+    Suppose
+    \[
+        \Gamma\vdash a:u\to_{\mathbb A}v
+        \qquad
+        \text{and}
+        \qquad
+        \Gamma\vdash x:v\leadsto y.
+    \]
+    These judgements determine a morphism
+    \[
+        \langle a,x\rangle:
+        \Gamma\to A_1\times_{t_A,A_0,p}P
+    \]
+    by the pullback square
+    \[
+        \begin{tikzcd}
+            A_1\times_{A_0}P
+                \arrow[r, "\pi_P"]
+                \arrow[d, "\pi_{A_1}"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+            &
+            P \arrow[d, "p"]
+            \\
+            A_1 \arrow[r, "t_A"']
+            &
+            A_0 .
+        \end{tikzcd}
+    \]
+    The one-step execution judgement
+    \[
+        \Gamma\vdash
+        x\xrightarrow{\;a/\beta\;}_{P}x'
+    \]
+    is defined by
+    \[
+        x':=\delta\langle a,x\rangle,
+        \qquad
+        \beta:=\omega\langle a,x\rangle.
+    \]
+    The intended picture is
+    \[
+        \begin{tikzcd}[column sep=large]
+            x
+                \arrow[r, "{a/\beta}"]
+            &
+            x' .
+        \end{tikzcd}
+    \]
+\end{definition}
+
+\begin{proposition}[Typing of one-step execution]
+\label{prop:typing-one-step-execution}
+    Under the hypotheses of Definition~\ref{def:one-step-execution}, the
+    conclusion is well typed:
+    \[
+        \Gamma\vdash x':u\leadsto y'
+    \]
+    and
+    \[
+        \Gamma\vdash \beta:y'\to_{\mathbb B}y,
+    \]
+    where
+    \[
+        y':=qx'.
+    \]
+\end{proposition}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Pull back the transition typing equation.}
+        The Mealy typing equation
+        \[
+            p\delta=s_A\pi_{A_1}
+        \]
+        pulled back along
+        \[
+            \langle a,x\rangle:\Gamma\to A_1\times_{A_0}P
+        \]
+        gives
+        \[
+            px'=s_Aa=u.
+        \]
+
+        \item \textbf{Pull back the output source equation.}
+        The Mealy typing equation
+        \[
+            s_B\omega=q\delta
+        \]
+        gives
+        \[
+            s_B\beta=qx'=y'.
+        \]
+
+        \item \textbf{Pull back the output target equation.}
+        The Mealy typing equation
+        \[
+            t_B\omega=q\pi_P
+        \]
+        gives
+        \[
+            t_B\beta=qx=y.
+        \]
+
+        \item \textbf{Conclude well-typedness.}
+        Hence
+        \[
+            \Gamma\vdash x':u\leadsto y',
+        \]
+        and
+        \[
+            \Gamma\vdash \beta:y'\to_{\mathbb B}y.
+        \]
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Identity execution rule]
+\label{def:identity-execution-rule}
+    The identity execution rule is the admissible rule
+    \[
+        \frac{
+            \Gamma\vdash x:v\leadsto y
+        }
+        {
+            \Gamma\vdash
+            x\xrightarrow{\;1_v/1_y\;}_{P}x
+        }.
+    \]
+    Here
+    \[
+        1_v:=e_Av,
+        \qquad
+        1_y:=e_By.
+    \]
+\end{definition}
+
+\begin{proposition}[Soundness of identity execution]
+\label{prop:soundness-identity-execution}
+    The identity execution rule is sound.
+\end{proposition}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Apply the Mealy unit law.}
+        The Mealy unit law gives
+        \[
+            \delta(e_A(px),x)=x,
+            \qquad
+            \omega(e_A(px),x)=e_B(qx).
+        \]
+
+        \item \textbf{Translate into judgemental notation.}
+        If
+        \[
+            \Gamma\vdash x:v\leadsto y,
+        \]
+        then \(px=v\) and \(qx=y\). Therefore
+        \[
+            \delta(e_Av,x)=x,
+            \qquad
+            \omega(e_Av,x)=e_By.
+        \]
+        This is exactly
+        \[
+            \Gamma\vdash
+            x\xrightarrow{\;1_v/1_y\;}_{P}x.
+        \]
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Sequential execution rule]
+\label{def:sequential-execution-rule}
+    Suppose
+    \[
+        \Gamma\vdash a:u\to_{\mathbb A}v,
+        \qquad
+        \Gamma\vdash b:v\to_{\mathbb A}w,
+        \qquad
+        \Gamma\vdash x:w\leadsto y.
+    \]
+    If
+    \[
+        \Gamma\vdash
+        x\xrightarrow{\;b/\beta\;}_{P}x_1
+    \]
+    and
+    \[
+        \Gamma\vdash
+        x_1\xrightarrow{\;a/\gamma\;}_{P}x_2,
+    \]
+    then the sequential execution rule derives
+    \[
+        \Gamma\vdash
+        x\xrightarrow{\;b\circ a/\,\beta\circ\gamma\;}_{P}x_2.
+    \]
+    The rule is pictured as
+    \[
+        \begin{tikzcd}[column sep=large]
+            x
+                \arrow[r, "{b/\beta}"]
+            &
+            x_1
+                \arrow[r, "{a/\gamma}"]
+            &
+            x_2
+        \end{tikzcd}
+        \qquad\leadsto\qquad
+        \begin{tikzcd}[column sep=large]
+            x
+                \arrow[r, "{b\circ a\,/\,\beta\circ\gamma}"]
+            &
+            x_2 .
+        \end{tikzcd}
+    \]
+\end{definition}
+
+\begin{proposition}[Soundness of sequential execution]
+\label{prop:soundness-sequential-execution}
+    The sequential execution rule is sound.
+\end{proposition}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Expand the first execution.}
+        By definition of one-step execution,
+        \[
+            x_1=\delta(b,x),
+            \qquad
+            \beta=\omega(b,x).
+        \]
+
+        \item \textbf{Expand the second execution.}
+        Again by definition,
+        \[
+            x_2=\delta(a,x_1)=\delta(a,\delta(b,x)),
+            \qquad
+            \gamma=\omega(a,\delta(b,x)).
+        \]
+
+        \item \textbf{Use the Mealy multiplication law for states.}
+        The state multiplication law gives
+        \[
+            \delta(b\circ a,x)
+            =
+            \delta(a,\delta(b,x))
+            =
+            x_2.
+        \]
+
+        \item \textbf{Use the Mealy multiplication law for outputs.}
+        The output multiplication law gives
+        \[
+            \omega(b\circ a,x)
+            =
+            \omega(b,x)\circ\omega(a,\delta(b,x))
+            =
+            \beta\circ\gamma.
+        \]
+
+        \item \textbf{Conclude soundness.}
+        Hence the derived execution judgement is interpreted by the one-step
+        execution along the composite input \(b\circ a\).
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Pipeline execution rule]
+\label{def:pipeline-execution-rule}
+    Let
+    \[
+        (P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+    \]
+    and
+    \[
+        (Q,\delta_Q,\omega_Q):\mathbb B\rightsquigarrow\mathbb C
+    \]
+    be composable Mealy morphisms. Suppose
+    \[
+        \Gamma\vdash x:p_Px\leadsto q_Px
+    \]
+    and
+    \[
+        \Gamma\vdash y:p_Qy\leadsto q_Qy
+    \]
+    satisfy the compatibility condition
+    \[
+        q_Px=p_Qy.
+    \]
+    If
+    \[
+        \Gamma\vdash
+        x\xrightarrow{\;a/\beta\;}_{P}x'
+    \]
+    and
+    \[
+        \Gamma\vdash
+        y\xrightarrow{\;\beta/\gamma\;}_{Q}y',
+    \]
+    then the pipeline execution rule derives
+    \[
+        \Gamma\vdash
+        (x,y)\xrightarrow{\;a/\gamma\;}_{Q\circ P}(x',y').
+    \]
+    Diagrammatically,
+    \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            x
+                \arrow[r, "{a/\beta}"]
+            &
+            x'
+            \\
+            y
+                \arrow[r, "{\beta/\gamma}"']
+            &
+            y'
+        \end{tikzcd}
+        \qquad\leadsto\qquad
+        \begin{tikzcd}[column sep=large]
+            (x,y)
+                \arrow[r, "{a/\gamma}"]
+            &
+            (x',y') .
+        \end{tikzcd}
+    \]
+\end{definition}
+
+\begin{proposition}[Soundness of pipeline execution]
+\label{prop:soundness-pipeline-execution}
+    The pipeline execution rule is sound for the composite Mealy morphism
+    \[
+        Q\circ P.
+    \]
+\end{proposition}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use the composite transition formula.}
+        By Proposition~\ref{prop:pipeline-composition-mealy},
+        \[
+            \delta_{QP}(a,(x,y))
+            =
+            \bigl(
+            \delta_P(a,x),
+            \delta_Q(\omega_P(a,x),y)
+            \bigr).
+        \]
+
+        \item \textbf{Substitute the premises.}
+        Since
+        \[
+            x'=\delta_P(a,x),
+            \qquad
+            \beta=\omega_P(a,x),
+        \]
+        and
+        \[
+            y'=\delta_Q(\beta,y),
+        \]
+        we obtain
+        \[
+            \delta_{QP}(a,(x,y))=(x',y').
+        \]
+
+        \item \textbf{Use the composite output formula.}
+        Again by Proposition~\ref{prop:pipeline-composition-mealy},
+        \[
+            \omega_{QP}(a,(x,y))
+            =
+            \omega_Q(\omega_P(a,x),y).
+        \]
+        Since
+        \[
+            \beta=\omega_P(a,x),
+            \qquad
+            \gamma=\omega_Q(\beta,y),
+        \]
+        the composite output is \(\gamma\).
+
+        \item \textbf{Conclude soundness.}
+        The conclusion is exactly the one-step execution judgement for
+        \(Q\circ P\).
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Simulation execution rule]
+\label{def:simulation-execution-rule}
+    Let
+    \[
+        (\theta,\alpha):P\Rightarrow Q
+    \]
+    be a Mealy simulation, so
+    \[
+        \theta:Q\to P,
+        \qquad
+        \alpha_y:q_P(\theta y)\to q_Q(y).
+    \]
+    If
+    \[
+        \Gamma\vdash
+        y\xrightarrow{\;a/\beta_Q\;}_{Q}y',
+    \]
+    then the simulation execution rule derives an execution
+    \[
+        \Gamma\vdash
+        \theta y\xrightarrow{\;a/\beta_P\;}_{P}\theta y'
+    \]
+    together with the output comparison equation
+    \[
+        \alpha_y\circ \beta_P
+        =
+        \beta_Q\circ\alpha_{y'}.
+    \]
+    This is the square
+    \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            q_P(\theta y')
+                \arrow[r, "\beta_P"]
+                \arrow[d, "\alpha_{y'}"']
+            &
+            q_P(\theta y)
+                \arrow[d, "\alpha_y"]
+            \\
+            q_Q(y')
+                \arrow[r, "\beta_Q"']
+            &
+            q_Q(y).
+        \end{tikzcd}
+    \]
+\end{definition}
+
+\begin{proposition}[Soundness of simulation execution]
+\label{prop:soundness-simulation-execution}
+    The simulation execution rule is sound.
+\end{proposition}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use the transition part of the simulation law.}
+        The transition law gives
+        \[
+            \theta(\delta_Q(a,y))
+            =
+            \delta_P(a,\theta y).
+        \]
+        Since
+        \[
+            y'=\delta_Q(a,y),
+        \]
+        this says
+        \[
+            \theta y'=\delta_P(a,\theta y).
+        \]
+
+        \item \textbf{Identify the simulated output.}
+        Put
+        \[
+            \beta_P:=\omega_P(a,\theta y).
+        \]
+        Then
+        \[
+            \Gamma\vdash
+            \theta y\xrightarrow{\;a/\beta_P\;}_{P}\theta y'.
+        \]
+
+        \item \textbf{Use the output part of the simulation law.}
+        The output law gives
+        \[
+            \alpha_y\circ \omega_P(a,\theta y)
+            =
+            \omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}.
+        \]
+        Since
+        \[
+            \beta_Q=\omega_Q(a,y),
+            \qquad
+            y'=\delta_Q(a,y),
+        \]
+        this becomes
+        \[
+            \alpha_y\circ\beta_P
+            =
+            \beta_Q\circ\alpha_{y'}.
+        \]
+    \end{enumerate}
+\end{proof}
+
+\begin{theorem}[Soundness of the operational calculus]
+\label{thm:soundness-operational-calculus}
+    Let
+    \[
+        (P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+    \]
+    be a Mealy morphism. Each displayed judgement form is interpreted by a
+    morphism in \(\mathcal E\) with the stated typing equations. Each displayed
+    execution rule is sound under this interpretation. The identity,
+    sequential, pipeline, and simulation rules are sound respectively by the
+    Mealy unit law, the Mealy multiplication law, the pipeline-composition
+    formula, and the Mealy simulation law.
+\end{theorem}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Interpret the basic judgements.}
+        The basic judgement forms are interpreted by
+        Definition~\ref{def:mealy-operational-judgements}.
+
+        \item \textbf{Interpret one-step execution.}
+        One-step execution is well typed by
+        Proposition~\ref{prop:typing-one-step-execution}.
+
+        \item \textbf{Interpret the identity rule.}
+        The identity rule is sound by
+        Proposition~\ref{prop:soundness-identity-execution}.
+
+        \item \textbf{Interpret the sequential rule.}
+        The sequential rule is sound by
+        Proposition~\ref{prop:soundness-sequential-execution}.
+
+        \item \textbf{Interpret the pipeline rule.}
+        The pipeline rule is sound by
+        Proposition~\ref{prop:soundness-pipeline-execution}.
+
+        \item \textbf{Interpret the simulation rule.}
+        The simulation rule is sound by
+        Proposition~\ref{prop:soundness-simulation-execution}.
+
+        \item \textbf{Conclude.}
+        Therefore every displayed rule in the operational calculus is sound
+        under the given interpretation in \(\mathcal E\).
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}[Conservativity]
+\label{rem:operational-calculus-conservativity}
+    Conversely, the one-step execution rule recovers the maps
+    \[
+        \delta:A_1\times_{A_0}P\to P,
+        \qquad
+        \omega:A_1\times_{A_0}P\to B_1.
+    \]
+    Thus the operational calculus is a judgemental presentation of the
+    component definition of a Mealy morphism, not an additional structure.
+\end{remark}
+

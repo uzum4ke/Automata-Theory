@@ -1,0 +1,2905 @@
+\chapter{\texorpdfstring{Derived Mealy Morphisms and Homotopical $1$--Cocycles}{Derived Mealy Morphisms and Homotopical 1-Cocycles}}
+\label{ch:derived-mealy-morphisms}
+
+\section{Orientation: from strict machines to derived executions}
+\label{sec:derived-mealy-orientation}
+
+In the previous chapter, Mealy morphisms were introduced as monad
+morphisms in the bicategory of spans. Equivalently, a strict Mealy
+morphism
+\[
+(P,\delta,\omega):\mathbb A\rightsquigarrow \mathbb B
+\]
+is a typed stateful transducer. Its states form a span
+\[
+A_0 \xleftarrow{p} P \xrightarrow{q} B_0,
+\]
+an input arrow
+\[
+a:u\to v
+\]
+of \(\mathbb A\) is admissible at a state \(x\in P\) precisely when
+\[
+p(x)=v,
+\]
+and the machine produces
+\[
+x
+\xrightarrow{\;a/\omega(a,x)\;}
+\delta(a,x),
+\]
+where
+\[
+p(\delta(a,x))=u,
+\qquad
+\omega(a,x):q(\delta(a,x))\to q(x)
+\]
+is an arrow of \(\mathbb B\).
+
+Thus the input is processed contravariantly: arrows of \(\mathbb A\) are
+lifted target-to-source along the state projection \(p:P\to A_0\). The
+output component \(\omega\) is then a nonabelian categorical cocycle
+recording how output interfaces change along these lifted executions.
+
+The purpose of this chapter is to pass from strict span-theoretic
+representatives to a homotopy-invariant calculus of derived
+correspondences. The guiding principle is:
+
+\begin{quote}
+A derived Mealy morphism is not merely a strict Mealy machine modulo
+weak equivalence. It is a homotopy-coherent transducer: its rigid state
+object is replaced by a derived execution object, and its strict output
+law is replaced by a derived nonabelian output \(1\)-cocycle.
+\end{quote}
+
+The strict picture
+\[
+A_0 \xleftarrow{p} P \xrightarrow{q} B_0
+\]
+will be replaced by a derived correspondence
+\[
+\mathbb A
+\longleftarrow
+\mathbb X
+\longrightarrow
+\mathbb B
+\]
+inside the localized homotopy theory of internal categories. The object
+\(\mathbb X\) should be read as a derived execution object: it may encode
+states, runs, refinements of runs, equivalences between runs, and higher
+coherences.
+
+\[
+\begin{tikzcd}[column sep=large]
+&
+\mathbb X
+\arrow[dl, "\pi"']
+\arrow[dr, "\Omega"]
+&
+\\
+\mathbb A
+&
+&
+\mathbb B
+\end{tikzcd}
+\]
+
+The map
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+records the input semantics of executions, and the map
+\[
+\Omega:\mathbb X\to\mathbb B
+\]
+records the observed output behavior. The main result of the chapter is
+that, after fixing \(\pi\), the remaining output datum is exactly a point
+of the derived mapping space
+\[
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B).
+\]
+This point is what we call a derived \(\mathbb B\)-valued output
+\(1\)-cocycle on \(\mathbb X\).
+
+\section{Joyal--Tierney homotopy theory}
+\label{sec:derived-mealy-jt-homotopy-theory}
+
+Throughout this chapter, let
+\[
+\mathcal E
+\]
+be a Grothendieck topos. Then \(\mathcal E\) has finite limits, so the
+bicategory
+\[
+\mathbf{Span}(\mathcal E)
+\]
+and the strict Mealy calculus of the previous chapter are still
+available.
+
+The additional structure used in this chapter is the Joyal--Tierney
+homotopy theory of internal categories in \(\mathcal E\).
+
+\begin{theorem}[Joyal--Tierney]
+\label{thm:joyal-tierney-model-structure-derived}
+Let \(\mathcal E\) be a Grothendieck topos. The category
+\[
+\mathbf{Cat}(\mathcal E)
+\]
+of internal categories in \(\mathcal E\) admits the Joyal--Tierney model
+structure. Its weak equivalences are the Joyal--Tierney equivalences, its
+cofibrations are the internal functors which are monomorphisms on
+objects, and its fibrant objects are the strong stacks.
+\end{theorem}
+
+\begin{proof}
+This is the Joyal--Tierney model structure on internal categories in a
+topos \cite{JoyalTierneyStrongStacks}. We use it as an external
+homotopical input throughout this chapter.
+\end{proof}
+
+Here a Joyal--Tierney weak equivalence is an internal categorical
+equivalence in the sense of Joyal--Tierney: internally fully faithful and
+internally essentially surjective, with essential surjectivity interpreted
+in the internal-topos sense used in the Joyal--Tierney model structure.
+
+\begin{definition}
+\label{def:jt-model-category-notation-derived}
+We write
+\[
+\mathcal M
+:=
+\mathbf{Cat}(\mathcal E)_{JT}
+\]
+for the Joyal--Tierney model category of internal categories in
+\(\mathcal E\). We write
+\[
+W_{JT}
+\]
+for its weak equivalences.
+
+The Dwyer--Kan localization of the relative category
+\[
+(\mathcal M,W_{JT})
+\]
+is denoted
+\[
+\mathcal C
+:=
+\mathcal M_\infty
+:=
+L_{DK}(\mathcal M,W_{JT}).
+\]
+For internal categories \(\mathbb X,\mathbb B\), we write
+\[
+\mathbf R\!\operatorname{Map}_{JT}(\mathbb X,\mathbb B)
+\]
+for the corresponding derived mapping space:
+\[
+\mathbf R\!\operatorname{Map}_{JT}(\mathbb X,\mathbb B)
+:=
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B).
+\]
+\end{definition}
+
+\paragraph{Foundational convention.}
+All derived constructions in this chapter are made in the
+\(\infty\)-category
+\[
+\mathcal C=\mathcal M_\infty.
+\]
+Thus products, pullbacks, slices, mapping spaces, and homotopy fibers are
+taken in \(\mathcal C\), unless explicitly stated otherwise.
+
+When a product such as
+\[
+\mathbb A\times\mathbb B
+\]
+is written inside \(\mathcal C\), it denotes the product in the
+\(\infty\)-category \(\mathcal C\). Point-set products in
+\(\mathcal M\) may be used as representatives only insofar as they
+present the corresponding derived products in \(\mathcal C\).
+
+Similarly, a point-set diagram
+\[
+\mathbb A
+\xleftarrow{\pi}
+\mathbb X
+\xrightarrow{\Omega}
+\mathbb B
+\]
+determines a derived correspondence by the induced map
+\[
+(\pi,\Omega):\mathbb X\to \mathbb A\times\mathbb B
+\]
+in \(\mathcal C\). Conversely, a derived correspondence is an object of
+the slice \(\infty\)-category
+\[
+\mathcal C/(\mathbb A\times\mathbb B).
+\]
+
+Point-set internal categories and internal functors are therefore used as
+representatives of objects and morphisms in the localized homotopy
+theory, not as the primary invariant objects.
+
+\begin{remark}
+\label{rem:dk-not-only-homotopy-category-derived}
+The Dwyer--Kan localization is used because we need full derived mapping
+spaces, not only the ordinary homotopy category obtained by formally
+inverting \(W_{JT}\). Thus all moduli statements below are statements in
+the localized homotopy theory, equivalently in the associated
+\(\infty\)-category.
+\end{remark}
+
+\paragraph{Point-set pullback convention.}
+Composition of derived Mealy morphisms is always defined by pullback in
+\[
+\mathcal C.
+\]
+Whenever an ordinary point-set pullback in \(\mathcal M\) is asserted to
+present such a derived pullback, this is to be read under one of the
+following equivalent safeguards:
+
+\begin{enumerate}
+\item the cospan has already been replaced by a point-set representative
+which computes the corresponding homotopy pullback;
+\item the relevant model-categorical hypotheses, such as a right-proper
+pullback computation along the displayed fibration, are available;
+\item the assertion is made only after applying an explicit fibrant
+diagram replacement of the cospan.
+\end{enumerate}
+
+This convention is used below only for point-set representatives. It is
+not part of the definition of derived Mealy composition, which is
+intrinsically the pullback in \(\mathcal C\).
+
+\section{Slices and point-set fibrational representatives}
+\label{sec:slices-point-set-fibrational-representatives}
+
+For an object
+\[
+\mathbb A\in\mathcal C,
+\]
+let
+\[
+\mathcal C/\mathbb A
+\]
+denote the \(\infty\)-categorical slice. Its objects are derived maps
+\[
+\mathbb X\to\mathbb A.
+\]
+
+On the point-set side, for an internal category
+\[
+\mathbb A\in\mathcal M,
+\]
+the ordinary slice category
+\[
+\mathcal M/\mathbb A
+\]
+has objects internal functors
+\[
+\mathbb X\to\mathbb A.
+\]
+A morphism in the slice is declared to be a weak equivalence when its
+underlying morphism in \(\mathcal M\) is a Joyal--Tierney weak
+equivalence.
+
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb X
+\arrow[rr, "\sim"]
+\arrow[dr, "\pi"']
+&
+&
+\mathbb X^{fib}
+\arrow[dl, "\pi^{fib}"]
+\\
+&
+\mathbb A
+&
+\end{tikzcd}
+\]
+
+\begin{proposition}[Point-set fibrations present the derived slice]
+\label{prop:jt-fibrations-present-derived-slice}
+Let
+\[
+\mathbb A\in\mathcal M.
+\]
+Let
+\[
+\mathbf{Fib}_{JT}(\mathbb A)
+\subseteq
+\mathcal M/\mathbb A
+\]
+be the full subcategory spanned by the Joyal--Tierney fibrations
+\[
+\pi:\mathbb X\to\mathbb A.
+\]
+Equip \(\mathbf{Fib}_{JT}(\mathbb A)\) with the weak equivalences created
+in \(\mathcal M\). Then the inclusion
+\[
+\mathbf{Fib}_{JT}(\mathbb A)
+\hookrightarrow
+\mathcal M/\mathbb A
+\]
+induces an equivalence on Dwyer--Kan localizations:
+\[
+L_{DK}\bigl(\mathbf{Fib}_{JT}(\mathbb A),W_{JT}\bigr)
+\simeq
+\mathcal C/\mathbb A.
+\]
+\end{proposition}
+
+\begin{proof}
+The slice category
+\[
+\mathcal M/\mathbb A
+\]
+carries the usual slice model structure, with weak equivalences and
+fibrations created in \(\mathcal M\). Its fibrant objects are precisely
+the maps
+\[
+\mathbb X\to\mathbb A
+\]
+which are Joyal--Tierney fibrations.
+
+Every object of \(\mathcal M/\mathbb A\) admits a fibrant replacement in
+the slice: factor its structure map as a weak equivalence followed by a
+Joyal--Tierney fibration,
+\[
+\mathbb X
+\xrightarrow{\sim}
+\mathbb X^{fib}
+\longrightarrow
+\mathbb A.
+\]
+Thus the full relative subcategory of fibrant objects is homotopically
+essentially surjective in the slice. By the standard comparison between
+a model category and its full relative subcategory of fibrant objects,
+the inclusion induces an equivalence on Dwyer--Kan localizations:
+\[
+L_{DK}\bigl(\mathbf{Fib}_{JT}(\mathbb A),W_{JT}\bigr)
+\simeq
+L_{DK}(\mathcal M/\mathbb A)
+\simeq
+\mathcal C/\mathbb A.
+\]
+\end{proof}
+
+\begin{definition}[Point-set fibrational representative]
+\label{def:point-set-fibrational-representative}
+Let
+\[
+\mathbb A,\mathbb B\in\mathcal M.
+\]
+A \textbf{Joyal--Tierney fibrational representative} from
+\(\mathbb A\) to \(\mathbb B\) is a point-set span of internal categories
+\[
+\mathbb A
+\xleftarrow{\pi}
+\mathbb X
+\xrightarrow{\Omega}
+\mathbb B
+\]
+such that
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+is a Joyal--Tierney fibration.
+
+It represents the derived correspondence determined by the map
+\[
+(\pi,\Omega):\mathbb X\to\mathbb A\times\mathbb B
+\]
+in \(\mathcal C\).
+\end{definition}
+
+\[
+\begin{tikzcd}[column sep=large]
+&
+\mathbb X
+\arrow[dl, "\pi"', two heads]
+\arrow[dr, "\Omega"]
+\arrow[d, "{(\pi,\Omega)}" description]
+&
+\\
+\mathbb A
+&
+\mathbb A\times\mathbb B
+\arrow[l, "\operatorname{pr}_{\mathbb A}"]
+\arrow[r, "\operatorname{pr}_{\mathbb B}"']
+&
+\mathbb B
+\end{tikzcd}
+\]
+
+\begin{remark}
+\label{rem:fibrational-representatives-not-primary}
+Fibrational representatives are useful point-set representatives, but
+they are not the primary definition of a derived Mealy morphism. The
+primary definition is made in the localized homotopy theory
+\[
+\mathcal C.
+\]
+We do not claim here that every object of
+\[
+\mathcal C/(\mathbb A\times\mathbb B)
+\]
+admits such a representative without further point-set replacement
+choices. The definition singles out those representatives whose input
+leg is already fibrational.
+\end{remark}
+
+We shall use the following compatibility between the Joyal--Tierney
+fibration notion and internal discrete fibrations.
+
+\begin{proposition}[Discrete fibrations are Joyal--Tierney fibrations]
+\label{prop:split-discrete-fibrations-are-jt-fibrations-rewritten}
+Every internal discrete fibration of internal categories in
+\(\mathcal E\) is a fibration in the Joyal--Tierney model structure.
+Consequently, every split internal discrete fibration is a
+Joyal--Tierney fibration.
+\end{proposition}
+
+\begin{proof}
+For internal groupoids, Joyal--Tierney prove that discrete fibrations
+have the unique right lifting property with respect to cofibration weak
+equivalences. Applying the corresponding internal-category form, or
+equivalently applying the groupoid-of-isomorphisms test used in the
+Joyal--Tierney fibration criterion, shows that an internal discrete
+fibration of internal categories is a Joyal--Tierney fibration. The split
+case is immediate.
+\end{proof}
+
+\begin{lemma}[Point-set pullbacks along fibrational representatives]
+\label{lem:point-set-pullback-along-fibration-derived}
+Let
+\[
+\mathbb X\to\mathbb B
+\qquad\text{and}\qquad
+\mathbb Y\to\mathbb B
+\]
+be a cospan in \(\mathcal M\). Suppose that the displayed point-set
+cospan is homotopy-pullback-ready in the sense of the point-set pullback
+convention above; for example, suppose that the leg
+\[
+\mathbb Y\to\mathbb B
+\]
+is a Joyal--Tierney fibration and the relevant right-proper or fibrant
+diagram replacement hypothesis is available. Then the ordinary pullback
+\[
+\mathbb X\times_{\mathbb B}\mathbb Y
+\]
+is a point-set representative of the corresponding pullback in
+\[
+\mathcal C.
+\]
+\end{lemma}
+
+\begin{proof}
+This is the standard model-categorical computation of homotopy
+pullbacks, applied only after the cospan has been arranged to be a
+point-set representative of its derived cospan for which the ordinary
+pullback computes the derived pullback. Without such a point-set
+hypothesis, the definition of the pullback used in this chapter is the
+pullback in
+\[
+\mathcal C.
+\]
+\end{proof}
+
+\section{Derived Mealy morphisms}
+\label{sec:derived-mealy-morphisms-definition}
+
+Let
+\[
+\mathbb A,\mathbb B\in\mathcal C.
+\]
+The derived Mealy calculus from \(\mathbb A\) to \(\mathbb B\) is the
+homotopy theory of correspondences
+\[
+\mathbb A
+\longleftarrow
+\mathbb X
+\longrightarrow
+\mathbb B
+\]
+inside \(\mathcal C\).
+
+\begin{definition}[Derived Mealy moduli theory]
+\label{def:derived-mealy-moduli-theory-rewritten}
+The \textbf{derived Mealy moduli theory} from \(\mathbb A\) to
+\(\mathbb B\) is the slice \(\infty\)-category
+\[
+\mathsf{Mealy}^h(\mathbb A,\mathbb B)
+:=
+\mathcal C/(\mathbb A\times\mathbb B).
+\]
+
+An object of
+\[
+\mathsf{Mealy}^h(\mathbb A,\mathbb B)
+\]
+is called a \textbf{derived Mealy morphism}
+\[
+\mathbb A\rightsquigarrow^h\mathbb B.
+\]
+\end{definition}
+
+Thus a derived Mealy morphism is represented by a map
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\]
+in \(\mathcal C\). By the product universal property, such a map is
+equivalently a pair
+\[
+\pi:\mathbb X\to\mathbb A,
+\qquad
+\Omega:\mathbb X\to\mathbb B
+\]
+in \(\mathcal C\). We call
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+the \textbf{derived input map} and
+\[
+\Omega:\mathbb X\to\mathbb B
+\]
+the \textbf{derived output map}.
+
+\[
+\begin{tikzcd}[column sep=large]
+&
+\mathbb X
+\arrow[dl, "\pi"']
+\arrow[dr, "\Omega"]
+\arrow[d, "\chi" description]
+&
+\\
+\mathbb A
+&
+\mathbb A\times\mathbb B
+\arrow[l, "\operatorname{pr}_{\mathbb A}"]
+\arrow[r, "\operatorname{pr}_{\mathbb B}"']
+&
+\mathbb B
+\end{tikzcd}
+\]
+
+\begin{remark}[Operational reading]
+\label{rem:derived-morphism-operational-reading}
+The object \(\mathbb X\) is the derived execution object. The map
+\(\pi\) says which input process an execution realizes. The map
+\(\Omega\) says which output process is observed along that execution.
+Unlike the strict state object \(P\), the object \(\mathbb X\) may have
+nontrivial higher homotopy: possible executions may themselves have
+equivalences and higher coherences.
+\end{remark}
+
+\begin{remark}
+\label{rem:derived-morphism-moduli-theoretic-rewritten}
+The word ``morphism'' is used moduli-theoretically:
+\[
+\mathsf{Mealy}^h(\mathbb A,\mathbb B)
+\]
+is the \(\infty\)-category of derived arrows from \(\mathbb A\) to
+\(\mathbb B\). Composition is defined by pullback in
+\(\mathcal C\), as described in
+Section~\ref{sec:composition-derived-mealy-rewritten}.
+Equivalently, the assignment
+\[
+(\mathbb A,\mathbb B)
+\longmapsto
+\mathcal C/(\mathbb A\times\mathbb B)
+\]
+is the hom-\(\infty\)-category of the correspondence
+\((\infty,2)\)-category
+\[
+\operatorname{Corr}(\mathcal C),
+\]
+whose composition is given by pullback.
+\end{remark}
+
+The following elementary identification will be used repeatedly.
+
+\begin{proposition}[Correspondences as a slice over the input projection]
+\label{prop:mealy-as-iterated-slice}
+There is a canonical equivalence of \(\infty\)-categories
+\[
+\mathcal C/(\mathbb A\times\mathbb B)
+\simeq
+(\mathcal C/\mathbb A)_{/\operatorname{pr}_{\mathbb A}},
+\]
+where
+\[
+\operatorname{pr}_{\mathbb A}:
+\mathbb A\times\mathbb B\to\mathbb A
+\]
+is the product projection in \(\mathcal C\).
+\end{proposition}
+
+\begin{proof}
+An object of
+\[
+\mathcal C/(\mathbb A\times\mathbb B)
+\]
+is a map
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B.
+\]
+Composing with the product projections gives maps
+\[
+\pi:\mathbb X\to\mathbb A,
+\qquad
+\Omega:\mathbb X\to\mathbb B.
+\]
+Equivalently, \(\chi\) is a map over \(\mathbb A\)
+\[
+\pi:\mathbb X\to\mathbb A
+\longrightarrow
+\operatorname{pr}_{\mathbb A}:\mathbb A\times\mathbb B\to\mathbb A.
+\]
+
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb X
+\arrow[rr, "\chi"]
+\arrow[dr, "\pi"']
+&
+&
+\mathbb A\times\mathbb B
+\arrow[dl, "\operatorname{pr}_{\mathbb A}"]
+\\
+&
+\mathbb A
+&
+\end{tikzcd}
+\]
+
+Thus \(\chi\) is precisely an object of the iterated slice
+\[
+(\mathcal C/\mathbb A)_{/\operatorname{pr}_{\mathbb A}}.
+\]
+The same argument applies to mapping spaces: a morphism between two maps
+to \(\mathbb A\times\mathbb B\) is exactly a morphism between the
+corresponding objects over \(\mathbb A\), compatible with the displayed
+maps to \(\operatorname{pr}_{\mathbb A}\). Hence the correspondence
+defines an equivalence of \(\infty\)-categories.
+\end{proof}
+
+\section{The input projection and its fibers}
+\label{sec:input-projection-and-fiber-theorem-derived}
+
+The input projection forgets the output coordinate of a derived Mealy
+morphism.
+
+\begin{definition}[Input projection]
+\label{def:input-projection-derived-rewritten}
+The \textbf{input projection} is the functor
+\[
+\Pi_{\mathbb A,\mathbb B}:
+\mathsf{Mealy}^h(\mathbb A,\mathbb B)
+=
+\mathcal C/(\mathbb A\times\mathbb B)
+\longrightarrow
+\mathcal C/\mathbb A
+\]
+defined by postcomposition with
+\[
+\operatorname{pr}_{\mathbb A}:
+\mathbb A\times\mathbb B\to\mathbb A.
+\]
+Thus a derived correspondence
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\]
+is sent to its input map
+\[
+\pi:=\operatorname{pr}_{\mathbb A}\chi:\mathbb X\to\mathbb A.
+\]
+\end{definition}
+
+\[
+\begin{tikzcd}[column sep=large]
+\mathcal C/(\mathbb A\times\mathbb B)
+\arrow[r, "\Pi_{\mathbb A,\mathbb B}"]
+\arrow[d, "\simeq"']
+&
+\mathcal C/\mathbb A
+\\
+(\mathcal C/\mathbb A)_{/\operatorname{pr}_{\mathbb A}}
+\arrow[ur, "\mathrm{forget}"']
+&
+\end{tikzcd}
+\]
+
+Under the equivalence of Proposition~\ref{prop:mealy-as-iterated-slice},
+this is simply the forgetful functor
+\[
+(\mathcal C/\mathbb A)_{/\operatorname{pr}_{\mathbb A}}
+\longrightarrow
+\mathcal C/\mathbb A.
+\]
+
+\begin{remark}[Automata interpretation of the input projection]
+\label{rem:input-projection-automata-interpretation}
+The input projection forgets the observation law and remembers only the
+execution semantics over the input process. Thus
+\[
+\Pi_{\mathbb A,\mathbb B}
+\]
+forgets
+\[
+\Omega:\mathbb X\to\mathbb B
+\]
+and retains
+\[
+\pi:\mathbb X\to\mathbb A.
+\]
+Operationally, it asks: what is the space, stack, or internal category
+of possible executions over the input system, before assigning any
+output behavior?
+\end{remark}
+
+We now compute the homotopy fiber of
+\[
+\Pi_{\mathbb A,\mathbb B}
+\]
+over a fixed input map
+\[
+\pi:\mathbb X\to\mathbb A.
+\]
+
+\begin{lemma}[Fiber of a slice projection]
+\label{lem:fiber-of-slice-projection}
+Let
+\[
+\mathcal D
+\]
+be an \(\infty\)-category, and let
+\[
+z\in\mathcal D.
+\]
+Consider the forgetful functor
+\[
+\mathcal D_{/z}\to\mathcal D.
+\]
+For any object
+\[
+d\in\mathcal D,
+\]
+the homotopy fiber over \(d\), regarded as an \(\infty\)-groupoid, is
+naturally equivalent to the mapping space
+\[
+\operatorname{Map}_{\mathcal D}(d,z).
+\]
+\end{lemma}
+
+\begin{proof}
+The functor
+\[
+\mathcal D_{/z}\to\mathcal D
+\]
+is the right fibration classified by the presheaf
+\[
+d\longmapsto \operatorname{Map}_{\mathcal D}(d,z).
+\]
+Therefore its fiber over an object \(d\) is the value of this presheaf at
+\(d\), namely
+\[
+\operatorname{Map}_{\mathcal D}(d,z).
+\]
+Equivalently, an object of the fiber over \(d\) is precisely a morphism
+\[
+d\to z,
+\]
+and higher morphisms in the fiber are exactly the higher paths between
+such morphisms.
+\end{proof}
+
+\begin{theorem}[Fiber theorem, slice form]
+\label{thm:fiber-theorem-slice-form-rewritten}
+Let
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+be an object of the slice \(\infty\)-category
+\[
+\mathcal C/\mathbb A.
+\]
+Then there is a natural equivalence
+\[
+\operatorname{hofib}_{\pi}
+\left(
+\Pi_{\mathbb A,\mathbb B}
+\right)
+\simeq
+\operatorname{Map}_{\mathcal C/\mathbb A}
+\left(
+\pi:\mathbb X\to\mathbb A,\,
+\operatorname{pr}_{\mathbb A}:\mathbb A\times\mathbb B\to\mathbb A
+\right).
+\]
+\end{theorem}
+
+\begin{proof}
+By Proposition~\ref{prop:mealy-as-iterated-slice},
+\[
+\mathsf{Mealy}^h(\mathbb A,\mathbb B)
+\simeq
+(\mathcal C/\mathbb A)_{/\operatorname{pr}_{\mathbb A}}.
+\]
+Under this equivalence, the input projection
+\[
+\Pi_{\mathbb A,\mathbb B}
+\]
+is the forgetful functor
+\[
+(\mathcal C/\mathbb A)_{/\operatorname{pr}_{\mathbb A}}
+\longrightarrow
+\mathcal C/\mathbb A.
+\]
+Applying Lemma~\ref{lem:fiber-of-slice-projection} with
+\[
+\mathcal D=\mathcal C/\mathbb A
+\]
+and
+\[
+z=\operatorname{pr}_{\mathbb A}:\mathbb A\times\mathbb B\to\mathbb A
+\]
+gives the result.
+\end{proof}
+
+The slice statement immediately gives the absolute mapping-space form.
+
+\begin{corollary}[Fiber theorem, absolute form]
+\label{cor:fiber-theorem-absolute-form-rewritten}
+For every input map
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+in \(\mathcal C\), there is a natural equivalence
+\[
+\operatorname{hofib}_{\pi}
+\left(
+\Pi_{\mathbb A,\mathbb B}
+\right)
+\simeq
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B)
+=
+\mathbf R\!\operatorname{Map}_{JT}(\mathbb X,\mathbb B).
+\]
+\end{corollary}
+
+\begin{proof}
+By Theorem~\ref{thm:fiber-theorem-slice-form-rewritten}, the homotopy
+fiber is
+\[
+\operatorname{Map}_{\mathcal C/\mathbb A}
+\left(
+\pi,\operatorname{pr}_{\mathbb A}
+\right).
+\]
+A map over \(\mathbb A\)
+\[
+\mathbb X\to\mathbb A\times\mathbb B
+\]
+from
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+to
+\[
+\operatorname{pr}_{\mathbb A}:\mathbb A\times\mathbb B\to\mathbb A
+\]
+is equivalently a map
+\[
+\mathbb X\to\mathbb B
+\]
+in \(\mathcal C\), since the component to \(\mathbb A\) is already fixed
+to be \(\pi\).
+
+Equivalently, using the product universal property in \(\mathcal C\),
+\[
+\operatorname{Map}_{\mathcal C}
+(\mathbb X,\mathbb A\times\mathbb B)
+\simeq
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb A)
+\times
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B),
+\]
+and the slice mapping space is the homotopy fiber over the point
+\[
+\pi\in\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb A)
+\]
+of the first projection. This homotopy fiber is
+\[
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B).
+\]
+\end{proof}
+
+\[
+\begin{tikzcd}[column sep=large]
+\operatorname{hofib}_{\pi}(\Pi_{\mathbb A,\mathbb B})
+\arrow[r, "\simeq"]
+&
+\operatorname{Map}_{\mathcal C/\mathbb A}
+\left(
+\mathbb X\to\mathbb A,\,
+\mathbb A\times\mathbb B\to\mathbb A
+\right)
+\arrow[r, "\simeq"]
+&
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B)
+\end{tikzcd}
+\]
+
+\begin{remark}[Operational meaning of the fiber theorem]
+\label{rem:fiber-theorem-meaning-rewritten}
+The fiber theorem says that once the input map
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+has been fixed, the remaining derived datum is precisely a derived
+output map
+\[
+\mathbb X\to\mathbb B.
+\]
+Operationally, fixing \(\pi\) fixes the execution semantics over the
+input system. The homotopy fiber of
+\[
+\Pi_{\mathbb A,\mathbb B}
+\]
+over \(\pi\) is then the space of possible output observation laws on
+that execution object. Its points are output laws, its paths are
+equivalences between output laws, and its higher paths are higher
+coherences between such equivalences.
+\end{remark}
+
+\section{\texorpdfstring{Derived output coordinates as $1$--cocycles}{Derived output coordinates as 1-cocycles}}
+\label{sec:derived-output-one-cocycles-rewritten}
+
+The fiber theorem identifies the output coordinate of a derived Mealy
+morphism with a point of a derived mapping space. This gives the
+homotopical notion of output \(1\)-cocycle.
+
+\begin{definition}[Derived output \(1\)-cocycle]
+\label{def:derived-output-one-cocycle-rewritten}
+Let
+\[
+\mathbb X,\mathbb B\in\mathcal C.
+\]
+A \textbf{\(\mathbb B\)-valued derived output \(1\)-cocycle on
+\(\mathbb X\)} is a point of the derived mapping space
+\[
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B)
+=
+\mathbf R\!\operatorname{Map}_{JT}(\mathbb X,\mathbb B).
+\]
+\end{definition}
+
+\begin{remark}[Terminology]
+\label{rem:one-cocycle-terminology}
+The term ``\(1\)-cocycle'' is used here in the nonabelian categorical
+sense. It is not meant to identify
+\[
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B)
+\]
+with a pre-existing abelian cochain complex. A strict map
+\[
+\mathbb X\to\mathbb B
+\]
+is specified by object-level and arrow-level data satisfying identity
+and composition equations. These are the categorical analogue of
+nonabelian \(1\)-cocycle equations. The derived version replaces the
+point-set solution space cut out by these strict equations with the
+homotopy-invariant derived mapping space
+\[
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B).
+\]
+Thus a derived output \(1\)-cocycle is a homotopy-coherent
+\(\mathbb B\)-valued output law.
+\end{remark}
+
+\begin{corollary}[Derived outputs are \(1\)-cocycles]
+\label{cor:derived-outputs-are-one-cocycles-rewritten}
+Let
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\]
+be a derived Mealy morphism. Write
+\[
+\pi:=\operatorname{pr}_{\mathbb A}\chi:\mathbb X\to\mathbb A
+\]
+and
+\[
+\Omega:=\operatorname{pr}_{\mathbb B}\chi:\mathbb X\to\mathbb B.
+\]
+Then the output coordinate
+\[
+\Omega:\mathbb X\to\mathbb B
+\]
+is a canonical \(\mathbb B\)-valued derived output \(1\)-cocycle on
+\(\mathbb X\).
+\end{corollary}
+
+\begin{proof}
+By definition, a derived output \(1\)-cocycle on \(\mathbb X\) is a point
+of
+\[
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B).
+\]
+The second projection of
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\]
+is precisely such a point:
+\[
+\Omega:\mathbb X\to\mathbb B.
+\]
+Equivalently, by Corollary~\ref{cor:fiber-theorem-absolute-form-rewritten},
+the homotopy fiber of the input projection over
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+is the derived mapping space
+\[
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B).
+\]
+Thus the remaining datum after fixing \(\pi\) is exactly a derived
+output \(1\)-cocycle.
+\end{proof}
+
+\begin{remark}[Point-set cocycle representatives]
+\label{rem:point-set-cocycle-representatives-rewritten}
+In a chosen point-set model for a derived mapping space, a point of
+\[
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B)
+\]
+may be represented by a diagram involving weak equivalences and
+replacement data. Such a presentation is not part of the definition of a
+derived output \(1\)-cocycle in this chapter. The definition is the point
+of the derived mapping space itself.
+\end{remark}
+
+\section{Strict cocycle defects}
+\label{sec:strict-cocycle-defects-rewritten}
+
+The derived mapping space
+\[
+\mathbf R\!\operatorname{Map}_{JT}(\mathbb X,\mathbb B)
+\]
+is the homotopy-correct replacement of the point-set solution space of
+strict internal functors
+\[
+\mathbb X\to\mathbb B.
+\]
+We now isolate the strict equations whose derived replacement is encoded
+by this mapping space.
+
+Let
+\[
+\mathbb X=(X_0,X_1,s_X,t_X,e_X,m_X)
+\]
+and
+\[
+\mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B)
+\]
+be point-set internal categories in \(\mathcal E\).
+
+\begin{definition}[Typed output \(1\)-cochain]
+\label{def:typed-output-one-cochain-rewritten}
+A \textbf{typed output \(1\)-cochain} from \(\mathbb X\) to \(\mathbb B\)
+consists of maps
+\[
+c_0:X_0\to B_0,
+\qquad
+c_1:X_1\to B_1
+\]
+such that
+\[
+s_Bc_1=c_0s_X,
+\qquad
+t_Bc_1=c_0t_X.
+\]
+Thus a typed output \(1\)-cochain is a morphism of the underlying
+internal directed graphs.
+\end{definition}
+
+The source-target conditions are the commutativity of
+\[
+\begin{tikzcd}
+X_1 \arrow[r, "c_1"] \arrow[d, "s_X"'] &
+B_1 \arrow[d, "s_B"]
+\\
+X_0 \arrow[r, "c_0"'] &
+B_0
+\end{tikzcd}
+\qquad
+\begin{tikzcd}
+X_1 \arrow[r, "c_1"] \arrow[d, "t_X"'] &
+B_1 \arrow[d, "t_B"]
+\\
+X_0 \arrow[r, "c_0"'] &
+B_0.
+\end{tikzcd}
+\]
+
+\begin{definition}[Unit defect]
+\label{def:unit-defect-rewritten}
+The \textbf{unit defect} of a typed output \(1\)-cochain
+\[
+(c_0,c_1):\mathbb X\to\mathbb B
+\]
+is the comparison between the two maps
+\[
+X_0\rightrightarrows B_1
+\]
+given by
+\[
+c_1e_X
+\qquad
+\text{and}
+\qquad
+e_Bc_0.
+\]
+The unit defect vanishes if
+\[
+c_1e_X=e_Bc_0.
+\]
+\end{definition}
+
+The unit-defect diagram is
+\[
+\begin{tikzcd}
+X_0
+\arrow[r, "e_X"]
+\arrow[d, "c_0"']
+&
+X_1
+\arrow[d, "c_1"]
+\\
+B_0
+\arrow[r, "e_B"']
+&
+B_1.
+\end{tikzcd}
+\]
+
+\begin{definition}[Composition defect]
+\label{def:composition-defect-rewritten}
+Let
+\[
+X_2:=X_1\times_{t_X,X_0,s_X}X_1
+\]
+be the object of composable pairs in \(\mathbb X\). The
+\textbf{composition defect} of a typed output \(1\)-cochain
+\[
+(c_0,c_1):\mathbb X\to\mathbb B
+\]
+is the comparison between the two maps
+\[
+X_2\rightrightarrows B_1
+\]
+given by
+\[
+c_1m_X
+\qquad
+\text{and}
+\qquad
+m_B(c_1\times c_1).
+\]
+Here
+\[
+c_1\times c_1:
+X_1\times_{t_X,X_0,s_X}X_1
+\longrightarrow
+B_1\times_{t_B,B_0,s_B}B_1
+\]
+is the induced map on pullbacks, which is well-defined by the
+source-target equations for \((c_0,c_1)\). The composition defect
+vanishes if
+\[
+c_1m_X=m_B(c_1\times c_1).
+\]
+\end{definition}
+
+The composition-defect diagram is
+\[
+\begin{tikzcd}[column sep=large]
+X_1\times_{X_0}X_1
+\arrow[r, "c_1\times c_1"]
+\arrow[d, "m_X"']
+&
+B_1\times_{B_0}B_1
+\arrow[d, "m_B"]
+\\
+X_1
+\arrow[r, "c_1"']
+&
+B_1.
+\end{tikzcd}
+\]
+
+\begin{proposition}[Strict cocycles as vanishing defects]
+\label{prop:strict-cocycles-as-vanishing-defects-rewritten}
+A typed output \(1\)-cochain
+\[
+(c_0,c_1):\mathbb X\to\mathbb B
+\]
+is the underlying cochain of an internal functor
+\[
+\mathbb X\to\mathbb B
+\]
+if and only if its unit defect and composition defect vanish.
+\end{proposition}
+
+\begin{proof}
+The source-target equations are already included in the definition of a
+typed output \(1\)-cochain. To be an internal functor, the pair
+\[
+(c_0,c_1)
+\]
+must additionally preserve identities and composition. These two
+conditions are exactly
+\[
+c_1e_X=e_Bc_0
+\]
+and
+\[
+c_1m_X=m_B(c_1\times c_1).
+\]
+Thus the typed \(1\)-cochain is an internal functor precisely when the
+unit and composition defects vanish.
+\end{proof}
+
+\begin{remark}[Derived correction of defects]
+\label{rem:derived-correction-defects-rewritten}
+The derived output \(1\)-cocycle space
+\[
+\mathbf R\!\operatorname{Map}_{JT}(\mathbb X,\mathbb B)
+\]
+may be regarded as the homotopy-invariant replacement of the point-set
+solution space cut out by the strict unit and composition equations. It
+records the output coordinate in the localized homotopy theory, rather
+than as a merely point-set functoriality condition.
+\end{remark}
+
+\section{Composition of derived Mealy morphisms}
+\label{sec:composition-derived-mealy-rewritten}
+
+Derived Mealy morphisms compose by pullback in the localized homotopy
+theory
+\[
+\mathcal C.
+\]
+
+Let
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\]
+and
+\[
+\psi:\mathbb Y\to\mathbb B\times\mathbb C
+\]
+be derived Mealy morphisms. Write their components as
+\[
+\pi:\mathbb X\to\mathbb A,
+\qquad
+\Omega:\mathbb X\to\mathbb B,
+\]
+and
+\[
+\rho:\mathbb Y\to\mathbb B,
+\qquad
+\Lambda:\mathbb Y\to\mathbb C.
+\]
+
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A
+&
+\mathbb X
+\arrow[l, "\pi"']
+\arrow[r, "\Omega"]
+&
+\mathbb B
+&
+\mathbb Y
+\arrow[l, "\rho"']
+\arrow[r, "\Lambda"]
+&
+\mathbb C.
+\end{tikzcd}
+\]
+
+\begin{definition}[Composite derived Mealy morphism]
+\label{def:composite-derived-mealy-rewritten}
+The composite
+\[
+\psi\circ\chi:\mathbb A\rightsquigarrow^h\mathbb C
+\]
+is the derived correspondence represented by the pullback in
+\(\mathcal C\)
+\[
+\mathbb X\times_{\mathbb B}\mathbb Y
+\]
+of
+\[
+\Omega:\mathbb X\to\mathbb B
+\qquad
+\text{and}
+\qquad
+\rho:\mathbb Y\to\mathbb B.
+\]
+Its structure maps are
+\[
+\mathbb X\times_{\mathbb B}\mathbb Y
+\longrightarrow
+\mathbb A
+\]
+given by
+\[
+\pi\operatorname{pr}_{\mathbb X}
+\]
+and
+\[
+\mathbb X\times_{\mathbb B}\mathbb Y
+\longrightarrow
+\mathbb C
+\]
+given by
+\[
+\Lambda\operatorname{pr}_{\mathbb Y}.
+\]
+Equivalently, the composite is the map
+\[
+\mathbb X\times_{\mathbb B}\mathbb Y
+\longrightarrow
+\mathbb A\times\mathbb C
+\]
+classified by these two components.
+\end{definition}
+
+Diagrammatically:
+\[
+\begin{tikzcd}[column sep=large, row sep=large]
+\mathbb X\times_{\mathbb B}\mathbb Y
+\arrow[r, "\operatorname{pr}_{\mathbb Y}"]
+\arrow[d, "\operatorname{pr}_{\mathbb X}"']
+&
+\mathbb Y
+\arrow[d, "\rho"]
+\\
+\mathbb X
+\arrow[r, "\Omega"']
+&
+\mathbb B
+\end{tikzcd}
+\qquad
+\begin{tikzcd}[column sep=large, row sep=large]
+&
+\mathbb X\times_{\mathbb B}\mathbb Y
+\arrow[dl, "\pi\operatorname{pr}_{\mathbb X}"']
+\arrow[dr, "\Lambda\operatorname{pr}_{\mathbb Y}"]
+\arrow[d, dashed, "{(\pi\operatorname{pr}_{\mathbb X},\,\Lambda\operatorname{pr}_{\mathbb Y})}" description]
+&
+\\
+\mathbb A
+&
+\mathbb A\times\mathbb C
+\arrow[l, "\operatorname{pr}_{\mathbb A}"]
+\arrow[r, "\operatorname{pr}_{\mathbb C}"']
+&
+\mathbb C
+\end{tikzcd}
+\]
+
+\begin{proposition}
+\label{prop:composition-derived-mealy-rewritten}
+Derived Mealy morphisms compose up to the canonical coherent
+equivalences for pullbacks in the \(\infty\)-category
+\[
+\mathcal C.
+\]
+The construction is invariant under equivalence of representatives.
+\end{proposition}
+
+\begin{proof}
+The composite is defined by a pullback in \(\mathcal C\). Pullbacks in an
+\(\infty\)-category are invariant under equivalence of diagrams and are
+unique up to a contractible space of choices. Therefore replacing either
+derived correspondence by an equivalent representative yields an
+equivalent pullback object.
+
+Associativity of composition follows from the canonical equivalence
+between iterated pullbacks:
+\[
+(\mathbb X\times_{\mathbb B}\mathbb Y)\times_{\mathbb C}\mathbb Z
+\simeq
+\mathbb X\times_{\mathbb B}
+(\mathbb Y\times_{\mathbb C}\mathbb Z).
+\]
+The coherence data are the standard coherences for finite limits in an
+\(\infty\)-category.
+\end{proof}
+
+\begin{remark}[Pipeline interpretation]
+\label{rem:derived-pipeline-interpretation-rewritten}
+Composition is the derived analogue of pipeline composition. The first
+derived Mealy morphism outputs into \(\mathbb B\), while the second is
+input-indexed over \(\mathbb B\). The pullback
+\[
+\mathbb X\times_{\mathbb B}\mathbb Y
+\]
+is the homotopy-correct execution object of compatible intermediate
+behaviors: an execution of the first machine and an execution of the
+second machine whose intermediate \(\mathbb B\)-behaviors agree up to
+coherent equivalence.
+\end{remark}
+
+\section{The stateless subcalculus}
+\label{sec:stateless-subcalculus-derived-rewritten}
+
+The previous chapter showed that strict Mealy morphisms carried by
+representable spans are precisely internal functors. In the derived
+setting, the corresponding notion is that the input map is equivalent to
+the identity input map.
+
+\begin{definition}[Stateless derived Mealy morphism]
+\label{def:stateless-derived-mealy-rewritten}
+A derived Mealy morphism
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\]
+is \textbf{stateless} if its input map
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+is equivalent in
+\[
+\mathcal C/\mathbb A
+\]
+to the identity map
+\[
+1_{\mathbb A}:\mathbb A\to\mathbb A.
+\]
+\end{definition}
+
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb X
+\arrow[rr, "\simeq"]
+\arrow[dr, "\pi"']
+&
+&
+\mathbb A
+\arrow[dl, "1_{\mathbb A}"]
+\\
+&
+\mathbb A
+&
+\end{tikzcd}
+\]
+
+\begin{proposition}[Stateless derived Mealy morphisms and derived functors]
+\label{prop:stateless-derived-internal-functors-rewritten}
+The homotopy fiber of
+\[
+\Pi_{\mathbb A,\mathbb B}
+\]
+over the identity input map is the Joyal--Tierney derived mapping theory
+of internal functors:
+\[
+\operatorname{hofib}_{1_{\mathbb A}}
+\left(
+\Pi_{\mathbb A,\mathbb B}
+\right)
+\simeq
+\operatorname{Map}_{\mathcal C}(\mathbb A,\mathbb B)
+=
+\mathbf R\!\operatorname{Map}_{JT}(\mathbb A,\mathbb B).
+\]
+More generally, if an input map
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+is equivalent to \(1_{\mathbb A}\) in
+\[
+\mathcal C/\mathbb A,
+\]
+then, after choosing such an equivalence, the homotopy fiber over
+\(\pi\) is equivalent to
+\[
+\mathbf R\!\operatorname{Map}_{JT}(\mathbb A,\mathbb B).
+\]
+\end{proposition}
+
+\begin{proof}
+Apply Corollary~\ref{cor:fiber-theorem-absolute-form-rewritten} to the
+input map
+\[
+1_{\mathbb A}:\mathbb A\to\mathbb A.
+\]
+This gives
+\[
+\operatorname{hofib}_{1_{\mathbb A}}
+\left(
+\Pi_{\mathbb A,\mathbb B}
+\right)
+\simeq
+\operatorname{Map}_{\mathcal C}(\mathbb A,\mathbb B).
+\]
+
+If
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+is equivalent to \(1_{\mathbb A}\) in the slice
+\[
+\mathcal C/\mathbb A,
+\]
+then the corresponding base points of
+\[
+\mathcal C/\mathbb A
+\]
+lie in the same connected component. A chosen equivalence between them
+transports the homotopy fiber over \(\pi\) to the homotopy fiber over
+\(1_{\mathbb A}\). Hence the fiber over \(\pi\) is equivalent, after that
+choice, to
+\[
+\operatorname{Map}_{\mathcal C}(\mathbb A,\mathbb B).
+\]
+\end{proof}
+
+\begin{remark}[Derived representability]
+\label{rem:derived-representable-analogue-rewritten}
+This is the derived analogue of the representable-carrier theorem from
+the previous chapter. Strict representable carriers are replaced by
+input maps equivalent to the identity. The remaining output data are
+derived internal functors. If the input map is only equivalent to the
+identity rather than literally equal to it, the comparison with the
+derived functor calculus depends on the chosen equivalence to
+\(1_{\mathbb A}\).
+
+Operationally, this is the stateless regime: the execution object has no
+hidden state beyond the input object itself, up to derived equivalence.
+\end{remark}
+
+\section{Strict Mealy morphisms as split discrete-fibration representatives}
+\label{sec:strict-mealy-as-split-discrete-derived-rewritten}
+
+We now show how the strict Mealy morphisms of the previous chapter
+determine rigid point-set representatives in the derived calculus.
+
+Let
+\[
+\mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A)
+\]
+be an internal category in \(\mathcal E\).
+
+\begin{definition}[Right action of an internal category]
+\label{def:right-action-internal-category-rewritten}
+A \textbf{right action} of \(\mathbb A\) on an object
+\[
+p:P\to A_0
+\]
+of the slice \(\mathcal E/A_0\) consists of a map
+\[
+\delta:
+A_1\times_{t_A,A_0,p}P
+\longrightarrow
+P
+\]
+such that
+\[
+p\delta=s_A\pi_1,
+\]
+and satisfying the unit and associativity laws
+\[
+\delta(e_A(px),x)=x,
+\]
+and, for
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w,
+\]
+\[
+\delta(b\circ a,x)
+=
+\delta(a,\delta(b,x)).
+\]
+\end{definition}
+
+The action is contravariant in the input category:
+\[
+a:u\to v,
+\qquad
+x\in P_v
+\quad\Longrightarrow\quad
+\delta(a,x)\in P_u.
+\]
+
+\[
+\begin{tikzcd}[column sep=large]
+P_u
+&
+P_v
+\arrow[l, dashed, "{a^\ast}"']
+\\
+u
+\arrow[r, "a"']
+&
+v
+\end{tikzcd}
+\qquad
+a^\ast(x)=\delta(a,x).
+\]
+
+\begin{definition}[Morphisms of right actions]
+\label{def:morphisms-right-actions}
+Let
+\[
+(P,p,\delta)
+\qquad\text{and}\qquad
+(P',p',\delta')
+\]
+be right actions of \(\mathbb A\). A morphism of right actions
+\[
+h:(P,p,\delta)\to(P',p',\delta')
+\]
+is a map
+\[
+h:P\to P'
+\]
+in \(\mathcal E\) such that
+\[
+p'h=p
+\]
+and
+\[
+h(\delta(a,x))=\delta'(a,hx)
+\]
+in generalized-element notation. Equivalently, the square
+\[
+\begin{tikzcd}[column sep=large]
+A_1\times_{A_0}P
+\arrow[r, "{1\times h}"]
+\arrow[d, "\delta"']
+&
+A_1\times_{A_0}P'
+\arrow[d, "\delta'"]
+\\
+P
+\arrow[r, "h"']
+&
+P'
+\end{tikzcd}
+\]
+commutes.
+\end{definition}
+
+We write
+\[
+\mathbf{Act}_r(\mathbb A)
+\]
+for the resulting category of right actions of \(\mathbb A\).
+
+\subsection{The category of elements}
+\label{subsec:category-of-elements-derived-rewritten}
+
+Let
+\[
+(p:P\to A_0,\delta)
+\]
+be a right action of \(\mathbb A\). Define an internal category
+\[
+P\rtimes\mathbb A
+\]
+as follows.
+
+Its object object is
+\[
+(P\rtimes\mathbb A)_0=P.
+\]
+Its arrow object is
+\[
+(P\rtimes\mathbb A)_1
+=
+A_1\times_{t_A,A_0,p}P.
+\]
+A generalized element
+\[
+(a,x)\in A_1\times_{A_0}P
+\]
+is read as an arrow
+\[
+\delta(a,x)\longrightarrow x.
+\]
+Thus the source and target maps are
+\[
+s(a,x)=\delta(a,x),
+\qquad
+t(a,x)=x.
+\]
+The identity at \(x\in P\) is
+\[
+(e_A(px),x).
+\]
+
+\[
+\begin{tikzcd}[column sep=large]
+\delta(a,x)
+\arrow[r, "{(a,x)}"]
+&
+x
+\\
+p(\delta(a,x))=u
+\arrow[r, "a"']
+&
+p(x)=v
+\end{tikzcd}
+\]
+
+The object of composable pairs in \(P\rtimes\mathbb A\) is canonically
+identified with
+\[
+\left(A_1\times_{t_A,A_0,s_A}A_1\right)
+\times_{t_A\pi_2,A_0,p}
+P.
+\]
+A generalized element is a triple
+\[
+(a,b,x)
+\]
+where
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w.
+\]
+Under this identification, the triple \((a,b,x)\) corresponds to the
+composable pair
+\[
+(a,\delta(b,x)),
+\qquad
+(b,x),
+\]
+where \((a,\delta(b,x))\) is performed first and \((b,x)\) second.
+Composition is defined by
+\[
+(a,b,x)\longmapsto (b\circ a,x).
+\]
+
+\[
+\begin{tikzcd}[column sep=large]
+\delta(a,\delta(b,x))
+\arrow[r, "{(a,\delta(b,x))}"]
+&
+\delta(b,x)
+\arrow[r, "{(b,x)}"]
+&
+x
+\\
+u
+\arrow[r, "a"']
+&
+v
+\arrow[r, "b"']
+&
+w
+\end{tikzcd}
+\]
+
+\begin{proposition}
+\label{prop:action-category-of-elements-rewritten}
+The data above define an internal category
+\[
+P\rtimes\mathbb A.
+\]
+\end{proposition}
+
+\begin{proof}
+The source of the composite \((b\circ a,x)\) is
+\[
+\delta(b\circ a,x),
+\]
+which equals
+\[
+\delta(a,\delta(b,x))
+\]
+by the action associativity law. This is the source of the first arrow in
+the corresponding composable pair
+\[
+(a,\delta(b,x)),
+\qquad
+(b,x).
+\]
+The target of the composite is
+\[
+x,
+\]
+the target of the second arrow. Thus composition is well typed.
+
+The identity at \(x\) is
+\[
+(e_A(px),x).
+\]
+The action unit law gives
+\[
+\delta(e_A(px),x)=x,
+\]
+so this arrow has source and target \(x\). The unit laws in
+\(\mathbb A\), together with the action unit law, give the left and right
+identity axioms in
+\[
+P\rtimes\mathbb A.
+\]
+
+Associativity of composition follows from associativity in
+\(\mathbb A\) and the action associativity law. Both ways of composing
+three arrows indexed by
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+c:w\to z,
+\qquad
+p(x)=z
+\]
+produce the arrow
+\[
+(c\circ b\circ a,x),
+\]
+with source determined by repeated application of the action
+associativity law. Hence the displayed data define an internal category.
+\end{proof}
+
+There is an evident internal functor
+\[
+\pi_P:P\rtimes\mathbb A\to\mathbb A
+\]
+given by
+\[
+(\pi_P)_0=p,
+\qquad
+(\pi_P)_1(a,x)=a.
+\]
+
+\[
+\begin{tikzcd}[column sep=large]
+A_1\times_{A_0}P
+\arrow[r, "{(\pi_P)_1}"]
+\arrow[d, "t"']
+&
+A_1
+\arrow[d, "t_A"]
+\\
+P
+\arrow[r, "p"']
+&
+A_0
+\end{tikzcd}
+\]
+
+\begin{definition}[Split internal discrete fibration]
+\label{def:split-internal-discrete-fibration-rewritten}
+An internal functor
+\[
+F:\mathbb E\to\mathbb A
+\]
+is an \textbf{internal discrete fibration} if the square
+\[
+\begin{tikzcd}
+E_1 \arrow[r, "F_1"] \arrow[d, "t_E"'] &
+A_1 \arrow[d, "t_A"]
+\\
+E_0 \arrow[r, "F_0"'] &
+A_0
+\end{tikzcd}
+\]
+is a pullback.
+
+We call such a discrete fibration \textbf{split} when we regard the
+corresponding unique pullback lifts as the chosen cleavage. In the
+discrete case this splitting is canonical once the pullback square is
+fixed, and its compatibility with identities and composition is strict.
+\end{definition}
+
+\begin{remark}
+\label{rem:split-discrete-fibration-splitting-canonical-rewritten}
+For a discrete fibration, lifts are unique once the pullback square is
+fixed. Thus the splitting is canonical in the discrete case. We keep the
+word ``split'' to emphasize that the category-of-elements
+representatives constructed here carry strictly compatible lifts.
+\end{remark}
+
+\begin{proposition}
+\label{prop:action-gives-split-discrete-fibration-rewritten}
+The functor
+\[
+\pi_P:P\rtimes\mathbb A\to\mathbb A
+\]
+is a split internal discrete fibration.
+\end{proposition}
+
+\begin{proof}
+The arrow object of
+\[
+P\rtimes\mathbb A
+\]
+is
+\[
+A_1\times_{t_A,A_0,p}P.
+\]
+This is exactly the pullback of
+\[
+t_A:A_1\to A_0
+\]
+along
+\[
+p:P\to A_0.
+\]
+Therefore the square
+\[
+\begin{tikzcd}
+(P\rtimes\mathbb A)_1 \arrow[r, "(\pi_P)_1"] \arrow[d, "t"'] &
+A_1 \arrow[d, "t_A"]
+\\
+(P\rtimes\mathbb A)_0 \arrow[r, "p"'] &
+A_0
+\end{tikzcd}
+\]
+is a pullback.
+
+Explicitly, an arrow
+\[
+a:u\to v
+\]
+of \(\mathbb A\) and a state
+\[
+x\in P
+\]
+with
+\[
+p(x)=v
+\]
+determine a unique lifted arrow
+\[
+(a,x):\delta(a,x)\to x
+\]
+over \(a\). The action unit and associativity laws say exactly that
+these canonical lifts are strictly compatible with identities and
+composition. Hence
+\[
+\pi_P
+\]
+is a split internal discrete fibration.
+\end{proof}
+
+Conversely, a split internal discrete fibration gives a right action.
+
+\begin{proposition}[Actions and split internal discrete fibrations]
+\label{prop:actions-equivalent-split-discrete-fibrations-rewritten}
+For fixed
+\[
+\mathbb A,
+\]
+the category
+\[
+\mathbf{Act}_r(\mathbb A)
+\]
+of right actions of \(\mathbb A\) is equivalent to the category of split
+internal discrete fibrations over \(\mathbb A\).
+\end{proposition}
+
+\begin{proof}
+Given a right action
+\[
+\delta:A_1\times_{t_A,A_0,p}P\to P,
+\]
+Proposition~\ref{prop:action-gives-split-discrete-fibration-rewritten}
+constructs a split internal discrete fibration
+\[
+\pi_P:P\rtimes\mathbb A\to\mathbb A.
+\]
+
+Conversely, let
+\[
+F:\mathbb E\to\mathbb A
+\]
+be a split internal discrete fibration. Put
+\[
+P:=E_0,
+\qquad
+p:=F_0:E_0\to A_0.
+\]
+Since \(F\) is an internal discrete fibration, the square
+\[
+\begin{tikzcd}
+E_1 \arrow[r, "F_1"] \arrow[d, "t_E"'] &
+A_1 \arrow[d, "t_A"]
+\\
+E_0 \arrow[r, "F_0"'] &
+A_0
+\end{tikzcd}
+\]
+is a pullback. Hence an arrow of \(\mathbb E\) with codomain \(x\) lying
+over an arrow \(a\) of \(\mathbb A\) is uniquely determined by the pair
+\[
+(a,x)\in A_1\times_{t_A,A_0,p}P.
+\]
+Define
+\[
+\delta(a,x)
+\]
+to be the domain of this lifted arrow. Preservation of identities and
+composition by the internal functor \(F\), together with uniqueness of
+lifts in the pullback square, gives precisely
+\[
+\delta(e_A(px),x)=x
+\]
+and
+\[
+\delta(b\circ a,x)=\delta(a,\delta(b,x)).
+\]
+Thus \(p:P\to A_0\) carries a right action of \(\mathbb A\).
+
+A morphism of right actions
+\[
+h:P\to P'
+\]
+induces the evident internal functor
+\[
+P\rtimes\mathbb A\to P'\rtimes\mathbb A
+\]
+over \(\mathbb A\). Conversely, a functor over \(\mathbb A\) between
+split internal discrete fibrations is determined by its map on objects,
+and compatibility with arrows is exactly the action-compatibility
+condition. Hence the two constructions define inverse equivalences of
+categories.
+\end{proof}
+
+\subsection{Strict Mealy morphisms}
+\label{subsec:strict-mealy-derived-rewritten}
+
+Let
+\[
+(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a strict Mealy morphism in the sense of the previous chapter. Thus
+\[
+A_0\xleftarrow{p}P\xrightarrow{q}B_0
+\]
+is a span, and
+\[
+\delta:
+A_1\times_{t_A,A_0,p}P\to P,
+\qquad
+\omega:
+A_1\times_{t_A,A_0,p}P\to B_1
+\]
+satisfy the strict Mealy typing, unit, and multiplication laws.
+
+The state-update component
+\[
+\delta
+\]
+is precisely a right action of \(\mathbb A\) on
+\[
+p:P\to A_0.
+\]
+Hence it determines the category of elements
+\[
+P\rtimes\mathbb A
+\]
+and a split internal discrete fibration
+\[
+\pi_P:P\rtimes\mathbb A\to\mathbb A.
+\]
+
+The output component determines an internal functor
+\[
+\Omega_P:P\rtimes\mathbb A\to\mathbb B
+\]
+by
+\[
+(\Omega_P)_0=q,
+\qquad
+(\Omega_P)_1(a,x)=\omega(a,x).
+\]
+
+\[
+\begin{tikzcd}[column sep=large]
+P\rtimes\mathbb A
+\arrow[dr, "\pi_P"']
+\arrow[rr, "\Omega_P"]
+&
+&
+\mathbb B
+\\
+&
+\mathbb A
+&
+\end{tikzcd}
+\]
+
+\begin{proposition}
+\label{prop:omega-output-functor-rewritten}
+The Mealy typing, unit, and multiplication laws for
+\[
+\omega
+\]
+are precisely the assertion that
+\[
+\Omega_P:P\rtimes\mathbb A\to\mathbb B
+\]
+is an internal functor.
+\end{proposition}
+
+\begin{proof}
+The typing equations for \(\omega\) say
+\[
+s_B\omega(a,x)=q(\delta(a,x)),
+\qquad
+t_B\omega(a,x)=q(x).
+\]
+These are exactly the source-target compatibility equations for the
+arrow map of
+\[
+\Omega_P.
+\]
+
+The Mealy unit law
+\[
+\omega(e_A(px),x)=e_B(qx)
+\]
+is exactly preservation of identities.
+
+For composable input arrows
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w,
+\]
+the Mealy multiplication law
+\[
+\omega(b\circ a,x)
+=
+\omega(b,x)\circ\omega(a,\delta(b,x))
+\]
+is exactly preservation of composition in the internal category
+\[
+P\rtimes\mathbb A.
+\]
+Hence \(\Omega_P\) is an internal functor, and conversely functoriality
+of \(\Omega_P\) gives precisely these equations.
+\end{proof}
+
+\begin{theorem}[Strict Mealy morphisms as split discrete-fibration representatives]
+\label{thm:strict-mealy-as-split-discrete-fibration-representatives-rewritten}
+Every strict Mealy morphism
+\[
+(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+determines a point-set Joyal--Tierney fibrational representative
+\[
+\mathbb A
+\xleftarrow{\pi_P}
+P\rtimes\mathbb A
+\xrightarrow{\Omega_P}
+\mathbb B
+\]
+and hence a derived Mealy morphism
+\[
+\mathbb A\rightsquigarrow^h\mathbb B.
+\]
+
+The \(\delta\)-unit and \(\delta\)-multiplication laws are precisely the
+strict action, or cleavage, equations making
+\[
+\pi_P:P\rtimes\mathbb A\to\mathbb A
+\]
+a split internal discrete fibration. Relative to this input fibration,
+the \(\omega\)-unit and \(\omega\)-multiplication laws are precisely the
+strict \(\mathbb B\)-valued \(1\)-cocycle equations, equivalently the
+functoriality equations for
+\[
+\Omega_P:P\rtimes\mathbb A\to\mathbb B.
+\]
+\end{theorem}
+
+\begin{proof}
+The state-update component
+\[
+\delta
+\]
+is a right action of \(\mathbb A\) on
+\[
+p:P\to A_0.
+\]
+By Proposition~\ref{prop:action-category-of-elements-rewritten}, it
+determines the internal category
+\[
+P\rtimes\mathbb A.
+\]
+By Proposition~\ref{prop:action-gives-split-discrete-fibration-rewritten},
+the projection
+\[
+\pi_P:P\rtimes\mathbb A\to\mathbb A
+\]
+is a split internal discrete fibration. By
+Proposition~\ref{prop:split-discrete-fibrations-are-jt-fibrations-rewritten},
+it is a Joyal--Tierney fibration.
+
+By Proposition~\ref{prop:omega-output-functor-rewritten}, the output
+component
+\[
+\omega
+\]
+determines an internal functor
+\[
+\Omega_P:P\rtimes\mathbb A\to\mathbb B.
+\]
+Thus we obtain a point-set Joyal--Tierney fibrational representative
+\[
+\mathbb A
+\xleftarrow{\pi_P}
+P\rtimes\mathbb A
+\xrightarrow{\Omega_P}
+\mathbb B.
+\]
+This point-set span determines the derived Mealy morphism represented by
+the map
+\[
+(\pi_P,\Omega_P):
+P\rtimes\mathbb A
+\to
+\mathbb A\times\mathbb B
+\]
+in \(\mathcal C\).
+
+The final assertion is exactly the separation established above:
+\(\delta\) supplies the split discrete-fibration structure, while
+\(\omega\) supplies the strict output \(1\)-cocycle on the resulting
+action category.
+\end{proof}
+
+\begin{proposition}[Converse construction]
+\label{prop:split-discrete-fibration-output-functor-gives-strict-mealy}
+Let
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+be a split internal discrete fibration, and let
+\[
+\Omega:\mathbb X\to\mathbb B
+\]
+be an internal functor. Then this data determines a strict Mealy morphism
+\[
+\mathbb A\rightsquigarrow\mathbb B.
+\]
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+P:=X_0,
+\qquad
+p:=\pi_0:X_0\to A_0,
+\qquad
+q:=\Omega_0:X_0\to B_0.
+\]
+Since \(\pi\) is a split internal discrete fibration, every arrow
+\[
+a:u\to v
+\]
+of \(\mathbb A\) and every state
+\[
+x\in X_0
+\]
+with
+\[
+p(x)=v
+\]
+has a chosen lifted arrow in \(\mathbb X\)
+\[
+\widetilde a_x:\delta(a,x)\to x
+\]
+lying over \(a\). Define
+\[
+\delta(a,x)
+\]
+to be the domain of this lifted arrow.
+
+The split compatibility of the discrete-fibration lifts with identities
+and composition gives
+\[
+\delta(e_A(px),x)=x
+\]
+and
+\[
+\delta(b\circ a,x)
+=
+\delta(a,\delta(b,x)).
+\]
+Thus \(\delta\) is a right action of \(\mathbb A\) on
+\[
+p:P\to A_0.
+\]
+
+Define
+\[
+\omega(a,x):=\Omega_1(\widetilde a_x).
+\]
+Since \(\Omega\) is an internal functor, the source and target of
+\(\omega(a,x)\) are
+\[
+q(\delta(a,x))
+\qquad
+\text{and}
+\qquad
+q(x),
+\]
+respectively. Preservation of identities gives
+\[
+\omega(e_A(px),x)=e_B(qx),
+\]
+and preservation of composition gives
+\[
+\omega(b\circ a,x)
+=
+\omega(b,x)\circ\omega(a,\delta(b,x)).
+\]
+Hence
+\[
+(P,\delta,\omega)
+\]
+is a strict Mealy morphism
+\[
+\mathbb A\rightsquigarrow\mathbb B.
+\]
+\end{proof}
+
+\begin{remark}[Discrete fibration, not opfibration]
+\label{rem:discrete-fibration-not-opfibration-derived-rewritten}
+With the orientation used throughout this work, the input projection is
+a discrete fibration, not a discrete opfibration. An input arrow
+\[
+a:u\to v
+\]
+acts on a state over \(v\) and produces a state over \(u\). Reversing the
+orientation of the Mealy structure cell would exchange discrete
+fibrations with discrete opfibrations.
+\end{remark}
+
+\subsection{Compatibility with strict pipeline composition}
+\label{subsec:strict-pipeline-derived-compatibility-rewritten}
+
+The preceding construction is compatible with the strict pipeline
+composition from the previous chapter.
+
+Let
+\[
+(P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+\]
+and
+\[
+(Q,\delta_Q,\omega_Q):\mathbb B\rightsquigarrow\mathbb C
+\]
+be strict Mealy morphisms, with underlying spans
+\[
+A_0\xleftarrow{p_P}P\xrightarrow{q_P}B_0,
+\qquad
+B_0\xleftarrow{p_Q}Q\xrightarrow{q_Q}C_0.
+\]
+Their strict composite has carrier
+\[
+P\times_{q_P,B_0,p_Q}Q
+\]
+and is given by
+\[
+\delta_{QP}(a,(x,y))
+=
+\bigl(
+\delta_P(a,x),
+\delta_Q(\omega_P(a,x),y)
+\bigr),
+\]
+\[
+\omega_{QP}(a,(x,y))
+=
+\omega_Q(\omega_P(a,x),y).
+\]
+
+\[
+\begin{tikzcd}[column sep=large]
+P\rtimes\mathbb A
+\arrow[rr, "\Omega_P"]
+\arrow[dr, "\pi_P"']
+&
+&
+\mathbb B
+&
+Q\rtimes\mathbb B
+\arrow[l, "\pi_Q"']
+\arrow[dl, "\Omega_Q"]
+\\
+&
+\mathbb A
+&
+\mathbb C
+&
+\end{tikzcd}
+\]
+
+\begin{proposition}[Strict pipeline as pullback of action categories]
+\label{prop:strict-pipeline-as-pullback-action-categories-rewritten}
+There is a canonical isomorphism of internal categories over
+\(\mathbb A\) and \(\mathbb C\):
+\[
+(P\times_{q_P,B_0,p_Q}Q)\rtimes\mathbb A
+\cong
+(P\rtimes\mathbb A)
+\times_{\mathbb B}
+(Q\rtimes\mathbb B),
+\]
+where the pullback on the right is the ordinary pullback in
+\(\mathbf{Cat}(\mathcal E)\) along
+\[
+\Omega_P:P\rtimes\mathbb A\to\mathbb B
+\]
+and
+\[
+\pi_Q:Q\rtimes\mathbb B\to\mathbb B.
+\]
+Under this identification, the output functor of the strict composite is
+the composite projection to
+\[
+Q\rtimes\mathbb B
+\]
+followed by
+\[
+\Omega_Q:Q\rtimes\mathbb B\to\mathbb C.
+\]
+
+If this point-set cospan is homotopy-pullback-ready in the sense of
+Lemma~\ref{lem:point-set-pullback-along-fibration-derived}---for
+example under a right-proper pullback computation along the
+Joyal--Tierney fibration
+\[
+\pi_Q:Q\rtimes\mathbb B\to\mathbb B
+\]
+or after an explicit fibrant diagram replacement---then this ordinary
+pullback presents the corresponding derived pullback in \(\mathcal C\).
+\end{proposition}
+
+\begin{proof}
+On objects, both sides have object object
+\[
+P\times_{q_P,B_0,p_Q}Q.
+\]
+A generalized object is a pair
+\[
+(x,y)
+\]
+satisfying
+\[
+q_P(x)=p_Q(y).
+\]
+
+An arrow of
+\[
+(P\times_{q_P,B_0,p_Q}Q)\rtimes\mathbb A
+\]
+is a triple
+\[
+(a,x,y)
+\]
+where \(a\) is an arrow of \(\mathbb A\) admissible at \(x\), and
+\((x,y)\) is a compatible pair of states. Its image in the pullback
+category is
+\[
+\bigl((a,x),(\omega_P(a,x),y)\bigr).
+\]
+This is well defined because the arrow
+\[
+\omega_P(a,x)
+\]
+of \(\mathbb B\) is admissible at \(y\):
+\[
+p_Q(y)=q_P(x)
+\]
+and
+\[
+t_B(\omega_P(a,x))=q_P(x).
+\]
+
+\[
+\begin{tikzcd}[column sep=large]
+\bigl(
+\delta_P(a,x),
+\delta_Q(\omega_P(a,x),y)
+\bigr)
+\arrow[r, "{(a,x,y)}"]
+&
+(x,y)
+\\
+\delta_P(a,x)
+\arrow[r, "{(a,x)}"']
+&
+x
+\\
+\delta_Q(\omega_P(a,x),y)
+\arrow[r, "{(\omega_P(a,x),y)}"']
+&
+y
+\end{tikzcd}
+\]
+
+The source of the arrow
+\[
+(\omega_P(a,x),y)
+\]
+in
+\[
+Q\rtimes\mathbb B
+\]
+is
+\[
+\delta_Q(\omega_P(a,x),y).
+\]
+Therefore the source of the paired arrow is
+\[
+\left(
+\delta_P(a,x),
+\delta_Q(\omega_P(a,x),y)
+\right),
+\]
+which is exactly the state-update formula for the strict pipeline
+composite.
+
+Conversely, an arrow in the pullback category consists of an arrow
+\[
+(a,x)
+\]
+of
+\[
+P\rtimes\mathbb A
+\]
+and an arrow
+\[
+(\beta,y)
+\]
+of
+\[
+Q\rtimes\mathbb B
+\]
+with the same image in \(\mathbb B\). This forces
+\[
+\beta=\omega_P(a,x),
+\]
+so the arrow is uniquely of the displayed form.
+
+The source, target, identity, and composition maps are preserved by the
+strict Mealy laws for
+\[
+(P,\delta_P,\omega_P)
+\]
+and
+\[
+(Q,\delta_Q,\omega_Q).
+\]
+For composition, the key equality is the output cocycle law for
+\(\omega_P\):
+\[
+\omega_P(b\circ a,x)
+=
+\omega_P(b,x)\circ\omega_P(a,\delta_P(b,x)).
+\]
+This is exactly what makes the second component of the pullback-category
+composition agree with the action category of the strict composite.
+Hence the displayed correspondence is an isomorphism of internal
+categories over
+\[
+\mathbb A
+\]
+and
+\[
+\mathbb C.
+\]
+
+Finally,
+\[
+\pi_Q:Q\rtimes\mathbb B\to\mathbb B
+\]
+is a split internal discrete fibration, hence a Joyal--Tierney fibration
+by Proposition~\ref{prop:split-discrete-fibrations-are-jt-fibrations-rewritten}.
+Under the point-set pullback convention of
+Lemma~\ref{lem:point-set-pullback-along-fibration-derived}, the ordinary
+pullback above then presents the corresponding derived pullback in
+\[
+\mathcal C.
+\]
+\end{proof}
+
+\begin{remark}[Strict pipeline composition]
+\label{rem:strict-pipeline-derived-composition-rewritten}
+Under the assignment of
+Theorem~\ref{thm:strict-mealy-as-split-discrete-fibration-representatives-rewritten},
+strict pipeline composition is modeled by the ordinary pullback of the
+corresponding split discrete-fibration representatives. Passing to the
+localized homotopy theory, the derived composite is the pullback in
+\[
+\mathcal C.
+\]
+A point-set ordinary pullback may be used as a representative exactly
+when the cospan has been arranged to compute that derived pullback.
+\end{remark}
+
+\section{Main consolidation}
+\label{sec:derived-mealy-main-consolidation-rewritten}
+
+We collect the constructions and identifications of the chapter.
+
+\begin{theorem}[Derived Mealy morphisms and homotopical \(1\)-cocycles]
+\label{thm:derived-mealy-main-consolidation-rewritten}
+Let \(\mathcal E\) be a Grothendieck topos, and let
+\[
+\mathcal M=\mathbf{Cat}(\mathcal E)_{JT}
+\]
+be the Joyal--Tierney model category of internal categories in
+\(\mathcal E\). Let
+\[
+\mathcal C
+=
+\mathcal M_\infty
+=
+L_{DK}(\mathcal M,W_{JT})
+\]
+be its Dwyer--Kan localization.
+
+\begin{enumerate}
+\item The derived Mealy moduli theory from
+\[
+\mathbb A
+\]
+to
+\[
+\mathbb B
+\]
+is the slice \(\infty\)-category
+\[
+\mathsf{Mealy}^h(\mathbb A,\mathbb B)
+=
+\mathcal C/(\mathbb A\times\mathbb B).
+\]
+
+\item A derived Mealy morphism is equivalently a derived correspondence
+\[
+\mathbb A
+\longleftarrow
+\mathbb X
+\longrightarrow
+\mathbb B
+\]
+inside \(\mathcal C\).
+
+\item There is a canonical input projection
+\[
+\Pi_{\mathbb A,\mathbb B}:
+\mathsf{Mealy}^h(\mathbb A,\mathbb B)
+\longrightarrow
+\mathcal C/\mathbb A
+\]
+given by postcomposition with
+\[
+\operatorname{pr}_{\mathbb A}:
+\mathbb A\times\mathbb B\to\mathbb A.
+\]
+
+\item For a fixed input map
+\[
+\pi:\mathbb X\to\mathbb A,
+\]
+the homotopy fiber of this projection is the derived mapping space in
+the slice:
+\[
+\operatorname{hofib}_{\pi}
+\left(
+\Pi_{\mathbb A,\mathbb B}
+\right)
+\simeq
+\operatorname{Map}_{\mathcal C/\mathbb A}
+\left(
+\pi,\operatorname{pr}_{\mathbb A}
+\right).
+\]
+
+\item Equivalently,
+\[
+\operatorname{hofib}_{\pi}
+\left(
+\Pi_{\mathbb A,\mathbb B}
+\right)
+\simeq
+\operatorname{Map}_{\mathcal C}(\mathbb X,\mathbb B)
+=
+\mathbf R\!\operatorname{Map}_{JT}(\mathbb X,\mathbb B).
+\]
+
+\item Therefore the output coordinate of a derived Mealy morphism is a
+canonical point of a derived mapping space. This point is a derived
+\(\mathbb B\)-valued output \(1\)-cocycle on \(\mathbb X\).
+
+\item Automata-theoretically, a derived Mealy morphism is a
+homotopy-coherent transducer. Its object
+\[
+\mathbb X
+\]
+is a derived execution object over the input process
+\[
+\mathbb A,
+\]
+and its output coordinate is a homotopy-coherent observation law valued
+in
+\[
+\mathbb B.
+\]
+
+\item Strictly, a typed output \(1\)-cochain
+\[
+(c_0,c_1):\mathbb X\to\mathbb B
+\]
+is an internal functor if and only if its unit and composition defects
+vanish.
+
+\item Derived Mealy morphisms compose, up to coherent equivalence, by
+pullback in
+\[
+\mathcal C.
+\]
+This is homotopy-coherent pipeline composition: intermediate behaviors
+are synchronized by homotopy pullback.
+
+\item The homotopy fiber over the identity input map is the
+Joyal--Tierney derived mapping theory of internal functors:
+\[
+\operatorname{hofib}_{1_{\mathbb A}}
+\left(
+\Pi_{\mathbb A,\mathbb B}
+\right)
+\simeq
+\operatorname{Map}_{\mathcal C}(\mathbb A,\mathbb B)
+=
+\mathbf R\!\operatorname{Map}_{JT}(\mathbb A,\mathbb B).
+\]
+More generally, representatives whose input map is equivalent to
+\(1_{\mathbb A}\) have equivalent fibers after choosing such an
+equivalence.
+
+\item Strict Mealy morphisms of the previous chapter determine
+Joyal--Tierney fibrational point-set representatives
+\[
+\mathbb A
+\xleftarrow{\pi_P}
+P\rtimes\mathbb A
+\xrightarrow{\Omega_P}
+\mathbb B.
+\]
+The \(\delta\)-laws are the strict action laws giving the split discrete
+fibration, and the \(\omega\)-laws are the strict output \(1\)-cocycle
+laws for
+\[
+\Omega_P.
+\]
+
+\item Conversely, a split internal discrete fibration over
+\[
+\mathbb A
+\]
+together with an output functor to
+\[
+\mathbb B
+\]
+recovers a strict Mealy morphism
+\[
+\mathbb A\rightsquigarrow\mathbb B.
+\]
+
+\item For these canonical point-set representatives, strict pipeline
+composition is modeled by ordinary pullback of the corresponding split
+discrete-fibration representatives. The derived pipeline composite is
+the pullback in
+\[
+\mathcal C.
+\]
+The ordinary pullback presents that derived pullback whenever the
+point-set cospan is homotopy-pullback-ready in the sense fixed above.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Part (1) is Definition~\ref{def:derived-mealy-moduli-theory-rewritten}.
+Part (2) follows from the product universal property in \(\mathcal C\).
+Part (3) is Definition~\ref{def:input-projection-derived-rewritten}.
+Part (4) is Theorem~\ref{thm:fiber-theorem-slice-form-rewritten}. Part
+(5) is Corollary~\ref{cor:fiber-theorem-absolute-form-rewritten}. Part
+(6) is Corollary~\ref{cor:derived-outputs-are-one-cocycles-rewritten}.
+Part (7) is the interpretation developed throughout the chapter, beginning
+with Section~\ref{sec:derived-mealy-orientation}. Part (8) is
+Proposition~\ref{prop:strict-cocycles-as-vanishing-defects-rewritten}.
+Part (9) is
+Proposition~\ref{prop:composition-derived-mealy-rewritten}. Part (10) is
+Proposition~\ref{prop:stateless-derived-internal-functors-rewritten}.
+Part (11) is
+Theorem~\ref{thm:strict-mealy-as-split-discrete-fibration-representatives-rewritten}.
+Part (12) is
+Proposition~\ref{prop:split-discrete-fibration-output-functor-gives-strict-mealy}.
+Part (13) is
+Proposition~\ref{prop:strict-pipeline-as-pullback-action-categories-rewritten}.
+\end{proof}
+
+\begin{remark}
+\label{rem:derived-mealy-conceptual-summary-rewritten}
+The derived theory keeps the stateful character of Mealy morphisms while
+placing it in the localized homotopy theory of internal categories. The
+input coordinate records how executions vary over the input category.
+The output coordinate is classified by a derived mapping space, hence by
+a derived \(1\)-cocycle.
+
+Thus the hierarchy is
+\[
+\text{strict Mealy morphisms}
+\longrightarrow
+\text{split discrete-fibration point-set representatives}
+\longrightarrow
+\text{derived correspondences in }\mathcal M_\infty.
+\]
+The first arrow is the canonical assignment constructed in
+Theorem~\ref{thm:strict-mealy-as-split-discrete-fibration-representatives-rewritten};
+it should not be read as a fully faithful embedding unless the relevant
+categories of transformations and their comparison with the localized
+derived moduli theory are also specified.
+
+The stateless part of this hierarchy recovers the derived
+internal-functor calculus, with the qualification that an input map
+merely equivalent to the identity requires a chosen equivalence to
+identify its fiber with the fiber over
+\[
+1_{\mathbb A}.
+\]
+\end{remark}
+
+\begin{remark}
+\label{rem:derived-automata-final-summary}
+From the systems-theoretic perspective, the main conceptual point is
+that the derived construction does not simply quotient ordinary Mealy
+machines by weak equivalence. It enlarges the notion of machine. A
+strict Mealy morphism has a rigid state object and a strict transition
+law. A derived Mealy morphism has instead a derived execution object
+\[
+\mathbb X
+\]
+over the input process
+\[
+\mathbb A.
+\]
+Its possible executions, equivalences between executions, and higher
+coherences are part of the semantics. The output law is a derived
+\(\mathbb B\)-valued \(1\)-cocycle
+\[
+\mathbb X\to\mathbb B.
+\]
+Composition of systems is synchronization of execution objects along
+intermediate behavior, carried out by homotopy pullback.
+\end{remark}

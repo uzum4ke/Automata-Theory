@@ -1,0 +1,76 @@
+\documentclass[oneside]{book}
+
+% ---------- Core math ----------
+\usepackage{amsmath, amsthm, amsfonts, amssymb}
+\usepackage{slashed}
+\usepackage{graphicx}
+%\usepackage{mathabx}
+\usepackage{mathtools}
+%\usepackage{stmaryrd}
+\usepackage{bm}
+% ---------- Layout & tables ----------
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{booktabs}
+\usepackage{comment}
+\usepackage{enumitem}  % instead of enumerate
+\usepackage{longtable}
+
+% ---------- TikZ-cd (externalize diagrams) ----------
+\usepackage{tikz-cd}
+
+% ---------- Misc ----------
+\usepackage{cancel}
+\usepackage{epigraph}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{bbm}
+
+% ---------- Hyperref last ----------
+\usepackage[colorlinks=true, linkcolor=black, urlcolor=cyan, pdfpagemode=FullScreen]{hyperref}
+
+% ---------- Theorems ----------
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{judgement}{Judgement}[section]
+\newtheorem{construction}{Construction}[section]
+\newtheorem{axiom}{Axiom}[section]
+\newtheorem{notation}{Notation}[section]
+\newtheorem{data}{Data}[section]
+\newtheorem{axiomset}{Axiom Set}[section]
+\newtheorem{hypothesis}{Hypothesis}[section]
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{convention}{Convention}[section]
+\newtheorem{observation}{Observation}[section]
+\newtheorem{problem}{Problem}[section]
+
+% ---------- Bibliography ----------
+\usepackage[backend=biber]{biblatex}
+\addbibresource{references.bib}
+
+% ---------- Title / Author / Date ----------
+\title{Automata Theory}
+\author{Conor Sheridan}
+\date{\today}
+
+\begin{document}
+    \maketitle
+    \tableofcontents
+
+    \input{macros}
+
+    \include{Refactor 1/Internal Categories and Mealy Morphisms in the Bicategory of Spans}
+    \include{Refactor 1/Behaviour Categories and the Categorical Myhill--Nerode Theorem}
+    \include{Refactor 1/Coequational Subrecognizers and Birkhoff Theorems}
+    \include{Refactor 1/Syntactic Transition--Output Images and Algebraic Eilenberg Duality}
+    
+    %\include{Relative Mealy Program Categories and Contextual Dynamic Proarrow Logic}
+    %\include{Polynomial Transposes of Relative Mealy Actions and Guarded Program Structure}
+    %\include{Partial Trace and Feedback for Mealy Morphisms}
+
+    \printbibliography
+\end{document}

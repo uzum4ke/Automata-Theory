@@ -1,0 +1,5329 @@
+\chapter{Behavior, Fibrations, and the Categorical Myhill--Nerode Theorem}
+\label{ch:behaviour-categories-myhill-nerode}
+
+\section{Fibred orientation and standing assumptions}
+\label{sec:behaviour-standing-assumptions}
+
+The Myhill--Nerode theorem characterizes regular behaviour by residuals. For a language, the residuals are the quotients of the language by input words. For a Mealy morphism between internal categories, the residual inputs over an object are organized by a slice internal category. This chapter develops the corresponding residual semantics for the Mealy morphisms of Chapter~\ref{ch:spans-internal-categories-mealy}. The language-theoretic residual quotient goes back to Myhill and Nerode, and the derivative viewpoint is closely related to Brzozowski's calculus of regular-expression derivatives \cite{Myhill1957,Nerode1958,Brzozowski1964}. The categorical formulation below is also related in spirit to the final-semantics and realization-theoretic approaches to automata \cite{Goguen1973,Rutten1998,Rutten2000}.
+
+The input internal category \(\mathbb A\) determines a residual syntax opfibration
+\[
+    \operatorname{Res}_{\mathbb A}\longrightarrow \mathbb A.
+\]
+The fibre over an object \(v\in A_0\) is the residual slice
+\[
+    \mathbb A/v.
+\]
+An input arrow
+\[
+    a:u\to v
+\]
+acts on residual syntax by cocartesian transport, given by postcomposition:
+\[
+    a_*:\mathbb A/u\to\mathbb A/v.
+\]
+Thus residual syntax is covariantly indexed by \(\mathbb A\).
+
+The behaviour assignment is contravariant in residual syntax. A residual behaviour over \(v\) is an internal functor
+\[
+    H:\mathbb A/v\to\mathbb B.
+\]
+Reindexing along
+\[
+    a:u\to v
+\]
+is precomposition with residual transport:
+\[
+    a^*H:=H\circ a_*.
+\]
+This reindexing is the derivative of \(H\) by \(a\):
+\[
+    \partial_aH:=a^*H=H\circ a_*.
+\]
+Hence the behaviour fibration is the contravariantly indexed internal category
+\[
+    \mathbf{Beh}_{\mathbb A,\mathbb B}\longrightarrow \mathbb A
+\]
+whose fibre over \(v\) is
+\[
+    \mathbf{Beh}_{\mathbb A,\mathbb B}(v)
+    =
+    [\mathbb A/v,\mathbb B].
+\]
+
+The behaviour fibration carries a canonical Mealy morphism. Its transition is cartesian reindexing,
+\[
+    H\longmapsto a^*H=\partial_aH,
+\]
+and its output is the anchor comparison obtained from the residual morphism
+\[
+    a_*1_u=a\longrightarrow 1_v
+\]
+in the slice \(\mathbb A/v\).
+
+\begin{assumption}
+\label{ass:behaviour-base}
+    Throughout this chapter, \(\mathcal E\) is a Barr-exact locally cartesian closed category with chosen pullbacks. Thus \(\mathcal E\) has finite limits, dependent products in slices, stable regular epi--mono factorizations, and effective quotients of internal equivalence relations.
+\end{assumption}
+
+\begin{notation}
+\label{not:behaviour-internal-categories}
+    Let
+    \[
+        \mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A),
+        \qquad
+        \mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B)
+    \]
+    be internal categories in \(\mathcal E\). We use the composition convention of Chapter~\ref{ch:spans-internal-categories-mealy}: if
+    \[
+        a:u\to v,
+        \qquad
+        b:v\to w,
+    \]
+    then
+    \[
+        m_A(a,b)=b\circ a.
+    \]
+    Thus a Mealy state over \(w\) processes the input \(b\circ a\) by first processing \(b\), then processing \(a\). We write
+    \[
+        1_v:=e_A(v)
+    \]
+    for the identity arrow at \(v\), and similarly in \(\mathbb B\).
+\end{notation}
+
+\begin{notation}
+\label{not:behaviour-generalized-elements}
+    Generalized-element notation abbreviates morphism equations in \(\mathcal E\). When variables such as \(a,r,x,H\) appear below, the corresponding formal assertion is the equality of maps out of the pullback object expressing the displayed typing constraints.
+\end{notation}
+
+\begin{notation}
+\label{not:mealy-recall-behaviour}
+    A Mealy morphism
+    \[
+        P:\mathbb A\rightsquigarrow\mathbb B
+    \]
+    has carrier span
+    \[
+        A_0\xleftarrow{p}P\xrightarrow{q}B_0
+    \]
+    and structure maps
+    \[
+        \delta:
+        A_1\times_{t_A,A_0,p}P\to P,
+        \qquad
+        \omega:
+        A_1\times_{t_A,A_0,p}P\to B_1.
+    \]
+    For \(a:u\to v\) and \(p(x)=v\), the input is processed target-to-source:
+    \[
+        p(\delta(a,x))=u,
+    \]
+    and the output arrow is
+    \[
+        \omega(a,x):q(\delta(a,x))\to q(x).
+    \]
+    The Mealy unit laws are
+    \[
+        \delta(1_{p(x)},x)=x,
+        \qquad
+        \omega(1_{p(x)},x)=1_{q(x)},
+    \]
+    and the Mealy multiplication laws are
+    \[
+        \delta(b\circ a,x)=\delta(a,\delta(b,x)),
+    \]
+    \[
+        \omega(b\circ a,x)
+        =
+        \omega(b,x)\circ\omega(a,\delta(b,x)).
+    \]
+\end{notation}
+
+\begin{notation}
+\label{not:simulation-recall-behaviour}
+    A Mealy simulation
+    \[
+        (\theta,\alpha):P\Rightarrow Q
+    \]
+    has underlying state map in the opposite direction
+    \[
+        \theta:Q\to P,
+    \]
+    and an output-comparison component
+    \[
+        \alpha:Q\to B_1
+    \]
+    satisfying
+    \[
+        p_P\theta=p_Q,
+        \qquad
+        s_B\alpha=q_P\theta,
+        \qquad
+        t_B\alpha=q_Q.
+    \]
+    Thus
+    \[
+        \alpha_y:q_P(\theta y)\to q_Q(y).
+    \]
+    The simulation laws are
+    \[
+        \theta(\delta_Q(a,y))
+        =
+        \delta_P(a,\theta y),
+    \]
+    and
+    \[
+        \alpha_y\circ\omega_P(a,\theta y)
+        =
+        \omega_Q(a,y)\circ\alpha_{\delta_Q(a,y)}.
+    \]
+\end{notation}
+
+\begin{remark}
+\label{rem:simulation-direction-warning-behaviour}
+    A displayed simulation
+    \[
+        P\Rightarrow Q
+    \]
+    has state map \(Q\to P\). The strict semantic homomorphisms used in Section~\ref{sec:terminal-residual-semantics} have covariantly directed state maps \(P\to Q\).
+\end{remark}
+
+\section{Residual syntax and the behaviour fibration}
+\label{sec:residual-syntax-behaviour-fibration}
+
+The residual syntax of an input category is the indexed-category presentation of the codomain opfibration. We use the split cleavage given by postcomposition.
+
+\subsection{Residual syntax as a split codomain opfibration}
+\label{subsec:residual-opfibration}
+
+\begin{definition}[Residual syntax]
+\label{def:residual-syntax}
+    The \textbf{residual syntax} of \(\mathbb A\) is the split internally indexed category
+    \[
+        \operatorname{Res}_{\mathbb A}:\mathbb A\to
+        \mathbf{Cat}_{\mathrm{int}}(\mathcal E)
+    \]
+    whose fibre over \(v\in A_0\) is the slice internal category
+    \[
+        \operatorname{Res}_{\mathbb A}(v):=\mathbb A/v.
+    \]
+    For an arrow
+    \[
+        a:u\to v
+    \]
+    of \(\mathbb A\), the transition functor
+    \[
+        a_*:\mathbb A/u\to\mathbb A/v
+    \]
+    is postcomposition by \(a\).
+\end{definition}
+
+The notation in Definition~\ref{def:residual-syntax} records a split internal indexed category, equivalently a chosen cleavage of the codomain opfibration. It is not intended as an external functor from the internal category \(\mathbb A\) to an ordinary category of internal categories.
+
+Thus an object of the fibre \(\mathbb A/v\) is an arrow
+\[
+    r:w\to v.
+\]
+A residual morphism in \(\mathbb A/v\)
+\[
+    r\circ c\to r
+\]
+is represented by a triangle
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            z
+                \arrow[rr, "r\circ c", bend left=15]
+                \arrow[r, "c"']
+        &
+            w
+                \arrow[r, "r"']
+        &
+            v.
+\end{tikzcd}
+\]
+The source of this residual morphism is the longer residual history \(r\circ c\), and its target is the shorter residual history \(r\).
+
+Internally, the object of residual objects is
+\[
+    A_1\xrightarrow{t_A}A_0.
+\]
+The object of residual arrows is the triangle object
+\[
+    T_A:=A_1\times_{t_A,A_0,s_A}A_1.
+\]
+Its defining pullback is
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            T_A
+                \arrow[r, "\pi_2"]
+                \arrow[d, "\pi_1"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            A_1
+                \arrow[d, "s_A"]
+        \\
+            A_1
+                \arrow[r, "t_A"']
+        &
+            A_0.
+    \end{tikzcd}
+\]
+A generalized element of \(T_A\) is a pair
+\[
+    (c,r)
+\]
+with
+\[
+    z\xrightarrow{c}w\xrightarrow{r}v.
+\]
+The projection to the base is
+\[
+    t_A\pi_2:T_A\to A_0.
+\]
+The source and target maps in the fibre over \(v\) are
+\[
+    d_0(c,r)=r\circ c=m_A(c,r),
+    \qquad
+    d_1(c,r)=r.
+\]
+The identity at \(r:w\to v\) is represented by
+\[
+    r\longmapsto (1_w,r)=(e_As_A(r),r).
+\]
+For a residual triple
+\[
+    y\xrightarrow{d}z\xrightarrow{c}w\xrightarrow{r}v,
+\]
+composition is represented by
+\[
+    (c,r)\circ(d,r\circ c)=(c\circ d,r),
+\]
+where
+\[
+    c\circ d=m_A(d,c).
+\]
+
+\begin{proposition}[Residual fibres]
+\label{prop:residual-fibres-in-slice}
+    The data above define an internal category in the slice
+    \[
+        \mathcal E/A_0.
+    \]
+    Its fibre over \(v\in A_0\) is the slice category
+    \[
+        \mathbb A/v.
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Specify the objects and arrows.} The object object in \(\mathcal E/A_0\) is
+        \[
+            A_1\xrightarrow{t_A}A_0.
+        \]
+        The arrow object in \(\mathcal E/A_0\) is
+        \[
+            T_A=A_1\times_{t_A,A_0,s_A}A_1
+            \xrightarrow{t_A\pi_2}A_0.
+        \]
+
+        \item \textbf{Define source and target.} For a generalized element
+        \[
+            z\xrightarrow{c}w\xrightarrow{r}v,
+        \]
+        the source and target maps in \(\mathcal E/A_0\) are
+        \[
+            d_0(c,r)=r\circ c=m_A(c,r),
+            \qquad
+            d_1(c,r)=r.
+        \]
+        Both lie over \(v\), because
+        \[
+            t_A m_A(c,r)=t_A(r).
+        \]
+
+        \item \textbf{Define identities.} The identity map sends
+        \[
+            r:w\to v
+            \quad\longmapsto\quad
+            (1_w,r)=(e_As_A(r),r).
+        \]
+        This is well-defined because
+        \[
+            t_A e_A s_A(r)=s_A(r).
+        \]
+        Its source and target are both \(r\), by the identity laws in \(\mathbb A\).
+
+        \item \textbf{Define composition.} The object of composable residual arrows is the object of triples
+        \[
+            y\xrightarrow{d}z\xrightarrow{c}w\xrightarrow{r}v.
+        \]
+        The composition map sends
+        \[
+            (d,r\circ c),(c,r)
+            \longmapsto
+            (c\circ d,r),
+        \]
+        where
+        \[
+            c\circ d=m_A(d,c).
+        \]
+        Its source is
+        \[
+            r\circ(c\circ d),
+        \]
+        and its target is \(r\). By associativity in \(\mathbb A\),
+        \[
+            r\circ(c\circ d)=(r\circ c)\circ d.
+        \]
+        Thus this is the composite of the two residual arrows.
+
+        \item \textbf{Verify the internal-category laws.} The unit and associativity diagrams for the residual category are the identity and associativity diagrams for \(\mathbb A\), restricted to the relevant pullback objects. Therefore the data form an internal category in \(\mathcal E/A_0\). The fibre over \(v\) has objects arrows into \(v\) and arrows commuting triangles over \(v\), hence is precisely \(\mathbb A/v\).
+
+        \item \textbf{Display triangle pasting.} Pasting of residual triangles is displayed by
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    y
+                        \arrow[r, "d"']
+                        \arrow[rr, "c\circ d", swap, bend right=20]
+                        \arrow[rrr, "r\circ c\circ d", bend left=25]
+                &
+                    z
+                        \arrow[r, "c"']
+                        \arrow[rr, "r\circ c", swap, bend right=20]
+                &
+                    w
+                        \arrow[r, "r"']
+                &
+                    v.
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Cocartesian residual transport]
+\label{def:residual-transport}
+    For an arrow
+    \[
+        a:u\to v
+    \]
+    of \(\mathbb A\), the \textbf{cocartesian residual transport} functor
+    \[
+        a_*:\mathbb A/u\to\mathbb A/v
+    \]
+    is defined by postcomposition:
+    \[
+        r:w\to u
+        \quad\longmapsto\quad
+        a\circ r:w\to v.
+    \]
+    On a residual triangle
+    \[
+        z\xrightarrow{c}w\xrightarrow{r}u,
+    \]
+    it sends the residual arrow
+    \[
+        r\circ c\to r
+    \]
+    to
+    \[
+        a\circ r\circ c\to a\circ r.
+    \]
+\end{definition}
+
+The transport square on residual objects is the cocartesian square
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            w
+                \arrow[r, equal]
+                \arrow[d, "r"']
+        &
+            w
+                \arrow[d, "a\circ r"]
+        \\
+            u
+                \arrow[r, "a"']
+        &
+            v.
+    \end{tikzcd}
+\]
+
+\begin{proposition}[Split opfibration laws]
+\label{prop:residual-transport-laws}
+    Residual transport satisfies
+    \[
+        (1_v)_*=\mathrm{id}_{\mathbb A/v},
+    \]
+    and, for composable arrows
+    \[
+        a:u\to v,
+        \qquad
+        b:v\to w,
+    \]
+    \[
+        (b\circ a)_*=b_*\circ a_*.
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Reduce to composition in \(\mathbb A\).} These equations are the identity and associativity laws for composition in \(\mathbb A\), applied to postcomposition in the codomain opfibration.
+
+        \item \textbf{Display associativity of transport.} The associativity law is displayed by the equality of the two routes in
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    \mathbb A/u
+                        \arrow[r, "a_*"]
+                        \arrow[rr, "{(b\circ a)_*}"', bend right=18]
+                &
+                    \mathbb A/v
+                        \arrow[r, "b_*"]
+                &
+                    \mathbb A/w.
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}[Codomain opfibration]
+\label{rem:codomain-opfibration}
+    Externally, this is the opfibred part of the codomain functor
+    \[
+        \operatorname{cod}:\mathbb A^\to\to\mathbb A.
+    \]
+    The chosen cocartesian lift of \(a:u\to v\) at \(r:w\to u\) is the square
+    \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+                w
+                    \arrow[r, equal]
+                    \arrow[d, "r"']
+            &
+                w
+                    \arrow[d, "a\circ r"]
+            \\
+                u
+                    \arrow[r, "a"']
+            &
+                v.
+        \end{tikzcd}
+    \]
+    Proposition~\ref{prop:residual-fibres-in-slice}, together with the split transports \(a_*\), gives the internally indexed presentation of this codomain opfibration.
+\end{remark}
+
+\subsection{The behaviour fibration}
+\label{subsec:behaviour-fibration}
+
+Behaviour is obtained from residual syntax by forming fibrewise internal functor categories into \(\mathbb B\). Since residual syntax is opfibred over \(\mathbb A\), behaviour is fibred contravariantly over \(\mathbb A\).
+
+\begin{definition}[Behaviour indexed category]
+\label{def:behaviour-indexed-category}
+    The \textbf{behaviour indexed category} associated to \(\mathbb A\) and \(\mathbb B\) is the contravariant internally indexed category
+    \[
+        \mathbf{Beh}_{\mathbb A,\mathbb B}
+        :
+        \mathbb A^{\mathrm{op}}\to
+        \mathbf{Cat}_{\mathrm{int}}(\mathcal E)
+    \]
+    defined fibrewise by
+    \[
+        \mathbf{Beh}_{\mathbb A,\mathbb B}(v)
+        :=
+        [\mathbb A/v,\mathbb B].
+    \]
+    Here \([\mathbb A/v,\mathbb B]\) denotes the strict internal functor category: objects are internal functors with specified object and arrow maps satisfying the functoriality equations on the nose.
+
+    For an input arrow
+    \[
+        a:u\to v,
+    \]
+    the reindexing functor
+    \[
+        a^*:
+        [\mathbb A/v,\mathbb B]\to[\mathbb A/u,\mathbb B]
+    \]
+    is precomposition with residual transport:
+    \[
+        a^*H:=H\circ a_*.
+    \]
+\end{definition}
+
+The variance change is summarized by the square
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+            \mathbb A/u
+                \arrow[r, "a_*"]
+                \arrow[dr, "{a^*H}"']
+        &
+            \mathbb A/v
+                \arrow[d, "H"]
+        \\
+        &
+            \mathbb B.
+    \end{tikzcd}
+\]
+
+\begin{definition}[Derivative]
+\label{def:derivative-behaviour}
+    The \textbf{derivative} of a residual behaviour
+    \[
+        H:\mathbb A/v\to\mathbb B
+    \]
+    by an arrow
+    \[
+        a:u\to v
+    \]
+    is its reindexing along \(a\):
+    \[
+        \partial_aH:=a^*H=H\circ a_*.
+    \]
+    Thus, for \(r:w\to u\),
+    \[
+        (\partial_aH)(r)=H(a\circ r).
+    \]
+\end{definition}
+
+\begin{definition}[Derivative of a comparison]
+\label{def:derivative-comparison}
+    If
+    \[
+        \eta:H\Rightarrow K
+    \]
+    is a behaviour comparison over \(v\), its \textbf{derivative} by \(a:u\to v\) is the whiskered natural transformation
+    \[
+        \partial_a\eta:=a^*\eta:
+        \partial_aH\Rightarrow\partial_aK.
+    \]
+\end{definition}
+
+\begin{proposition}[Split fibration laws for derivatives]
+\label{prop:derivative-laws-behaviour-category}
+    Derivatives satisfy
+    \[
+        \partial_{1_v}H=H,
+    \]
+    and, for composable arrows
+    \[
+        a:u\to v,
+        \qquad
+        b:v\to w,
+    \]
+    \[
+        \partial_{b\circ a}H
+        =
+        \partial_a(\partial_bH).
+    \]
+    The same equations hold for behaviour comparisons. Moreover,
+    \[
+        \partial_a(1_H)=1_{\partial_aH},
+        \qquad
+        \partial_a(\mu\circ\eta)=\partial_a\mu\circ\partial_a\eta.
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use functoriality of precomposition.} This is functoriality of precomposition, together with the split opfibration equations
+        \[
+            (1_v)_*=\mathrm{id}_{\mathbb A/v},
+            \qquad
+            (b\circ a)_*=b_*\circ a_*.
+        \]
+
+        \item \textbf{Display the derivative law.} The derivative law is the commutativity of
+        \[
+            \begin{tikzcd}[column sep=huge, row sep=large]
+                    \mathbb A/u
+                        \arrow[r, "a_*"]
+                        \arrow[rr, "{(b\circ a)_*}"', bend right=16]
+                &
+                    \mathbb A/v
+                        \arrow[r, "b_*"]
+                &
+                    \mathbb A/w
+                        \arrow[r, "H"]
+                &
+                    \mathbb B.
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{Representation of the behaviour fibration}
+\label{subsec:representation-behaviour-fibration}
+
+\begin{theorem}[Object of residual behaviours]
+\label{thm:object-of-residual-behaviours}
+    There is an object
+    \[
+        \mathbf{Beh}_0
+    \]
+    representing residual behaviours. It comes equipped with a projection
+    \[
+        p_{\mathbf{Beh}}:\mathbf{Beh}_0\to A_0
+    \]
+    whose fibre over \(v\) represents the strict internal functor category
+    \[
+        [\mathbb A/v,\mathbb B].
+    \]
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Work fibrewise over \(A_0\).} Work in the internal language of the locally cartesian closed category \(\mathcal E\), uniformly over \(v\in A_0\).
+
+        \item \textbf{Represent object assignments.} The residual objects over \(v\) are the fibre of
+        \[
+            t_A:A_1\to A_0.
+        \]
+        An object assignment
+        \[
+            r\longmapsto H(r)\in B_0
+        \]
+        is represented by the dependent product along \(t_A\).
+
+        \item \textbf{Represent typed arrow assignments.} Over the object \(U_0\) of object assignments, an arrow assignment must assign to each residual arrow
+        \[
+            (c,r):r\circ c\to r
+        \]
+        an arrow of \(\mathbb B\)
+        \[
+            H(c,r):H(r\circ c)\to H(r).
+        \]
+        The universal object assignment determines an endpoint map
+        \[
+            T_A\times_{A_0}U_0
+            \longrightarrow B_0\times B_0,
+            \qquad
+            (c,r,H)\longmapsto \bigl(H(r\circ c),H(r)\bigr).
+        \]
+        Pulling back
+        \[
+            (s_B,t_B):B_1\to B_0\times B_0
+        \]
+        along this endpoint map gives the object of correctly typed arrow values. Taking the dependent product along
+        \[
+            T_A\times_{A_0}U_0\to U_0
+        \]
+        gives the object of all typed arrow assignments over the chosen object assignment. Diagrammatically, the typing of arrow assignments is imposed by pullbacks of the form
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                \mathrm{ArrVal}
+                    \arrow[r]
+                    \arrow[d]
+                    \arrow[dr, phantom, "\lrcorner", very near start]
+                &
+                    B_1
+                        \arrow[d, "{(s_B,t_B)}"]
+                \\
+                    T_A
+                        \arrow[r, "{(H(r\circ c),H(r))}"']
+                &
+                    B_0\times B_0.
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Impose functoriality equations.} The identity equations are imposed by equalizers indexed by residual objects, and the composition equations are imposed by equalizers indexed by residual triples. The resulting subobject of the object of assignments is \(\mathbf{Beh}_0\). Its projection to \(A_0\) records the base object \(v\) of the residual slice.
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Anchor evaluation]
+\label{def:anchor-evaluation}
+    The identity residual section
+    \[
+        e_A:A_0\to A_1
+    \]
+    selects, in the fibre \(\mathbb A/v\), the distinguished residual object
+    \[
+        1_v:v\to v.
+    \]
+    The \textbf{anchor} of a behaviour
+    \[
+        H:\mathbb A/v\to\mathbb B
+    \]
+    is its value at this distinguished residual:
+    \[
+        \operatorname{anch}(H):=H(1_v).
+    \]
+    The corresponding anchor map is
+    \[
+        q_{\mathbf{Beh}}:\mathbf{Beh}_0\to B_0.
+    \]
+\end{definition}
+
+Thus the represented behaviour fibration carries the anchor span
+\[
+    \begin{tikzcd}[column sep=large]
+        &
+            \mathbf{Beh}_0
+                \arrow[dl, "p_{\mathbf{Beh}}"']
+                \arrow[dr, "q_{\mathbf{Beh}}"]
+        &
+        \\
+            A_0
+        &
+        &
+            B_0.
+    \end{tikzcd}
+\]
+
+\begin{definition}[Behaviour comparison]
+\label{def:behaviour-comparison}
+    Let
+    \[
+        H,K:\mathbb A/v\to\mathbb B
+    \]
+    be residual behaviours over the same object \(v\). A \textbf{behaviour comparison}
+    \[
+        \eta:H\Rightarrow K
+    \]
+    is an internal natural transformation. Its component at \(r:u\to v\) is an arrow
+    \[
+        \eta_r:H(r)\to K(r)
+    \]
+    satisfying, for every residual triangle
+    \[
+        w\xrightarrow{c}u\xrightarrow{r}v,
+    \]
+    the naturality equation
+    \[
+        \eta_r\circ H(c,r)
+        =
+        K(c,r)\circ\eta_{r\circ c}.
+    \]
+\end{definition}
+
+The naturality square of a behaviour comparison is
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            H(r\circ c)
+                \arrow{r}{H(c,r)}
+                \arrow{d}[swap]{\eta_{r\circ c}}
+        &
+            H(r)
+                \arrow{d}{\eta_r}
+        \\
+            K(r\circ c)
+                \arrow{r}[swap]{K(c,r)}
+        &
+            K(r)
+    \end{tikzcd}
+\]
+
+\begin{theorem}[Object of behaviour comparisons]
+\label{thm:object-of-behaviour-comparisons}
+    There is an object
+    \[
+        \mathbf{Beh}_1
+    \]
+    representing triples
+    \[
+        (H,K,\eta),
+    \]
+    where \(H\) and \(K\) are residual behaviours over the same object of \(\mathbb A\), and
+    \[
+        \eta:H\Rightarrow K
+    \]
+    is a behaviour comparison. The source and target maps
+    \[
+        s,t:\mathbf{Beh}_1\rightrightarrows\mathbf{Beh}_0
+    \]
+    send
+    \[
+        \eta:H\Rightarrow K
+    \]
+    to \(H\) and \(K\), and the pair \((s,t)\) factors through
+    \[
+        \mathbf{Beh}_0\times_{A_0}\mathbf{Beh}_0.
+    \]
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Fix a pair of behaviours.} Work over
+        \[
+            \mathbf{Beh}_0\times_{A_0}\mathbf{Beh}_0.
+        \]
+        A generalized point is a pair \((H,K)\) of behaviours over the same residual fibre \(\mathbb A/v\).
+
+        \item \textbf{Represent component assignments.} The components of a comparison are indexed by residual objects \(r:u\to v\). Pulling back
+        \[
+            (s_B,t_B):B_1\to B_0\times B_0
+        \]
+        along
+        \[
+            r\longmapsto (H(r),K(r))
+        \]
+        and taking the dependent product over the pulled-back residual-object family gives the object of component assignments.
+
+        \item \textbf{Impose naturality.} Naturality is an equality indexed by the triangle object \(T_A\), and is imposed by an equalizer.
+
+        \item \textbf{Display component typing.} The component-typing pullback has the form
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    \mathrm{CompVal}
+                        \arrow[r]
+                        \arrow[d]
+                        \arrow[dr, phantom, "\lrcorner", very near start]
+                &
+                    B_1
+                        \arrow[d, "{(s_B,t_B)}"]
+                \\
+                    A_1
+                        \arrow[r, "{(H(r),K(r))}"']
+                &
+                    B_0\times B_0.
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\begin{theorem}[Vertical behaviour category]
+\label{thm:internal-behaviour-category}
+    The data
+    \[
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+        =
+        (\mathbf{Beh}_0,\mathbf{Beh}_1,s,t,e,m)
+    \]
+    form an internal category.
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Define identities and composition.} Identities and composition are defined fibrewise by identities and vertical composition of internal natural transformations. These operations are represented by the universal construction of \(\mathbf{Beh}_1\).
+
+        \item \textbf{Verify the internal-category laws.} The internal identity and associativity laws hold pointwise in \(\mathbb B\), hence define the internal-category laws for \(\mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}\).
+
+        \item \textbf{Display vertical composition.} Fibrewise vertical composition is represented by the pasted comparison diagram
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    H(r)
+                        \arrow[r, "\eta_r"]
+                        \arrow[rr, "\mu_r\circ\eta_r", bend left=15]
+                &
+                    K(r)
+                        \arrow[r, "\mu_r"]
+                &
+                    L(r).
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}
+\label{rem:vertical-not-total-fibration}
+    The internal category
+    \[
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+    \]
+    is the vertical category of the behaviour fibration. Its arrows are comparisons inside a fixed fibre. The full Grothendieck construction of the behaviour fibration would also include arrows over non-identity arrows of \(\mathbb A\), generated by derivative reindexing. The Mealy structure below uses that cleavage.
+\end{remark}
+
+\begin{remark}[Equality of behaviours]
+\label{rem:equality-of-behaviours}
+    The object \(\mathbf{Beh}_0\) represents residual functors themselves. Thus equality in \(\mathbf{Beh}_0\) is equality of represented residual functors, not isomorphism of residual functors and not equivalence inside the vertical behaviour category.
+\end{remark}
+
+\subsection{Running specializations}
+\label{subsec:residual-behaviour-running-specializations}
+
+\subsubsection{The one-object specialization}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as one-object internal categories
+\[
+    \mathbb A=M,
+    \qquad
+    \mathbb B=N,
+\]
+using the one-object convention of Chapter~\ref{ch:spans-internal-categories-mealy}. Thus categorical composition in the associated one-object category is written
+\[
+    b\circ a=ba.
+\]
+
+The residual opfibration has a single base object, but its fibre is the internal residual right-Cayley category of \(M\). Its object object is \(M\). An object is written \(r\), and an arrow labelled by \(m\) has the form 
+\[
+    rm\longrightarrow r.
+\]
+Equivalently, the arrow object is \(M\times M\), with source and target maps
+\[
+    (r,m)\longmapsto rm,
+    \qquad
+    (r,m)\longmapsto r.
+\]
+The identity at \(r\) is \((r,1)\), and composition is determined by
+\[
+    rmn \xrightarrow{\,n\,} rm \xrightarrow{\,m\,} r
+    \qquad\longmapsto\qquad
+    rmn \xrightarrow{\,mn\,} r.
+\]
+In morphism notation, this says
+\[
+    (rm,n),(r,m)\longmapsto (r,mn).
+\]
+
+Transport along an input \(s\) is postcomposition in the one-object category. It therefore sends
+\[
+    r\longmapsto sr.
+\]
+Here \(sr\) denotes the monoid product corresponding to the categorical composite \(s\circ r\), in accordance with the convention \(b\circ a=ba\).
+
+A residual behaviour is an internal functor from this residual right-Cayley category to \(N\). Since \(N\) has one object, such a functor is equivalently a map
+\[
+    \lambda:M\times M\to N
+\]
+satisfying the internal functoriality equations
+\[
+    \lambda(r,1)=1,
+    \qquad
+    \lambda(r,mn)=\lambda(r,m)\lambda(rm,n).
+\]
+Thus \(\lambda(r,m)\) is the output attached to the residual arrow
+\[
+    rm\longrightarrow r.
+\]
+
+A behaviour comparison
+\[
+    \alpha:\lambda\Rightarrow\mu
+\]
+is an internal natural transformation between the corresponding functors. Equivalently, it is a map
+\[
+    \alpha:M\to N
+\]
+satisfying
+\[
+    \alpha_r\lambda(r,m)=\mu(r,m)\alpha_{rm}.
+\]
+This is exactly the naturality square for the arrow \(rm\to r\) in the residual right-Cayley category. If \(N=G\) is an internal group, this equation may equivalently be written
+\[
+    \mu(r,m)=\alpha_r\lambda(r,m)\alpha_{rm}^{-1}.
+\]
+
+\subsubsection{The stateless specialization}
+
+In the stateless case, let
+\[
+    F:\mathbb A\to\mathbb B
+\]
+be an internal functor, regarded as the map-representable Mealy morphism
+associated to its object map
+\[
+    F_0:A_0\to B_0.
+\]
+For an object \(v\in A_0\), the induced residual behaviour is the internal
+functor
+\[
+    H^F_v:\mathbb A/v\to\mathbb B
+\]
+defined by restriction of \(F\) along the domain functor
+\[
+    \operatorname{dom}_v:\mathbb A/v\to\mathbb A.
+\]
+Thus
+\[
+    H^F_v=F\circ\operatorname{dom}_v.
+\]
+Explicitly,
+\[
+    H^F_v(r:u\to v)=F_0(u),
+\]
+and, for a morphism in the slice
+\[
+    w\xrightarrow{a}u\xrightarrow{r}v,
+\]
+one has
+\[
+    H^F_v(a,r)=F_1(a):F_0(w)\to F_0(u).
+\]
+
+Hence an internal functor \(F:\mathbb A\to\mathbb B\) determines a canonical
+map into the behaviour object,
+\[
+    J_F:A_0\to \mathbf{Beh}_0,
+    \qquad
+    J_F(v)=H^F_v=F\circ\operatorname{dom}_v.
+\]
+This is the stateless residual semantics of \(F\). It assigns to an input object \(v\) the ordinary category-theoretic slice restriction of \(F\) to arrows with codomain \(v\).
+
+For an input arrow
+\[
+    a:u\to v,
+\]
+the residual derivative is reindexing along postcomposition
+\[
+    a_*:\mathbb A/u\to\mathbb A/v.
+\]
+The defining square is
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+            \mathbb A/u
+                \arrow[r, "a_*"]
+                \arrow[d, "\operatorname{dom}_u"']
+        &
+            \mathbb A/v
+                \arrow[d, "\operatorname{dom}_v"]
+        \\
+            \mathbb A
+                \arrow[r, equal]
+        &
+            \mathbb A.
+    \end{tikzcd}
+\]
+Therefore
+\[
+    \partial_aH^F_v
+        =
+    H^F_v\circ a_*
+        =
+    F\circ\operatorname{dom}_v\circ a_*
+        =
+    F\circ\operatorname{dom}_u
+        =
+    H^F_u.
+\]
+Equivalently,
+\[
+    \partial_a J_F(v)=J_F(u).
+\]
+
+Thus, in the stateless specialization, residual differentiation is ordinary change of slice. The behaviour fibration contains each internal functor through its family of slice restrictions
+\[
+    v\longmapsto F\circ\operatorname{dom}_v.
+\]
+In particular, for the identity functor on \(\mathbb A\), one obtains
+\[
+    J_{1_{\mathbb A}}(v)=\operatorname{dom}_v:\mathbb A/v\to\mathbb A.
+\]
+So the stateless part of the residual semantics recovers the ordinary codomain-slice geometry of \(\mathbb A\) itself.
+
+\section{The cleavage Mealy morphism}
+\label{sec:cleavage-mealy-morphism}
+
+The behaviour indexed category has a split cleavage given by derivative reindexing. Anchor evaluation turns this cleavage into a Mealy morphism.
+
+\subsection{Internal derivative and anchor-output maps}
+\label{subsec:internal-derivative-anchor-output}
+
+\begin{lemma}[Internal derivative and output maps]
+\label{lem:internal-derivative-output-maps}
+    The derivative reindexing of \(\mathbf{Beh}_{\mathbb A,\mathbb B}\) is represented by a morphism
+    \[
+        \partial:
+        A_1\times_{t_A,A_0,p_{\mathbf{Beh}}}\mathbf{Beh}_0
+        \longrightarrow
+        \mathbf{Beh}_0
+    \]
+    satisfying
+    \[
+        p_{\mathbf{Beh}}\partial=s_A\pi_{A_1}.
+    \]
+    The anchor comparison induced by the residual morphism
+    \[
+        a_*1_u=a\longrightarrow 1_v
+    \]
+    is represented by a morphism
+    \[
+        \mathrm{out}_{\mathbf{Beh}}:
+        A_1\times_{t_A,A_0,p_{\mathbf{Beh}}}\mathbf{Beh}_0
+        \longrightarrow
+        B_1
+    \]
+    satisfying
+    \[
+        s_B\mathrm{out}_{\mathbf{Beh}}
+        =
+        q_{\mathbf{Beh}}\partial,
+        \qquad
+        t_B\mathrm{out}_{\mathbf{Beh}}
+        =
+        q_{\mathbf{Beh}}\pi_{\mathbf{Beh}}.
+    \]
+\end{lemma}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Represent derivative reindexing.} The derivative map is the representing morphism for the fibrewise reindexing operation
+        \[
+            (a,H)\longmapsto a^*H=H\circ a_*.
+        \]
+        Its base equation is the statement that \(a^*H\) lies over \(s_A(a)\).
+
+        \item \textbf{Construct the anchor comparison.} For the output map, let
+        \[
+            a:u\to v,
+            \qquad
+            H:\mathbb A/v\to\mathbb B.
+        \]
+        In the slice \(\mathbb A/v\), the chosen cocartesian transport of \(1_u\) along \(a\) gives the residual object \(a:u\to v\), and there is the residual morphism
+        \[
+            a\to 1_v.
+        \]
+        Applying \(H\) gives
+        \[
+            H(a)\to H(1_v).
+        \]
+
+        \item \textbf{Check source and target.} Since
+        \[
+            H(a)=(a^*H)(1_u)=q_{\mathbf{Beh}}(\partial(a,H)),
+            \qquad
+            H(1_v)=q_{\mathbf{Beh}}(H),
+        \]
+        this arrow has the displayed source and target.
+
+        \item \textbf{Display the typing diagram.} The source-target typing is encoded by
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                &
+                    A_1\times_{A_0}\mathbf{Beh}_0
+                        \arrow[dl, "q_{\mathbf{Beh}}\partial"']
+                        \arrow[dr, "q_{\mathbf{Beh}}\pi_{\mathbf{Beh}}"]
+                        \arrow[d, "\mathrm{out}_{\mathbf{Beh}}" description]
+                &
+                \\
+                    B_0
+                &
+                    B_1
+                        \arrow[l, "s_B"]
+                        \arrow[r, "t_B"']
+                &
+                    B_0.
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{The canonical behaviour carrier}
+\label{subsec:canonical-behaviour-carrier}
+
+\begin{definition}[Canonical behaviour carrier]
+\label{def:canonical-behaviour-carrier}
+    The \textbf{canonical behaviour carrier} is the anchor span
+    \[
+        A_0
+        \xleftarrow{p_{\mathbf{Beh}}}
+        \mathbf{Beh}_0
+        \xrightarrow{q_{\mathbf{Beh}}}
+        B_0.
+    \]
+\end{definition}
+
+\begin{definition}[Canonical transition and output]
+\label{def:canonical-transition-output}
+    The \textbf{canonical transition} is derivative reindexing:
+    \[
+        \delta_{\mathbf{Beh}}:=\partial.
+    \]
+    The \textbf{canonical output} is the anchor comparison:
+    \[
+        \omega_{\mathbf{Beh}}:=\mathrm{out}_{\mathbf{Beh}}.
+    \]
+    In generalized-element notation,
+    \[
+        \delta_{\mathbf{Beh}}(a,H)=\partial_aH,
+    \]
+    and
+    \[
+        \omega_{\mathbf{Beh}}(a,H)=H(a,1_v):H(a)\to H(1_v),
+    \]
+    where \(a:u\to v\) and \(H:\mathbb A/v\to\mathbb B\).
+\end{definition}
+
+The defining residual triangle for the output is
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            u
+                \arrow[r, "a"]
+                \arrow[rr, "a", bend left=15]
+        &
+            v
+                \arrow[r, "1_v"']
+        &
+            v.
+    \end{tikzcd}
+\]
+
+\subsection{The cleavage Mealy morphism}
+\label{subsec:cleavage-mealy-morphism}
+
+\begin{theorem}[Cleavage Mealy morphism of the behaviour fibration]
+\label{thm:canonical-behaviour-mealy-morphism}
+    The anchor span, together with derivative transition and anchor-comparison output, defines a Mealy morphism
+    \[
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}:
+        \mathbb A\rightsquigarrow\mathbb B.
+    \]
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Check typing.} The typing equations are exactly the two parts of Lemma~\ref{lem:internal-derivative-output-maps}.
+
+        \item \textbf{Verify the transition laws.} The transition unit and multiplication laws are the split fibration laws:
+        \[
+            \partial_{1_v}H=H,
+            \qquad
+            \partial_{b\circ a}H=\partial_a(\partial_bH).
+        \]
+
+        \item \textbf{Verify the output unit law.} The output unit law follows because the residual morphism
+        \[
+            1_v\to 1_v
+        \]
+        is the identity in the slice \(\mathbb A/v\), so applying \(H\) gives
+        \[
+            1_{H(1_v)}.
+        \]
+
+        \item \textbf{Factor the residual composite.} For multiplication, let
+        \[
+            a:u\to v,
+            \qquad
+            b:v\to w,
+            \qquad
+            H:\mathbb A/w\to\mathbb B.
+        \]
+        In the slice \(\mathbb A/w\), the residual morphism
+        \[
+            b\circ a\to 1_w
+        \]
+        factors as
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    u
+                        \arrow[r, "a"]
+                        \arrow[rr, "b\circ a", bend left=17]
+                        \arrow[rrr, "b\circ a", bend left=32]
+                &
+                    v
+                        \arrow[r, "b"]
+                        \arrow[rr, "b", bend left=17]
+                &
+                    w
+                        \arrow[r, "1_w"']
+                &
+                    w.
+            \end{tikzcd}
+        \]
+        That is, the residual arrow
+        \[
+            b\circ a\to 1_w
+        \]
+        factors through
+        \[
+            b\circ a\longrightarrow b\longrightarrow 1_w.
+        \]
+
+        \item \textbf{Apply functoriality of \(H\).} Applying the functor \(H\) gives
+        \[
+            H(b\circ a,1_w)
+            =
+            H(b,1_w)\circ H(a,b).
+        \]
+        This is the required Mealy output law:
+        \[
+            \omega_{\mathbf{Beh}}(b\circ a,H)
+            =
+            \omega_{\mathbf{Beh}}(b,H)
+            \circ
+            \omega_{\mathbf{Beh}}(a,\partial_bH).
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{Derivative-closed subobjects}
+\label{subsec:derivative-closed-subobjects}
+
+Put
+\[
+    Z:=A_0\times B_0.
+\]
+The behaviour object is regarded as an object of \(\mathcal E/Z\) by
+\[
+    (p_{\mathbf{Beh}},q_{\mathbf{Beh}}):
+    \mathbf{Beh}_0\to Z.
+\]
+
+\begin{definition}[Derivative domain of a subobject]
+\label{def:derivative-domain-subobject}
+    Let
+    \[
+        i:S\hookrightarrow\mathbf{Beh}_0
+    \]
+    be a subobject in \(\mathcal E/Z\). Write
+    \[
+        p_S:=p_{\mathbf{Beh}}i.
+    \]
+    The \textbf{derivative domain} of \(S\) is
+    \[
+        \mathsf D(S):=
+        A_1\times_{t_A,A_0,p_S}S.
+    \]
+    It is regarded as an object of \(\mathcal E/Z\) through the derivative composite
+    \[
+        \mathsf D(S)
+            \xrightarrow{\partial(1_{A_1}\times i)}
+        \mathbf{Beh}_0
+            \xrightarrow{(p_{\mathbf{Beh}},q_{\mathbf{Beh}})}
+        Z.
+    \]
+\end{definition}
+
+The defining pullback is
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            \mathsf D(S)
+                \arrow[r, "\pi_S"]
+                \arrow[d, "\pi_{A_1}"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            S
+                \arrow[d, "p_S"]
+        \\
+            A_1
+                \arrow[r, "t_A"']
+        &
+            A_0.
+    \end{tikzcd}
+\]
+Thus a generalized element \((a,H)\), with
+\[
+    a:u\to p_S(H),
+\]
+has \(Z\)-coordinate
+\[
+    \bigl(u,\ q_{\mathbf{Beh}}(\partial_a iH)\bigr).
+\]
+This coordinate is the input interface and anchor of the derivative behaviour.
+
+\begin{definition}[Derivative-closed subobject]
+\label{def:derivative-closed-subobject}
+    A subobject
+    \[
+        i:S\hookrightarrow\mathbf{Beh}_0
+    \]
+    in \(\mathcal E/Z\) is \textbf{derivative-closed} if the derivative map
+    \[
+        \partial(1_{A_1}\times i):
+        \mathsf D(S)\to\mathbf{Beh}_0
+    \]
+    factors through \(i\) in \(\mathcal E/Z\). Equivalently, there is a unique
+    map
+    \[
+        \bar\partial_S:\mathsf D(S)\to S
+    \]
+    over \(Z\) such that
+    \[
+        i\bar\partial_S
+        =
+        \partial(1_{A_1}\times i).
+    \]
+\end{definition}
+
+The factorization condition is displayed by
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            \mathsf D(S)
+                \arrow[rr, "{\partial(1_{A_1}\times i)}"]
+                \arrow[dr, "\bar\partial_S"']
+        &
+        &
+            \mathbf{Beh}_0
+        \\
+        &
+            S
+                \arrow[ur, "i"']
+        &
+    \end{tikzcd}
+    \qquad
+    \text{in }\mathcal E/Z.
+\]
+
+\begin{lemma}[Restriction to derivative-closed subobjects]
+\label{lem:restriction-derivative-closed-subobject}
+    Let
+    \[
+        i:S\hookrightarrow\mathbf{Beh}_0
+    \]
+    be derivative-closed. Then the canonical behaviour Mealy morphism restricts to a Mealy morphism carried by
+    \[
+        A_0\xleftarrow{p_{\mathbf{Beh}}i}S
+        \xrightarrow{q_{\mathbf{Beh}}i}B_0.
+    \]
+\end{lemma}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Restrict the transition.} Derivative-closedness supplies the transition
+        \[
+            \bar\partial_S:\mathsf D(S)\to S.
+        \]
+
+        \item \textbf{Restrict the output.} The output is the restriction of
+        \[
+            \omega_{\mathbf{Beh}}
+        \]
+        along
+        \[
+            1_{A_1}\times i:
+            A_1\times_{A_0}S\to
+            A_1\times_{A_0}\mathbf{Beh}_0.
+        \]
+
+        \item \textbf{Verify the laws by monicity.} The typing equations follow from the fact that \(\bar\partial_S\) is a map over the derivative-induced \(Z\)-structure. The unit and multiplication laws hold after composing with the monomorphism \(i\), hence hold in \(S\).
+    \end{enumerate}
+\end{proof}
+
+\subsection{Running specializations}
+\label{subsec:cleavage-running-specializations}
+
+\subsubsection{The one-object specialization}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as one-object internal categories
+\[
+    \mathbb A=M,
+    \qquad
+    \mathbb B=N,
+\]
+using the convention
+\[
+    b\circ a=ba.
+\]
+In this case the states of the canonical behaviour Mealy morphism are residual \(N\)-valued cocycles
+\[
+    \lambda:M\times M\to N
+\]
+on the internal residual right-Cayley category of \(M\).
+
+For an input \(s\in M\), the transition is derivative reindexing:
+\[
+    \lambda\longmapsto\partial_s\lambda,
+    \qquad
+    (\partial_s\lambda)(r,m)=\lambda(sr,m).
+\]
+Indeed, transport along \(s\) sends a residual object \(r\) to the residual object \(sr\), corresponding to the categorical composite \(s\circ r\).
+
+The output on input \(s\) is the anchor comparison associated to the residual arrow
+\[
+    s\longrightarrow 1
+\]
+in the residual right-Cayley category. Under the one-object identification of \(\mathbb B=N\), this comparison is represented by the element
+\[
+    \lambda(1,s)\in N.
+\]
+Thus the canonical behaviour Mealy morphism specializes to the internal residual-cocycle machine
+\[
+    \lambda
+        \xmapsto{\;s\;/\;\lambda(1,s)\;}
+    \partial_s\lambda.
+\]
+It is canonical because it is generated entirely by the cleavage of residual syntax and the anchor-output map of the behaviour fibration.
+
+\subsubsection{The stateless specialization}
+
+In the stateless case, let
+\[
+    F:\mathbb A\to\mathbb B
+\]
+be an internal functor, regarded as a map-representable Mealy morphism. As in Subsection~\ref{subsec:residual-behaviour-running-specializations}, \(F\) determines a map into the canonical behaviour carrier
+\[
+    J_F:A_0\to \mathbf{Beh}_0,
+    \qquad
+    J_F(v)=H^F_v=F\circ\operatorname{dom}_v.
+\]
+Thus the state over \(v\) is the ordinary category-theoretic residual of \(F\) at \(v\), namely the restriction of \(F\) to the slice
+\[
+    \mathbb A/v.
+\]
+
+For an input arrow
+\[
+    a:u\to v
+\]
+the transition in the canonical behaviour machine is derivative reindexing:
+\[
+    H^F_v\longmapsto \partial_a H^F_v.
+\]
+By the defining square
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+            \mathbb A/u
+                \arrow[r, "a_*"]
+                \arrow[d, "\operatorname{dom}_u"']
+        &
+            \mathbb A/v
+                \arrow[d, "\operatorname{dom}_v"]
+        \\
+            \mathbb A
+                \arrow[r, equal]
+        &
+            \mathbb A,
+    \end{tikzcd}
+\]
+one has
+\[
+    \partial_aH^F_v
+        =
+    H^F_v\circ a_*
+        =
+    F\circ\operatorname{dom}_v\circ a_*
+        =
+    F\circ\operatorname{dom}_u
+        =
+    H^F_u.
+\]
+Hence
+\[
+    J_F(v)\xmapsto{\;a\;}J_F(u).
+\]
+
+The emitted output arrow is the anchor comparison for \(H^F_v\) along \(a\). Since \(H^F_v\) is the slice restriction of \(F\), this anchor comparison is exactly
+\[
+    F_1(a):F_0u\to F_0v.
+\]
+Thus the restriction of the canonical behaviour Mealy morphism to the image of \(J_F\) has transitions
+\[
+    H^F_v
+        \xmapsto{\;a\;/\;F_1(a)\;}
+    H^F_u.
+\]
+
+Consequently the canonical behaviour machine contains ordinary internal functoriality as its stateless part: an internal functor \(F:\mathbb A\to\mathbb B\) appears as the derivative-closed family of slice restrictions
+\[
+    v\longmapsto F\circ\operatorname{dom}_v,
+\]
+with output arrows given by the arrow map of \(F\). In particular, for the identity functor on \(\mathbb A\), the corresponding stateless submachine is the slice-residual machine
+\[
+    v\longmapsto \operatorname{dom}_v:\mathbb A/v\to\mathbb A,
+\]
+whose transitions are ordinary change of slice along arrows of \(\mathbb A\).
+
+\section{Mealy actions and residual semantics}
+\label{sec:mealy-actions-residual-semantics}
+
+An arbitrary Mealy morphism determines a residual semantics by sending each state to its residual orbit. This construction is the categorical analogue of sending a state of a deterministic automaton to the language, or output behaviour, observed from that state. Related formulations appear in the coalgebraic account of final semantics and minimization \cite{Rutten1998,Rutten2000}.
+
+\subsection{The execution category}
+\label{subsec:execution-category}
+
+The transition part of a Mealy morphism is a contravariant action of \(\mathbb A\), equivalently a covariant action of \(\mathbb A^{\mathrm{op}}\). We use the corresponding category of executions, whose arrows are oriented in the direction in which states evolve.
+
+\begin{definition}[Execution category]
+\label{def:execution-category}
+    Let
+    \[
+        P:\mathbb A\rightsquigarrow\mathbb B
+    \]
+    be a Mealy morphism. Its \textbf{execution category}
+    \[
+        \int_{\mathbb A}P
+    \]
+    has object object \(P\) and arrow object
+    \[
+        A_1\times_{t_A,A_0,p}P.
+    \]
+    The arrow
+    \[
+        (a,x)
+    \]
+    has source and target
+    \[
+        s_{\int P}(a,x)=x,
+        \qquad
+        t_{\int P}(a,x)=\delta(a,x).
+    \]
+    The identity at \(x\) is
+    \[
+        (1_{p(x)},x).
+    \]
+    If
+    \[
+        (a,x):x\to\delta(a,x),
+        \qquad
+        (c,\delta(a,x)):
+        \delta(a,x)\to\delta(c,\delta(a,x))
+    \]
+    are composable, where
+    \[
+        c:w\to u,
+        \qquad
+        a:u\to v,
+    \]
+    then their composite is
+    \[
+        (a\circ c,x):x\to\delta(a\circ c,x).
+    \]
+    Here \(a\circ c\) denotes the ordinary categorical composite
+    \[
+        w\xrightarrow{c}u\xrightarrow{a}v,
+    \]
+    so, in the notation of Chapter~\ref{ch:spans-internal-categories-mealy},
+    \[
+        a\circ c=m_A(c,a).
+    \]
+\end{definition}
+
+The transition square for an execution arrow is
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            {q(\delta(a,x))}
+                \arrow[r, "{\omega(a,x)}"]
+        &
+            {q(x)}
+            \\
+            {\delta(a,x)}
+                \arrow[u, "q"]
+        &
+            {x}
+                \arrow[l, "{(a,x)}"']
+                \arrow[u, "q"']
+    \end{tikzcd}
+\]
+where the horizontal arrow on the bottom is in the execution category and the top arrow is its emitted \(\mathbb B\)-output.
+
+\begin{proposition}[Execution category]
+\label{prop:execution-category}
+    The data of Definition~\ref{def:execution-category} define an internal category
+    \[
+        \int_{\mathbb A}P.
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use the Mealy laws for \(\delta\).} The identity and composition maps are well-defined by the Mealy unit and multiplication laws for \(\delta\). The identity and associativity laws are inherited from the identity and associativity laws in \(\mathbb A\), using the Mealy laws for \(\delta\).
+
+        \item \textbf{Display the execution order.} The execution category composes in the ordinary categorical order of \(\mathbb A\), while execution itself processes inputs target-to-source. The composite execution square is
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    x
+                        \arrow[r, "{(a,x)}"]
+                        \arrow[rr, "{(a\circ c,x)}"', bend right=18]
+                &
+                    \delta(a,x)
+                        \arrow[r, "{(c,\delta(a,x))}"]
+                &
+                    \delta(c,\delta(a,x)).
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{The output functor}
+\label{subsec:output-functor}
+
+\begin{proposition}[Output functor]
+\label{prop:output-functor}
+    The output map of \(P\) is equivalently an internal functor
+    \[
+        \Omega_P:\int_{\mathbb A}P\to\mathbb B^{\mathrm{op}}
+    \]
+    with object map
+    \[
+        q:P\to B_0.
+    \]
+    It sends an execution arrow
+    \[
+        (a,x):x\to\delta(a,x)
+    \]
+    to
+    \[
+        \omega(a,x)^{\mathrm{op}}:q(x)\to q(\delta(a,x))
+    \]
+    in \(\mathbb B^{\mathrm{op}}\).
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Check arrow typing.} The Mealy typing equations give
+        \[
+            \omega(a,x):q(\delta(a,x))\to q(x)
+        \]
+        in \(\mathbb B\), hence an arrow
+        \[
+            q(x)\to q(\delta(a,x))
+        \]
+        in \(\mathbb B^{\mathrm{op}}\).
+
+        \item \textbf{Check identities.} The Mealy output unit law gives identity preservation.
+
+        \item \textbf{Check composition.} For composition, consider composable execution arrows
+        \[
+            (a,x):x\to\delta(a,x),
+            \qquad
+            (c,\delta(a,x)):\delta(a,x)\to\delta(c,\delta(a,x)).
+        \]
+        Their composite is
+        \[
+            (a\circ c,x).
+        \]
+        The output of the composite is
+        \[
+            \omega(a\circ c,x)
+            =
+            \omega(a,x)\circ\omega(c,\delta(a,x))
+        \]
+        in \(\mathbb B\). Passing to \(\mathbb B^{\mathrm{op}}\), this is exactly composition preservation:
+        \[
+            \omega(c,\delta(a,x))^{\mathrm{op}}
+            \circ
+            \omega(a,x)^{\mathrm{op}}
+            =
+            \omega(a\circ c,x)^{\mathrm{op}}.
+        \]
+
+        \item \textbf{Display the opposite composition square.} The relevant square in \(\mathbb B^{\mathrm{op}}\) is
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    {q(x)}
+                        \arrow{r}{\omega(a,x)^{\mathrm{op}}}
+                        \arrow{rr}[swap, bend right=15]{\omega(a\circ c,x)^{\mathrm{op}}}
+                &
+                    {q(\delta(a,x))}
+                        \arrow{r}{\omega(c,\delta(a,x))^{\mathrm{op}}}
+                &
+                    {q(\delta(c,\delta(a,x)))}
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{Residual orbit functors}
+\label{subsec:orbit-functors}
+
+\begin{definition}[Residual orbit]
+\label{def:residual-orbit}
+    Let \(x\in P\) with \(p(x)=v\). The \textbf{residual orbit} of \(x\) is the functor
+    \[
+        \rho_x:\mathbb A/v\to
+        \left(\int_{\mathbb A}P\right)^{\mathrm{op}}
+    \]
+    defined as follows. On a residual object
+    \[
+        r:u\to v,
+    \]
+    it is
+    \[
+        \rho_x(r)=\delta(r,x).
+    \]
+    On a residual morphism represented by
+    \[
+        w\xrightarrow{a}u\xrightarrow{r}v,
+    \]
+    it is the opposite of the execution arrow
+    \[
+        (a,\delta(r,x)):
+        \delta(r,x)\to\delta(a,\delta(r,x)).
+    \]
+    Since
+    \[
+        \delta(a,\delta(r,x))=\delta(r\circ a,x),
+    \]
+    this gives an arrow
+    \[
+        \delta(r\circ a,x)\to\delta(r,x)
+    \]
+    in
+    \[
+        \left(\int_{\mathbb A}P\right)^{\mathrm{op}}.
+    \]
+\end{definition}
+
+The orbit sends a residual triangle to an opposite execution arrow:
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            w
+                \arrow[r, "a"]
+                \arrow[rr, "r\circ a", bend left=17]
+        &
+            u
+                \arrow[r, "r"]
+        &
+            v
+    \end{tikzcd}
+    \qquad\leadsto\qquad
+    \begin{tikzcd}[column sep=large, row sep=large]
+            \delta(r\circ a,x)
+                \arrow[r]
+        &
+            \delta(r,x)
+    \end{tikzcd}
+\]
+where the arrow on the right is in \(\left(\int_{\mathbb A}P\right)^{\mathrm{op}}\).
+
+\begin{proposition}[Orbit functor]
+\label{prop:residual-orbit-functor}
+    For every state \(x\), the residual orbit assignment is a functor
+    \[
+        \rho_x:\mathbb A/p(x)\to
+        \left(\int_{\mathbb A}P\right)^{\mathrm{op}}.
+    \]
+    Moreover, for \(a:u\to v\) and \(p(x)=v\),
+    \[
+        \rho_{\delta(a,x)}=\rho_x\circ a_*.
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Prove functoriality.} Functoriality follows from the identity and composition laws of the execution category.
+
+        \item \textbf{Identify reindexing of orbits.} The displayed compatibility states that executing from the state \(\delta(a,x)\) along a residual \(r\) is the same as executing from \(x\) along the transported residual \(a\circ r\). This is the Mealy multiplication law for \(\delta\).
+
+        \item \textbf{Display the compatibility square.} The compatibility is summarized by
+        \[
+            \begin{tikzcd}[column sep=huge, row sep=large]
+                    \mathbb A/u
+                        \arrow[r, "a_*"]
+                        \arrow[d, "\rho_{\delta(a,x)}"']
+                &
+                    \mathbb A/v
+                        \arrow[d, "\rho_x"]
+                \\
+                    \left(\int_{\mathbb A}P\right)^{\mathrm{op}}
+                        \arrow[r, equal]
+                &
+                    \left(\int_{\mathbb A}P\right)^{\mathrm{op}}.
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{Residual behaviour of a state}
+\label{subsec:residual-behaviour-of-state}
+
+\begin{definition}[Residual behaviour of a state]
+\label{def:residual-behaviour-of-state}
+    The \textbf{residual behaviour} of a state \(x\in P\) is the composite
+    \[
+        H_x:=
+        \Omega_P^{\mathrm{op}}\circ\rho_x:
+        \mathbb A/p(x)\to\mathbb B.
+    \]
+    Thus
+    \[
+        H_x(r)=q(\delta(r,x)).
+    \]
+    For a residual triangle
+    \[
+        w\xrightarrow{a}u\xrightarrow{r}p(x),
+    \]
+    the arrow value is
+    \[
+        H_x(a,r)
+        =
+        \omega(a,\delta(r,x)):
+        q(\delta(r\circ a,x))\to q(\delta(r,x)).
+    \]
+\end{definition}
+
+The residual behaviour is the composite of the orbit and output functor:
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+            \mathbb A/p(x)
+                \arrow[r, "\rho_x"]
+                \arrow[rr, "H_x"', bend right=16]
+        &
+            \left(\int_{\mathbb A}P\right)^{\mathrm{op}}
+                \arrow[r, "\Omega_P^{\mathrm{op}}"]
+        &
+            \mathbb B.
+    \end{tikzcd}
+\]
+
+\begin{proposition}
+\label{prop:state-residual-behaviour-functor}
+    For every \(x\in P\), the assignment \(H_x\) is a residual behaviour. Moreover,
+    \[
+        H_x(1_{p(x)})=q(x).
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use functoriality of the composite.} The first claim follows because \(H_x\) is the composite of two functors.
+
+        \item \textbf{Evaluate at the anchor.} The second follows from the Mealy unit law:
+        \[
+            H_x(1_{p(x)})
+            =
+            q(\delta(1_{p(x)},x))
+            =
+            q(x).
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{The behaviour assignment}
+\label{subsec:semantic-map-beta}
+
+\begin{definition}[Behaviour assignment]
+\label{def:behaviour-assignment-map}
+    For a Mealy morphism \(P\), the \textbf{behaviour assignment} is the map
+    \[
+        \beta_P:P\to\mathbf{Beh}_0
+    \]
+    classified by the residual behaviours
+    \[
+        x\longmapsto H_x.
+    \]
+\end{definition}
+
+\begin{lemma}[Internal construction of \(\beta_P\)]
+\label{lem:internal-construction-beta}
+    The assignment
+    \[
+        x\longmapsto H_x
+    \]
+    defines a morphism
+    \[
+        \beta_P:P\to\mathbf{Beh}_0.
+    \]
+\end{lemma}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Define the object assignment.} The object-assignment part of the family \(H_x\) is the map
+        \[
+            A_1\times_{t_A,A_0,p}P\to B_0,
+            \qquad
+            (r,x)\longmapsto q(\delta(r,x)).
+        \]
+
+        \item \textbf{Define the arrow assignment.} The arrow-assignment part, indexed by residual triangles, is
+        \[
+            (a,r,x)\longmapsto\omega(a,\delta(r,x)).
+        \]
+
+        \item \textbf{Invoke the representing property.} The Mealy laws imply the functoriality equations for this assignment. Hence the representing property of \(\mathbf{Beh}_0\) gives the desired morphism.
+    \end{enumerate}
+\end{proof}
+
+\begin{proposition}[Semantic homomorphism]
+\label{prop:behaviour-assignment}
+    The map
+    \[
+        \beta_P:P\to\mathbf{Beh}_0
+    \]
+    lies over
+    \[
+        Z=A_0\times B_0.
+    \]
+    It satisfies
+    \[
+        \beta_P(\delta_P(a,x))
+        =
+        \partial_a(\beta_P(x)),
+    \]
+    and
+    \[
+        \omega_P(a,x)
+        =
+        \omega_{\mathbf{Beh}}(a,\beta_P(x)).
+    \]
+    Therefore
+    \[
+        \beta_P:P\to\mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+    \]
+    is a strict semantic Mealy homomorphism.
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Check the map over \(Z\).} Since \(H_x\) lies over \(p(x)\) and satisfies
+        \[
+            H_x(1_{p(x)})=q(x),
+        \]
+        the map \(\beta_P\) lies over \(Z\). This is the commutativity of
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    P
+                        \arrow[r, "\beta_P"]
+                        \arrow[dr, "{(p,q)}"']
+                &
+                    \mathbf{Beh}_0
+                        \arrow[d, "{(p_{\mathbf{Beh}},q_{\mathbf{Beh}})}"]
+                \\
+                &
+                    A_0\times B_0.
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Check transition preservation.} For \(a:u\to v\) and \(p(x)=v\), the residual-orbit identity gives
+        \[
+            \rho_{\delta(a,x)}=\rho_x\circ a_*.
+        \]
+        Therefore
+        \[
+            \beta_P(\delta(a,x))
+            =
+            H_{\delta(a,x)}
+            =
+            H_x\circ a_*
+            =
+            \partial_aH_x
+            =
+            \partial_a(\beta_P(x)).
+        \]
+
+        \item \textbf{Check output preservation.} Finally,
+        \[
+            \omega_{\mathbf{Beh}}(a,\beta_P(x))
+            =
+            H_x(a,1_v)
+            =
+            \omega_P(a,\delta_P(1_v,x))
+            =
+            \omega_P(a,x).
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{Running specializations}
+\label{subsec:residual-semantics-running-specializations}
+
+\subsubsection{The one-object specialization}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as one-object internal categories
+\[
+    \mathbb A=M,
+    \qquad
+    \mathbb B=N,
+\]
+using the convention
+\[
+    b\circ a=ba.
+\]
+A Mealy morphism
+\[
+    M\rightsquigarrow N
+\]
+is an internal right \(M\)-object \(P\), written
+\[
+    x\cdot m:=\delta(m,x),
+\]
+together with an internal \(N\)-valued output cocycle
+\[
+    \omega:M\times P\to N
+\]
+satisfying
+\[
+    x\cdot 1=x,
+    \qquad
+    x\cdot(mn)=(x\cdot m)\cdot n,
+\]
+and
+\[
+    \omega(1,x)=1,
+    \qquad
+    \omega(mn,x)=\omega(m,x)\omega(n,x\cdot m).
+\]
+
+The execution category is the internal action category of this right \(M\)-object. Its object object is \(P\), and an arrow labelled by \(m\) has the form
+\[
+    x\longrightarrow x\cdot m.
+\]
+The output functor sends this execution arrow to the element
+\[
+    \omega(m,x)\in N.
+\]
+The cocycle equation for \(\omega\) is precisely the statement that this assignment preserves composition:
+\[
+    x
+        \xrightarrow{\;m\;}
+    x\cdot m
+        \xrightarrow{\;n\;}
+    (x\cdot m)\cdot n
+\]
+has total output
+\[
+    \omega(m,x)\omega(n,x\cdot m)
+        =
+    \omega(mn,x).
+\]
+
+For a state \(x\in P\), the residual behaviour of \(x\) is the residual cocycle
+\[
+    \lambda_x:M\times M\to N
+\]
+defined by
+\[
+    \lambda_x(r,m)=\omega(m,x\cdot r).
+\]
+Thus \(\lambda_x(r,m)\) is the output produced after first moving from \(x\) to the residual state \(x\cdot r\), and then reading the residual input \(m\). The cocycle equations for \(\omega\) imply the residual-cocycle equations
+\[
+    \lambda_x(r,1)=1,
+    \qquad
+    \lambda_x(r,mn)=\lambda_x(r,m)\lambda_x(rm,n).
+\]
+The behaviour assignment is therefore
+\[
+    \beta_P:P\to \mathbf{Beh}_0,
+    \qquad
+    \beta_P(x)=\lambda_x.
+\]
+
+\subsubsection{The stateless specialization}
+
+In the stateless case, let
+\[
+    F:\mathbb A\to\mathbb B
+\]
+be an internal functor, regarded as the map-representable Mealy morphism associated to its object map
+\[
+    F_0:A_0\to B_0.
+\]
+The carrier of the associated Mealy morphism is
+\[
+    A_0
+        \xleftarrow{\;1_{A_0}\;}
+    A_0
+        \xrightarrow{\;F_0\;}
+    B_0.
+\]
+Thus a state is simply an input object \(v\in A_0\). There is no additional
+state object beyond the object-of-objects of \(\mathbb A\).
+
+For an input arrow
+\[
+    a:u\to v
+\]
+the transition sends the state \(v\) to the state \(u\), and the emitted output arrow is
+\[
+    F_1(a):F_0u\to F_0v.
+\]
+Hence the stateless execution category has the same arrows as \(\mathbb A\), but read in the target-to-source execution direction. In other words, it is canonically identified with
+\[
+    \mathbb A^{op}.
+\]
+Under this identification, the output functor is
+\[
+    F^{op}:\mathbb A^{op}\to\mathbb B^{op}.
+\]
+Thus the execution semantics of a stateless Mealy morphism is ordinary functoriality, with the variance imposed by target-to-source input processing.
+
+The residual behaviour of the state \(v\in A_0\) is the internal functor
+\[
+    H^F_v:\mathbb A/v\to\mathbb B
+\]
+given by restriction of \(F\) along the domain functor:
+\[
+    H^F_v
+        =
+    F\circ\operatorname{dom}_v.
+\]
+Explicitly,
+\[
+    H^F_v(r:u\to v)=F_0(u),
+\]
+and, for a morphism in the slice
+\[
+    w\xrightarrow{a}u\xrightarrow{r}v,
+\]
+one has
+\[
+    H^F_v(a,r)=F_1(a):F_0(w)\to F_0(u).
+\]
+
+Therefore the behaviour assignment of the stateless machine is
+\[
+    \beta_{F_!}:A_0\to \mathbf{Beh}_0,
+    \qquad
+    \beta_{F_!}(v)=H^F_v.
+\]
+Equivalently, with the notation introduced in Subsection~\ref{subsec:residual-behaviour-running-specializations},
+\[
+    \beta_{F_!}=J_F,
+    \qquad
+    J_F(v)=F\circ\operatorname{dom}_v.
+\]
+
+Thus the residual semantics of a stateless machine is the ordinary category-theoretic family of slice restrictions of \(F\):
+\[
+    v\longmapsto F\circ\operatorname{dom}_v.
+\]
+In particular, for \(F=1_{\mathbb A}\), the behaviour assignment is
+\[
+    v\longmapsto \operatorname{dom}_v:\mathbb A/v\to\mathbb A,
+\]
+so the stateless residual semantics recovers the codomain-slice geometry of \(\mathbb A\) itself.
+
+\section{Terminal residual semantics}
+\label{sec:terminal-residual-semantics}
+
+The canonical behaviour machine is terminal among strict semantic Mealy homomorphisms. The terminality is formulated in an ordinary category whose morphisms preserve transition and output strictly. This section is in the same general line as universal-realization and final-semantics formulations of automata behaviour \cite{Goguen1973,Rutten1998,Rutten2000}.
+
+\subsection{Strict semantic homomorphisms}
+\label{subsec:strict-semantic-homomorphisms}
+
+\begin{definition}[Strict semantic Mealy homomorphism]
+\label{def:strict-semantic-mealy-homomorphism}
+    Let
+    \[
+        P,Q:\mathbb A\rightsquigarrow\mathbb B
+    \]
+    be Mealy morphisms. A \textbf{strict semantic Mealy homomorphism}
+    \[
+        f:P\to Q
+    \]
+    is a map over
+    \[
+        Z=A_0\times B_0,
+    \]
+    so that
+    \[
+        p_Qf=p_P,
+        \qquad
+        q_Qf=q_P,
+    \]
+    satisfying
+    \[
+        f(\delta_P(a,x))=\delta_Q(a,f(x)),
+    \]
+    and
+    \[
+        \omega_P(a,x)=\omega_Q(a,f(x)).
+    \]
+\end{definition}
+
+The strict preservation equations are displayed by
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+        x
+            \arrow[r, "{a,\omega_P(a,x)}"]
+            \arrow[d, "f"']
+        &
+            \delta_P(a,x)
+                \arrow[d, "f"]
+        \\
+            f(x)
+                \arrow[r, "{a,\omega_Q(a,f(x))}"']
+        &
+            \delta_Q(a,f(x)).
+    \end{tikzcd}
+\]
+
+\begin{lemma}
+\label{lem:strict-semantic-category}
+    Strict semantic Mealy homomorphisms are closed under identities and composition.
+\end{lemma}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Check identities and composition.} This is immediate from the defining preservation equations.
+    \end{enumerate}
+\end{proof}
+
+\begin{notation}
+\label{not:strict-semantic-category}
+    Write
+    \[
+        \mathbf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}
+    \]
+    for the ordinary category whose objects are Mealy morphisms
+    \[
+        \mathbb A\rightsquigarrow\mathbb B
+    \]
+    and whose morphisms are strict semantic Mealy homomorphisms.
+\end{notation}
+
+\begin{remark}
+\label{rem:terminality-not-bicategorical}
+    The terminality statement below is a statement in the ordinary category
+    \[
+        \mathbf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}.
+    \]
+    The bicategory \(\mathbf{Mly}(\mathcal E)\) uses Mealy simulations as 2-cells, and those simulations have oppositely directed state maps.
+\end{remark}
+
+\subsection{Terminality of the canonical behaviour machine}
+\label{subsec:terminality-canonical-behaviour-machine}
+
+\begin{lemma}
+\label{lem:canonical-behaviour-map-identity}
+    For the canonical behaviour Mealy morphism,
+    \[
+        \beta_{\mathbf{Beh}^{\mathrm{can}}}=1_{\mathbf{Beh}_0}.
+    \]
+    If
+    \[
+        i:S\hookrightarrow\mathbf{Beh}_0
+    \]
+    is derivative-closed and the canonical behaviour machine is restricted to \(S\), then its behaviour assignment is the inclusion
+    \[
+        S\hookrightarrow\mathbf{Beh}_0.
+    \]
+\end{lemma}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Compute the residual behaviour of a canonical state.} Let \(H:\mathbb A/v\to\mathbb B\) be a state of the canonical behaviour machine. Its residual behaviour sends
+        \[
+            r:u\to v
+        \]
+        to
+        \[
+            q_{\mathbf{Beh}}(\partial_rH)=H(r),
+        \]
+        and sends a residual triangle
+        \[
+            w\xrightarrow{a}u\xrightarrow{r}v
+        \]
+        to
+        \[
+            \omega_{\mathbf{Beh}}(a,\partial_rH)=H(a,r).
+        \]
+
+        \item \textbf{Conclude identity of the behaviour map.} Thus the residual behaviour determined by \(H\) is \(H\). The restricted statement follows by the same calculation after composing with the subobject inclusion.
+    \end{enumerate}
+\end{proof}
+
+\begin{theorem}[Terminal residual semantics]
+\label{thm:terminal-residual-semantics}
+    The canonical behaviour Mealy morphism
+    \[
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+    \]
+    is terminal in
+    \[
+        \mathbf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}.
+    \]
+    For every Mealy morphism \(P\), the unique strict semantic homomorphism
+    \[
+        P\to\mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+    \]
+    is
+    \[
+        \beta_P:x\mapsto H_x.
+    \]
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Establish existence.} Existence is Proposition~\ref{prop:behaviour-assignment}.
+
+        \item \textbf{Set up uniqueness.} For uniqueness, let
+        \[
+            f:P\to\mathbf{Beh}_0
+        \]
+        be a strict semantic Mealy homomorphism. We show \(f=\beta_P\).
+
+        \item \textbf{Recover the object assignment.} Let \(x\in P\), and let \(r:u\to p(x)\) be a residual input. Since \(f\) preserves transitions,
+        \[
+            f(\delta_P(r,x))=\partial_r f(x).
+        \]
+        Since \(f\) lies over \(Z\),
+        \[
+            q_{\mathbf{Beh}}(f(\delta_P(r,x)))=q(\delta_P(r,x)).
+        \]
+        But
+        \[
+            q_{\mathbf{Beh}}(\partial_r f(x))=(f(x))(r).
+        \]
+        Hence
+        \[
+            (f(x))(r)=q(\delta_P(r,x))=H_x(r).
+        \]
+
+        \item \textbf{Recover the arrow assignment.} Now let
+        \[
+            w\xrightarrow{a}u\xrightarrow{r}p(x)
+        \]
+        be a residual triangle. Strict output preservation at the state
+        \[
+            \delta_P(r,x)
+        \]
+        gives
+        \[
+            \omega_P(a,\delta_P(r,x))
+            =
+            \omega_{\mathbf{Beh}}(a,f(\delta_P(r,x))).
+        \]
+        Using transition preservation,
+        \[
+            f(\delta_P(r,x))=\partial_r f(x).
+        \]
+        Therefore
+        \[
+            \omega_{\mathbf{Beh}}(a,\partial_r f(x))
+            =
+            (\partial_r f(x))(a,1_u)
+            =
+            (f(x))(a,r).
+        \]
+        Hence
+        \[
+            (f(x))(a,r)
+            =
+            \omega_P(a,\delta_P(r,x))
+            =
+            H_x(a,r).
+        \]
+        Thus \(f(x)=H_x\) for every \(x\), so \(f=\beta_P\).
+
+        \item \textbf{Display the reconstruction diagrams.} The proof reconstructs the object and arrow assignments of \(f(x)\) by the two diagrams
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    \delta_P(r,x)
+                        \arrow[r, "f"]
+                        \arrow[d, "q"']
+                &
+                    \partial_r f(x)
+                        \arrow[d, "q_{\mathbf{Beh}}"]
+                \\
+                    q(\delta_P(r,x))
+                        \arrow[r, equal]
+                &
+                    (f(x))(r)
+            \end{tikzcd}
+            \qquad
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    q(\delta_P(r\circ a,x))
+                        \arrow[r, "{\omega_P(a,\delta_P(r,x))}"]
+                        \arrow[d, equal]
+                &
+                    q(\delta_P(r,x))
+                        \arrow[d, equal]
+                \\
+                    (f(x))(r\circ a)
+                        \arrow[r, "{(f(x))(a,r)}"']
+                &
+                    (f(x))(r).
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{Behavioural separatedness}
+\label{subsec:behavioural-separatedness}
+
+\begin{definition}[Behavioural separatedness]
+\label{def:behavioural-separatedness}
+    A Mealy morphism
+    \[
+        P:\mathbb A\rightsquigarrow\mathbb B
+    \]
+    is \textbf{behaviourally separated} if
+    \[
+        \beta_P:P\to\mathbf{Beh}_0
+    \]
+    is monic.
+\end{definition}
+
+\subsection{Running specializations}
+\label{subsec:terminal-running-specializations}
+
+\subsubsection{The one-object specialization}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as one-object internal categories
+\[
+    \mathbb A=M,
+    \qquad
+    \mathbb B=N,
+\]
+using the convention
+\[
+    b\circ a=ba.
+\]
+A Mealy morphism
+\[
+    M\rightsquigarrow N
+\]
+is an internal right \(M\)-object \(P\), together with an internal \(N\)-valued output cocycle
+\[
+    \omega:M\times P\to N.
+\]
+Terminality of the canonical behaviour Mealy morphism says that there is a unique strict semantic map from \(P\) to the canonical residual-cocycle machine. This map sends a state \(x\) to its future cocycle
+\[
+    \lambda_x:M\times M\to N
+\]
+defined by
+\[
+    \lambda_x(r,m)=\omega(m,x\cdot r).
+\]
+Thus the unique semantic map is
+\[
+    \beta_P:P\to \mathbf{Beh}_0,
+    \qquad
+    \beta_P(x)=\lambda_x.
+\]
+
+The equation
+\[
+    \lambda_x(r,m)=\omega(m,x\cdot r)
+\]
+expresses the usual residual interpretation: first move from \(x\) to the residual state \(x\cdot r\), and then read the residual input \(m\). The cocycle laws for \(\omega\) imply
+\[
+    \lambda_x(r,1)=1,
+    \qquad
+    \lambda_x(r,mn)=\lambda_x(r,m)\lambda_x(rm,n),
+\]
+so \(\lambda_x\) is a residual behaviour.
+
+Behavioural separatedness says that the semantic map
+\[
+    \beta_P:P\to \mathbf{Beh}_0
+\]
+is monic. Equivalently, states are identified only when they have the same future cocycle:
+\[
+    \lambda_x=\lambda_y.
+\]
+Thus, in the one-object specialization, behavioural separatedness is precisely separation by residual \(N\)-valued cocycles.
+
+\subsubsection{The stateless specialization}
+
+In the stateless case, let
+\[
+    F:\mathbb A\to\mathbb B
+\]
+be an internal functor, regarded as the map-representable Mealy morphism \(F_!\). Its carrier is
+\[
+    A_0
+        \xleftarrow{\;1_{A_0}\;}
+    A_0
+        \xrightarrow{\;F_0\;}
+    B_0,
+\]
+so a state is simply an input object \(v\in A_0\).
+
+Terminality of the canonical behaviour Mealy morphism says that there is a unique strict semantic map
+\[
+    \beta_{F_!}:A_0\to \mathbf{Beh}_0.
+\]
+This map is exactly the functorial residual semantics
+\[
+    J_F:A_0\to \mathbf{Beh}_0,
+    \qquad
+    J_F(v)=H^F_v=F\circ\operatorname{dom}_v.
+\]
+Thus
+\[
+    \beta_{F_!}=J_F.
+\]
+
+Explicitly, for each object \(v\in A_0\), the behaviour assigned to \(v\) is the internal functor
+\[
+    H^F_v:\mathbb A/v\to\mathbb B
+\]
+given by restriction of \(F\) along the domain functor
+\[
+    \operatorname{dom}_v:\mathbb A/v\to\mathbb A.
+\]
+Thus
+\[
+    H^F_v=F\circ\operatorname{dom}_v.
+\]
+For an object \(r:u\to v\) of the slice,
+\[
+    H^F_v(r)=F_0(u),
+\]
+and, for a morphism in the slice
+\[
+    w\xrightarrow{a}u\xrightarrow{r}v,
+\]
+one has
+\[
+    H^F_v(a,r)=F_1(a):F_0(w)\to F_0(u).
+\]
+
+Hence terminality specializes to the statement that the canonical behaviour
+machine receives a unique strict semantic map from every internal functor,
+and this map is the ordinary category-theoretic family of slice restrictions
+\[
+    v\longmapsto F\circ\operatorname{dom}_v.
+\]
+The stateless semantic map is therefore the residual form of ordinary functoriality.
+
+Moreover, the behaviour object lies over \(A_0\), and the map \(J_F\) is a section of this projection:
+\[
+    p_{\mathbf{Beh}}J_F=1_{A_0}.
+\]
+Consequently \(J_F\) is monic. Thus stateless map-representable machines are behaviourally separated: two stateless states cannot be identified without also identifying their underlying input objects. In particular, for \(F=1_{\mathbb A}\), terminal residual semantics is the assignment
+\[
+    v\longmapsto \operatorname{dom}_v:\mathbb A/v\to\mathbb A,
+\]
+so the canonical behaviour machine recovers the codomain-slice geometry of \(\mathbb A\) itself.
+
+\section{Simulations and induced behaviour comparisons}
+\label{sec:simulations-and-behaviour-comparisons}
+
+Simulations compare machines by output-comparison arrows. Under residual semantics, every Mealy simulation induces a vertical natural transformation between the corresponding residual behaviours.
+
+\subsection{Simulation-induced vertical behaviour comparisons}
+\label{subsec:simulation-induced-behaviour-comparisons}
+
+\begin{theorem}[Simulation-induced vertical behaviour comparison]
+\label{thm:simulation-induces-behaviour-comparison}
+    Let
+    \[
+        (\theta,\alpha):P\Rightarrow Q
+    \]
+    be a Mealy simulation. For each \(y\in Q\), the family
+    \[
+        (\widehat\alpha_y)_r:=\alpha_{\delta_Q(r,y)}
+    \]
+    defines a natural transformation
+    \[
+        \widehat\alpha_y:
+        H^P_{\theta y}\Rightarrow H^Q_y.
+    \]
+    Equivalently, the simulation induces a morphism
+    \[
+        Q\to\mathbf{Beh}_1
+    \]
+    whose source is
+    \[
+        \beta_P\theta
+    \]
+    and whose target is
+    \[
+        \beta_Q.
+    \]
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Type the components.} The state law gives
+        \[
+            \theta(\delta_Q(r,y))=\delta_P(r,\theta y).
+        \]
+        Hence
+        \[
+            \alpha_{\delta_Q(r,y)}
+            :
+            q_P(\delta_P(r,\theta y))
+            \to
+            q_Q(\delta_Q(r,y)),
+        \]
+        which is exactly a component
+        \[
+            H^P_{\theta y}(r)\to H^Q_y(r).
+        \]
+
+        \item \textbf{Check naturality.} For a residual triangle
+        \[
+            w\xrightarrow{a}u\xrightarrow{r}p_Q(y),
+        \]
+        naturality requires
+        \[
+            (\widehat\alpha_y)_r\circ H^P_{\theta y}(a,r)
+            =
+            H^Q_y(a,r)\circ(\widehat\alpha_y)_{r\circ a}.
+        \]
+        This is the simulation output law applied to the state
+        \[
+            \delta_Q(r,y).
+        \]
+
+        \item \textbf{Display the naturality square.} The square is
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    H^P_{\theta y}(r\circ a)
+                        \arrow[r, "{H^P_{\theta y}(a,r)}"]
+                        \arrow[d, "{\alpha_{\delta_Q(r\circ a,y)}}"']
+                &
+                    H^P_{\theta y}(r)
+                        \arrow[d, "{\alpha_{\delta_Q(r,y)}}"]
+                \\
+                    H^Q_y(r\circ a)
+                        \arrow[r, "{H^Q_y(a,r)}"']
+                &
+                    H^Q_y(r).
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}
+\label{rem:simulation-to-comparison-not-equivalence}
+    The construction in Theorem~\ref{thm:simulation-induces-behaviour-comparison} is a semantic consequence of a state-level simulation. A vertical behaviour comparison compares the residual behaviours after applying \(\beta_P\) and \(\beta_Q\). A Mealy simulation also contains the state-level comparison data and satisfies the transition law before residual semantics is applied.
+\end{remark}
+
+\subsection{Running specializations}
+\label{subsec:simulations-running-specializations}
+
+\subsubsection{The one-object specialization}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as one-object internal categories
+\[
+    \mathbb A=M,
+    \qquad
+    \mathbb B=N,
+\]
+using the convention
+\[
+    b\circ a=ba.
+\]
+In this case residual behaviours are internal \(N\)-valued cocycles
+\[
+    \lambda,\mu:M\times M\to N
+\]
+on the residual right-Cayley category of \(M\). A behaviour comparison
+\[
+    \alpha:\lambda\Rightarrow\mu
+\]
+is an internal natural transformation between the corresponding functors from the residual right-Cayley category to \(N\).
+
+Equivalently, it is a map
+\[
+    \alpha:M\to N
+\]
+satisfying the naturality equation
+\[
+    \alpha_r\lambda(r,m)=\mu(r,m)\alpha_{rm}.
+\]
+This is the naturality square for the residual arrow
+\[
+    rm\longrightarrow r.
+\]
+Indeed, \(\lambda(r,m)\) and \(\mu(r,m)\) are the two images of this residual arrow, while \(\alpha_r\) and \(\alpha_{rm}\) are the comparison components at its target and source:
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+            \bullet
+                \arrow[r, "{ \lambda (r,m) }"]
+                \arrow[d, "{ \alpha_{rm} }"']
+        &
+            \bullet
+                \arrow[d, "{ \alpha_r }"]
+        \\
+            \bullet
+                \arrow[r, "{ \mu(r,m) }"']
+        &
+            \bullet
+    \end{tikzcd}.
+\]
+Since \(N\) is one-object, commutativity of this square is exactly
+\[
+    \alpha_r\lambda(r,m)=\mu(r,m)\alpha_{rm}.
+\]
+
+If \(N=G\) is an internal group, this may equivalently be written
+\[
+    \mu(r,m)=\alpha_r\lambda(r,m)\alpha_{rm}^{-1}.
+\]
+Thus, in the one-object specialization, simulation-induced behaviour comparison is the internal nonabelian coboundary relation between residual cocycles.
+
+\subsubsection{The stateless specialization}
+
+In the stateless case, let
+\[
+    F,G:\mathbb A\to\mathbb B
+\]
+be internal functors, regarded as map-representable Mealy morphisms
+\[
+    F_!,G_!:\mathbb A\rightsquigarrow\mathbb B.
+\]
+A Mealy simulation
+\[
+    F_!\Rightarrow G_!
+\]
+is exactly an internal natural transformation
+\[
+    \alpha:F\Rightarrow G.
+\]
+Thus \(\alpha\) consists of a map
+\[
+    \alpha:A_0\to B_1
+\]
+satisfying
+\[
+    s_B\alpha=F_0,
+    \qquad
+    t_B\alpha=G_0,
+\]
+and the internal naturality equation.
+
+The induced behaviour comparison is obtained by restricting this natural transformation to each slice. For each \(v\in A_0\), it is a vertical natural transformation
+\[
+    \widehat{\alpha}_v:
+        H^F_v
+            \Rightarrow
+        H^G_v
+\]
+between the residual functors
+\[
+    H^F_v=F\circ\operatorname{dom}_v,
+    \qquad
+    H^G_v=G\circ\operatorname{dom}_v.
+\]
+At an object
+\[
+    r:u\to v
+\]
+of the slice \(\mathbb A/v\), its component is
+\[
+    (\widehat{\alpha}_v)_r
+        =
+    \alpha_u:F_0(u)\to G_0(u).
+\]
+
+For a morphism in the slice
+\[
+    w\xrightarrow{a}u\xrightarrow{r}v,
+\]
+naturality of \(\widehat{\alpha}_v\) is the square
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+            F_0(w)
+                \arrow[r, "F_1(a)"]
+                \arrow[d, "\alpha_w"']
+        &
+            F_0(u)
+                \arrow[d, "\alpha_u"]
+        \\
+            G_0(w)
+                \arrow[r, "G_1(a)"']
+        &
+            G_0(u).
+    \end{tikzcd}
+\]
+This is exactly the ordinary internal naturality square for
+\[
+    \alpha:F\Rightarrow G
+\]
+at the arrow \(a:w\to u\).
+
+Thus simulation-induced behaviour comparison specializes to ordinary category-theoretic restriction of a natural transformation along slices:
+\[
+    \widehat{\alpha}_v
+        =
+    \alpha\ast \operatorname{dom}_v:
+        F\circ\operatorname{dom}_v
+            \Rightarrow
+        G\circ\operatorname{dom}_v.
+\]
+Consequently, the stateless part of the simulation theory is precisely the usual natural-transformation calculus of internal category theory, viewed through the residual slice semantics of the behaviour fibration.
+
+\section{Specifications and derivative images}
+\label{sec:specifications-and-derivative-images}
+
+A specification is a family of behaviours. Its formal derivative orbit is obtained by acting on that family by all residual input arrows through the cleavage of the behaviour fibration.
+
+\subsection{Specifications}
+\label{subsec:specifications}
+
+\begin{definition}[Behaviour specification]
+\label{def:behaviour-specification}
+    A \textbf{behaviour specification} is a morphism
+    \[
+        k:K\to\mathbf{Beh}_0.
+    \]
+    Write
+    \[
+        p_K:=p_{\mathbf{Beh}}k.
+    \]
+    We regard \(K\) as an object of
+    \[
+        \mathcal E/Z,
+        \qquad
+        Z=A_0\times B_0,
+    \]
+    through the composite
+    \[
+        K
+            \xrightarrow{k}
+        \mathbf{Beh}_0
+            \xrightarrow{(p_{\mathbf{Beh}},q_{\mathbf{Beh}})}
+        Z.
+    \]
+\end{definition}
+
+\subsection{Formal derivative orbits}
+\label{subsec:formal-derivative-orbits}
+
+\begin{definition}[Formal derivative orbit]
+\label{def:formal-derivative-orbit}
+    The \textbf{formal derivative orbit object} of \(K\) is
+    \[
+        D_K:=A_1\times_{t_A,A_0,p_K}K.
+    \]
+    A generalized element is a pair
+    \[
+        (a,\kappa),
+    \]
+    where
+    \[
+        a:u\to p_K(\kappa).
+    \]
+\end{definition}
+
+Its defining pullback is
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            D_K
+                \arrow[r, "\pi_K"]
+                \arrow[d, "\pi_{A_1}"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            K
+                \arrow[d, "p_K"]
+        \\
+            A_1
+                \arrow[r, "t_A"']
+        &
+            A_0.
+    \end{tikzcd}
+\]
+
+\begin{definition}[Residual evaluation]
+\label{def:residual-evaluation}
+    The \textbf{residual evaluation map} is
+    \[
+        d_K:D_K\to\mathbf{Beh}_0
+    \]
+    defined by
+    \[
+        d_K(a,\kappa)=\partial_a k(\kappa).
+    \]
+    Equivalently,
+    \[
+        d_K=
+        \partial\circ(1_{A_1}\times k).
+    \]
+\end{definition}
+
+The object \(D_K\) is regarded as an object over
+\[
+    Z=A_0\times B_0
+\]
+through the composite
+\[
+    D_K
+        \xrightarrow{d_K}
+    \mathbf{Beh}_0
+        \xrightarrow{(p_{\mathbf{Beh}},q_{\mathbf{Beh}})}
+    Z.
+\]
+Thus the \(Z\)-coordinate of \((a,\kappa)\) is the input interface and anchor of the derivative behaviour
+\[
+    \partial_a k(\kappa).
+\]
+We write
+\[
+    p_{D_K}:=p_{\mathbf{Beh}}d_K.
+\]
+For a generalized element \((a,\kappa)\), with
+\[
+    a:u\to p_K(\kappa),
+\]
+one has
+\[
+    p_{D_K}(a,\kappa)=u=s_A(a).
+\]
+
+\begin{definition}[Unit inclusion of syntax]
+\label{def:syntax-unit-inclusion}
+    The \textbf{unit inclusion of syntax}
+    \[
+        \iota_K:K\to D_K
+    \]
+    is
+    \[
+        \kappa\longmapsto(1_{p_K(\kappa)},\kappa).
+    \]
+    It satisfies
+    \[
+        d_K\iota_K=k.
+    \]
+\end{definition}
+
+\subsection{Derivative images}
+\label{subsec:derivative-image}
+
+\begin{lemma}[Regular-epi descent for subobjects]
+\label{lem:regular-epi-descent-subobjects}
+    Let \(\mathcal E\) be regular. If
+    \[
+        e:X\twoheadrightarrow Y
+    \]
+    is a regular epimorphism and
+    \[
+        m:S\hookrightarrow Z
+    \]
+    is a subobject, then a map
+    \[
+        g:Y\to Z
+    \]
+    factors through \(m\) whenever
+    \[
+        ge:X\to Z
+    \]
+    factors through \(m\).
+\end{lemma}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use the kernel pair of the regular epimorphism.} Suppose \(ge=mh\). Let
+        \[
+            K_e\rightrightarrows X
+        \]
+        be the kernel pair of \(e\). Since \(e\) is the coequalizer of its kernel pair,
+        \[
+            ge\pi_1=ge\pi_2.
+        \]
+        Hence
+        \[
+            mh\pi_1=mh\pi_2.
+        \]
+
+        \item \textbf{Descend through the monomorphism.} Since \(m\) is monic,
+        \[
+            h\pi_1=h\pi_2.
+        \]
+        Thus \(h\) descends uniquely through \(e\), giving
+        \[
+            \bar h:Y\to S
+        \]
+        with
+        \[
+            \bar h e=h.
+        \]
+
+        \item \textbf{Recover the factorization of \(g\).} Since \(e\) is epi,
+        \[
+            m\bar h=g.
+        \]
+        The descent diagram is
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    K_e
+                        \arrow[r, shift left=0.5ex, "\pi_1"]
+                        \arrow[r, shift right=0.5ex, "\pi_2"']
+                &
+                    X
+                        \arrow[r, two heads, "e"]
+                        \arrow[d, "h"']
+                &
+                    Y
+                        \arrow[dl, dashed, "\bar h"]
+                        \arrow[d, "g"]
+                \\
+                &
+                    S
+                        \arrow[r, hook, "m"']
+                &
+                    Z
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+Since \(\mathcal E\) is regular, the map
+\[
+    d_K:D_K\to\mathbf{Beh}_0
+\]
+has a regular epi--mono factorization in the slice
+\[
+    \mathcal E/Z.
+\]
+Write it as
+\[
+    D_K
+        \xrightarrow{e_K}
+    \operatorname{Der}_0(K)
+        \xrightarrow{j_K}
+    \mathbf{Beh}_0,
+\]
+where \(e_K\) is a regular epimorphism and \(j_K\) is monic in \(\mathcal E/Z\):
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            D_K
+                \arrow[rr, "d_K"]
+                \arrow[dr, two heads, "e_K"']
+        &
+        &
+            \mathbf{Beh}_0
+        \\
+        &
+            \operatorname{Der}_0(K)
+                \arrow[ur, hook, "j_K"']
+        &
+    \end{tikzcd}
+    \qquad
+    \text{in }\mathcal E/Z.
+\]
+
+\begin{definition}[Derivative image]
+\label{def:derivative-image}
+    The object
+    \[
+        \operatorname{Der}_0(K)
+    \]
+    is the \textbf{derivative image}, or \textbf{object-level residual closure}, of \(K\).
+\end{definition}
+
+\subsection{Derivative closure}
+\label{subsec:derivative-closure}
+
+\begin{theorem}[Derivative closure]
+\label{thm:derivative-closure}
+    The subobject
+    \[
+        j_K:\operatorname{Der}_0(K)\hookrightarrow\mathbf{Beh}_0
+    \]
+    is the smallest derivative-closed subobject of \(\mathbf{Beh}_0\) in
+    \(\mathcal E/Z\) containing the image of \(K\).
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Show that the image contains \(K\).} The image subobject contains the image of \(K\), because
+        \[
+            d_K\iota_K=k.
+        \]
+        Equivalently, the image of \(k\) factors through the image of \(d_K\).
+
+        \item \textbf{Set up the derivative of the image.} We first prove derivative-closedness. Consider the derivative map of the subobject \(j_K\):
+        \[
+            g:
+            \mathsf D(\operatorname{Der}_0(K))\to\mathbf{Beh}_0.
+        \]
+        Pull back the regular epimorphism
+        \[
+            e_K:D_K\twoheadrightarrow \operatorname{Der}_0(K)
+        \]
+        along the underlying projection
+        \[
+            \mathsf D(\operatorname{Der}_0(K))\to\operatorname{Der}_0(K).
+        \]
+        This projection is not, in general, a morphism in \(\mathcal E/Z\); the pullback is therefore taken in \(\mathcal E\). Since regular epimorphisms are stable under pullback in \(\mathcal E\), this gives a regular epimorphism
+        \[
+            e'_K:
+            A_1\times_{t_A,A_0,p_{D_K}}D_K
+            \twoheadrightarrow
+            \mathsf D(\operatorname{Der}_0(K)).
+        \]
+        The pullback cover is
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    A_1\times_{A_0}D_K
+                        \arrow[r, two heads, "e'_K"]
+                        \arrow[d]
+                        \arrow[dr, phantom, "\lrcorner", very near start]
+                &
+                    \mathsf D(\operatorname{Der}_0(K))
+                        \arrow[d]
+                \\
+                    D_K
+                        \arrow[r, two heads, "e_K"']
+                &
+                    \operatorname{Der}_0(K).
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Compute derivatives on the cover.} On this cover, a generalized element has the form
+        \[
+            (c,a,\kappa),
+        \]
+        with
+        \[
+            a:u\to p_K(\kappa),
+            \qquad
+            c:w\to u.
+        \]
+        Then
+        \[
+            \begin{aligned}
+                g e'_K(c,a,\kappa)
+                &=
+                \partial_c(d_K(a,\kappa))
+                \\
+                &=
+                \partial_c(\partial_a k(\kappa))
+                \\
+                &=
+                \partial_{a\circ c}k(\kappa)
+                \\
+                &=
+                d_K(a\circ c,\kappa)
+                \\
+                &=
+                j_K e_K(a\circ c,\kappa).
+            \end{aligned}
+        \]
+        Here \(a\circ c=m_A(c,a)\). Hence \(g e'_K\) factors through \(j_K\).
+
+        \item \textbf{Descend the factorization.} Since \(e'_K\) is a regular epimorphism and \(j_K\) is monic, regular-epi descent gives a unique factorization of \(g\) through \(j_K\) in \(\mathcal E\). The resulting factorization is a morphism in \(\mathcal E/Z\), because \(j_K\) is a monomorphism over \(Z\) and both composites to \(Z\) agree after composing with \(j_K\). This proves derivative-closedness.
+
+        \item \textbf{Prove minimality.} Now let
+        \[
+            i:S\hookrightarrow\mathbf{Beh}_0
+        \]
+        be derivative-closed and contain the image of \(K\). Since \(k\) factors through \(S\), derivative-closedness implies that
+        \[
+            d_K(a,\kappa)=\partial_a k(\kappa)
+        \]
+        factors through \(S\). Hence \(d_K\) factors through \(S\). Since \(\operatorname{Der}_0(K)\) is the image of \(d_K\), the image subobject \(j_K\) is contained in \(S\).
+    \end{enumerate}
+\end{proof}
+
+\subsection{Running specializations}
+\label{subsec:specifications-running-specializations}
+
+\subsubsection{The one-object specialization}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as one-object internal categories
+\[
+    \mathbb A=M,
+    \qquad
+    \mathbb B=N,
+\]
+using the convention
+\[
+    b\circ a=ba.
+\]
+In this case the behaviour object \(\mathbf{Beh}_0\) is the object of residual \(N\)-valued cocycles
+\[
+    \lambda:M\times M\to N
+\]
+on the internal residual right-Cayley category of \(M\).
+
+A specification
+\[
+    k:K\to\mathbf{Beh}_0
+\]
+is therefore an internal family of residual cocycles. For
+\[
+    \kappa\in K,
+\]
+write
+\[
+    k(\kappa)=\lambda_\kappa.
+\]
+The formal derivative orbit is
+\[
+    D_K=M\times K.
+\]
+Its generalized elements are pairs \((s,\kappa)\), where \(s\in M\) is a formal input and \(\kappa\in K\) is a specified residual cocycle.
+
+The residual evaluation map is
+\[
+    d_K:M\times K\to \mathbf{Beh}_0,
+    \qquad
+    d_K(s,\kappa)=\partial_s\lambda_\kappa.
+\]
+Explicitly,
+\[
+    \bigl(\partial_s\lambda_\kappa\bigr)(r,m)
+        =
+    \lambda_\kappa(sr,m).
+\]
+Thus \(d_K\) sends a specified cocycle to all of its formal residual derivatives.
+
+The derivative image
+\[
+    \operatorname{Der}_0(K)
+        \rightarrowtail
+    \mathbf{Beh}_0
+\]
+is the image of \(d_K\). Hence, in the one-object specialization, \(\operatorname{Der}_0(K)\) is the internal residual derivative closure of the specified \(N\)-valued cocycles.
+
+\subsubsection{The stateless specialization}
+
+In the stateless case, let
+\[
+    F:\mathbb A\to\mathbb B
+\]
+be an internal functor, and let
+\[
+    i:K\to A_0
+\]
+be a family of input objects. The corresponding stateless specification is the composite
+\[
+    k
+        =
+    J_F i:
+    K\to \mathbf{Beh}_0,
+\]
+where
+\[
+    J_F:A_0\to \mathbf{Beh}_0,
+    \qquad
+    J_F(v)=F\circ\operatorname{dom}_v.
+\]
+Thus the specified behaviours are the slice-restricted functorial behaviours
+\[
+    H^F_{i(\kappa)}
+        =
+    F\circ\operatorname{dom}_{i(\kappa)}.
+\]
+
+The formal derivative orbit is
+\[
+    D_K
+        =
+    A_1\times_{t_A,A_0,i}K.
+\]
+A generalized element is an arrow
+\[
+    a:u\to i(\kappa)
+\]
+together with a specified object \(\kappa\in K\). The residual evaluation map is
+\[
+    d_K:D_K\to \mathbf{Beh}_0,
+    \qquad
+    d_K(a,\kappa)
+        =
+    \partial_a J_F(i(\kappa)).
+\]
+Since stateless derivatives are change of slice, one has
+\[
+    \partial_a J_F(i(\kappa))
+        =
+    J_F(u)
+        =
+    J_F(s_Aa).
+\]
+Therefore \(d_K\) factors as
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+            A_1\times_{t_A,A_0,i}K
+                \arrow[r, "s_A\pi_{A_1}"]
+                \arrow[dr, "d_K"']
+        &
+            A_0
+                \arrow[d, "J_F"]
+        \\
+        &
+            \mathbf{Beh}_0 .
+    \end{tikzcd}
+\]
+
+Consequently, the derivative image is
+\[
+    \operatorname{Der}_0(K)
+        =
+    \operatorname{Im}
+    \left(
+        A_1\times_{t_A,A_0,i}K
+            \xrightarrow{\;s_A\pi_{A_1}\;}
+        A_0
+            \xrightarrow{\;J_F\;}
+        \mathbf{Beh}_0
+    \right).
+\]
+Thus, in the stateless specialization, derivative closure is not merely an abstract closure operation on behaviours. It is the image under the functorial residual embedding \(J_F\) of the domain-closure of the specified family of objects.
+
+Equivalently, the generated residual state object is obtained by taking all objects \(u\in A_0\) admitting an arrow
+\[
+    u\to i(\kappa)
+\]
+into one of the specified objects, and then assigning to each such \(u\) the slice-restricted functorial behaviour
+\[
+    J_F(u)=F\circ\operatorname{dom}_u.
+\]
+Thus the stateless derivative image is the category-theoretic sieve generated by the specified objects, viewed through the residual semantics of the internal functor \(F\).
+
+\section{The Categorical Myhill--Nerode Theorem}
+\label{sec:categorical-myhill-nerode-theorem}
+
+We now assemble the equality-level Nerode relation, the derivative image, the minimal residual realization, and the reachability--separatedness criterion. The result is a categorical Myhill--Nerode theorem for the residual semantics developed above. Related categorical minimization theorems for automata and languages appear in functorial and topos-theoretic settings \cite{ColcombetPetrisan2020,Iwaniack2023}. The theorem below is stated for Mealy morphisms between internal categories and uses the equality of represented residual behaviours.
+
+\subsection{The Nerode relation}
+\label{subsec:nerode-relation}
+
+\begin{definition}[Nerode relation]
+\label{def:nerode-relation}
+    The \textbf{Nerode relation}
+    \[
+        {\equiv_K}\rightrightarrows D_K
+    \]
+    is the kernel pair of
+    \[
+        d_K:D_K\to\mathbf{Beh}_0
+    \]
+    in the slice
+    \[
+        \mathcal E/Z,
+        \qquad
+        Z=A_0\times B_0.
+    \]
+    Thus
+    \[
+        (a,\kappa)\equiv_K(a',\kappa')
+    \]
+    precisely when
+    \[
+        \partial_a k(\kappa)=\partial_{a'}k(\kappa')
+    \]
+    as represented residual behaviours.
+\end{definition}
+
+The kernel-pair square is
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            {\equiv_K}
+                \arrow[r, "\pi_2"]
+                \arrow[d, "\pi_1"']
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            D_K
+                \arrow[d, "d_K"]
+        \\
+            D_K
+                \arrow[r, "d_K"']
+        &
+            \mathbf{Beh}_0.
+    \end{tikzcd}
+\]
+
+\begin{remark}
+\label{rem:equality-level-nerode}
+    This is an equality-level Nerode relation. It identifies formal residual derivatives exactly when they determine the same represented residual functor, including both object and arrow assignments. It does not quotient by isomorphism, by behaviour comparison, or by equivalence inside the vertical behaviour category.
+\end{remark}
+
+\subsection{The Nerode quotient}
+\label{subsec:nerode-quotient}
+
+\begin{theorem}[Categorical Myhill--Nerode quotient]
+\label{thm:categorical-myhill-nerode-quotient}
+    The quotient
+    \[
+        D_K/{\equiv_K}
+    \]
+    exists and is effective in
+    \[
+        \mathcal E/Z.
+    \]
+    Moreover, there is a canonical isomorphism
+    \[
+        D_K/{\equiv_K}
+        \cong
+        \operatorname{Der}_0(K)
+    \]
+    in \(\mathcal E/Z\).
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use exactness of the slice.} Since \(\mathcal E\) is Barr-exact, the slice \(\mathcal E/Z\) is Barr-exact. Hence the kernel pair of \(d_K\) has an effective quotient.
+
+        \item \textbf{Identify the quotient with the image.} In a Barr-exact category, the quotient of the kernel pair of a morphism is its regular image. Therefore
+        \[
+            D_K/{\equiv_K}
+            \cong
+            \operatorname{Im}(d_K)
+            =
+            \operatorname{Der}_0(K).
+        \]
+
+        \item \textbf{Display the comparison.} The comparison is represented by the diagram
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    {\equiv_K}
+                        \arrow[r, shift left=0.5ex]
+                        \arrow[r, shift right=0.5ex]
+                &
+                    D_K
+                        \arrow[r, two heads]
+                        \arrow[dr, two heads, "e_K"']
+                &
+                    D_K/{\equiv_K}
+                        \arrow[d, dashed, "\cong"]
+                \\
+                &
+                &
+                    \operatorname{Der}_0(K).
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{The minimal residual realization}
+\label{subsec:minimal-residual-realization}
+
+\begin{definition}[Minimal residual realization]
+\label{def:minimal-residual-realization}
+    The \textbf{minimal residual realization} of a specification
+    \[
+        k:K\to\mathbf{Beh}_0
+    \]
+    is the restriction of the canonical behaviour Mealy morphism to the derivative-closed image
+    \[
+        \operatorname{Der}_0(K)\hookrightarrow\mathbf{Beh}_0.
+    \]
+    It is denoted
+    \[
+        \mathsf{Min}(K):\mathbb A\rightsquigarrow\mathbb B.
+    \]
+\end{definition}
+
+The minimal realization carries a canonical realization map
+\[
+    i_{\min}:K\to\operatorname{Der}_0(K)
+\]
+defined by
+\[
+    i_{\min}:=e_K\iota_K.
+\]
+It satisfies
+\[
+    j_K i_{\min}
+    =
+    j_Ke_K\iota_K
+    =
+    d_K\iota_K
+    =
+    k.
+\]
+
+\subsection{Realizations and reachability}
+\label{subsec:realizations-reachability}
+
+\begin{definition}[Realization]
+\label{def:realization}
+    A \textbf{realization} of a behaviour specification
+    \[
+        k:K\to\mathbf{Beh}_0
+    \]
+    is a Mealy morphism
+    \[
+        P:\mathbb A\rightsquigarrow\mathbb B
+    \]
+    together with a map
+    \[
+        i:K\to P
+    \]
+    such that
+    \[
+        \beta_P i=k.
+    \]
+\end{definition}
+
+\begin{remark}
+\label{rem:realization-over-base}
+    Since \(\beta_P\) and \(k\) both lie over \(Z=A_0\times B_0\), the equation
+    \[
+        \beta_P i=k
+    \]
+    implies that \(i\) is a map over \(Z\).
+\end{remark}
+
+\begin{definition}[Reachability map]
+\label{def:reachability-map}
+    Given a realization
+    \[
+        i:K\to P,
+    \]
+    the \textbf{reachability map}
+    \[
+        \rho_{P,K}:D_K\to P
+    \]
+    is defined by
+    \[
+        \rho_{P,K}(a,\kappa)
+        =
+        \delta_P(a,i(\kappa)).
+    \]
+\end{definition}
+
+\begin{lemma}
+\label{lem:reachability-map-over-base}
+    The reachability map satisfies
+    \[
+        \beta_P\rho_{P,K}=d_K.
+    \]
+    Consequently, \(\rho_{P,K}\) is a map over \(Z\), where \(D_K\) is viewed over \(Z\) through \(d_K\).
+\end{lemma}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Compute the behaviour of a reachable state.} For \((a,\kappa)\in D_K\),
+        \[
+            \begin{aligned}
+                \beta_P(\rho_{P,K}(a,\kappa))
+                &=
+                \beta_P(\delta_P(a,i(\kappa)))
+                \\
+                &=
+                \partial_a(\beta_P(i(\kappa)))
+                \\
+                &=
+                \partial_a k(\kappa)
+                \\
+                &=
+                d_K(a,\kappa).
+            \end{aligned}
+        \]
+
+        \item \textbf{Display the commutative triangle.} This is the commutativity of
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    D_K
+                        \arrow[r, "\rho_{P,K}"]
+                        \arrow[dr, "d_K"']
+                &
+                    P
+                        \arrow[d, "\beta_P"]
+                \\
+                &
+                    \mathbf{Beh}_0.
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Transition-closed subobject]
+\label{def:transition-closed-subobject}
+    Let
+    \[
+        P:\mathbb A\rightsquigarrow\mathbb B
+    \]
+    be a Mealy morphism, and let
+    \[
+        m:S\hookrightarrow P
+    \]
+    be a subobject in \(\mathcal E/Z\), where \(Z=A_0\times B_0\). Write
+    \[
+        p_S:=p_Pm.
+    \]
+    The \textbf{transition domain} of \(S\) is
+    \[
+        \mathsf T(S):=
+        A_1\times_{t_A,A_0,p_S}S.
+    \]
+    We regard \(\mathsf T(S)\) as an object of \(\mathcal E/Z\) through the composite
+    \[
+        \mathsf T(S)
+            \xrightarrow{1_{A_1}\times m}
+        A_1\times_{t_A,A_0,p_P}P
+            \xrightarrow{\delta_P}
+        P
+            \xrightarrow{(p_P,q_P)}
+        Z.
+    \]
+
+    We say that \(S\) is \textbf{transition-closed} if the transition map
+    \[
+        \delta_P(1_{A_1}\times m):
+        \mathsf T(S)\to P
+    \]
+    factors through \(m\) in \(\mathcal E/Z\). Equivalently, there is a unique map
+    \[
+        \bar\delta_S:\mathsf T(S)\to S
+    \]
+    over \(Z\) such that
+    \[
+        m\bar\delta_S
+        =
+        \delta_P(1_{A_1}\times m).
+    \]
+\end{definition}
+
+The factorization condition is
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            \mathsf T(S)
+                \arrow[rr, "{\delta_P(1_{A_1}\times m)}"]
+                \arrow[dr, "\bar\delta_S"']
+        &
+        &
+            P
+        \\
+        &
+            S
+                \arrow[ur, hook, "m"']
+        &
+    \end{tikzcd}
+    \qquad
+    \text{in }\mathcal E/Z.
+\]
+
+\begin{lemma}[Restriction to transition-closed subobjects]
+\label{lem:restriction-transition-closed-subobject}
+    Let
+    \[
+        m:S\hookrightarrow P
+    \]
+    be a transition-closed subobject of a Mealy morphism
+    \[
+        P:\mathbb A\rightsquigarrow\mathbb B
+    \]
+    in \(\mathcal E/Z\). Then \(S\), with the restricted carrier
+    \[
+        A_0\xleftarrow{p_Pm}S\xrightarrow{q_Pm}B_0,
+    \]
+    carries a canonical restricted Mealy morphism structure.
+
+    Its transition is the factorization
+    \[
+        \bar\delta_S:
+        A_1\times_{t_A,A_0,p_Pm}S\to S
+    \]
+    supplied by transition-closedness, and its output is the restriction of
+    \[
+        \omega_P:
+        A_1\times_{t_A,A_0,p_P}P\to B_1
+    \]
+    along
+    \[
+        1_{A_1}\times m.
+    \]
+\end{lemma}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Restrict the transition and output.} The transition is supplied by transition-closedness, and the output is the restriction of the output map of \(P\).
+
+        \item \textbf{Verify the laws by monicity.} The typing equations follow because \(\bar\delta_S\) is a map over the transition-induced \(Z\)-structure and because the output map is the restriction of the output map of \(P\). The unit and multiplication laws hold after composing with the monomorphism \(m\), hence hold in \(S\).
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Reachable part]
+\label{def:reachable-part}
+    The \textbf{reachable part}
+    \[
+        \operatorname{Reach}_0(P,K)\hookrightarrow P
+    \]
+    is the regular image of
+    \[
+        \rho_{P,K}:D_K\to P
+    \]
+    in the slice
+    \[
+        \mathcal E/Z.
+    \]
+\end{definition}
+
+\begin{proposition}[Reachable part]
+\label{prop:reachable-part}
+    The subobject
+    \[
+        \operatorname{Reach}_0(P,K)\hookrightarrow P
+    \]
+    is transition-closed. Moreover, there is a regular epimorphism in
+    \(\mathcal E/Z\)
+    \[
+        \operatorname{Reach}_0(P,K)
+        \twoheadrightarrow
+        \operatorname{Der}_0(K).
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Factor the reachability map.} Let
+        \[
+            e_R:D_K\twoheadrightarrow \operatorname{Reach}_0(P,K),
+            \qquad
+            m_R:\operatorname{Reach}_0(P,K)\hookrightarrow P
+        \]
+        be the image factorization of \(\rho_{P,K}\) in \(\mathcal E/Z\):
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    D_K
+                        \arrow[rr, "\rho_{P,K}"]
+                        \arrow[dr, two heads, "e_R"']
+                &
+                &
+                    P
+                \\
+                &
+                    \operatorname{Reach}_0(P,K)
+                        \arrow[ur, hook, "m_R"']
+                &
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Set up transition-closedness.} To prove transition-closedness, consider
+        \[
+            g:
+            A_1\times_{t_A,A_0,p_{\operatorname{Reach}}}
+                \operatorname{Reach}_0(P,K)
+            \to P,
+            \qquad
+            (c,z)\longmapsto\delta_P(c,m_Rz),
+        \]
+        where
+        \[
+            p_{\operatorname{Reach}}:=p_Pm_R.
+        \]
+        Pull back \(e_R\) along the underlying projection to \(\operatorname{Reach}_0(P,K)\). This projection is not, in general, a morphism in \(\mathcal E/Z\); the pullback is therefore taken in \(\mathcal E\). It gives a regular epimorphism
+        \[
+            e'_R:
+            A_1\times_{t_A,A_0,p_{D_K}}D_K
+            \twoheadrightarrow
+            A_1\times_{t_A,A_0,p_{\operatorname{Reach}}}
+                \operatorname{Reach}_0(P,K).
+        \]
+
+        \item \textbf{Compute transitions on the cover.} On the cover, a generalized element has the form
+        \[
+            (c,a,\kappa),
+        \]
+        with
+        \[
+            a:u\to p_K(\kappa),
+            \qquad
+            c:w\to u.
+        \]
+        Then
+        \[
+            \begin{aligned}
+                g e'_R(c,a,\kappa)
+                &=
+                \delta_P(c,\delta_P(a,i(\kappa)))
+                \\
+                &=
+                \delta_P(a\circ c,i(\kappa))
+                \\
+                &=
+                \rho_{P,K}(a\circ c,\kappa)
+                \\
+                &=
+                m_R e_R(a\circ c,\kappa).
+            \end{aligned}
+        \]
+        Hence \(g e'_R\) factors through \(m_R\). Since \(e'_R\) is a regular epimorphism and \(m_R\) is monic, regular-epi descent for subobjects gives a factorization of \(g\) through \(m_R\) in \(\mathcal E\). The resulting factorization is a morphism in \(\mathcal E/Z\), because \(m_R\) is a monomorphism over \(Z\) and both composites to \(Z\) agree after composing with \(m_R\). Thus the reachable part is transition-closed.
+
+        \item \textbf{Compare with the derivative image.} Let
+        \[
+            e_K:D_K\twoheadrightarrow \operatorname{Der}_0(K),
+            \qquad
+            j_K:\operatorname{Der}_0(K)\hookrightarrow\mathbf{Beh}_0
+        \]
+        be the image factorization of \(d_K\). By Lemma~\ref{lem:reachability-map-over-base},
+        \[
+            \beta_Pm_Re_R
+            =
+            \beta_P\rho_{P,K}
+            =
+            d_K
+            =
+            j_Ke_K.
+        \]
+
+        \item \textbf{Descend \(e_K\) through \(e_R\).} We now show that \(e_K\) descends through \(e_R\). Let
+        \[
+            R_{e_R}\rightrightarrows D_K
+        \]
+        be the kernel pair of \(e_R\), with projections \(\pi_1,\pi_2\). Then
+        \[
+            \begin{aligned}
+                j_Ke_K\pi_1
+                &=
+                \beta_Pm_Re_R\pi_1
+                \\
+                &=
+                \beta_Pm_Re_R\pi_2
+                \\
+                &=
+                j_Ke_K\pi_2.
+            \end{aligned}
+        \]
+        Since \(j_K\) is monic,
+        \[
+            e_K\pi_1=e_K\pi_2.
+        \]
+        Since \(e_R\) is the coequalizer of its kernel pair, there is a unique map
+        \[
+            h:\operatorname{Reach}_0(P,K)\to\operatorname{Der}_0(K)
+        \]
+        such that
+        \[
+            he_R=e_K.
+        \]
+        It also satisfies
+        \[
+            j_Kh=\beta_Pm_R,
+        \]
+        because both sides agree after precomposition with the epimorphism \(e_R\).
+
+        \item \textbf{Show that the descended map is regular epic.} The descent diagram is
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    {D_K}
+                        \arrow[r, two heads, "{e_R}"]
+                        \arrow[dr, two heads, "{e_K}"']
+                &
+                    {\operatorname{Reach}_0(P,K)}
+                        \arrow[d, dashed, "{h}"]
+                        \arrow[dr, "{\beta_P m_R}"]
+                &
+                \\
+                &
+                    {\operatorname{Der}_0(K)}
+                        \arrow[r, hook, "{j_K}"']
+                &
+                    {\mathbf{Beh}_0}
+            \end{tikzcd}
+        \]
+        Factor \(h\) as a regular epimorphism followed by a monomorphism in \(\mathcal E/Z\). Since \(e_K=he_R\) is a regular epimorphism, the mono part is an isomorphism. Hence \(h\) is a regular epimorphism.
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Reachable realization]
+\label{def:reachable-realization}
+    A realization \(i:K\to P\) is \textbf{reachable} if
+    \[
+        \operatorname{Reach}_0(P,K)\hookrightarrow P
+    \]
+    is an isomorphism.
+\end{definition}
+
+\subsection{Semantic quotient and minimality}
+\label{subsec:semantic-quotient-minimality}
+
+\begin{theorem}[Semantic quotient theorem]
+\label{thm:semantic-quotient-theorem}
+    Let
+    \[
+        i:K\to P
+    \]
+    be a realization of
+    \[
+        k:K\to\mathbf{Beh}_0.
+    \]
+    The behaviour assignment restricts on the reachable part to a strict semantic homomorphism
+    \[
+        \overline{\beta}_{P,K}:
+        \operatorname{Reach}_0(P,K)\to\mathsf{Min}(K).
+    \]
+    This map is a regular epimorphism in \(\mathcal E/Z\). If \(P\) is reachable, then
+    \[
+        \overline{\beta}_{P,K}:P\twoheadrightarrow\mathsf{Min}(K)
+    \]
+    is a regular epimorphic strict semantic homomorphism.
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Define the restricted semantic map.} By Proposition~\ref{prop:reachable-part}, there is a regular epimorphism
+        \[
+            h:\operatorname{Reach}_0(P,K)\twoheadrightarrow\operatorname{Der}_0(K)
+        \]
+        satisfying
+        \[
+            j_Kh=\beta_Pm_R.
+        \]
+        Define
+        \[
+            \overline{\beta}_{P,K}:=h.
+        \]
+
+        \item \textbf{Restrict the Mealy structures.} Since the reachable part is transition-closed and \(\operatorname{Der}_0(K)\) is derivative-closed, the source carries its restricted Mealy structure by Lemma~\ref{lem:restriction-transition-closed-subobject}, and the target carries its restricted Mealy structure by Lemma~\ref{lem:restriction-derivative-closed-subobject}.
+
+        \item \textbf{Check strict preservation.} The map \(\overline{\beta}_{P,K}\) is a strict semantic homomorphism because it is the restriction of the strict semantic homomorphism
+        \[
+            \beta_P:P\to
+            \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}.
+        \]
+        For example, transition preservation follows after composing with \(j_K\): both sides become the corresponding transition-preservation equation for \(\beta_P\). Since \(j_K\) is monic, the equality holds in \(\operatorname{Der}_0(K)\). The output equation is inherited directly from the restricted output structure.
+
+        \item \textbf{Conclude regular epimorphy.} Its regular epimorphy is the regular epimorphy of \(h\). If \(P\) is reachable, then \(\operatorname{Reach}_0(P,K)\cong P\), giving the final statement.
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Separated realization]
+\label{def:separated-realization}
+    A realization \(i:K\to P\) is \textbf{behaviourally separated} if the Mealy morphism \(P\) is behaviourally separated, equivalently if
+    \[
+        \beta_P:P\to\mathbf{Beh}_0
+    \]
+    is monic.
+\end{definition}
+
+\begin{theorem}[Minimal realization theorem]
+\label{thm:minimal-realization}
+    If a realization
+    \[
+        i:K\to P
+    \]
+    is reachable and behaviourally separated, then the canonical quotient map
+    \[
+        \overline{\beta}_{P,K}:P\to\mathsf{Min}(K)
+    \]
+    is an isomorphism of Mealy morphisms. Moreover,
+    \[
+        \overline{\beta}_{P,K}i=i_{\min}.
+    \]
+    Hence every reachable separated realization of \(K\) is isomorphic to
+    \[
+        \mathsf{Min}(K)
+    \]
+    as a realization.
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use reachability to get a regular epimorphism.} By Theorem~\ref{thm:semantic-quotient-theorem}, reachability gives a regular epimorphic strict semantic homomorphism
+        \[
+            \overline{\beta}_{P,K}:P\twoheadrightarrow\mathsf{Min}(K).
+        \]
+
+        \item \textbf{Use separatedness to get a monomorphism.} Let
+        \[
+            j_K:\operatorname{Der}_0(K)\hookrightarrow\mathbf{Beh}_0
+        \]
+        be the image inclusion. Then
+        \[
+            j_K\overline{\beta}_{P,K}=\beta_P.
+        \]
+        Since \(P\) is behaviourally separated, \(\beta_P\) is monic. Since \(j_K\) is monic, \(\overline{\beta}_{P,K}\) is monic. A morphism that is both regular epimorphic and monic in a regular category is an isomorphism.
+
+        \item \textbf{Promote the isomorphism to Mealy morphisms.} Since \(\overline{\beta}_{P,K}\) is a strict semantic homomorphism and an isomorphism over \(Z\), its inverse preserves transitions and outputs by applying the inverse to the strict preservation equations. Hence it is an isomorphism of Mealy morphisms.
+
+        \item \textbf{Compare realization maps.} Finally,
+        \[
+            j_K\overline{\beta}_{P,K}i
+            =
+            \beta_P i
+            =
+            k
+            =
+            j_K i_{\min}.
+        \]
+        Since \(j_K\) is monic,
+        \[
+            \overline{\beta}_{P,K}i=i_{\min}.
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{The categorical theorem}
+\label{subsec:categorical-myhill-nerode-theorem}
+
+\begin{theorem}[Categorical Myhill--Nerode theorem]
+\label{thm:categorical-myhill-nerode}
+    Let
+    \[
+        k:K\to\mathbf{Beh}_0
+    \]
+    be a behaviour specification. Then:
+    \begin{enumerate}
+        \item the equality-level Nerode quotient
+        \[
+            D_K/{\equiv_K}
+        \]
+        exists effectively in
+        \[
+            \mathcal E/(A_0\times B_0);
+        \]
+
+        \item there is a canonical isomorphism
+        \[
+            D_K/{\equiv_K}\cong\operatorname{Der}_0(K);
+        \]
+
+        \item under this isomorphism, the quotient carries the restricted canonical Mealy structure;
+
+        \item this restricted Mealy morphism is the minimal residual realization
+        \[
+            \mathsf{Min}(K);
+        \]
+
+        \item every realization \(i:K\to P\) has a reachable part mapping by a regular epimorphic strict semantic homomorphism onto
+        \[
+            \mathsf{Min}(K);
+        \]
+
+        \item every reachable behaviourally separated realization of \(K\) is isomorphic to
+        \[
+            \mathsf{Min}(K)
+        \]
+        as a realization.
+    \end{enumerate}
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Apply the quotient theorem.} The first two claims are Theorem~\ref{thm:categorical-myhill-nerode-quotient}.
+
+        \item \textbf{Restrict the canonical Mealy structure.} By Theorem~\ref{thm:derivative-closure},
+        \[
+            \operatorname{Der}_0(K)\hookrightarrow\mathbf{Beh}_0
+        \]
+        is derivative-closed. Therefore, by Lemma~\ref{lem:restriction-derivative-closed-subobject}, the canonical behaviour Mealy morphism restricts to \(\operatorname{Der}_0(K)\). This restricted Mealy morphism is \(\mathsf{Min}(K)\) by Definition~\ref{def:minimal-residual-realization}.
+
+        \item \textbf{Apply the semantic quotient and minimality theorems.} The regular epimorphic quotient from the reachable part of any realization onto \(\mathsf{Min}(K)\) is Theorem~\ref{thm:semantic-quotient-theorem}. The uniqueness of reachable separated realizations is Theorem~\ref{thm:minimal-realization}.
+    \end{enumerate}
+\end{proof}
+
+\subsection{Finite-state corollary}
+\label{subsec:finite-state-corollary}
+
+\begin{definition}[Finite-state structure]
+\label{def:finite-state-doctrine}
+    A \textbf{finite-state structure} on \(\mathcal E\) is a choice, for every \(Z\in\mathcal E\), of a replete full subcategory
+    \[
+        \mathsf{Fin}_Z\subseteq\mathcal E/Z
+    \]
+    closed under:
+    \begin{enumerate}
+        \item isomorphisms;
+
+        \item subobjects;
+
+        \item regular images;
+
+        \item effective quotients of internal equivalence relations.
+    \end{enumerate}
+\end{definition}
+
+For the remainder of this subsection, put
+\[
+    Z=A_0\times B_0.
+\]
+
+\begin{definition}[Finite-state realization]
+\label{def:finite-state-realization}
+    A realization with carrier
+    \[
+        P\to Z
+    \]
+    is \textbf{finite-state} if
+    \[
+        P\to Z
+    \]
+    lies in
+    \[
+        \mathsf{Fin}_Z.
+    \]
+\end{definition}
+
+\begin{corollary}[Finite-state Myhill--Nerode theorem]
+\label{cor:finite-state-myhill-nerode}
+    Let
+    \[
+        k:K\to\mathbf{Beh}_0
+    \]
+    be a behaviour specification. The following are equivalent:
+    \begin{enumerate}
+        \item \(K\) has a finite-state realization.
+
+        \item \(K\) has a finite-state reachable behaviourally separated realization.
+
+        \item The carrier
+        \[
+            \operatorname{Der}_0(K)\to Z
+        \]
+        of
+        \[
+            \mathsf{Min}(K)
+        \]
+        lies in \(\mathsf{Fin}_Z\).
+
+        \item The Nerode quotient
+        \[
+            D_K/{\equiv_K}
+        \]
+        lies in \(\mathsf{Fin}_Z\).
+    \end{enumerate}
+\end{corollary}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Derive finiteness of the minimal carrier from a finite realization.} Suppose \(K\) has a finite-state realization \(i:K\to P\). The reachable part
+        \[
+            \operatorname{Reach}_0(P,K)\hookrightarrow P
+        \]
+        is a subobject of \(P\) in \(\mathcal E/Z\), hence lies in \(\mathsf{Fin}_Z\). By Theorem~\ref{thm:semantic-quotient-theorem}, there is a regular epimorphism
+        \[
+            \operatorname{Reach}_0(P,K)\twoheadrightarrow\mathsf{Min}(K)
+        \]
+        in \(\mathcal E/Z\). Closure under regular images gives
+        \[
+            \operatorname{Der}_0(K)\in\mathsf{Fin}_Z.
+        \]
+        Thus (1) implies (3).
+
+        \item \textbf{Show the minimal realization is reachable and separated.}
+        If
+        \[
+            \operatorname{Der}_0(K)\in\mathsf{Fin}_Z,
+        \]
+        then \(\mathsf{Min}(K)\) is finite-state. Its realization map is
+        \[
+            i_{\min}:K\to\operatorname{Der}_0(K).
+        \]
+        The reachability map of this realization has image
+        \[
+            \operatorname{Der}_0(K),
+        \]
+        because its composite with the inclusion
+        \[
+            \operatorname{Der}_0(K)\hookrightarrow\mathbf{Beh}_0
+        \]
+        is
+        \[
+            (a,\kappa)
+            \longmapsto
+            \partial_a k(\kappa)
+            =
+            d_K(a,\kappa).
+        \]
+        Hence \(\mathsf{Min}(K)\) is reachable. It is behaviourally separated because, by Lemma~\ref{lem:canonical-behaviour-map-identity}, its behaviour map is the monomorphism
+        \[
+            \operatorname{Der}_0(K)\hookrightarrow\mathbf{Beh}_0.
+        \]
+        Thus (3) implies (2).
+
+        \item \textbf{Conclude the remaining implications.} The implication (2) implies (1) is immediate. Finally, Theorem~\ref{thm:categorical-myhill-nerode-quotient} gives
+        \[
+            D_K/{\equiv_K}\cong\operatorname{Der}_0(K)
+        \]
+        in \(\mathcal E/Z\), so (3) and (4) are equivalent.
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}
+\label{rem:finite-state-doctrine-quotients}
+    In the proof above, finite realizability implies finiteness of the minimal carrier using closure under subobjects and regular images. Closure under effective quotients ensures that, when a formal derivative object lies in the finite-state structure, its Nerode quotient remains in the same finite-state structure.
+\end{remark}
+
+\begin{remark}
+\label{rem:finite-arrow-object}
+    For finite categorical semantics, one may also require the arrow object
+    \[
+        \mathbf{Der}(K)_1
+    \]
+    to lie in the chosen finite class over
+    \[
+        \operatorname{Der}_0(K)\times_{A_0}\operatorname{Der}_0(K).
+    \]
+    This records finiteness of comparison structure as well as finiteness of residual states.
+\end{remark}
+
+\subsection{Running specializations}
+\label{subsec:myhill-nerode-running-specializations}
+
+\subsubsection{The one-object specialization}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as one-object internal categories
+\[
+    \mathbb A=M,
+    \qquad
+    \mathbb B=N,
+\]
+using the convention
+\[
+    b\circ a=ba.
+\]
+In this case a specification
+\[
+    k:K\to\mathbf{Beh}_0
+\]
+is an internal family of residual \(N\)-valued cocycles. Writing
+\[
+    k(\kappa)=\lambda_\kappa,
+\]
+the formal derivative orbit is
+\[
+    D_K=M\times K,
+\]
+and the residual evaluation map is
+\[
+    d_K:M\times K\to\mathbf{Beh}_0,
+    \qquad
+    d_K(s,\kappa)=\partial_s\lambda_\kappa.
+\]
+Explicitly,
+\[
+    \bigl(\partial_s\lambda_\kappa\bigr)(r,m)
+        =
+    \lambda_\kappa(sr,m).
+\]
+
+The Nerode relation is the kernel pair of \(d_K\). Thus it identifies formal derivatives
+\[
+    (s,\kappa),
+    \qquad
+    (s',\kappa')
+\]
+precisely when the corresponding residual cocycles are equal:
+\[
+    (s,\kappa)\equiv_K(s',\kappa')
+    \quad\Longleftrightarrow\quad
+    \partial_s\lambda_\kappa
+        =
+    \partial_{s'}\lambda_{\kappa'}.
+\]
+Equivalently,
+\[
+    \lambda_\kappa(sr,m)
+        =
+    \lambda_{\kappa'}(s'r,m)
+\]
+as internal residual behaviours.
+
+The Nerode quotient
+\[
+    D_K/{\equiv_K}
+\]
+is canonically the derivative image
+\[
+    \operatorname{Der}_0(K)
+        \rightarrowtail
+    \mathbf{Beh}_0.
+\]
+Thus the state object of the minimal residual realization is the residual derivative closure of the specified cocycles. Its transition is derivative reindexing,
+\[
+    \lambda\longmapsto \partial_s\lambda,
+\]
+and its output on input \(s\) is the anchor output
+\[
+    \lambda(1,s)\in N.
+\]
+Therefore the minimal residual realization is the smallest residual-cocycle machine containing the specified cocycles and closed under all residual derivatives.
+
+The finite-state corollary specializes accordingly: a finite-state realization exists precisely when the derivative closure
+\[
+    \operatorname{Der}_0(K)
+\]
+is finite, in the relevant sense of finiteness for the ambient context. In the ordinary external case, this says that a finite \(M\)-system realizing the specified \(N\)-valued behaviours exists exactly when there are only finitely many distinct residual cocycles.
+
+\subsubsection{The stateless specialization}
+
+In the stateless case, let
+\[
+    F:\mathbb A\to\mathbb B
+\]
+be an internal functor, and let
+\[
+    i:K\to A_0
+\]
+be a family of specified input objects. The corresponding stateless specification is
+\[
+    k
+        =
+    J_F i:
+    K\to\mathbf{Beh}_0,
+\]
+where
+\[
+    J_F:A_0\to\mathbf{Beh}_0,
+    \qquad
+    J_F(v)=F\circ\operatorname{dom}_v.
+\]
+Thus the specified behaviours are the slice restrictions
+\[
+    H^F_{i(\kappa)}
+        =
+    F\circ\operatorname{dom}_{i(\kappa)}.
+\]
+
+The formal derivative orbit is
+\[
+    D_K
+        =
+    A_1\times_{t_A,A_0,i}K.
+\]
+A generalized element is an arrow
+\[
+    a:u\to i(\kappa)
+\]
+into one of the specified objects. The residual evaluation map is
+\[
+    d_K:D_K\to\mathbf{Beh}_0,
+    \qquad
+    d_K(a,\kappa)=\partial_aJ_F(i(\kappa)).
+\]
+Since stateless differentiation is change of slice, this becomes
+\[
+    d_K(a,\kappa)=J_F(u)=J_F(s_Aa).
+\]
+Hence \(d_K\) factors as
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+            A_1\times_{t_A,A_0,i}K
+                \arrow[r, "s_A\pi_{A_1}"]
+                \arrow[dr, "d_K"']
+        &
+            A_0
+                \arrow[d, "J_F"]
+        \\
+        &
+            \mathbf{Beh}_0 .
+    \end{tikzcd}
+\]
+
+The Nerode relation on \(D_K\) is therefore
+\[
+    (a,\kappa)\equiv_K(a',\kappa')
+    \quad\Longleftrightarrow\quad
+    J_F(s_Aa)=J_F(s_Aa').
+\]
+But \(J_F\) lies over \(A_0\):
+\[
+    p_{\mathbf{Beh}}J_F=1_{A_0}.
+\]
+Consequently \(J_F\) is monic, and the preceding equivalence reduces to equality of generated domains:
+\[
+    (a,\kappa)\equiv_K(a',\kappa')
+    \quad\Longleftrightarrow\quad
+    s_Aa=s_Aa'.
+\]
+Thus the Nerode quotient is the image of the domain map
+\[
+    A_1\times_{t_A,A_0,i}K
+        \xrightarrow{\;s_A\pi_{A_1}\;}
+    A_0.
+\]
+Equivalently,
+\[
+    D_K/{\equiv_K}
+        \cong
+    \operatorname{Im}
+    \left(
+        A_1\times_{t_A,A_0,i}K
+            \xrightarrow{\;s_A\pi_{A_1}\;}
+        A_0
+    \right).
+\]
+
+After applying the functorial residual embedding \(J_F\), this quotient is the derivative image
+\[
+    \operatorname{Der}_0(K)
+        =
+    \operatorname{Im}
+    \left(
+        A_1\times_{t_A,A_0,i}K
+            \xrightarrow{\;s_A\pi_{A_1}\;}
+        A_0
+            \xrightarrow{\;J_F\;}
+        \mathbf{Beh}_0
+    \right).
+\]
+Thus, in the stateless specialization, the categorical Myhill--Nerode quotient is the category-theoretic domain-closure of the specified objects, viewed through the residual semantics of \(F\).
+
+Equivalently, the minimal residual realization generated by \(k=J_Fi\) has as states the objects \(u\in A_0\) admitting an arrow
+\[
+    u\to i(\kappa)
+\]
+into one of the specified objects. Its residual behaviour at such a state is
+\[
+    J_F(u)=F\circ\operatorname{dom}_u.
+\]
+Hence the minimal stateless realization is the functorial residual machine on the sieve generated by the specified family.
+
+In particular, if the specified family is already closed under domains of arrows into it, then no new stateless residual states are generated. If it is also behaviourally separated, then it is already minimal. For the full specification
+\[
+    i=1_{A_0}:A_0\to A_0,
+\]
+the formal derivative orbit is \(A_1\), the Nerode quotient identifies arrows precisely by their source object, and the quotient recovers \(A_0\). Thus the minimal residual realization of the full stateless specification is the original map-representable machine associated to \(F\).
+
+\section{Generated residual behaviour categories}
+\label{sec:generated-residual-behaviour-categories}
+
+The minimal Mealy carrier records the object image of the derivative orbit. The vertical behaviour category also records behaviour comparisons between generated residual behaviours.
+
+\subsection{Derivative-closed full internal subcategories}
+\label{subsec:derivative-closed-full-internal-subcategories}
+
+\begin{definition}[Derivative-closed full internal subcategory]
+\label{def:derivative-closed-full-subcategory}
+    A full internal subcategory
+    \[
+        \mathbb S\subseteq
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+    \]
+    is \textbf{derivative-closed} if its object subobject
+    \[
+        S_0\hookrightarrow\mathbf{Beh}_0
+    \]
+    is derivative-closed in the sense of Definition~\ref{def:derivative-closed-subobject}.
+\end{definition}
+
+\subsection{The generated residual behaviour category}
+\label{subsec:generated-residual-behaviour-category}
+
+\begin{definition}[Generated residual behaviour category]
+\label{def:generated-residual-behaviour-category}
+    The \textbf{generated residual behaviour category} of a specification
+    \[
+        k:K\to\mathbf{Beh}_0
+    \]
+    is the full internal subcategory
+    \[
+        \mathbf{Der}(K)
+        \subseteq
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+    \]
+    on the object subobject
+    \[
+        \operatorname{Der}_0(K)\hookrightarrow\mathbf{Beh}_0.
+    \]
+    Thus
+    \[
+        \mathbf{Der}(K)_0=\operatorname{Der}_0(K),
+    \]
+    and
+    \[
+        \mathbf{Der}(K)_1
+        =
+        \operatorname{Der}_0(K)
+        \times_{\mathbf{Beh}_0,s}
+        \mathbf{Beh}_1
+        \times_{t,\mathbf{Beh}_0}
+        \operatorname{Der}_0(K).
+    \]
+\end{definition}
+
+The arrow object is defined by the pullback rectangle
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            \mathbf{Der}(K)_1
+                \arrow[r]
+                \arrow[d]
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            \mathbf{Beh}_1
+                \arrow[d, "{(s,t)}"]
+        \\
+            \operatorname{Der}_0(K)\times_{A_0}\operatorname{Der}_0(K)
+                \arrow[r, "{(j_K,j_K)}"']
+        &
+            \mathbf{Beh}_0\times_{A_0}\mathbf{Beh}_0.
+    \end{tikzcd}
+\]
+
+\begin{theorem}[Generated residual behaviour category]
+\label{thm:generated-residual-behaviour-category}
+    The internal category
+    \[
+        \mathbf{Der}(K)
+    \]
+    is the smallest full derivative-closed internal subcategory of
+    \[
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+    \]
+    containing the specified behaviours.
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use the object-level closure.} By Theorem~\ref{thm:derivative-closure}, the object part
+        \[
+            \operatorname{Der}_0(K)
+        \]
+        is the smallest derivative-closed subobject of \(\mathbf{Beh}_0\) containing the image of \(K\).
+
+        \item \textbf{Pass to the full subcategory.} The category \(\mathbf{Der}(K)\) is the full internal subcategory on this object subobject. Hence any full derivative-closed internal subcategory containing \(K\) contains \(\operatorname{Der}_0(K)\) on objects. Since it is full, it contains all arrows between those objects, and therefore contains the full subcategory \(\mathbf{Der}(K)\). Thus \(\mathbf{Der}(K)\) is the smallest full derivative-closed internal subcategory containing the specified behaviours.
+    \end{enumerate}
+\end{proof}
+
+\subsection{The syntactic residual comparison category}
+\label{subsec:syntactic-residual-comparison-category}
+
+\begin{definition}[Syntactic residual comparison category]
+\label{def:syntactic-residual-comparison-category}
+    The \textbf{syntactic residual comparison category} of \(K\) is the full inverse-image internal category along the object map \(d_K\):
+    \[
+        \mathbf{Syn}(K):=d_K^*
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}.
+    \]
+    Thus
+    \[
+        \mathbf{Syn}(K)_0=D_K,
+    \]
+    and
+    \[
+        \mathbf{Syn}(K)_1
+        =
+        D_K
+        \times_{\mathbf{Beh}_0,s}
+        \mathbf{Beh}_1
+        \times_{t,\mathbf{Beh}_0}
+        D_K.
+    \]
+    A generalized arrow
+    \[
+        (a,\kappa)\to(a',\kappa')
+    \]
+    is a behaviour comparison
+    \[
+        \partial_a k(\kappa)
+        \Rightarrow
+        \partial_{a'} k(\kappa').
+    \]
+\end{definition}
+
+The inverse-image square on arrow objects may be displayed fibrewise as
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            \mathbf{Syn}(K)_1
+                \arrow[r]
+                \arrow[d]
+                \arrow[dr, phantom, "\lrcorner", very near start]
+        &
+            \mathbf{Beh}_1
+                \arrow[d, "{(s,t)}"]
+        \\
+            D_K\times_{A_0}D_K
+                \arrow[r, "{(d_K,d_K)}"']
+        &
+            \mathbf{Beh}_0\times_{A_0}\mathbf{Beh}_0.
+    \end{tikzcd}
+\]
+
+The evident projection functor
+\[
+    \nu_K:
+    \mathbf{Syn}(K)\to
+    \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+\]
+has object map \(d_K\) and sends each arrow, already a behaviour comparison in \(\mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}\), to that same comparison.
+
+\begin{remark}
+\label{rem:comparison-level-image-full}
+    The comparison-level image considered below is the full subcategory on the object image. It is not the pointwise arrow-image of the residual evaluation functor. The map from \(\mathbf{Syn}(K)\) to this full subcategory is regular epimorphic on arrows because \(\mathbf{Syn}(K)\) is defined by pulling back the whole vertical behaviour category along \(d_K\).
+\end{remark}
+
+\subsection{The full residual image}
+\label{subsec:full-residual-image}
+
+\begin{theorem}[Full residual image on the derivative object image]
+\label{thm:comparison-level-residual-image}
+    The residual evaluation functor
+    \[
+        \nu_K:
+        \mathbf{Syn}(K)\to
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+    \]
+    factors as
+    \[
+        \mathbf{Syn}(K)
+        \twoheadrightarrow
+        \mathbf{Der}(K)
+        \hookrightarrow
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B},
+    \]
+    where the first functor is regular epimorphic on objects and arrows, and the second functor is the full inclusion.
+\end{theorem}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Identify the object image.} The object map of \(\nu_K\) is
+        \[
+            d_K:D_K\to\mathbf{Beh}_0,
+        \]
+        whose image is
+        \[
+            \operatorname{Der}_0(K).
+        \]
+
+        \item \textbf{Compare the arrow objects.} The arrow object of \(\mathbf{Syn}(K)\) is
+        \[
+            D_K
+            \times_{\mathbf{Beh}_0,s}
+            \mathbf{Beh}_1
+            \times_{t,\mathbf{Beh}_0}
+            D_K,
+        \]
+        while the arrow object of \(\mathbf{Der}(K)\) is
+        \[
+            \operatorname{Der}_0(K)
+            \times_{\mathbf{Beh}_0,s}
+            \mathbf{Beh}_1
+            \times_{t,\mathbf{Beh}_0}
+            \operatorname{Der}_0(K).
+        \]
+        The induced arrow map factors as
+        \[
+            \begin{aligned}
+                &
+                D_K
+                \times_{\mathbf{Beh}_0,s}
+                \mathbf{Beh}_1
+                \times_{t,\mathbf{Beh}_0}
+                D_K
+                \\
+                &\qquad\twoheadrightarrow
+                \operatorname{Der}_0(K)
+                \times_{\mathbf{Beh}_0,s}
+                \mathbf{Beh}_1
+                \times_{t,\mathbf{Beh}_0}
+                D_K
+                \\
+                &\qquad\twoheadrightarrow
+                \operatorname{Der}_0(K)
+                \times_{\mathbf{Beh}_0,s}
+                \mathbf{Beh}_1
+                \times_{t,\mathbf{Beh}_0}
+                \operatorname{Der}_0(K).
+            \end{aligned}
+        \]
+
+        \item \textbf{Use stability of regular epimorphisms.} Each map is a pullback of
+        \[
+            e_K:D_K\twoheadrightarrow\operatorname{Der}_0(K).
+        \]
+        Regular epimorphisms are stable under pullback and closed under composition, so the arrow map is a regular epimorphism.
+
+        \item \textbf{Display the arrow-level image.} The arrow-level image diagram is
+        \[
+            \begin{tikzcd}[column sep=large, row sep=large]
+                    \mathbf{Syn}(K)_1
+                        \arrow[r, two heads]
+                        \arrow[d]
+                &
+                    \mathbf{Der}(K)_1
+                        \arrow[d, hook]
+                \\
+                    \mathbf{Beh}_1
+                        \arrow[r, equal]
+                &
+                    \mathbf{Beh}_1.
+            \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{Running specializations}
+\label{subsec:generated-categories-running-specializations}
+
+\subsubsection{The one-object specialization}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as one-object internal categories
+\[
+    \mathbb A=M,
+    \qquad
+    \mathbb B=N,
+\]
+using the convention
+\[
+    b\circ a=ba.
+\]
+In this case residual behaviours are internal \(N\)-valued cocycles
+\[
+    \lambda:M\times M\to N
+\]
+on the residual right-Cayley category of \(M\). For a specification
+\[
+    k:K\to\mathbf{Beh}_0,
+\]
+the generated object
+\[
+    \operatorname{Der}_0(K)
+\]
+is the residual derivative closure of the specified cocycles.
+
+The internal category
+\[
+    \mathbf{Der}(K)
+\]
+is the full residual comparison category on these generated residual cocycles. Thus its objects are residual derivatives of the specified cocycles. An arrow
+\[
+    \lambda\to\mu
+\]
+in \(\mathbf{Der}(K)\) is a residual behaviour comparison, equivalently a map
+\[
+    \alpha:M\to N
+\]
+satisfying
+\[
+    \alpha_r\lambda(r,m)=\mu(r,m)\alpha_{rm}.
+\]
+This is the naturality equation for the residual arrow
+\[
+    rm\longrightarrow r
+\]
+in the residual right-Cayley category.
+
+Equivalently, \(\mathbf{Der}(K)\) is the full internal category whose object object is \(\operatorname{Der}_0(K)\), and whose morphisms are the internal natural transformations between the corresponding residual-cocycle functors. If \(N=G\) is an internal group, these arrows may be read as nonabelian residual coboundaries:
+\[
+    \mu(r,m)=\alpha_r\lambda(r,m)\alpha_{rm}^{-1}.
+\]
+Thus the generated residual behaviour category records not only the residual derivatives generated by \(K\), but also all residual coboundary comparisons between them.
+
+\subsubsection{The stateless specialization}
+
+In the stateless case, let
+\[
+    F:\mathbb A\to\mathbb B
+\]
+be an internal functor, and let
+\[
+    i:K\to A_0
+\]
+be a family of specified input objects. The corresponding stateless specification is
+\[
+    k=J_Fi:K\to\mathbf{Beh}_0,
+\]
+where
+\[
+    J_F:A_0\to\mathbf{Beh}_0,
+    \qquad
+    J_F(v)=F\circ\operatorname{dom}_v.
+\]
+The derivative image is
+\[
+    \operatorname{Der}_0(K)
+        =
+    \operatorname{Im}
+    \left(
+        A_1\times_{t_A,A_0,i}K
+            \xrightarrow{\;s_A\pi_{A_1}\;}
+        A_0
+            \xrightarrow{\;J_F\;}
+        \mathbf{Beh}_0
+    \right).
+\]
+Thus the generated objects are precisely the slice-restricted functorial behaviours
+\[
+    J_F(u)=F\circ\operatorname{dom}_u
+\]
+where \(u\) lies in the domain-closure of the specified family.
+
+The internal category
+\[
+    \mathbf{Der}(K)
+\]
+is the full residual comparison category on these generated functorial residual behaviours. Hence an arrow
+\[
+    J_F(u)\to J_F(u')
+\]
+in \(\mathbf{Der}(K)\) is an internal natural transformation
+\[
+    F\circ\operatorname{dom}_u
+        \Rightarrow
+    F\circ\operatorname{dom}_{u'}.
+\]
+Equivalently, \(\mathbf{Der}(K)\) is the full internal subcategory of the behaviour category spanned by the slice restrictions of \(F\) generated from the specified objects.
+
+This category is a vertical comparison category. It records natural transformations between residual functors. The transition-output structure of the minimal residual realization is separate: it is given by derivative reindexing along arrows of \(\mathbb A\), with output supplied by \(F\). Thus, in the stateless case, the generated residual construction has two ordinary category-theoretic faces.
+
+First, its vertical comparison category is the full category of natural transformations between the generated slice restrictions
+\[
+    F\circ\operatorname{dom}_u.
+\]
+Second, its execution category is the opposite of the generated sieve in \(\mathbb A\), and the output functor is the restriction of
+\[
+    F^{op}:\mathbb A^{op}\to\mathbb B^{op}.
+\]
+For the full specification
+\[
+    i=1_{A_0}:A_0\to A_0,
+\]
+the generated sieve is all of \(\mathbb A\). Hence the stateless minimal execution semantics recovers
+\[
+    \mathbb A^{op}
+        \xrightarrow{\;F^{op}\;}
+    \mathbb B^{op},
+\]
+while \(\mathbf{Der}(K)\) records the residual natural-transformation
+structure among the slice restrictions
+\[
+    v\longmapsto F\circ\operatorname{dom}_v.
+\]
+
+Thus, in the stateless specialization, the generated residual behaviour category is not merely an automata-theoretic construction attached to \(F\). It is the category-theoretic comparison structure among the slice residuals of \(F\), while the associated minimal execution machine recovers ordinary functoriality on the generated sieve, with the variance determined by target-to-source input processing.
+
+\section{Examples}
+\label{sec:behaviour-myhill-nerode-examples}
+
+\begin{example}[Classical deterministic Mealy machines]
+\label{ex:classical-deterministic-mealy-machines}
+    Let
+    \[
+        M=I^*
+    \]
+    and let \(N\) be an output monoid. The residual syntax fibre is the residual right-Cayley category of \(I^*\). A residual behaviour is a residual cocycle
+    \[
+        \lambda:I^*\times I^*\to N
+    \]
+    satisfying
+    \[
+        \lambda(w,1)=1,
+        \qquad
+        \lambda(w,uv)=\lambda(w,u)\lambda(wu,v).
+    \]
+    Since \(I^*\) is free, such a cocycle is determined by its generator-output function
+    \[
+        \bar\lambda:I^*\times I\to N.
+    \]
+    Equivalently, writing
+    \[
+        o(wi)=\bar\lambda(w,i),
+    \]
+    one obtains a single-step output function
+    \[
+        o:I^+\to N.
+    \]
+    The associated cocycle is
+    \[
+        \lambda_o(w,i_1\cdots i_n)
+        =
+        o(wi_1)o(wi_1i_2)\cdots o(wi_1\cdots i_n),
+    \]
+    with
+    \[
+        \lambda_o(w,1)=1.
+    \]
+    The derivative is
+    \[
+        (\partial_w o)(u)=o(wu),
+        \qquad
+        u\in I^+.
+    \]
+    The minimal residual realization has state set
+    \[
+        \{\partial_w o\mid w\in I^*\}.
+    \]
+    On a generator \(i\in I\), the transition is
+    \[
+        \partial_w o\longmapsto\partial_{wi}o,
+    \]
+    and the output is
+    \[
+        o(wi).
+    \]
+    The finite-state theorem says that a finite realization exists precisely when
+    \[
+        \{\partial_w o\mid w\in I^*\}
+    \]
+    is finite. This is the Mealy-output analogue of the residual quotient criterion in the Myhill--Nerode theorem \cite{Myhill1957,Nerode1958,Brzozowski1964}.
+\end{example}
+
+\begin{example}[Group-valued cumulative output languages]
+\label{ex:group-valued-cumulative-output-languages}
+    Let \(G\) be a group and let
+    \[
+        \ell:\Sigma^*\to G
+    \]
+    be a cumulative output function. It determines an incremental residual cocycle by
+    \[
+        \lambda_\ell(r,m)=\ell(r)^{-1}\ell(rm).
+    \]
+    Then
+    \[
+        \lambda_\ell(r,1)=1,
+    \]
+    and
+    \[
+        \lambda_\ell(r,mn)
+        =
+        \lambda_\ell(r,m)\lambda_\ell(rm,n).
+    \]
+    Thus group-valued cumulative output languages fit the present Mealy-type semantics after passing to prefix quotients.
+\end{example}
+
+\begin{example}[Base-\texorpdfstring{\(r\)}{r} carry machine]
+\label{ex:base-r-carry-machine}
+    Let
+    \[
+        M=N=(\mathbb N,+),
+        \qquad
+        P=\{0,\dots,r-1\}.
+    \]
+    Define
+    \[
+        x\cdot n=(x+n)\bmod r,
+    \]
+    and
+    \[
+        \omega(n,x)=\left\lfloor\frac{x+n}{r}\right\rfloor.
+    \]
+    The behaviour of \(x\) is
+    \[
+        \lambda_x(s,n)
+        =
+        \omega(n,x\cdot s)
+        =
+        \left\lfloor
+        \frac{(x+s)\bmod r+n}{r}
+        \right\rfloor.
+    \]
+    The derivative closure is
+    \[
+        \{\lambda_x\mid x\in\{0,\dots,r-1\}\}.
+    \]
+    The Nerode quotient identifies residual histories with the same carry residue.
+\end{example}
+
+\begin{example}[Typed path-category machines]
+\label{ex:typed-path-category-machines}
+    Let \(G\) and \(H\) be directed graphs, and consider a Mealy morphism
+    \[
+        \mathbf{Path}(G)\rightsquigarrow\mathbf{Path}(H).
+    \]
+    For a vertex \(v\) of \(G\), the residual syntax fibre is
+    \[
+        \mathbf{Path}(G)/v.
+    \]
+    A residual behaviour is a functor
+    \[
+        \mathbf{Path}(G)/v\to\mathbf{Path}(H).
+    \]
+    It assigns coherent output paths in \(H\) to input paths ending at \(v\). Derivatives are reindexing along residual transport by path concatenation. The categorical Myhill--Nerode object is the derivative image of these path-output behaviours. Simulations induce natural transformations between the corresponding residual path-output functors.
+\end{example}
+
+\begin{example}[Context restriction and register allocation]
+\label{ex:register-allocation-myhill-nerode}
+    Consider the register-allocation Mealy morphism whose states are triples
+    \[
+        (\Gamma,R,\rho),
+    \]
+    where \(\Gamma\) is a finite variable context, \(R\) is a finite register context, and
+    \[
+        \rho:\Gamma\cong R
+    \]
+    is a bijection. For an inclusion
+    \[
+        \Gamma'\hookrightarrow\Gamma,
+    \]
+    the residual state is
+    \[
+        (\Gamma',\rho(\Gamma'),\rho|_{\Gamma'}).
+    \]
+    The residual behaviour sends the residual object
+    \[
+        \Gamma'\hookrightarrow\Gamma
+    \]
+    to the restricted register context
+    \[
+        \rho(\Gamma')\subseteq R.
+    \]
+    For a residual triangle
+    \[
+        \Gamma''\hookrightarrow\Gamma'\hookrightarrow\Gamma,
+    \]
+    the behaviour arrow is the inclusion
+    \[
+        \rho(\Gamma'')\hookrightarrow\rho(\Gamma').
+    \]
+    The generated residual behaviour category records residual restriction behaviours and coherent register-interface comparisons.
+
+    The residual behaviour square is
+    \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+                \Gamma''
+                    \arrow[r, hook]
+                    \arrow[d, "{\rho|_{\Gamma''}}"', "\sim"]
+            &
+                \Gamma'
+                    \arrow[d, "{\rho|_{\Gamma'}}", "\sim"']
+            \\
+                \rho(\Gamma'')
+                    \arrow[r, hook]
+            &
+                \rho(\Gamma').
+        \end{tikzcd}
+    \]
+\end{example}
+
+\begin{example}[Poset-valued systems]
+\label{ex:poset-valued-systems}
+    If \(\mathbb A\) and \(\mathbb B\) are internal posets, then the residual fibre over \(v\) is the downset of objects mapping to \(v\). A residual behaviour over \(v\) is a monotone assignment from this residual downset into \(\mathbb B\). Behaviour comparisons are pointwise inequalities. Thus
+    \[
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+    \]
+    is an internal preorder, and \(\mathbf{Der}(K)\) is the derivative-closed residual preorder generated by the specification.
+\end{example}
+
+\begin{example}[Action groupoids and gauge comparisons]
+\label{ex:action-groupoids-gauge-comparisons}
+    Let
+    \[
+        X/\!/G
+        \qquad\text{and}\qquad
+        Y/\!/H
+    \]
+    be action groupoids. The residual syntax fibre over \(x\in X\) is the category of arrows ending at \(x\). A residual behaviour records coherent \(H\)-transport along residual \(G\)-histories. Behaviour comparisons are gauge transformations between such transport assignments. The generated residual behaviour category is the full residual image of the syntactic residual comparison category in the behaviour category.
+\end{example}
+
+\begin{example}[Group-valued coboundary outputs]
+\label{ex:group-valued-coboundary-outputs}
+    Let \(N=G\) be a group. A behaviour comparison
+    \[
+        \alpha:\lambda\Rightarrow\mu
+    \]
+    between residual cocycles is a family
+    \[
+        \alpha_r\in G
+    \]
+    satisfying
+    \[
+        \alpha_r\lambda(r,m)=\mu(r,m)\alpha_{rm}.
+    \]
+    Equivalently,
+    \[
+        \mu(r,m)=\alpha_r\lambda(r,m)\alpha_{rm}^{-1}.
+    \]
+    Thus the vertical behaviour category is a category of residual cocycles and nonabelian coboundary comparisons.
+\end{example}
+
+\section{Chapter summary}
+\label{sec:behaviour-myhill-nerode-summary}
+
+The constructions of this chapter may be summarized as follows:
+\[
+\begin{array}{c|l}
+\text{fibred structure} & \text{Mealy-theoretic role} \\
+\hline
+\operatorname{Res}_{\mathbb A}\to\mathbb A
+&
+\text{split codomain opfibration of residual input syntax}
+\\
+\mathbb A/v
+&
+\text{residual histories ending at }v
+\\
+a_*:\mathbb A/u\to\mathbb A/v
+&
+\text{cocartesian residual transport by postcomposition}
+\\
+\mathbf{Beh}_{\mathbb A,\mathbb B}\to\mathbb A
+&
+\text{behaviour fibration}
+\\
+\mathbf{Beh}_{\mathbb A,\mathbb B}(v)
+&
+[\mathbb A/v,\mathbb B]
+\\
+\partial_aH=a^*H=H\circ a_*
+&
+\text{cartesian derivative reindexing}
+\\
+\mathbf{Beh}_0
+&
+\text{total object of residual behaviours}
+\\
+\mathbf{Beh}_1
+&
+\text{vertical behaviour comparisons}
+\\
+q_{\mathbf{Beh}}(H)=H(1_v)
+&
+\text{anchor evaluation}
+\\
+\text{cleavage of }\mathbf{Beh}
+&
+\text{canonical behaviour Mealy morphism}
+\\
+\beta_P(x)=\Omega_P^{\mathrm{op}}\rho_x
+&
+\text{classifying map of residual orbit semantics}
+\\
+D_K
+&
+\text{formal derivative orbit of a specification}
+\\
+d_K:D_K\to\mathbf{Beh}_0
+&
+\text{fibred residual evaluation}
+\\
+{\equiv_K}
+&
+\text{kernel-pair Nerode relation}
+\\
+D_K/{\equiv_K}\cong \operatorname{Der}_0(K)
+&
+\text{categorical Myhill--Nerode quotient}
+\\
+\operatorname{Der}_0(K)
+&
+\text{object image of the derivative orbit}
+\\
+\mathsf{Min}(K)
+&
+\text{minimal residual realization}
+\\
+\operatorname{Reach}_0(P,K)\twoheadrightarrow \mathsf{Min}(K)
+&
+\text{semantic quotient of a reachable realization}
+\\
+\mathbf{Der}(K)
+&
+\text{generated full residual behaviour category}
+\end{array}
+\]
+
+The residual syntax of the input category is organized by the split codomain
+opfibration
+\[
+    \operatorname{Res}_{\mathbb A}\to\mathbb A.
+\]
+Its fibre over \(v\) is the residual slice
+\[
+    \mathbb A/v,
+\]
+and transport along \(a:u\to v\) is postcomposition
+\[
+    a_*:\mathbb A/u\to\mathbb A/v.
+\]
+Behaviours form the corresponding contravariant behaviour fibration:
+\[
+    \mathbf{Beh}_{\mathbb A,\mathbb B}(v)
+    =
+    [\mathbb A/v,\mathbb B].
+\]
+Derivatives are cartesian reindexing:
+\[
+    \partial_aH=H\circ a_*.
+\]
+
+The cleavage of the behaviour fibration makes the object of behaviours into
+the state object of the canonical behaviour Mealy morphism
+\[
+    \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}:
+    \mathbb A\rightsquigarrow\mathbb B.
+\]
+The transition is derivative reindexing, and the output is the anchor
+comparison
+\[
+    H(a,1_v):H(a)\to H(1_v).
+\]
+
+For any Mealy morphism \(P\), each state \(x\) determines an orbit functor
+\[
+    \rho_x:\mathbb A/p(x)\to
+    \left(\int_{\mathbb A}P\right)^{\mathrm{op}},
+\]
+and composing this orbit with the output functor gives the residual behaviour
+\[
+    H_x=\Omega_P^{\mathrm{op}}\rho_x.
+\]
+Thus the semantic map
+\[
+    \beta_P:P\to\mathbf{Beh}_0
+\]
+is determined by fibred residual orbit semantics. The canonical behaviour
+machine is terminal in the ordinary category of strict semantic Mealy
+homomorphisms.
+
+For a specification
+\[
+    k:K\to\mathbf{Beh}_0,
+\]
+the residual evaluation map
+\[
+    d_K:D_K\to\mathbf{Beh}_0
+\]
+sends a formal derivative \((a,\kappa)\) to
+\[
+    \partial_a k(\kappa).
+\]
+Its kernel pair is the equality-level Nerode relation, and exactness gives
+\[
+    D_K/{\equiv_K}
+    \cong
+    \operatorname{Der}_0(K).
+\]
+The right-hand side is derivative-closed, so the canonical behaviour machine
+restricts to it. This restricted machine is the minimal residual realization
+\[
+    \mathsf{Min}(K).
+\]
+Every reachable realization maps regularly epimorphically onto
+\(\mathsf{Min}(K)\), and every reachable behaviourally separated realization
+is isomorphic to it. With a finite-state structure, a finite realization exists
+exactly when the Nerode quotient, equivalently the minimal residual
+realization, is finite.
+
+The generated residual behaviour category
+\[
+    \mathbf{Der}(K)
+\]
+records the vertical behaviour comparisons between generated residual
+behaviours. It is the full internal subcategory of
+\[
+    \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+\]
+on the derivative image
+\[
+    \operatorname{Der}_0(K)\hookrightarrow\mathbf{Beh}_0.
+\]
+Thus the categorical Myhill--Nerode theorem has an object-level Mealy
+component, namely \(\mathsf{Min}(K)\), and a comparison-level fibred component,
+namely \(\mathbf{Der}(K)\).

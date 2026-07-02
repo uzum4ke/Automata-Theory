@@ -1,0 +1,3913 @@
+\chapter{Mealy Program Categories and Dynamic Proarrow Logic}
+\label{ch:mealy-program-categories-dynamic-logic}
+
+\section{Primitive executions and internal actions}
+\label{sec:primitive-executions-internal-actions}
+
+Throughout the first part of this chapter, let \(\mathcal E\) be a category with pullbacks. We use the span conventions of Chapter~\ref{ch:spans-internal-categories-mealy}: spans compose by chosen pullbacks, and the associativity and unit constraints are the canonical isomorphisms between the corresponding chosen pullbacks.
+
+Let
+\[
+\mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A)
+\]
+and
+\[
+\mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B)
+\]
+be internal categories in \(\mathcal E\). Let
+\[
+(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism, with carrier span
+\[
+A_0\xleftarrow{p}P\xrightarrow{q}B_0.
+\]
+Thus the Mealy structure is equivalently given by maps
+\[
+\delta:
+A_1\times_{t_A,A_0,p}P\to P,
+\qquad
+\omega:
+A_1\times_{t_A,A_0,p}P\to B_1
+\]
+satisfying the typing equations
+\begin{align}
+p\circ\delta&=s_A\circ\pi_1,
+\label{eq:prog-pdelta}
+\\
+s_B\circ\omega&=q\circ\delta,
+\label{eq:prog-source-output}
+\\
+t_B\circ\omega&=q\circ\pi_2.
+\label{eq:prog-target-output}
+\end{align}
+The unit equations are
+\begin{align}
+\delta(e_A(p x),x)&=x,
+\label{eq:prog-delta-unit}
+\\
+\omega(e_A(p x),x)&=e_B(qx).
+\label{eq:prog-omega-unit}
+\end{align}
+The multiplication equations are, for
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w,
+\]
+\begin{align}
+\delta(b\circ a,x)
+&=
+\delta(a,\delta(b,x)),
+\label{eq:prog-delta-composition}
+\\
+\omega(b\circ a,x)
+&=
+\omega(b,x)\circ\omega(a,\delta(b,x)).
+\label{eq:prog-omega-composition}
+\end{align}
+Equivalently, since
+\[
+m_A(a,b)=b\circ a,
+\]
+these are
+\begin{align}
+\delta(m_A(a,b),x)
+&=
+\delta(a,\delta(b,x)),
+\label{eq:prog-delta-composition-m}
+\\
+\omega(m_A(a,b),x)
+&=
+m_B\bigl(\omega(a,\delta(b,x)),\omega(b,x)\bigr).
+\label{eq:prog-omega-composition-m}
+\end{align}
+
+Define
+\[
+M_1:=A_1\times_{t_A,A_0,p}P.
+\]
+A generalized element of \(M_1\) is a pair
+\[
+(a,x)
+\]
+where \(a:u\to v\) is an arrow of \(\mathbb A\) and \(p(x)=v\). Operationally, \((a,x)\) is one admissible Mealy execution: the state \(x\) consumes the input arrow \(a\), updates to \(\delta(a,x)\), and emits the output arrow \(\omega(a,x)\).
+
+\begin{definition}[Primitive Mealy execution span]
+\label{def:primitive-mealy-execution-span}
+The \textbf{primitive Mealy execution span} associated to
+\[
+(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+is the endospan
+\[
+\mathbf m_\Phi
+=
+\left(
+P
+\xleftarrow{s_M}
+M_1
+\xrightarrow{t_M}
+P
+\right),
+\]
+where
+\[
+s_M:=\pi_2,
+\qquad
+t_M:=\delta.
+\]
+Thus
+\[
+s_M(a,x)=x,
+\qquad
+t_M(a,x)=\delta(a,x).
+\]
+\end{definition}
+
+\begin{proposition}
+\label{prop:primitive-execution-is-endospan}
+The primitive Mealy execution span
+\[
+\mathbf m_\Phi:P\nrightarrow P
+\]
+is a 1-cell \(P\to P\) in \(\mathbf{Span}(\mathcal E)\).
+\end{proposition}
+
+\begin{proof}
+By construction,
+\[
+M_1=A_1\times_{t_A,A_0,p}P
+\]
+is an object of \(\mathcal E\), and
+\[
+s_M=\pi_2:M_1\to P,
+\qquad
+t_M=\delta:M_1\to P
+\]
+are morphisms in \(\mathcal E\). Hence
+\[
+P\xleftarrow{s_M}M_1\xrightarrow{t_M}P
+\]
+is an endospan on \(P\).
+\end{proof}
+
+\subsection{Right internal actions}
+
+The state-update component \(\delta\) is a right action of \(\mathbb A\) on the object \(P\) over \(A_0\), with the convention that inputs are processed target-to-source.
+
+\begin{definition}[Right action of an internal category]
+\label{def:right-action-internal-category}
+Let
+\[
+\mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A)
+\]
+be an internal category and let
+\[
+p:P\to A_0
+\]
+be a morphism in \(\mathcal E\). A \textbf{right action} of \(\mathbb A\) on \(p:P\to A_0\) consists of a morphism
+\[
+\delta:A_1\times_{t_A,A_0,p}P\to P
+\]
+such that
+\begin{align}
+p\circ\delta&=s_A\circ\pi_1,
+\label{eq:right-action-typing}
+\\
+\delta(e_A(px),x)&=x,
+\label{eq:right-action-unit}
+\\
+\delta(m_A(a,b),x)&=\delta(a,\delta(b,x)).
+\label{eq:right-action-composition}
+\end{align}
+The last equation is read on the pullback object of triples
+\[
+(a,b,x)
+\]
+satisfying
+\[
+t_A(a)=s_A(b),
+\qquad
+t_A(b)=p(x).
+\]
+\end{definition}
+
+Thus every Mealy morphism determines a right action of its input category \(\mathbb A\) on its state object \(P\). The output component \(\omega\) is additional cocycle data valued in \(\mathbb B\).
+
+\section{The Mealy program category}
+\label{sec:mealy-program-category}
+
+The primitive execution span is not merely a graph of one-step transitions. The Mealy state-update equations make it into a monoid object in
+\[
+\operatorname{EndSpan}_{\mathcal E}(P)
+=
+\mathbf{Span}(\mathcal E)(P,P).
+\]
+Equivalently, it defines an internal category with object-of-objects \(P\).
+
+The internal category structure uses only the state-update component \(\delta\), together with the internal category structure of \(\mathbb A\). The output component \(\omega\) enters through the output labelling functor constructed in Section~\ref{sec:input-output-labelling-functors}.
+
+\subsection{The unit}
+
+Define
+\[
+e_M:P\to M_1
+\]
+by
+\[
+e_M(x):=(e_A(p x),x).
+\]
+This is well-defined because
+\[
+t_A(e_A(p x))=p x.
+\]
+
+\begin{proposition}
+\label{prop:program-unit-span-map}
+The map
+\[
+e_M:P\to M_1
+\]
+is a map of spans
+\[
+1_P\Rightarrow \mathbf m_\Phi.
+\]
+\end{proposition}
+
+\begin{proof}
+The left-leg condition is
+\[
+s_M(e_M(x))
+=
+s_M(e_A(px),x)
+=
+x.
+\]
+The right-leg condition is
+\[
+t_M(e_M(x))
+=
+\delta(e_A(px),x)
+=
+x
+\]
+by the Mealy unit law~\eqref{eq:prog-delta-unit}. Therefore \(e_M\) is a map of spans.
+\end{proof}
+
+\subsection{The multiplication}
+
+The composite span
+\[
+\mathbf m_\Phi;\mathbf m_\Phi
+\]
+has apex
+\[
+M_2:=M_1\times_{t_M,P,s_M}M_1.
+\]
+A generalized element of \(M_2\) is a pair of primitive executions
+\[
+\bigl((b,x),(a,y)\bigr)
+\]
+satisfying
+\[
+y=\delta(b,x).
+\]
+We regard this as an ordered pair
+\[
+(\text{first step},\text{second step})
+=
+\bigl((b,x),(a,\delta(b,x))\bigr).
+\]
+Thus the first input consumed is \(b\), and the second input consumed is \(a\). Equivalently, such a pair is determined by data
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w,
+\]
+with temporal execution
+\[
+x\xrightarrow{b}\delta(b,x)
+\xrightarrow{a}\delta(a,\delta(b,x)).
+\]
+
+Define
+\[
+m_M:M_2\to M_1
+\]
+by
+\[
+m_M\bigl((b,x),(a,\delta(b,x))\bigr)
+:=
+(m_A(a,b),x).
+\]
+Equivalently,
+\[
+m_M\bigl((b,x),(a,\delta(b,x))\bigr)
+=
+(b\circ a,x).
+\]
+The notation \(m_A(a,b)\) is in categorical composition order, while the pair
+\[
+\bigl((b,x),(a,\delta(b,x))\bigr)
+\]
+is in temporal execution order.
+
+\begin{lemma}
+\label{lem:program-multiplication-well-defined}
+The displayed formula defines a morphism
+\[
+m_M:M_2\to M_1.
+\]
+\end{lemma}
+
+\begin{proof}
+Let
+\[
+\rho_1,\rho_2:M_2\to M_1
+\]
+be the two projections, where \(\rho_1\) selects the first temporal step and \(\rho_2\) selects the second temporal step. Write
+\[
+\alpha:=\pi_1:M_1\to A_1,
+\qquad
+\xi:=\pi_2:M_1\to P.
+\]
+Thus, on generalized elements,
+\[
+\alpha(a,x)=a,
+\qquad
+\xi(a,x)=x.
+\]
+
+We define \(m_M\) as the unique morphism into the pullback
+\[
+M_1=A_1\times_{t_A,A_0,p}P
+\]
+whose \(A_1\)-component is
+\[
+m_A(\alpha\rho_2,\alpha\rho_1):M_2\to A_1
+\]
+and whose \(P\)-component is
+\[
+\xi\rho_1:M_2\to P.
+\]
+It remains only to check the defining pullback equation.
+
+On generalized elements, write an element of \(M_2\) as
+\[
+\bigl((b,x),(a,y)\bigr)
+\]
+with
+\[
+y=\delta(b,x).
+\]
+Since \((a,y)\in M_1\), we have
+\[
+t_A(a)=p(y).
+\]
+Since \(y=\delta(b,x)\), the typing equation \(p\circ\delta=s_A\circ\pi_1\) gives
+\[
+p(y)=p\delta(b,x)=s_A(b).
+\]
+Therefore
+\[
+t_A(a)=s_A(b),
+\]
+so \(m_A(a,b)\) is defined.
+
+Now
+\[
+t_A(m_A(a,b))=t_A(b),
+\]
+and \((b,x)\in M_1\) gives
+\[
+t_A(b)=p(x).
+\]
+Hence
+\[
+t_A(m_A(a,b))=p(x).
+\]
+Thus the displayed components satisfy the pullback equation defining \(M_1\), and hence induce a unique morphism
+\[
+m_M:M_2\to M_1.
+\]
+\end{proof}
+
+\begin{proposition}
+\label{prop:program-multiplication-span-map}
+The map
+\[
+m_M:M_2\to M_1
+\]
+is a map of spans
+\[
+\mathbf m_\Phi;\mathbf m_\Phi
+\Longrightarrow
+\mathbf m_\Phi.
+\]
+\end{proposition}
+
+\begin{proof}
+The source of the composite span at
+\[
+\bigl((b,x),(a,\delta(b,x))\bigr)
+\]
+is \(x\). The source of its image under \(m_M\) is
+\[
+s_M(m_A(a,b),x)=x.
+\]
+Hence the left-leg condition holds.
+
+For the right leg, the target of the image is
+\[
+t_M(m_A(a,b),x)
+=
+\delta(m_A(a,b),x).
+\]
+By the Mealy multiplication law~\eqref{eq:prog-delta-composition-m},
+\[
+\delta(m_A(a,b),x)
+=
+\delta(a,\delta(b,x)).
+\]
+This is exactly the target of the second primitive step. Hence the right-leg condition holds.
+\end{proof}
+
+\begin{theorem}[The Mealy program category]
+\label{thm:mealy-program-category}
+Let
+\[
+(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism in \(\mathbf{Span}(\mathcal E)\). The primitive execution span
+\[
+\mathbf m_\Phi:P\nrightarrow P
+\]
+is a monoid object in
+\[
+\operatorname{EndSpan}_{\mathcal E}(P).
+\]
+Equivalently, it defines an internal category
+\[
+\mathsf{Prog}_\Phi
+\]
+with
+\[
+(\mathsf{Prog}_\Phi)_0=P,
+\qquad
+(\mathsf{Prog}_\Phi)_1=M_1=A_1\times_{t_A,A_0,p}P,
+\]
+source and target
+\[
+s_M(a,x)=x,
+\qquad
+t_M(a,x)=\delta(a,x),
+\]
+identity
+\[
+e_M(x)=(e_A(px),x),
+\]
+and composition
+\[
+m_M\bigl((b,x),(a,\delta(b,x))\bigr)
+=
+(m_A(a,b),x).
+\]
+\end{theorem}
+
+\begin{proof}
+By Proposition~\ref{prop:primitive-execution-is-endospan}, \(\mathbf m_\Phi\) is an endospan on \(P\). By Proposition~\ref{prop:program-unit-span-map}, \(e_M\) is a map of spans
+\[
+1_P\Rightarrow\mathbf m_\Phi.
+\]
+By Proposition~\ref{prop:program-multiplication-span-map}, \(m_M\) is a map of spans
+\[
+\mathbf m_\Phi;\mathbf m_\Phi\Rightarrow\mathbf m_\Phi.
+\]
+
+It remains to verify the monoid axioms. We do this in generalized-element notation; formally, these are equalities of morphisms out of the relevant pullback objects, after inserting the canonical associativity and unit isomorphisms for chosen pullbacks.
+
+Let
+\[
+(a,x)\in M_1,
+\qquad
+a:u\to v,
+\qquad
+p(x)=v.
+\]
+
+For the right identity at the target state
+\[
+t_M(a,x)=\delta(a,x),
+\]
+we have
+\[
+e_M(\delta(a,x))
+=
+(e_A(p\delta(a,x)),\delta(a,x)).
+\]
+By \(p\circ\delta=s_A\circ\pi_1\),
+\[
+p\delta(a,x)=s_A(a),
+\]
+so
+\[
+e_M(\delta(a,x))
+=
+(e_A(s_Aa),\delta(a,x)).
+\]
+Thus
+\[
+m_M\bigl((a,x),(e_A(s_Aa),\delta(a,x))\bigr)
+=
+(m_A(e_A(s_Aa),a),x)
+=
+(a,x)
+\]
+by the identity law in \(\mathbb A\).
+
+Although this is the identity at the target state of the program arrow, it corresponds to the identity at the source of the input arrow \(a\), because the program category records the opposite direction of execution over \(\mathbb A\).
+
+For the left identity at the source state \(x\), we have
+\[
+e_M(x)=(e_A(px),x)=(e_A(t_Aa),x).
+\]
+Its target is
+\[
+t_M(e_A(px),x)
+=
+\delta(e_A(px),x)
+=
+x
+\]
+by the Mealy unit law, so it is composable with \((a,x)\). Hence
+\[
+m_M\bigl((e_A(t_Aa),x),(a,x)\bigr)
+=
+(m_A(a,e_A(t_Aa)),x)
+=
+(a,x)
+\]
+by the identity law in \(\mathbb A\).
+
+For associativity, take
+\[
+a:r\to u,
+\qquad
+b:u\to v,
+\qquad
+c:v\to w,
+\qquad
+p(x)=w.
+\]
+The three temporal steps are
+\[
+x
+\xrightarrow{c}
+\delta(c,x)
+\xrightarrow{b}
+\delta(b,\delta(c,x))
+\xrightarrow{a}
+\delta(a,\delta(b,\delta(c,x))).
+\]
+Composing \(c\) and then \(b\), and then composing with \(a\), gives
+\[
+(m_A(a,m_A(b,c)),x).
+\]
+Composing \(b\) and then \(a\), and then composing with \(c\), gives
+\[
+(m_A(m_A(a,b),c),x).
+\]
+These agree by associativity of \(m_A\):
+\[
+m_A(a,m_A(b,c))
+=
+m_A(m_A(a,b),c).
+\]
+The corresponding target equality follows from repeated use of the Mealy multiplication law:
+\[
+\delta(m_A(a,m_A(b,c)),x)
+=
+\delta(a,\delta(m_A(b,c),x))
+=
+\delta(a,\delta(b,\delta(c,x))),
+\]
+and
+\[
+\delta(m_A(m_A(a,b),c),x)
+=
+\delta(m_A(a,b),\delta(c,x))
+=
+\delta(a,\delta(b,\delta(c,x))).
+\]
+Thus the monoid associativity law holds.
+
+Therefore \(\mathbf m_\Phi\) is a monoid object in
+\[
+\operatorname{EndSpan}_{\mathcal E}(P).
+\]
+By the equivalence between endospan monoids and internal categories, this is equivalently the displayed internal category \(\mathsf{Prog}_\Phi\).
+\end{proof}
+
+\begin{remark}
+\label{rem:program-category-forced}
+The category \(\mathsf{Prog}_\Phi\) is not additional structure. It is forced by the Mealy state-transition equations. The state object is \(P\), the arrow object is the admissible-input object
+\[
+A_1\times_{t_A,A_0,p}P,
+\]
+and composition is induced by internal composition in \(\mathbb A\) together with the compatibility of \(\delta\) with that composition. Equivalently, \(\mathsf{Prog}_\Phi\) is the internal action category for the right action of \(\mathbb A\) on \(P\) encoded by the Mealy state update.
+\end{remark}
+
+\section{Input and output labelling functors}
+\label{sec:input-output-labelling-functors}
+
+The category
+\[
+\mathsf{Prog}_\Phi
+\]
+records executions. The maps
+\[
+p:P\to A_0,
+\qquad
+q:P\to B_0,
+\]
+together with
+\[
+\pi_1:M_1\to A_1,
+\qquad
+\omega:M_1\to B_1,
+\]
+record their input and output labels.
+
+Because execution moves target-to-source in \(\mathbb A\), the input labelling is contravariant. The same is true for the output labelling, because the emitted \(B\)-arrow goes from the updated output interface back to the current output interface.
+
+\begin{definition}[Opposite internal category]
+\label{def:opposite-internal-category}
+For an internal category
+\[
+\mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A),
+\]
+its opposite internal category is
+\[
+\mathbb A^{\mathrm{op}}
+=
+(A_0,A_1,t_A,s_A,e_A,m_A^{\mathrm{op}}).
+\]
+The composition object of \(\mathbb A^{\mathrm{op}}\) is
+\[
+A_1\times_{s_A,A_0,t_A}A_1.
+\]
+There is a canonical swap isomorphism
+\[
+A_1\times_{s_A,A_0,t_A}A_1
+\cong
+A_1\times_{t_A,A_0,s_A}A_1,
+\qquad
+(\alpha,\beta)\mapsto(\beta,\alpha).
+\]
+Define
+\[
+m_A^{\mathrm{op}}
+:=
+m_A\circ \mathrm{swap}.
+\]
+Thus, if
+\[
+a:u\to v,
+\qquad
+b:v\to w
+\]
+in \(\mathbb A\), then in \(\mathbb A^{\mathrm{op}}\) the composite of \(b\), viewed as \(w\to v\), followed by \(a\), viewed as \(v\to u\), is represented by
+\[
+m_A(a,b)=b\circ a.
+\]
+\end{definition}
+
+\begin{proposition}[Input labelling]
+\label{prop:input-labelling-functor}
+The maps
+\[
+p:P\to A_0,
+\qquad
+\pi_1:M_1\to A_1
+\]
+define an internal functor
+\[
+I_\Phi:\mathsf{Prog}_\Phi\to\mathbb A^{\mathrm{op}}.
+\]
+\end{proposition}
+
+\begin{proof}
+In \(\mathbb A^{\mathrm{op}}\), the source and target maps are
+\[
+s_{A^{\mathrm{op}}}=t_A,
+\qquad
+t_{A^{\mathrm{op}}}=s_A.
+\]
+For \((a,x)\in M_1\), we have
+\[
+s_{A^{\mathrm{op}}}\pi_1(a,x)
+=
+t_A(a)
+=
+p(x)
+=
+p\,s_M(a,x).
+\]
+Also,
+\[
+t_{A^{\mathrm{op}}}\pi_1(a,x)
+=
+s_A(a)
+=
+p\delta(a,x)
+=
+p\,t_M(a,x),
+\]
+using \(p\circ\delta=s_A\circ\pi_1\).
+
+Identity preservation follows from
+\[
+\pi_1e_M(x)
+=
+\pi_1(e_A(px),x)
+=
+e_A(px).
+\]
+Composition preservation follows because, for a composable pair
+\[
+\bigl((b,x),(a,\delta(b,x))\bigr),
+\]
+we have
+\[
+\pi_1m_M\bigl((b,x),(a,\delta(b,x))\bigr)
+=
+m_A(a,b).
+\]
+This is precisely the composite in \(\mathbb A^{\mathrm{op}}\) of the image of \((b,x)\) followed by the image of \((a,\delta(b,x))\). Therefore \(I_\Phi\) is an internal functor.
+\end{proof}
+
+\begin{theorem}[Output labelling]
+\label{thm:output-labelling-functor}
+The maps
+\[
+q:P\to B_0,
+\qquad
+\omega:M_1\to B_1
+\]
+define an internal functor
+\[
+\Omega_\Phi:\mathsf{Prog}_\Phi\to\mathbb B^{\mathrm{op}}.
+\]
+\end{theorem}
+
+\begin{proof}
+In \(\mathbb B^{\mathrm{op}}\), the source and target maps are
+\[
+s_{B^{\mathrm{op}}}=t_B,
+\qquad
+t_{B^{\mathrm{op}}}=s_B.
+\]
+For \((a,x)\in M_1\), the Mealy typing equations give
+\[
+s_{B^{\mathrm{op}}}\omega(a,x)
+=
+t_B\omega(a,x)
+=
+q(x)
+=
+q\,s_M(a,x),
+\]
+and
+\[
+t_{B^{\mathrm{op}}}\omega(a,x)
+=
+s_B\omega(a,x)
+=
+q\delta(a,x)
+=
+q\,t_M(a,x).
+\]
+So the source-target equations hold.
+
+Identity preservation is exactly the Mealy unit law
+\[
+\omega(e_A(px),x)=e_B(qx).
+\]
+
+For composition, consider a composable pair
+\[
+\bigl((b,x),(a,\delta(b,x))\bigr).
+\]
+The output of its composite is
+\[
+\omega\circ m_M\bigl((b,x),(a,\delta(b,x))\bigr)
+=
+\omega(m_A(a,b),x).
+\]
+By the Mealy multiplication law,
+\[
+\omega(m_A(a,b),x)
+=
+m_B\bigl(\omega(a,\delta(b,x)),\omega(b,x)\bigr).
+\]
+This is precisely the composite in \(\mathbb B^{\mathrm{op}}\) of
+\[
+\omega(b,x)
+\]
+followed by
+\[
+\omega(a,\delta(b,x)).
+\]
+Therefore \(\Omega_\Phi\) preserves composition.
+\end{proof}
+
+\begin{corollary}[The labelled Mealy program category]
+\label{cor:labelled-mealy-program-category}
+A Mealy morphism determines an internal category
+\[
+\mathsf{Prog}_\Phi
+\]
+together with internal functors
+\[
+I_\Phi:\mathsf{Prog}_\Phi\to\mathbb A^{\mathrm{op}},
+\qquad
+\Omega_\Phi:\mathsf{Prog}_\Phi\to\mathbb B^{\mathrm{op}}.
+\]
+If the product internal category
+\[
+\mathbb A^{\mathrm{op}}\times\mathbb B^{\mathrm{op}}
+\]
+exists, these assemble into a single internal functor
+\[
+L_\Phi:
+\mathsf{Prog}_\Phi
+\longrightarrow
+\mathbb A^{\mathrm{op}}\times\mathbb B^{\mathrm{op}},
+\]
+given on objects by
+\[
+L_\Phi(x)=(p x,q x)
+\]
+and on arrows by
+\[
+L_\Phi(a,x)=\bigl(a^{\mathrm{op}},\omega(a,x)^{\mathrm{op}}\bigr).
+\]
+\end{corollary}
+
+\section{Universal characterization by labelled discrete opfibrations}
+\label{sec:universal-labelled-discrete-opfibrations}
+
+We now repackage the preceding construction as a universal characterization. The state-update part of a Mealy morphism is exactly a discrete opfibration over the opposite input category; the output part is exactly a functorial labelling of that discrete opfibration.
+
+\subsection{Input-discrete functors}
+
+\begin{definition}[Input-discrete functor over \(\mathbb A^{\mathrm{op}}\)]
+\label{def:input-discrete-functor}
+Let
+\[
+\mathbb P=(P,P_1,s_P,t_P,e_P,m_P)
+\]
+be an internal category. An internal functor
+\[
+J:\mathbb P\to\mathbb A^{\mathrm{op}}
+\]
+with object map
+\[
+J_0=p:P\to A_0
+\]
+is called \textbf{input-discrete} if the square
+\[
+\begin{tikzcd}
+P_1 \arrow[r, "J_1"] \arrow[d, "s_P"']
+&
+A_1 \arrow[d, "t_A"]
+\\
+P \arrow[r, "p"']
+&
+A_0
+\end{tikzcd}
+\]
+is a pullback.
+
+Equivalently, every arrow of \(\mathbb P\) is uniquely an admissible pair
+\[
+(a,x)
+\]
+where \(a\) is an arrow of \(\mathbb A\) and
+\[
+t_A(a)=p(x).
+\]
+\end{definition}
+
+This is the internal analogue of a discrete opfibration over \(\mathbb A^{\mathrm{op}}\): given an object of \(\mathbb P\) and an outgoing arrow of \(\mathbb A^{\mathrm{op}}\) from its image, there is a unique lifted arrow in \(\mathbb P\).
+
+\begin{theorem}[Actions as input-discrete functors]
+\label{thm:actions-as-input-discrete-functors}
+Let
+\[
+p:P\to A_0
+\]
+be a morphism in \(\mathcal E\). To give a right action of \(\mathbb A\) on \(p:P\to A_0\) is equivalently to give an internal category
+\[
+\mathbb P
+\]
+with object object \(P\), together with an input-discrete internal functor
+\[
+J:\mathbb P\to\mathbb A^{\mathrm{op}}
+\]
+whose object map is \(p\).
+
+Under this equivalence, the internal category associated to an action \(\delta\) is the action category
+\[
+\mathsf{Act}_\delta
+\]
+with
+\[
+(\mathsf{Act}_\delta)_0=P,
+\qquad
+(\mathsf{Act}_\delta)_1=A_1\times_{t_A,A_0,p}P,
+\]
+source and target
+\[
+s(a,x)=x,
+\qquad
+t(a,x)=\delta(a,x),
+\]
+identity
+\[
+e(x)=(e_A(px),x),
+\]
+and composition
+\[
+\bigl((b,x),(a,\delta(b,x))\bigr)
+\longmapsto
+(m_A(a,b),x).
+\]
+\end{theorem}
+
+\begin{proof}
+Suppose first that \(\delta\) is a right action of \(\mathbb A\) on \(p:P\to A_0\). The construction of Theorem~\ref{thm:mealy-program-category}, using only \(\delta\), gives an internal category
+\[
+\mathsf{Act}_\delta
+\]
+with arrow object
+\[
+A_1\times_{t_A,A_0,p}P.
+\]
+The projection
+\[
+\pi_1:A_1\times_{t_A,A_0,p}P\to A_1
+\]
+together with \(p:P\to A_0\) defines the input functor
+\[
+J:\mathsf{Act}_\delta\to\mathbb A^{\mathrm{op}}.
+\]
+The square
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}P \arrow[r, "\pi_1"] \arrow[d, "\pi_2"']
+&
+A_1 \arrow[d, "t_A"]
+\\
+P \arrow[r, "p"']
+&
+A_0
+\end{tikzcd}
+\]
+is the defining pullback. Hence \(J\) is input-discrete.
+
+Conversely, suppose that
+\[
+J:\mathbb P\to\mathbb A^{\mathrm{op}}
+\]
+is input-discrete with object map \(p:P\to A_0\). Since the square in Definition~\ref{def:input-discrete-functor} is a pullback, there is a canonical isomorphism
+\[
+P_1\cong A_1\times_{t_A,A_0,p}P.
+\]
+Transporting the target map
+\[
+t_P:P_1\to P
+\]
+across this isomorphism gives a morphism
+\[
+\delta:A_1\times_{t_A,A_0,p}P\to P.
+\]
+The target compatibility of the functor \(J:\mathbb P\to\mathbb A^{\mathrm{op}}\) says
+\[
+s_A J_1=p\,t_P.
+\]
+Under the pullback identification, this becomes
+\[
+p\delta=s_A\pi_1,
+\]
+which is the typing equation for the action.
+
+Identity preservation by \(J\) and the identity axioms of \(\mathbb P\) give
+\[
+\delta(e_A(px),x)=x.
+\]
+Composition preservation by \(J\), together with associativity in \(\mathbb P\), gives
+\[
+\delta(m_A(a,b),x)=\delta(a,\delta(b,x)).
+\]
+Thus \(\delta\) is a right action.
+
+The two constructions are inverse up to the canonical isomorphism between \(P_1\) and the displayed pullback.
+\end{proof}
+
+\subsection{Mealy morphisms as labelled input-discrete functors}
+
+The previous theorem accounts for the state-update component \(\delta\). A Mealy morphism also has an output component \(\omega\). This is exactly a functorial labelling of the associated input-discrete category by \(\mathbb B^{\mathrm{op}}\).
+
+\begin{definition}[Labelled input-discrete category]
+\label{def:labelled-input-discrete-category}
+Let \(\mathbb A\) and \(\mathbb B\) be internal categories. A \textbf{labelled input-discrete category from \(\mathbb A\) to \(\mathbb B\)} consists of:
+\begin{enumerate}
+\item an object \(P\in\mathcal E\);
+\item maps
+\[
+p:P\to A_0,
+\qquad
+q:P\to B_0;
+\]
+\item an internal category \(\mathbb P\) with object object \(P\);
+\item an input-discrete internal functor
+\[
+I:\mathbb P\to\mathbb A^{\mathrm{op}}
+\]
+whose object map is \(p\);
+\item an internal functor
+\[
+\Omega:\mathbb P\to\mathbb B^{\mathrm{op}}
+\]
+whose object map is \(q\).
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[Mealy morphisms as labelled input-discrete categories]
+\label{thm:mealy-as-labelled-discrete-opfibrations}
+Let \(\mathbb A\) and \(\mathbb B\) be internal categories in a category \(\mathcal E\) with pullbacks. To give a Mealy morphism
+\[
+(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+is equivalently to give a labelled input-discrete category from \(\mathbb A\) to \(\mathbb B\).
+
+Under this equivalence, the labelled input-discrete category associated to a Mealy morphism is
+\[
+\left(
+\mathsf{Prog}_\Phi,
+I_\Phi,
+\Omega_\Phi
+\right),
+\]
+where
+\[
+I_\Phi:\mathsf{Prog}_\Phi\to\mathbb A^{\mathrm{op}},
+\qquad
+\Omega_\Phi:\mathsf{Prog}_\Phi\to\mathbb B^{\mathrm{op}}
+\]
+are the input and output labelling functors.
+\end{theorem}
+
+\begin{proof}
+Starting from a Mealy morphism, Theorem~\ref{thm:mealy-program-category} constructs the internal category
+\[
+\mathsf{Prog}_\Phi.
+\]
+Proposition~\ref{prop:input-labelling-functor} constructs the input functor
+\[
+I_\Phi:\mathsf{Prog}_\Phi\to\mathbb A^{\mathrm{op}},
+\]
+and by construction the square
+\[
+\begin{tikzcd}
+M_1 \arrow[r, "\pi_1"] \arrow[d, "s_M"']
+&
+A_1 \arrow[d, "t_A"]
+\\
+P \arrow[r, "p"']
+&
+A_0
+\end{tikzcd}
+\]
+is the pullback defining \(M_1\). Hence \(I_\Phi\) is input-discrete. Theorem~\ref{thm:output-labelling-functor} constructs the output functor
+\[
+\Omega_\Phi:\mathsf{Prog}_\Phi\to\mathbb B^{\mathrm{op}}
+\]
+with object map \(q\). Thus every Mealy morphism determines a labelled input-discrete category.
+
+Conversely, suppose given a labelled input-discrete category
+\[
+(\mathbb P,I,\Omega)
+\]
+from \(\mathbb A\) to \(\mathbb B\). Since \(I\) is input-discrete, Theorem~\ref{thm:actions-as-input-discrete-functors} gives a right action
+\[
+\delta:A_1\times_{t_A,A_0,p}P\to P.
+\]
+Using the canonical pullback identification
+\[
+P_1\cong A_1\times_{t_A,A_0,p}P,
+\]
+define
+\[
+\omega:A_1\times_{t_A,A_0,p}P\to B_1
+\]
+to be the arrow map of \(\Omega\).
+
+The source and target equations for the functor
+\[
+\Omega:\mathbb P\to\mathbb B^{\mathrm{op}}
+\]
+are, under this pullback identification,
+\[
+t_B\omega=q\pi_2,
+\qquad
+s_B\omega=q\delta.
+\]
+These are precisely the Mealy typing equations
+\[
+s_B\omega=q\delta,
+\qquad
+t_B\omega=q\pi_2.
+\]
+Identity preservation by \(\Omega\) gives
+\[
+\omega(e_A(px),x)=e_B(qx).
+\]
+Composition preservation by \(\Omega\) gives, for a composable temporal pair
+\[
+\bigl((b,x),(a,\delta(b,x))\bigr),
+\]
+the equation
+\[
+\omega(m_A(a,b),x)
+=
+m_B\bigl(\omega(a,\delta(b,x)),\omega(b,x)\bigr).
+\]
+This is the Mealy output multiplication law. Hence the data determine a Mealy morphism.
+
+The constructions are inverse up to the canonical pullback isomorphism identifying \(P_1\) with
+\[
+A_1\times_{t_A,A_0,p}P.
+\]
+\end{proof}
+
+\subsection{Transformations}
+
+The previous equivalence also identifies Mealy transformations with functors between labelled input-discrete categories over both labels.
+
+\begin{definition}[Mealy transformation]
+\label{def:mealy-transformation-program-chapter}
+Let
+\[
+(P,\delta_P,\omega_P),
+\qquad
+(Q,\delta_Q,\omega_Q)
+:
+\mathbb A\rightsquigarrow\mathbb B
+\]
+be Mealy morphisms. A \textbf{Mealy transformation}
+\[
+\theta:(P,\delta_P,\omega_P)\Rightarrow(Q,\delta_Q,\omega_Q)
+\]
+is a map
+\[
+\theta:P\to Q
+\]
+such that
+\[
+p_Q\theta=p_P,
+\qquad
+q_Q\theta=q_P,
+\]
+and
+\begin{align}
+\theta(\delta_P(a,x))
+&=
+\delta_Q(a,\theta x),
+\label{eq:mealy-transformation-delta-program}
+\\
+\omega_P(a,x)
+&=
+\omega_Q(a,\theta x).
+\label{eq:mealy-transformation-omega-program}
+\end{align}
+\end{definition}
+
+\begin{proposition}[Transformations as labelled functors]
+\label{prop:transformations-labelled-functors}
+A Mealy transformation
+\[
+\theta:(P,\delta_P,\omega_P)\Rightarrow(Q,\delta_Q,\omega_Q)
+\]
+is equivalently an internal functor
+\[
+\Theta:\mathsf{Prog}_{\Phi_P}\to\mathsf{Prog}_{\Phi_Q}
+\]
+whose object map is \(\theta\), and which commutes with both input and output labellings:
+\[
+I_{\Phi_Q}\Theta=I_{\Phi_P},
+\qquad
+\Omega_{\Phi_Q}\Theta=\Omega_{\Phi_P}.
+\]
+\end{proposition}
+
+\begin{proof}
+Given \(\theta:P\to Q\), define the arrow map of \(\Theta\) by
+\[
+\Theta_1(a,x):=(a,\theta x).
+\]
+This is well-defined because
+\[
+p_Q(\theta x)=p_P(x)=t_A(a).
+\]
+It preserves sources automatically:
+\[
+s_Q(a,\theta x)=\theta x=\theta s_P(a,x).
+\]
+It preserves targets exactly when
+\[
+\delta_Q(a,\theta x)=\theta(\delta_P(a,x)),
+\]
+which is equation~\eqref{eq:mealy-transformation-delta-program}. Identity and composition preservation then follow from the corresponding laws in the two program categories.
+
+Commutation with the input labelling is automatic from the definition of \(\Theta_1\):
+\[
+\pi_1(a,\theta x)=a=\pi_1(a,x).
+\]
+Commutation with the output labelling is exactly
+\[
+\omega_Q(a,\theta x)=\omega_P(a,x),
+\]
+which is equation~\eqref{eq:mealy-transformation-omega-program}.
+
+Conversely, any internal functor
+\[
+\Theta:\mathsf{Prog}_{\Phi_P}\to\mathsf{Prog}_{\Phi_Q}
+\]
+commuting with the input labellings must have arrow map of the form
+\[
+(a,x)\mapsto (a,\theta x).
+\]
+Preservation of targets gives equation~\eqref{eq:mealy-transformation-delta-program}, and commutation with output labellings gives equation~\eqref{eq:mealy-transformation-omega-program}. Thus \(\Theta\) is exactly a Mealy transformation.
+\end{proof}
+
+\begin{corollary}
+\label{cor:mealy-hom-category-labelled-discrete}
+For fixed internal categories \(\mathbb A\) and \(\mathbb B\), the category of Mealy morphisms
+\[
+\mathbb A\rightsquigarrow\mathbb B
+\]
+and Mealy transformations is equivalent to the category of labelled input-discrete categories from \(\mathbb A\) to \(\mathbb B\) and labelled functors between them.
+\end{corollary}
+
+\begin{proof}
+This is Theorem~\ref{thm:mealy-as-labelled-discrete-opfibrations} on objects and Proposition~\ref{prop:transformations-labelled-functors} on morphisms.
+\end{proof}
+
+\section{Representable carriers and functorial programs}
+\label{sec:representable-carriers-functorial-programs}
+
+The previous chapter showed that representable Mealy morphisms are precisely internal functors. The program-category construction makes this identification operational.
+
+Let
+\[
+F:\mathbb A\to\mathbb B
+\]
+be an internal functor, with object map
+\[
+F_0:A_0\to B_0
+\]
+and arrow map
+\[
+F_1:A_1\to B_1.
+\]
+The corresponding representable Mealy morphism is carried by
+\[
+F_{0!}
+=
+\left(
+A_0\xleftarrow{1_{A_0}}A_0\xrightarrow{F_0}B_0
+\right).
+\]
+Thus
+\[
+P=A_0,
+\qquad
+p=1_{A_0},
+\qquad
+q=F_0.
+\]
+
+The primitive execution object is
+\[
+M_1=A_1\times_{t_A,A_0,1_{A_0}}A_0.
+\]
+This is canonically isomorphic to \(A_1\), via
+\[
+(a,t_Aa)\longleftrightarrow a.
+\]
+
+\begin{theorem}[Program category of a representable Mealy morphism]
+\label{thm:program-category-representable}
+Let
+\[
+F:\mathbb A\to\mathbb B
+\]
+be an internal functor, regarded as a representable Mealy morphism. Then
+\[
+\mathsf{Prog}_F\cong\mathbb A^{\mathrm{op}}.
+\]
+Under this identification, the input labelling functor
+\[
+I_F:\mathsf{Prog}_F\to\mathbb A^{\mathrm{op}}
+\]
+is the identity functor, and the output functor
+\[
+\Omega_F:\mathsf{Prog}_F\to\mathbb B^{\mathrm{op}}
+\]
+is
+\[
+F^{\mathrm{op}}:\mathbb A^{\mathrm{op}}\to\mathbb B^{\mathrm{op}}.
+\]
+\end{theorem}
+
+\begin{proof}
+Since
+\[
+P=A_0
+\]
+and
+\[
+M_1=A_1\times_{t_A,A_0,1_{A_0}}A_0,
+\]
+the projection
+\[
+M_1\to A_1
+\]
+is an isomorphism. Under this isomorphism, a primitive execution is represented by an arrow
+\[
+a:u\to v
+\]
+of \(\mathbb A\), with state \(v=t_A(a)\).
+
+The source of the program arrow is
+\[
+s_M(a)=t_A(a),
+\]
+and its target is
+\[
+t_M(a)=\delta(a,t_Aa)=s_A(a).
+\]
+Thus the program arrow goes from \(t_A(a)\) to \(s_A(a)\), exactly as an arrow of
+\[
+\mathbb A^{\mathrm{op}}.
+\]
+Identities and composition agree with those of \(\mathbb A^{\mathrm{op}}\) by the definitions of \(e_M\) and \(m_M\). Hence
+\[
+\mathsf{Prog}_F\cong\mathbb A^{\mathrm{op}}.
+\]
+
+The input labelling arrow map is \(\pi_1\), which is the above isomorphism, so \(I_F\) identifies with
+\[
+1_{\mathbb A^{\mathrm{op}}}.
+\]
+
+The output map is
+\[
+\omega(a,t_Aa)=F_1(a).
+\]
+Since the output functor lands in
+\[
+\mathbb B^{\mathrm{op}},
+\]
+this is exactly the arrow map of
+\[
+F^{\mathrm{op}}:\mathbb A^{\mathrm{op}}\to\mathbb B^{\mathrm{op}}.
+\]
+The object map is
+\[
+q=F_0.
+\]
+Therefore
+\[
+\Omega_F=F^{\mathrm{op}}
+\]
+under the displayed identification.
+\end{proof}
+
+\begin{corollary}[Representable Mealy morphisms as trivial labelled opfibrations]
+\label{cor:representable-trivial-labelled-opfibrations}
+Under the equivalence of Theorem~\ref{thm:mealy-as-labelled-discrete-opfibrations}, representable Mealy morphisms correspond precisely to the case in which the input-discrete functor
+\[
+I_\Phi:\mathsf{Prog}_\Phi\to\mathbb A^{\mathrm{op}}
+\]
+is isomorphic to the identity functor on \(\mathbb A^{\mathrm{op}}\).
+\end{corollary}
+
+\begin{proof}
+If the Mealy morphism is induced by an internal functor \(F:\mathbb A\to\mathbb B\), then Theorem~\ref{thm:program-category-representable} gives
+\[
+\mathsf{Prog}_F\cong\mathbb A^{\mathrm{op}},
+\qquad
+I_F\cong 1_{\mathbb A^{\mathrm{op}}}.
+\]
+
+Conversely, if
+\[
+I_\Phi:\mathsf{Prog}_\Phi\to\mathbb A^{\mathrm{op}}
+\]
+is isomorphic to the identity functor, then in particular its object map
+\[
+p:P\to A_0
+\]
+is an isomorphism. Hence the carrier span
+\[
+A_0\xleftarrow{p}P\xrightarrow{q}B_0
+\]
+is representable, and therefore, by the representability theorem of the previous chapter, the corresponding Mealy morphism is induced by an internal functor.
+\end{proof}
+
+\section{Predicate semantics for spans}
+\label{sec:predicate-semantics-spans}
+
+The construction of the program category only required pullbacks. To obtain dynamic logic, one next makes execution spans act on predicates.
+
+Let
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right)
+\]
+be a span. For a predicate
+\[
+\varphi\hookrightarrow Y,
+\]
+the intended existential modality is
+\[
+\langle R\rangle\varphi
+=
+\exists_{\ell}(r^\ast\varphi).
+\]
+The pullback \(r^\ast\varphi\) exists under finite limits. The new operation required here is the direct image
+\[
+\exists_\ell.
+\]
+This is supplied by regular image factorization.
+
+\begin{definition}[Regular category]
+\label{def:regular-category}
+A category \(\mathcal E\) is \textbf{regular} if:
+\begin{enumerate}
+\item \(\mathcal E\) has finite limits;
+\item every morphism factors as a regular epimorphism followed by a monomorphism;
+\item regular epimorphisms are stable under pullback.
+\end{enumerate}
+\end{definition}
+
+For the rest of this section, let \(\mathcal E\) be a regular category.
+
+For each object \(X\), write
+\[
+\mathrm{Sub}(X)
+\]
+for the poset of subobjects of \(X\). For every morphism
+\[
+f:X\to Y,
+\]
+write
+\[
+f^\ast:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+for pullback along \(f\).
+
+\begin{definition}[Existential image]
+\label{def:existential-image-regular}
+For a morphism
+\[
+f:X\to Y
+\]
+in a regular category, define
+\[
+\exists_f:\mathrm{Sub}(X)\to\mathrm{Sub}(Y)
+\]
+as follows. Given a subobject
+\[
+u:U\hookrightarrow X,
+\]
+factor the composite
+\[
+U\xrightarrow{u}X\xrightarrow{f}Y
+\]
+as a regular epimorphism followed by a monomorphism:
+\[
+U\twoheadrightarrow \exists_f(U)\hookrightarrow Y.
+\]
+The subobject \(\exists_f(U)\hookrightarrow Y\) is the existential image of \(U\) along \(f\).
+\end{definition}
+
+\begin{proposition}[Existential image is left adjoint to pullback]
+\label{prop:exists-left-adjoint-pullback}
+For every morphism
+\[
+f:X\to Y
+\]
+in a regular category, there is an adjunction
+\[
+\exists_f\dashv f^\ast.
+\]
+That is, for
+\[
+U\in\mathrm{Sub}(X),
+\qquad
+V\in\mathrm{Sub}(Y),
+\]
+we have
+\[
+\exists_f(U)\le V
+\quad\Longleftrightarrow\quad
+U\le f^\ast V.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition, \(\exists_f(U)\) is the image of the composite
+\[
+U\to X\xrightarrow{f}Y.
+\]
+Thus
+\[
+\exists_f(U)\le V
+\]
+means that the composite \(U\to Y\) factors through the monomorphism \(V\hookrightarrow Y\). By the universal property of pullback, this is equivalent to the map \(U\to X\) factoring through the pullback
+\[
+f^\ast V\hookrightarrow X.
+\]
+Equivalently,
+\[
+U\le f^\ast V.
+\]
+\end{proof}
+
+\begin{proposition}[Beck--Chevalley for regular images]
+\label{prop:regular-beck-chevalley}
+For every pullback square in a regular category
+\[
+\begin{tikzcd}
+X' \arrow[r, "g'"] \arrow[d, "f'"']
+&
+X \arrow[d, "f"]
+\\
+Y' \arrow[r, "g"']
+&
+Y,
+\end{tikzcd}
+\]
+the Beck--Chevalley identity
+\[
+g^\ast\exists_f
+=
+\exists_{f'}(g')^\ast
+\]
+holds as maps
+\[
+\mathrm{Sub}(X)\to\mathrm{Sub}(Y').
+\]
+\end{proposition}
+
+\begin{proof}
+This is the statement that regular images are stable under pullback. Indeed, for a subobject \(U\hookrightarrow X\), the image of \(U\to X\xrightarrow{f}Y\), pulled back along \(g:Y'\to Y\), agrees with the image of the pulled-back subobject
+\[
+(g')^\ast U\hookrightarrow X'
+\]
+along \(f':X'\to Y'\). Stability of regular epimorphisms under pullback supplies the regular epi part of the pulled-back image factorization.
+\end{proof}
+
+\begin{definition}[Diamond modality of a span]
+\label{def:span-diamond-regular}
+Let
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right)
+\]
+be a span in a regular category. Define
+\[
+\langle R\rangle:
+\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+by
+\[
+\langle R\rangle\varphi
+:=
+\exists_{\ell}(r^\ast\varphi).
+\]
+\end{definition}
+
+\begin{proposition}[Functoriality of span diamonds]
+\label{prop:span-diamond-functoriality}
+Let
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right),
+\qquad
+S=
+\left(
+Y\xleftarrow{m}S\xrightarrow{n}Z
+\right)
+\]
+be spans in a regular category. Then
+\[
+\langle 1_X\rangle=\mathrm{id}_{\mathrm{Sub}(X)}
+\]
+and
+\[
+\langle R;S\rangle
+=
+\langle R\rangle\circ\langle S\rangle.
+\]
+\end{proposition}
+
+\begin{proof}
+For the identity span
+\[
+1_X=
+\left(
+X\xleftarrow{1_X}X\xrightarrow{1_X}X
+\right),
+\]
+we have
+\[
+\langle 1_X\rangle\varphi
+=
+\exists_{1_X}(1_X^\ast\varphi)
+=
+\varphi.
+\]
+
+For composition, the composite \(R;S\) has apex
+\[
+R\times_{r,Y,m}S
+\]
+and legs
+\[
+\ell\pi_R:R\times_Y S\to X,
+\qquad
+n\pi_S:R\times_Y S\to Z.
+\]
+Hence
+\[
+\langle R;S\rangle\varphi
+=
+\exists_{\ell\pi_R}\bigl((n\pi_S)^\ast\varphi\bigr).
+\]
+Since
+\[
+(n\pi_S)^\ast\varphi
+=
+\pi_S^\ast(n^\ast\varphi),
+\]
+we get
+\[
+\langle R;S\rangle\varphi
+=
+\exists_{\ell\pi_R}\pi_S^\ast(n^\ast\varphi).
+\]
+Using functoriality of existential image,
+\[
+\exists_{\ell\pi_R}
+=
+\exists_\ell\exists_{\pi_R}.
+\]
+Therefore
+\[
+\langle R;S\rangle\varphi
+=
+\exists_\ell\exists_{\pi_R}\pi_S^\ast(n^\ast\varphi).
+\]
+By Beck--Chevalley for the pullback square
+\[
+\begin{tikzcd}
+R\times_Y S \arrow[r, "\pi_S"] \arrow[d, "\pi_R"']
+&
+S \arrow[d, "m"]
+\\
+R \arrow[r, "r"'] & Y,
+\end{tikzcd}
+\]
+we have
+\[
+\exists_{\pi_R}\pi_S^\ast
+=
+r^\ast\exists_m.
+\]
+Thus
+\[
+\begin{aligned}
+\langle R;S\rangle\varphi
+&=
+\exists_\ell r^\ast\exists_m n^\ast\varphi
+\\
+&=
+\exists_\ell r^\ast(\langle S\rangle\varphi)
+\\
+&=
+\langle R\rangle(\langle S\rangle\varphi).
+\end{aligned}
+\]
+\end{proof}
+
+\subsection{The universal form of the diamond semantics}
+
+The formula
+\[
+\langle R\rangle=\exists_\ell r^\ast
+\]
+is not arbitrary. It is forced by the canonical factorization of a span into a reverse map span followed by a map span.
+
+For a morphism
+\[
+f:X\to Y
+\]
+write
+\[
+f_!
+:=
+\left(
+X\xleftarrow{1_X}X\xrightarrow{f}Y
+\right)
+\]
+for the map span, and
+\[
+f^\ast_{\mathrm{sp}}
+:=
+\left(
+Y\xleftarrow{f}X\xrightarrow{1_X}X
+\right)
+\]
+for the reverse map span. We use the subscript \({\mathrm{sp}}\) to distinguish the reverse map span from the pullback functor \(f^\ast\) on subobjects.
+
+Every span
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right)
+\]
+factors canonically as
+\[
+R
+=
+\ell^\ast_{\mathrm{sp}};r_!.
+\]
+
+\begin{theorem}[Universal characterization of diamonds]
+\label{thm:universal-diamond-extension}
+In a regular category, the diamond assignment
+\[
+R\longmapsto \langle R\rangle
+\]
+is the functorial extension from map spans and reverse map spans determined by
+\[
+\langle f_!\rangle=f^\ast,
+\qquad
+\langle f^\ast_{\mathrm{sp}}\rangle=\exists_f.
+\]
+That is, for a span
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right)
+=
+\ell^\ast_{\mathrm{sp}};r_!,
+\]
+functoriality forces
+\[
+\langle R\rangle
+=
+\langle \ell^\ast_{\mathrm{sp}}\rangle\circ \langle r_!\rangle
+=
+\exists_\ell\circ r^\ast.
+\]
+\end{theorem}
+
+\begin{proof}
+For a map span
+\[
+f_!
+=
+\left(
+X\xleftarrow{1_X}X\xrightarrow{f}Y
+\right),
+\]
+we have
+\[
+\langle f_!\rangle\varphi
+=
+\exists_{1_X}(f^\ast\varphi)
+=
+f^\ast\varphi.
+\]
+For a reverse map span
+\[
+f^\ast_{\mathrm{sp}}
+=
+\left(
+Y\xleftarrow{f}X\xrightarrow{1_X}X
+\right),
+\]
+we have
+\[
+\langle f^\ast_{\mathrm{sp}}\rangle\psi
+=
+\exists_f(1_X^\ast\psi)
+=
+\exists_f\psi.
+\]
+
+Now every span
+\[
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\]
+factors as
+\[
+\ell^\ast_{\mathrm{sp}};r_!.
+\]
+By functoriality of diamonds,
+\[
+\langle R\rangle
+=
+\langle \ell^\ast_{\mathrm{sp}};r_!\rangle
+=
+\langle \ell^\ast_{\mathrm{sp}}\rangle\circ\langle r_!\rangle
+=
+\exists_\ell\circ r^\ast.
+\]
+Thus the formula is forced by the values on map spans and reverse map spans.
+\end{proof}
+
+\section{Tests, restricted programs, and coherent choice}
+\label{sec:tests-restricted-programs-coherent-choice}
+
+The regular structure supplies existential modalities. It also supplies the diamond law for tests.
+
+Let \(\mathcal E\) be a regular category, and let
+\[
+\theta:\Theta\hookrightarrow P
+\]
+be a predicate on \(P\). Define the test span
+\[
+\theta?
+=
+\left(
+P\xleftarrow{\theta}\Theta\xrightarrow{\theta}P
+\right).
+\]
+
+\begin{proposition}[Diamond law for tests]
+\label{prop:test-law-regular}
+For every predicate
+\[
+\varphi\hookrightarrow P
+\]
+we have
+\[
+\langle\theta?\rangle\varphi
+=
+\theta\wedge\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\langle\theta?\rangle\varphi
+=
+\exists_\theta(\theta^\ast\varphi).
+\]
+Since \(\theta\) is monic, \(\exists_\theta\) identifies subobjects of \(\Theta\) with subobjects of \(P\) lying below \(\theta\). The pullback \(\theta^\ast\varphi\) is the intersection of \(\theta\) and \(\varphi\), viewed over \(\Theta\). Its image along \(\theta\) is therefore
+\[
+\theta\wedge\varphi.
+\]
+\end{proof}
+
+The input and output labelling maps of the Mealy program category allow predicates on input and output arrows to define subprograms.
+
+Let
+\[
+R\hookrightarrow A_1
+\]
+be a predicate on input arrows. Define
+\[
+R^\sharp:=\pi_1^\ast R\hookrightarrow M_1.
+\]
+Let
+\[
+O\hookrightarrow B_1
+\]
+be a predicate on output arrows. Define
+\[
+O^\sharp:=\omega^\ast O\hookrightarrow M_1.
+\]
+Their simultaneous restriction is
+\[
+(R/O)^\sharp:=R^\sharp\wedge O^\sharp\hookrightarrow M_1.
+\]
+If
+\[
+i:(R/O)^\sharp\hookrightarrow M_1
+\]
+is the inclusion, the restricted primitive program is the span
+\[
+P
+\xleftarrow{s_M i}
+(R/O)^\sharp
+\xrightarrow{t_M i}
+P.
+\]
+Its diamond is denoted
+\[
+\langle R/O\rangle\varphi
+:=
+\left\langle
+P
+\xleftarrow{s_M i}
+(R/O)^\sharp
+\xrightarrow{t_M i}
+P
+\right\rangle
+\varphi.
+\]
+
+\begin{proposition}[External reading of restricted primitive modalities]
+\label{prop:external-reading-input-output-modality}
+In \(\mathbf{Set}\),
+\[
+x\models \langle R/O\rangle\varphi
+\]
+holds precisely when there exists an arrow
+\[
+a:u\to p(x)
+\]
+in \(\mathbb A\) such that
+\[
+R(a),
+\qquad
+O(\omega(a,x)),
+\qquad
+\delta(a,x)\models\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\langle R/O\rangle\varphi
+\]
+is the diamond modality for the subspan
+\[
+(R/O)^\sharp\hookrightarrow M_1.
+\]
+Thus \(x\) satisfies it exactly when there exists a primitive execution
+\[
+(a,x)\in M_1
+\]
+with source \(x\), target \(\delta(a,x)\), and satisfying the subprogram predicate
+\[
+R^\sharp(a,x)\wedge O^\sharp(a,x).
+\]
+The first conjunct says \(R(a)\), the second says \(O(\omega(a,x))\), and the target-state condition is
+\[
+\delta(a,x)\models\varphi.
+\]
+\end{proof}
+
+Finite nondeterministic choice of subprograms requires finite joins of subobjects stable under pullback. This is the next categorical structure.
+
+\begin{definition}[Coherent category]
+\label{def:coherent-category}
+A \textbf{coherent category} is a regular category \(\mathcal E\) such that:
+\begin{enumerate}
+\item for every object \(X\), the poset \(\mathrm{Sub}(X)\) has finite joins;
+\item for every morphism \(f:X\to Y\), the pullback map
+\[
+f^\ast:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+preserves finite joins.
+\end{enumerate}
+\end{definition}
+
+Let \(\mathcal E\) now be coherent. Let
+\[
+U,V\hookrightarrow M_1
+\]
+be subprograms of the primitive execution span. Their finite choice as subprograms of \(\mathbf m_\Phi\) is the join
+\[
+U\vee V\hookrightarrow M_1.
+\]
+The associated choice span is obtained by restricting \(s_M,t_M\) to \(U\vee V\).
+
+For a subobject
+\[
+i_U:U\hookrightarrow M_1,
+\]
+we write
+\[
+\langle U\rangle\varphi
+:=
+\exists_{s_M i_U}\bigl((t_M i_U)^\ast\varphi\bigr).
+\]
+Equivalently, regarding \(U\) as a predicate on \(M_1\),
+\[
+\langle U\rangle\varphi
+=
+\exists_{s_M}\bigl(U\wedge t_M^\ast\varphi\bigr).
+\]
+
+\begin{proposition}[Diamond choice law for subprograms]
+\label{prop:choice-law-coherent}
+For subprograms
+\[
+U,V\hookrightarrow M_1
+\]
+in a coherent category,
+\[
+\langle U\vee V\rangle\varphi
+=
+\langle U\rangle\varphi
+\vee
+\langle V\rangle\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+Regard \(U\) and \(V\) as predicates on \(M_1\). Then
+\[
+\langle U\vee V\rangle\varphi
+=
+\exists_{s_M}\bigl((U\vee V)\wedge t_M^\ast\varphi\bigr).
+\]
+In a coherent category, finite joins in subobject lattices distribute over finite meets, because pullback along a subobject inclusion is meet with that subobject and pullback preserves finite joins. Hence
+\[
+(U\vee V)\wedge t_M^\ast\varphi
+=
+(U\wedge t_M^\ast\varphi)
+\vee
+(V\wedge t_M^\ast\varphi).
+\]
+Since \(\exists_{s_M}\) is a left adjoint, it preserves finite joins. Thus
+\[
+\begin{aligned}
+\langle U\vee V\rangle\varphi
+&=
+\exists_{s_M}(U\wedge t_M^\ast\varphi)
+\vee
+\exists_{s_M}(V\wedge t_M^\ast\varphi)
+\\
+&=
+\langle U\rangle\varphi
+\vee
+\langle V\rangle\varphi.
+\end{aligned}
+\]
+\end{proof}
+
+\begin{remark}
+\label{rem:subprogram-choice-versus-span-coproduct}
+The choice operation in Proposition~\ref{prop:choice-law-coherent} is choice of subprograms inside a fixed primitive execution span. It is not the same as arbitrary witnessful coproduct choice of spans. In a category with coproducts, arbitrary span choice may be represented by coproduct of apexes; in a relational quotient this becomes union of relations. The coherent construction here is the finite join of subobjects of a fixed program object.
+\end{remark}
+
+\section{Universal predicate semantics and boxes}
+\label{sec:universal-predicate-semantics-boxes}
+
+Diamonds are existential predicate transformers. Box modalities require universal quantification, that is, right adjoints to pullback.
+
+\begin{definition}[First-order Heyting category]
+\label{def:first-order-heyting-category}
+A \textbf{first-order Heyting category} is a coherent category \(\mathcal E\) such that for every morphism
+\[
+f:X\to Y,
+\]
+the pullback map
+\[
+f^\ast:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+has a right adjoint
+\[
+\forall_f:\mathrm{Sub}(X)\to\mathrm{Sub}(Y),
+\]
+and these right adjoints satisfy Beck--Chevalley for pullback squares.
+Thus, for every \(f\), there is an adjoint triple
+\[
+\exists_f\dashv f^\ast\dashv \forall_f.
+\]
+\end{definition}
+
+For the rest of this section, let \(\mathcal E\) be a first-order Heyting category. Then each fibre \(\mathrm{Sub}(X)\) is a Heyting algebra. Its implication is characterized by
+\[
+\psi\le \theta\Rightarrow\varphi
+\quad\Longleftrightarrow\quad
+\psi\wedge\theta\le\varphi.
+\]
+
+\begin{definition}[Box modality of a span]
+\label{def:box-modality-span}
+Let
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right)
+\]
+be a span. Define
+\[
+[R]:
+\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+by
+\[
+[R]\varphi
+:=
+\forall_\ell(r^\ast\varphi).
+\]
+\end{definition}
+
+\begin{proposition}[Functoriality of boxes]
+\label{prop:box-functoriality}
+For spans
+\[
+R:X\nrightarrow Y,
+\qquad
+S:Y\nrightarrow Z
+\]
+in a first-order Heyting category,
+\[
+[1_X]=\mathrm{id}_{\mathrm{Sub}(X)}
+\]
+and
+\[
+[R;S]=[R]\circ[S].
+\]
+\end{proposition}
+
+\begin{proof}
+The identity law is immediate:
+\[
+[1_X]\varphi
+=
+\forall_{1_X}(1_X^\ast\varphi)
+=
+\varphi.
+\]
+
+Write
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right),
+\qquad
+S=
+\left(
+Y\xleftarrow{m}S\xrightarrow{n}Z
+\right).
+\]
+Then
+\[
+[R;S]\varphi
+=
+\forall_{\ell\pi_R}\bigl((n\pi_S)^\ast\varphi\bigr).
+\]
+Since
+\[
+(n\pi_S)^\ast\varphi
+=
+\pi_S^\ast(n^\ast\varphi),
+\]
+we have
+\[
+[R;S]\varphi
+=
+\forall_{\ell\pi_R}\pi_S^\ast(n^\ast\varphi).
+\]
+Using functoriality of universal image,
+\[
+\forall_{\ell\pi_R}
+=
+\forall_\ell\forall_{\pi_R}.
+\]
+By Beck--Chevalley for the pullback square
+\[
+\begin{tikzcd}
+R\times_Y S \arrow[r, "\pi_S"] \arrow[d, "\pi_R"']
+&
+S \arrow[d, "m"]
+\\
+R \arrow[r, "r"'] & Y,
+\end{tikzcd}
+\]
+we have
+\[
+\forall_{\pi_R}\pi_S^\ast
+=
+r^\ast\forall_m.
+\]
+Therefore
+\[
+\begin{aligned}
+[R;S]\varphi
+&=
+\forall_\ell r^\ast\forall_m(n^\ast\varphi)
+\\
+&=
+[R]([S]\varphi).
+\end{aligned}
+\]
+\end{proof}
+
+\begin{proposition}[Box law for tests]
+\label{prop:box-law-tests}
+For a test
+\[
+\theta?
+=
+\left(
+P\xleftarrow{\theta}\Theta\xrightarrow{\theta}P
+\right)
+\]
+in a first-order Heyting category,
+\[
+[\theta?]\varphi
+=
+\theta\Rightarrow\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+[\theta?]\varphi
+=
+\forall_\theta(\theta^\ast\varphi).
+\]
+We show that this is the Heyting implication \(\theta\Rightarrow\varphi\). For any predicate
+\[
+\psi\hookrightarrow P,
+\]
+we have
+\[
+\psi\le \forall_\theta(\theta^\ast\varphi)
+\]
+if and only if
+\[
+\theta^\ast\psi\le \theta^\ast\varphi
+\]
+by the adjunction \(\theta^\ast\dashv \forall_\theta\). Since \(\theta\) is monic, this is equivalent to
+\[
+\psi\wedge\theta\le \varphi.
+\]
+By the defining adjunction for Heyting implication, this is equivalent to
+\[
+\psi\le \theta\Rightarrow\varphi.
+\]
+Therefore
+\[
+\forall_\theta(\theta^\ast\varphi)
+=
+\theta\Rightarrow\varphi.
+\]
+\end{proof}
+
+\begin{theorem}[Universal characterization of boxes]
+\label{thm:universal-box-extension}
+In a first-order Heyting category, the box assignment
+\[
+R\longmapsto [R]
+\]
+is the functorial extension from map spans and reverse map spans determined by
+\[
+[f_!]=f^\ast,
+\qquad
+[f^\ast_{\mathrm{sp}}]=\forall_f.
+\]
+That is, for a span
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right)
+=
+\ell^\ast_{\mathrm{sp}};r_!,
+\]
+functoriality forces
+\[
+[R]
+=
+[\ell^\ast_{\mathrm{sp}}]\circ [r_!]
+=
+\forall_\ell\circ r^\ast.
+\]
+\end{theorem}
+
+\begin{proof}
+For a map span
+\[
+f_!
+=
+\left(
+X\xleftarrow{1_X}X\xrightarrow{f}Y
+\right),
+\]
+we have
+\[
+[f_!]\varphi
+=
+\forall_{1_X}(f^\ast\varphi)
+=
+f^\ast\varphi.
+\]
+For a reverse map span
+\[
+f^\ast_{\mathrm{sp}}
+=
+\left(
+Y\xleftarrow{f}X\xrightarrow{1_X}X
+\right),
+\]
+we have
+\[
+[f^\ast_{\mathrm{sp}}]\psi
+=
+\forall_f(1_X^\ast\psi)
+=
+\forall_f\psi.
+\]
+
+Every span
+\[
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\]
+factors as
+\[
+\ell^\ast_{\mathrm{sp}};r_!.
+\]
+By functoriality of boxes,
+\[
+[R]
+=
+[\ell^\ast_{\mathrm{sp}};r_!]
+=
+[\ell^\ast_{\mathrm{sp}}]\circ [r_!]
+=
+\forall_\ell\circ r^\ast.
+\]
+\end{proof}
+
+\begin{remark}
+\label{rem:box-not-boolean-dual}
+If the predicate fibres are Boolean, one may recover boxes from diamonds by
+\[
+[R]\varphi=\neg\langle R\rangle\neg\varphi.
+\]
+This is a specialization. The structural definition of the box modality is
+\[
+[R]\varphi=\forall_\ell(r^\ast\varphi),
+\]
+which remains meaningful in intuitionistic settings.
+\end{remark}
+
+\section{Finite sequential iteration}
+\label{sec:finite-sequential-iteration}
+
+Finite iteration already exists in the span bicategory, independently of infinite joins or fixed points.
+
+Let
+\[
+U:P\nrightarrow P
+\]
+be an endospan. Define
+\[
+U^0:=1_P,
+\qquad
+U^{n+1}:=U;U^n.
+\]
+The span \(U^n\) is the span of \(n\)-step executions of \(U\), with the chosen right-associated parenthesization induced by the recursion
+\[
+U^{n+1}:=U;U^n.
+\]
+Other parenthesizations are canonically isomorphic by bicategorical associativity of spans.
+
+When it is necessary to distinguish a span from its apex, we write
+\[
+U^n=
+\left(
+P\xleftarrow{\ell_n}U_n\xrightarrow{r_n}P
+\right).
+\]
+Thus \(U_n\) denotes the apex of the \(n\)-fold composite span.
+
+\begin{proposition}[Finite sequential laws]
+\label{prop:finite-sequential-laws}
+After the canonical associativity and unit identifications of spans,
+\[
+U^{m+n}\cong U^m;U^n.
+\]
+Consequently, in a regular category,
+\[
+\langle U^{m+n}\rangle
+=
+\langle U^m\rangle\circ\langle U^n\rangle,
+\]
+and in a first-order Heyting category,
+\[
+[U^{m+n}]
+=
+[U^m]\circ[U^n].
+\]
+\end{proposition}
+
+\begin{proof}
+The span isomorphism follows by induction on \(m\), using associativity and unit constraints in \(\mathbf{Span}(\mathcal E)\). The diamond and box identities follow from Proposition~\ref{prop:span-diamond-functoriality} and Proposition~\ref{prop:box-functoriality}.
+\end{proof}
+
+\section{Countable path structure and free monoids in spans}
+\label{sec:countable-path-structure-free-monoids}
+
+The finite spans \(U^n\) give finite execution paths. To form the span of all finite paths, one wants a countable coproduct
+\[
+\coprod_{n\ge0}U_n
+\]
+of the apex objects, with stable behaviour under pullback and with compatible predicate semantics.
+
+The preceding constructions have led us through a sequence of categorical requirements:
+\[
+\begin{array}{c|c}
+\text{construction} & \text{categorical structure required} \\
+\hline
+\text{span composition and program categories} & \text{finite limits} \\
+\text{diamond modalities} & \text{regular images} \\
+\text{finite subprogram choice} & \text{coherent finite joins} \\
+\text{box modalities and implication tests} & \text{right adjoints to pullback} \\
+\text{finite-path star} & \text{stable countable coproducts} \\
+\text{coproduct modal laws} & \text{subobject-extensive countable coproducts} \\
+\text{fibrewise }\mu,\nu\text{ comparisons} & \text{complete predicate fibres and continuity of the induced transformers}
+\end{array}
+\]
+
+\begin{definition}[\(\omega\)-iterative first-order Heyting category]
+\label{def:omega-iterative-heyting-category}
+An \(\omega\)-iterative first-order Heyting category is a first-order Heyting category \(\mathcal E\) such that:
+\begin{enumerate}
+\item \(\mathcal E\) has countable coproducts;
+\item countable coproducts are stable under pullback;
+\item countable coproducts are subobject-extensive, in the sense that for every countable family \((X_n)_{n\ge0}\), pullback along the coproduct injections induces an isomorphism
+\[
+\mathrm{Sub}\left(\coprod_{n\ge0}X_n\right)
+\cong
+\prod_{n\ge0}\mathrm{Sub}(X_n);
+\]
+\item for every object \(X\), the fibre \(\mathrm{Sub}(X)\) is a complete lattice.
+\end{enumerate}
+\end{definition}
+
+\begin{remark}
+\label{rem:omega-iterative-hypothesis-strength}
+For the specific Kleene-chain comparison below, it is enough to have the countable joins and countable meets that occur in the displayed formulas. The complete-fibre formulation makes the fixed-point terminology unambiguous and keeps the statement stable under later extensions of the logic.
+\end{remark}
+
+\begin{example}[Grothendieck topoi]
+\label{ex:grothendieck-topos-omega-iterative}
+Every Grothendieck topos is an \(\omega\)-iterative first-order Heyting category. In particular, Grothendieck topoi provide a standard source of models for the iteration and fixed-point constructions below. The following results, however, use only the structure listed in Definition~\ref{def:omega-iterative-heyting-category}.
+\end{example}
+
+For the rest of the iteration and fixed-point comparison, assume that \(\mathcal E\) is an \(\omega\)-iterative first-order Heyting category. We continue to work with a Mealy morphism
+\[
+(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+in \(\mathbf{Span}(\mathcal E)\), and with the associated program category
+\[
+\mathsf{Prog}_\Phi.
+\]
+
+Let
+\[
+U:P\nrightarrow P
+\]
+be an endospan, written
+\[
+U=
+\left(
+P\xleftarrow{\ell}U_1\xrightarrow{r}P
+\right).
+\]
+For its powers, write
+\[
+U^n=
+\left(
+P\xleftarrow{\ell_n}U_n\xrightarrow{r_n}P
+\right).
+\]
+
+\begin{definition}[Finite-path star as a span]
+\label{def:path-star-span}
+Define the finite-path star of \(U\) to be the endospan
+\[
+U^\star_{\mathrm{path}}:P\nrightarrow P
+\]
+whose apex is the countable coproduct
+\[
+\coprod_{n\ge0}U_n,
+\]
+and whose legs are induced by the source and target legs of the powers \(U^n\):
+\[
+P
+\xleftarrow{\,[\ell_n]_{n\ge0}\,}
+\coprod_{n\ge0}U_n
+\xrightarrow{\,[r_n]_{n\ge0}\,}
+P.
+\]
+\end{definition}
+
+\subsection{The path star as a free monoid}
+
+The construction \(U\mapsto U^\star_{\mathrm{path}}\) has a universal property: it is the free monoid on \(U\) in the endospan monoidal category.
+
+\begin{theorem}[Path star as the free endospan monoid]
+\label{thm:path-star-free-monoid}
+Let \(\mathcal E\) have pullbacks and countable coproducts stable under pullback. Then for every endospan
+\[
+U:P\nrightarrow P,
+\]
+the path-star span
+\[
+U^\star_{\mathrm{path}}
+=
+\coprod_{n\ge0}U^n
+\]
+is the free monoid on \(U\) in the monoidal category
+\[
+\operatorname{EndSpan}_{\mathcal E}(P).
+\]
+
+Explicitly, \(U^\star_{\mathrm{path}}\) carries a monoid structure whose unit is the coproduct inclusion
+\[
+U^0=1_P\to U^\star_{\mathrm{path}},
+\]
+and whose multiplication is induced by the canonical composite isomorphisms
+\[
+U^m;U^n\cong U^{m+n}
+\]
+followed by the coproduct inclusions
+\[
+U^{m+n}\to \coprod_{k\ge0}U^k.
+\]
+
+For any monoid object \(M\) in \(\operatorname{EndSpan}_{\mathcal E}(P)\) and any map of spans
+\[
+i:U\to M,
+\]
+there is a unique monoid morphism
+\[
+\overline{i}:U^\star_{\mathrm{path}}\to M
+\]
+such that the composite
+\[
+U=U^1\to U^\star_{\mathrm{path}}\xrightarrow{\overline{i}}M
+\]
+is \(i\).
+\end{theorem}
+
+\begin{proof}
+Since countable coproducts are stable under pullback, composition with a fixed span preserves countable coproducts of apexes. Hence the endohom category
+\[
+\operatorname{EndSpan}_{\mathcal E}(P)
+\]
+has countable coproducts of endospans, computed by coproduct of apexes, and the monoidal product preserves these coproducts separately in each variable.
+
+Define
+\[
+U^\star_{\mathrm{path}}:=\coprod_{n\ge0}U^n.
+\]
+The unit of the monoid is the inclusion of the \(0\)-summand
+\[
+1_P=U^0\to \coprod_{n\ge0}U^n.
+\]
+For multiplication, use distributivity of span composition over countable coproducts:
+\[
+U^\star_{\mathrm{path}};U^\star_{\mathrm{path}}
+\cong
+\coprod_{m,n\ge0}(U^m;U^n).
+\]
+By Proposition~\ref{prop:finite-sequential-laws}, each summand is canonically isomorphic to
+\[
+U^{m+n}.
+\]
+Composing with the coproduct inclusion
+\[
+U^{m+n}\to \coprod_{k\ge0}U^k
+\]
+defines the multiplication
+\[
+U^\star_{\mathrm{path}};U^\star_{\mathrm{path}}
+\to
+U^\star_{\mathrm{path}}.
+\]
+Associativity and unit laws follow from the associativity and unit constraints of span composition and the associativity and unit laws of addition on natural numbers.
+
+Now let \(M\) be a monoid object in \(\operatorname{EndSpan}_{\mathcal E}(P)\), with unit
+\[
+\eta:1_P\to M
+\]
+and multiplication
+\[
+\mu:M;M\to M.
+\]
+Given a map of spans
+\[
+i:U\to M,
+\]
+define maps
+\[
+i_n:U^n\to M
+\]
+by induction:
+\[
+i_0:=\eta,
+\qquad
+i_1:=i,
+\]
+and
+\[
+i_{n+1}:=
+\mu\circ(i;i_n):U;U^n\to M;M\to M.
+\]
+The coproduct universal property gives a unique map of spans
+\[
+\overline{i}:U^\star_{\mathrm{path}}\to M
+\]
+whose restriction to \(U^n\) is \(i_n\).
+
+The monoid morphism laws for \(\overline{i}\) follow by induction on summands, using associativity and unit laws of \(M\). Conversely, any monoid morphism
+\[
+h:U^\star_{\mathrm{path}}\to M
+\]
+extending \(i\) must restrict to \(\eta\) on \(U^0\), to \(i\) on \(U^1\), and recursively to the \(n\)-fold product \(i_n\) on \(U^n\). Hence \(h=\overline{i}\). This proves the universal property.
+\end{proof}
+
+\begin{proposition}[Path-star equation]
+\label{prop:path-star-equation}
+There is a canonical isomorphism of endospans
+\[
+U^\star_{\mathrm{path}}
+\cong
+1_P\oplus U;U^\star_{\mathrm{path}},
+\]
+where \(\oplus\) denotes coproduct of span apexes.
+\end{proposition}
+
+\begin{proof}
+By definition, the apex of \(U^\star_{\mathrm{path}}\) is
+\[
+\coprod_{n\ge0}U_n.
+\]
+Separating the \(n=0\) summand gives
+\[
+\coprod_{n\ge0}U_n
+\cong
+U_0+\coprod_{n\ge0}U_{n+1}.
+\]
+Since
+\[
+U^0=1_P
+\]
+and
+\[
+U^{n+1}=U;U^n,
+\]
+the second summand is
+\[
+\coprod_{n\ge0}\operatorname{apex}(U;U^n).
+\]
+Because countable coproducts are stable under pullback, composing \(U\) with the coproduct span \(\coprod_{n\ge0}U^n\) gives the coproduct of the composites:
+\[
+U;\left(\coprod_{n\ge0}U^n\right)
+\cong
+\coprod_{n\ge0}(U;U^n).
+\]
+Thus
+\[
+U^\star_{\mathrm{path}}
+\cong
+1_P\oplus U;U^\star_{\mathrm{path}},
+\]
+as spans, up to the canonical associativity and unit isomorphisms of \(\mathbf{Span}(\mathcal E)\).
+\end{proof}
+
+\begin{proposition}[Diamonds and boxes of countable coproduct spans]
+\label{prop:coproduct-span-modalities}
+Let
+\[
+(R_n)_{n\ge0}
+\]
+be a countable family of spans
+\[
+R_n:X\nrightarrow Y
+\]
+in an \(\omega\)-iterative first-order Heyting category, and let
+\[
+\coprod_{n\ge0}R_n
+\]
+be the span obtained by coproduct of apexes. Then
+\[
+\left\langle\coprod_{n\ge0}R_n\right\rangle\varphi
+=
+\bigvee_{n\ge0}\langle R_n\rangle\varphi
+\]
+and
+\[
+\left[\coprod_{n\ge0}R_n\right]\varphi
+=
+\bigwedge_{n\ge0}[R_n]\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+Write
+\[
+R_n=
+\left(
+X\xleftarrow{\ell_n}R_n\xrightarrow{r_n}Y
+\right).
+\]
+The coproduct span has apex \(\coprod_n R_n\) and legs
+\[
+[\ell_n]_n:\coprod_nR_n\to X,
+\qquad
+[r_n]_n:\coprod_nR_n\to Y.
+\]
+
+For diamonds,
+\[
+\left\langle\coprod_nR_n\right\rangle\varphi
+=
+\exists_{[\ell_n]_n}\bigl([r_n]_n^\ast\varphi\bigr).
+\]
+The predicate \([r_n]_n^\ast\varphi\) restricts to \(r_n^\ast\varphi\) on the \(n\)-th summand.
+
+By subobject-extensivity, subobjects of \(\coprod_nR_n\) are determined by their restrictions to the summands. Moreover, for any subobject \(W\hookrightarrow \coprod_nR_n\) with restrictions \(W_n\hookrightarrow R_n\), one has
+\[
+\exists_{[\ell_n]_n}(W)
+=
+\bigvee_n\exists_{\ell_n}(W_n).
+\]
+Indeed, for any \(\psi\hookrightarrow X\),
+\[
+\exists_{[\ell_n]_n}(W)\le\psi
+\]
+if and only if
+\[
+W\le [\ell_n]_n^\ast\psi
+\]
+by adjunction. By subobject-extensivity this is equivalent to
+\[
+W_n\le \ell_n^\ast\psi
+\]
+for all \(n\), which is equivalent to
+\[
+\exists_{\ell_n}(W_n)\le \psi
+\]
+for all \(n\), and hence to
+\[
+\bigvee_n\exists_{\ell_n}(W_n)\le\psi.
+\]
+Applying this to
+\[
+W=[r_n]_n^\ast\varphi
+\]
+gives
+\[
+\exists_{[\ell_n]_n}\bigl([r_n]_n^\ast\varphi\bigr)
+=
+\bigvee_n\exists_{\ell_n}(r_n^\ast\varphi)
+=
+\bigvee_n\langle R_n\rangle\varphi.
+\]
+
+For boxes, let \(\psi\hookrightarrow X\). Then
+\[
+\psi\le
+\forall_{[\ell_n]_n}\bigl([r_n]_n^\ast\varphi\bigr)
+\]
+if and only if
+\[
+[\ell_n]_n^\ast\psi
+\le
+[r_n]_n^\ast\varphi.
+\]
+By subobject-extensivity of coproducts, this is equivalent to requiring, for every \(n\ge0\),
+\[
+\ell_n^\ast\psi
+\le
+r_n^\ast\varphi.
+\]
+By the adjunction \(\ell_n^\ast\dashv \forall_{\ell_n}\), this is equivalent to requiring, for every \(n\ge0\),
+\[
+\psi\le
+\forall_{\ell_n}(r_n^\ast\varphi)
+=
+[R_n]\varphi.
+\]
+Equivalently,
+\[
+\psi\le
+\bigwedge_{n\ge0}[R_n]\varphi.
+\]
+Therefore
+\[
+\left[\coprod_{n\ge0}R_n\right]\varphi
+=
+\bigwedge_{n\ge0}[R_n]\varphi.
+\]
+\end{proof}
+
+\section{Fibrewise fixed points}
+\label{sec:fibrewise-fixed-points}
+
+We now construct the fixed-point modalities in the fibre
+\[
+\mathrm{Sub}(P).
+\]
+This is the fibrational form of induction and coinduction: least fixed points are initial algebras in the fibre, and greatest fixed points are final coalgebras in the fibre. This follows the general fibrational viewpoint on induction and coinduction \cite{HermidaJacobsInductionCoinduction,HasuoChoKataokaJacobsCoinductivePredicates,ChoCoalgebraicFixedPointLogics}.
+
+Let
+\[
+U:P\nrightarrow P
+\]
+be an endoprogram, and let
+\[
+\varphi\in\mathrm{Sub}(P)
+\]
+be a state predicate.
+
+\subsection{The least fixed point generated by diamonds}
+
+Define the endomap
+\[
+F^\Diamond_{U,\varphi}:\mathrm{Sub}(P)\to\mathrm{Sub}(P)
+\]
+by
+\[
+F^\Diamond_{U,\varphi}(X)
+:=
+\varphi\vee\langle U\rangle X.
+\]
+This map preserves suprema of increasing \(\omega\)-chains. Indeed, \(X\mapsto\varphi\vee X\) preserves nonempty joins, \(r^\ast\) preserves joins because it is a left adjoint in the adjoint triple
+\[
+\exists_r\dashv r^\ast\dashv \forall_r,
+\]
+and \(\exists_\ell\) preserves joins because it is a left adjoint. Therefore \(F^\Diamond_{U,\varphi}\) is \(\omega\)-continuous in the sense needed for the Kleene-chain construction from \(\bot\).
+
+Consequently,
+\[
+\bigvee_{n\ge0}(F^\Diamond_{U,\varphi})^n(\bot)
+\]
+is the least fixed point of \(F^\Diamond_{U,\varphi}\). We denote it by
+\[
+\mu F^\Diamond_{U,\varphi}
+:=
+\bigvee_{n\ge0}(F^\Diamond_{U,\varphi})^n(\bot).
+\]
+
+\begin{lemma}[Diamond approximants]
+\label{lem:diamond-approximants}
+For every \(n\ge0\),
+\[
+(F^\Diamond_{U,\varphi})^n(\bot)
+=
+\bigvee_{0\le k<n}\langle U^k\rangle\varphi.
+\]
+Here the empty join, for \(n=0\), is \(\bot\).
+\end{lemma}
+
+\begin{proof}
+The case \(n=0\) is the definition of the empty join.
+
+Assume the formula holds for \(n\). Then
+\[
+\begin{aligned}
+(F^\Diamond_{U,\varphi})^{n+1}(\bot)
+&=
+F^\Diamond_{U,\varphi}
+\left(
+\bigvee_{0\le k<n}\langle U^k\rangle\varphi
+\right)
+\\
+&=
+\varphi
+\vee
+\langle U\rangle
+\left(
+\bigvee_{0\le k<n}\langle U^k\rangle\varphi
+\right)
+\\
+&=
+\varphi
+\vee
+\bigvee_{0\le k<n}
+\langle U\rangle\langle U^k\rangle\varphi
+\\
+&=
+\langle U^0\rangle\varphi
+\vee
+\bigvee_{0\le k<n}
+\langle U;U^k\rangle\varphi
+\\
+&=
+\bigvee_{0\le k<n+1}
+\langle U^k\rangle\varphi.
+\end{aligned}
+\]
+The fourth equality uses functoriality of span diamonds.
+\end{proof}
+
+\begin{theorem}[Least fixed point for diamond iteration]
+\label{thm:diamond-least-fixed-point}
+In \(\mathrm{Sub}(P)\),
+\[
+\mu F^\Diamond_{U,\varphi}
+=
+\bigvee_{n\ge0}\langle U^n\rangle\varphi.
+\]
+Moreover this predicate is the least pre-fixed point of
+\[
+X\longmapsto \varphi\vee\langle U\rangle X.
+\]
+Equivalently,
+\[
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr)
+=
+\bigvee_{n\ge0}\langle U^n\rangle\varphi.
+\]
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:diamond-approximants},
+\[
+\mu F^\Diamond_{U,\varphi}
+=
+\bigvee_{n\ge0}(F^\Diamond_{U,\varphi})^n(\bot)
+=
+\bigvee_{n\ge0}\langle U^n\rangle\varphi.
+\]
+
+Let
+\[
+\chi:=
+\bigvee_{n\ge0}\langle U^n\rangle\varphi.
+\]
+Since \(\langle U\rangle\) preserves countable joins,
+\[
+\begin{aligned}
+F^\Diamond_{U,\varphi}(\chi)
+&=
+\varphi\vee\langle U\rangle
+\left(
+\bigvee_{n\ge0}\langle U^n\rangle\varphi
+\right)
+\\
+&=
+\varphi
+\vee
+\bigvee_{n\ge0}
+\langle U\rangle\langle U^n\rangle\varphi
+\\
+&=
+\langle U^0\rangle\varphi
+\vee
+\bigvee_{n\ge0}
+\langle U^{n+1}\rangle\varphi
+\\
+&=
+\bigvee_{n\ge0}\langle U^n\rangle\varphi
+\\
+&=
+\chi.
+\end{aligned}
+\]
+Thus \(\chi\) is a fixed point.
+
+Now suppose
+\[
+F^\Diamond_{U,\varphi}(\psi)\le \psi.
+\]
+Then
+\[
+\varphi\le\psi
+\qquad
+\text{and}
+\qquad
+\langle U\rangle\psi\le\psi.
+\]
+By induction on \(n\), using functoriality of diamonds and monotonicity of \(\langle U\rangle\), one obtains
+\[
+\langle U^n\rangle\varphi\le\psi
+\]
+for every \(n\ge0\). Hence
+\[
+\chi=
+\bigvee_{n\ge0}\langle U^n\rangle\varphi
+\le
+\psi.
+\]
+Therefore \(\chi\) is the least pre-fixed point, hence the initial algebra of \(F^\Diamond_{U,\varphi}\) in the posetal fibre \(\mathrm{Sub}(P)\).
+\end{proof}
+
+\begin{corollary}[Diamond induction principle]
+\label{cor:diamond-induction-principle}
+If
+\[
+\varphi\vee\langle U\rangle\psi\le\psi,
+\]
+then
+\[
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr)
+\le
+\psi.
+\]
+\end{corollary}
+
+\begin{proof}
+This is exactly the least pre-fixed point property in Theorem~\ref{thm:diamond-least-fixed-point}.
+\end{proof}
+
+\subsection{The greatest fixed point generated by boxes}
+
+Define the endomap
+\[
+F^\Box_{U,\varphi}:\mathrm{Sub}(P)\to\mathrm{Sub}(P)
+\]
+by
+\[
+F^\Box_{U,\varphi}(X)
+:=
+\varphi\wedge[U]X.
+\]
+This map preserves infima of decreasing \(\omega\)-chains. Indeed, \(X\mapsto\varphi\wedge X\) preserves nonempty meets, \(r^\ast\) preserves meets because it is a right adjoint in the adjoint triple
+\[
+\exists_r\dashv r^\ast\dashv \forall_r,
+\]
+and \(\forall_\ell\) preserves meets because it is a right adjoint. Therefore \(F^\Box_{U,\varphi}\) is dually \(\omega\)-continuous in the sense needed for the descending Kleene-chain construction from \(\top\).
+
+Consequently,
+\[
+\bigwedge_{n\ge0}(F^\Box_{U,\varphi})^n(\top)
+\]
+is the greatest fixed point of \(F^\Box_{U,\varphi}\). We denote it by
+\[
+\nu F^\Box_{U,\varphi}
+:=
+\bigwedge_{n\ge0}(F^\Box_{U,\varphi})^n(\top).
+\]
+
+\begin{lemma}[Box approximants]
+\label{lem:box-approximants}
+For every \(n\ge0\),
+\[
+(F^\Box_{U,\varphi})^n(\top)
+=
+\bigwedge_{0\le k<n}[U^k]\varphi.
+\]
+Here the empty meet, for \(n=0\), is \(\top\).
+\end{lemma}
+
+\begin{proof}
+The case \(n=0\) is the definition of the empty meet.
+
+Assume the formula holds for \(n\). Then
+\[
+\begin{aligned}
+(F^\Box_{U,\varphi})^{n+1}(\top)
+&=
+F^\Box_{U,\varphi}
+\left(
+\bigwedge_{0\le k<n}[U^k]\varphi
+\right)
+\\
+&=
+\varphi
+\wedge
+[U]
+\left(
+\bigwedge_{0\le k<n}[U^k]\varphi
+\right)
+\\
+&=
+\varphi
+\wedge
+\bigwedge_{0\le k<n}
+[U][U^k]\varphi
+\\
+&=
+[U^0]\varphi
+\wedge
+\bigwedge_{0\le k<n}
+[U;U^k]\varphi
+\\
+&=
+\bigwedge_{0\le k<n+1}[U^k]\varphi.
+\end{aligned}
+\]
+The fourth equality uses functoriality of boxes.
+\end{proof}
+
+\begin{theorem}[Greatest fixed point for box iteration]
+\label{thm:box-greatest-fixed-point}
+In \(\mathrm{Sub}(P)\),
+\[
+\nu F^\Box_{U,\varphi}
+=
+\bigwedge_{n\ge0}[U^n]\varphi.
+\]
+Moreover this predicate is the greatest post-fixed point of
+\[
+X\longmapsto \varphi\wedge[U]X.
+\]
+Equivalently,
+\[
+\nu X.\bigl(\varphi\wedge[U]X\bigr)
+=
+\bigwedge_{n\ge0}[U^n]\varphi.
+\]
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:box-approximants},
+\[
+\nu F^\Box_{U,\varphi}
+=
+\bigwedge_{n\ge0}(F^\Box_{U,\varphi})^n(\top)
+=
+\bigwedge_{n\ge0}[U^n]\varphi.
+\]
+
+Let
+\[
+\chi:=
+\bigwedge_{n\ge0}[U^n]\varphi.
+\]
+Since \([U]\) preserves countable meets,
+\[
+\begin{aligned}
+F^\Box_{U,\varphi}(\chi)
+&=
+\varphi\wedge[U]
+\left(
+\bigwedge_{n\ge0}[U^n]\varphi
+\right)
+\\
+&=
+\varphi
+\wedge
+\bigwedge_{n\ge0}
+[U][U^n]\varphi
+\\
+&=
+[U^0]\varphi
+\wedge
+\bigwedge_{n\ge0}
+[U^{n+1}]\varphi
+\\
+&=
+\bigwedge_{n\ge0}[U^n]\varphi
+\\
+&=
+\chi.
+\end{aligned}
+\]
+Thus \(\chi\) is a fixed point.
+
+Now suppose
+\[
+\psi\le F^\Box_{U,\varphi}(\psi).
+\]
+Then
+\[
+\psi\le\varphi
+\qquad
+\text{and}
+\qquad
+\psi\le[U]\psi.
+\]
+By induction on \(n\), using functoriality of boxes and monotonicity of \([U]\), one obtains
+\[
+\psi\le [U^n]\varphi
+\]
+for every \(n\ge0\). Hence
+\[
+\psi
+\le
+\bigwedge_{n\ge0}[U^n]\varphi
+=
+\chi.
+\]
+Therefore \(\chi\) is the greatest post-fixed point, hence the final coalgebra of \(F^\Box_{U,\varphi}\) in the posetal fibre \(\mathrm{Sub}(P)\).
+\end{proof}
+
+\begin{corollary}[Box coinduction principle]
+\label{cor:box-coinduction-principle}
+If
+\[
+\psi\le\varphi\wedge[U]\psi,
+\]
+then
+\[
+\psi\le
+\nu X.\bigl(\varphi\wedge[U]X\bigr).
+\]
+\end{corollary}
+
+\begin{proof}
+This is exactly the greatest post-fixed point property in Theorem~\ref{thm:box-greatest-fixed-point}.
+\end{proof}
+
+\section{Comparison of path semantics and fixed-point semantics}
+\label{sec:path-fixed-point-comparison}
+
+We now compare the program-level finite-path star
+\[
+U^\star_{\mathrm{path}}
+=
+\coprod_{n\ge0}U^n
+\]
+with the fibrewise fixed-point modalities. More precisely, the displayed coproduct is the coproduct of the apexes \(U_n\) of the powers \(U^n\).
+
+\begin{theorem}[Path/fixed-point comparison]
+\label{thm:path-fixed-point-comparison}
+Let \(\mathcal E\) be an \(\omega\)-iterative first-order Heyting category, and let
+\[
+U:P\nrightarrow P
+\]
+be an endoprogram. For every predicate
+\[
+\varphi\in\mathrm{Sub}(P),
+\]
+we have
+\[
+\langle U^\star_{\mathrm{path}}\rangle\varphi
+=
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr),
+\]
+and
+\[
+[U^\star_{\mathrm{path}}]\varphi
+=
+\nu X.\bigl(\varphi\wedge[U]X\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+By Proposition~\ref{prop:coproduct-span-modalities},
+\[
+\langle U^\star_{\mathrm{path}}\rangle\varphi
+=
+\left\langle\coprod_{n\ge0}U^n\right\rangle\varphi
+=
+\bigvee_{n\ge0}\langle U^n\rangle\varphi.
+\]
+By Theorem~\ref{thm:diamond-least-fixed-point},
+\[
+\bigvee_{n\ge0}\langle U^n\rangle\varphi
+=
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr).
+\]
+This proves the diamond comparison.
+
+Similarly,
+\[
+[U^\star_{\mathrm{path}}]\varphi
+=
+\left[\coprod_{n\ge0}U^n\right]\varphi
+=
+\bigwedge_{n\ge0}[U^n]\varphi
+\]
+by Proposition~\ref{prop:coproduct-span-modalities}. By Theorem~\ref{thm:box-greatest-fixed-point},
+\[
+\bigwedge_{n\ge0}[U^n]\varphi
+=
+\nu X.\bigl(\varphi\wedge[U]X\bigr).
+\]
+This proves the box comparison.
+\end{proof}
+
+\begin{corollary}[Grothendieck topos case]
+\label{cor:grothendieck-topos-path-fixed-point-comparison}
+The hypotheses of Theorem~\ref{thm:path-fixed-point-comparison} hold in every Grothendieck topos. Hence the path/fixed-point comparison applies in particular to sheaf and presheaf topos models whenever the relevant Mealy data are internal to them.
+\end{corollary}
+
+\begin{remark}
+\label{rem:path-versus-fixed-point}
+There are two different but compatible levels of iteration.
+
+The program-level operation
+\[
+U^\star_{\mathrm{path}}
+=
+\coprod_{n\ge0}U^n
+\]
+is the witnessful span of finite \(U\)-paths. By Theorem~\ref{thm:path-star-free-monoid}, it is also the free monoid on \(U\) in the endospan monoidal category.
+
+The predicate-level operations
+\[
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr),
+\qquad
+\nu X.\bigl(\varphi\wedge[U]X\bigr)
+\]
+are fibrewise initial-algebra and final-coalgebra constructions.
+
+Theorem~\ref{thm:path-fixed-point-comparison} says that, under the \(\omega\)-iterative first-order Heyting hypotheses, these two levels agree under the span predicate semantics. Grothendieck topoi are standard examples of this setting, but they are not the only possible environment.
+\end{remark}
+
+\section{Folded trace semantics}
+\label{sec:folded-trace-semantics}
+
+The span
+\[
+U^\star_{\mathrm{path}}
+\]
+remembers a finite path as a witness. When \(U\) is a subprogram of the primitive execution span
+\[
+\mathbf m_\Phi,
+\]
+there is also a folded trace semantics: a finite path of primitive executions can be folded into a single arrow of the internal category
+\[
+\mathsf{Prog}_\Phi.
+\]
+
+The free-monoid theorem gives the folded trace semantics as a universal construction.
+
+Let
+\[
+i:U\hookrightarrow M_1
+\]
+be a subprogram of the primitive execution span. Equivalently, \(i\) is a map of spans
+\[
+U\to\mathbf m_\Phi.
+\]
+Since
+\[
+\mathbf m_\Phi
+\]
+is a monoid object in
+\[
+\operatorname{EndSpan}_{\mathcal E}(P),
+\]
+Theorem~\ref{thm:path-star-free-monoid} gives a unique monoid morphism
+\[
+\operatorname{fold}_U:
+U^\star_{\mathrm{path}}\to \mathbf m_\Phi
+\]
+whose restriction to the \(1\)-step summand
+\[
+U=U^1\to U^\star_{\mathrm{path}}
+\]
+is the inclusion
+\[
+i:U\to \mathbf m_\Phi.
+\]
+
+Equivalently, \(\operatorname{fold}_U\) is assembled from maps
+\[
+\operatorname{fold}_n:U_n\to M_1
+\]
+defined by induction.
+
+For \(n=0\), set
+\[
+\operatorname{fold}_0:=e_M:P\to M_1.
+\]
+Here \(U_0=P\), since \(U^0=1_P\). For \(n=1\), set
+\[
+\operatorname{fold}_1:=i:U\to M_1.
+\]
+For \(n\ge1\), the apex of
+\[
+U^{n+1}=U;U^n
+\]
+is
+\[
+U\times_{r,P,\ell_n}U_n.
+\]
+Define
+\[
+\operatorname{fold}_{n+1}
+:=
+m_M\circ(i\times \operatorname{fold}_n),
+\]
+where
+\[
+i\times\operatorname{fold}_n:
+U\times_{r,P,\ell_n}U_n
+\to
+M_1\times_{t_M,P,s_M}M_1
+\]
+is the induced map on pullbacks. The case \(n=0\) would recover \(\operatorname{fold}_1=i\) only after the canonical unit identification, so we keep \(\operatorname{fold}_1\) as a separate base case.
+
+\begin{proposition}[Fold maps are maps of spans]
+\label{prop:fold-maps-are-span-maps}
+Each
+\[
+\operatorname{fold}_n:U_n\to M_1
+\]
+is a map of spans
+\[
+U^n\Rightarrow\mathbf m_\Phi.
+\]
+Consequently, by the coproduct universal property, the maps \(\operatorname{fold}_n\) assemble into the unique monoid morphism
+\[
+\operatorname{fold}_U:
+U^\star_{\mathrm{path}}\to \mathbf m_\Phi
+\]
+extending
+\[
+i:U\to\mathbf m_\Phi.
+\]
+\end{proposition}
+
+\begin{proof}
+For \(n=0\), this is Proposition~\ref{prop:program-unit-span-map}. For \(n=1\), this is the inclusion of the subspan \(U\hookrightarrow M_1\).
+
+Assume the claim holds for \(n\ge1\). Then
+\[
+i\times\operatorname{fold}_n:
+U\times_{r,P,\ell_n}U_n
+\to
+M_1\times_{t_M,P,s_M}M_1
+\]
+is a map from the composite span \(U;U^n\) to the composite span \(\mathbf m_\Phi;\mathbf m_\Phi\). Composing with the multiplication map
+\[
+m_M:M_1\times_{t_M,P,s_M}M_1\to M_1
+\]
+gives a map of spans
+\[
+U^{n+1}\Rightarrow\mathbf m_\Phi.
+\]
+Thus the claim follows by induction.
+
+The final statement is exactly the universal property of \(U^\star_{\mathrm{path}}\) as the free monoid on \(U\), applied to the monoid \(\mathbf m_\Phi\).
+\end{proof}
+
+\begin{proposition}[Folded outputs]
+\label{prop:folded-outputs}
+The output functor
+\[
+\Omega_\Phi:\mathsf{Prog}_\Phi\to\mathbb B^{\mathrm{op}}
+\]
+sends the folded composite of a finite execution path to the composite in \(\mathbb B^{\mathrm{op}}\) of the outputs of its primitive steps.
+\end{proposition}
+
+\begin{proof}
+This follows by induction on path length.
+
+For length \(0\), the path is an identity. The folded arrow is
+\[
+e_M(x),
+\]
+and the output is
+\[
+\omega(e_A(px),x)=e_B(qx)
+\]
+by the Mealy unit law.
+
+For length \(1\), the statement is immediate.
+
+For length \(2\), take a path
+\[
+(b,x),
+\qquad
+(a,\delta(b,x)).
+\]
+Its fold is
+\[
+(m_A(a,b),x).
+\]
+The output of the fold is
+\[
+\omega(m_A(a,b),x).
+\]
+By the Mealy multiplication law,
+\[
+\omega(m_A(a,b),x)
+=
+m_B\bigl(\omega(a,\delta(b,x)),\omega(b,x)\bigr),
+\]
+which is exactly the composition in \(\mathbb B^{\mathrm{op}}\) of the two primitive outputs in temporal order.
+
+Longer paths follow by associativity of \(m_M\) and functoriality of
+\[
+\Omega_\Phi:\mathsf{Prog}_\Phi\to\mathbb B^{\mathrm{op}}.
+\]
+Different parenthesizations give the same folded output by associativity of \(m_M\), up to the canonical pullback associativity isomorphisms.
+\end{proof}
+
+\begin{remark}
+\label{rem:path-versus-folded-output}
+Path semantics remembers the decomposition of a run into primitive steps. Folded trace semantics remembers only the composite arrow in
+\[
+\mathsf{Prog}_\Phi.
+\]
+These agree only after quotienting by the categorical composition laws. For output-sensitive logics this distinction matters: requiring each primitive output to lie in a class
+\[
+O\hookrightarrow B_1
+\]
+is different from requiring the total folded output to lie in \(O\).
+\end{remark}
+
+\section{Standard special cases}
+\label{sec:standard-special-cases}
+
+\begin{example}[Relational propositional dynamic logic]
+\label{ex:relational-pdl-special-case}
+Let
+\[
+\mathcal E=\mathbf{Set}
+\]
+and pass from spans to their extensional binary relations. A span
+\[
+P\xleftarrow{\ell}R\xrightarrow{r}P
+\]
+determines the relation
+\[
+x\,\overline R\,y
+\]
+if and only if there exists \(\rho\in R\) such that
+\[
+\ell(\rho)=x,
+\qquad
+r(\rho)=y.
+\]
+For a subset
+\[
+\varphi\subseteq P,
+\]
+the span diamond is
+\[
+\langle R\rangle\varphi
+=
+\{x\in P\mid \exists \rho\in R,\ \ell(\rho)=x,\ r(\rho)\in\varphi\}.
+\]
+Equivalently,
+\[
+x\models\langle R\rangle\varphi
+\]
+if and only if there exists \(y\in P\) such that
+\[
+x\,\overline R\,y
+\]
+and
+\[
+y\models\varphi.
+\]
+This is the standard relational semantics of propositional dynamic logic \cite{PrattDynamicLogic,FischerLadnerPDL,HarelKozenTiurynDynamicLogic}.
+
+Tests are diagonal relations
+\[
+\theta?
+=
+\{(x,x)\mid x\in\theta\},
+\]
+choice is union of relations, and iteration is reflexive-transitive closure. The span semantics is finer than the relational quotient because it remembers witnesses of transitions.
+\end{example}
+
+\begin{example}[Relational Kleene algebra with tests]
+\label{ex:relational-kat-special-case}
+Again let
+\[
+\mathcal E=\mathbf{Set}
+\]
+and pass to the relational quotient. Endoprograms on a set \(P\) form
+\[
+\mathcal P(P\times P).
+\]
+Sequential composition is relational composition, choice is union, the unit is the identity relation, and star is reflexive-transitive closure.
+
+Predicates
+\[
+\theta\subseteq P
+\]
+embed as subidentity relations
+\[
+\theta?
+=
+\{(x,x)\mid x\in\theta\}.
+\]
+Consequently the operations
+\[
+;,\qquad
+\vee,\qquad
+(-)^\ast,\qquad
+1,\qquad
+\theta?
+\]
+form the standard relational model of Kleene algebra with tests \cite{KozenKAT}. In the Mealy setting, the primitive execution span \(\mathbf m_\Phi\) selects a distinguished generating program, and the corresponding Kleene algebra with tests is generated from that execution structure.
+\end{example}
+
+\begin{example}[Classical deterministic Mealy machines]
+\label{ex:classical-mealy-machines-special-case}
+Let
+\[
+\mathcal E=\mathbf{Set}
+\]
+and suppose that \(\mathbb A\) and \(\mathbb B\) have one object. Then they are monoids. Take
+\[
+\mathbb A=I^\ast,
+\qquad
+\mathbb B=O^\ast,
+\]
+with the categorical multiplication convention of this chapter. A carrier span
+\[
+1\xleftarrow{}P\xrightarrow{}1
+\]
+is just a state set \(P\).
+
+A Mealy morphism consists of functions
+\[
+\delta:I^\ast\times P\to P,
+\qquad
+\omega:I^\ast\times P\to O^\ast
+\]
+satisfying
+\[
+\delta(1,x)=x,
+\qquad
+\omega(1,x)=1,
+\]
+and
+\[
+\delta(mn,x)=\delta(n,\delta(m,x)),
+\]
+\[
+\omega(mn,x)=\omega(m,x)\,\omega(n,\delta(m,x)),
+\]
+where the product \(mn\) is read in the categorical convention used throughout the chapter.
+
+Writing
+\[
+x\cdot m:=\delta(m,x),
+\]
+the state update is a right action:
+\[
+x\cdot(mn)=(x\cdot m)\cdot n,
+\]
+and \(\omega\) is the corresponding output cocycle:
+\[
+\omega(mn,x)=\omega(m,x)\,\omega(n,x\cdot m).
+\]
+In this one-object case, a primitive Mealy execution for \(\mathbb A=I^\ast\) consumes a whole word, not necessarily a single input letter. The usual letter-step presentation is recovered either by restricting to the subpredicate of length-one words or by starting with the generator-level transition-output map and extending it to \(I^\ast\).
+\end{example}
+
+\section{The progressive consolidation}
+\label{sec:progressive-consolidation}
+
+\begin{theorem}[Mealy programs and dynamic proarrow logic]
+\label{thm:mealy-programs-dynamic-proarrow-logic}
+The constructions of this chapter form the following progressive hierarchy.
+
+\begin{enumerate}
+\item If \(\mathcal E\) has pullbacks, every Mealy morphism
+\[
+(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+determines a primitive execution span
+\[
+\mathbf m_\Phi
+=
+\left(
+P\xleftarrow{\pi_2}
+A_1\times_{t_A,A_0,p}P
+\xrightarrow{\delta}
+P
+\right).
+\]
+
+\item The Mealy unit and multiplication laws make this endospan into a monoid object in
+\[
+\operatorname{EndSpan}_{\mathcal E}(P),
+\]
+equivalently an internal category
+\[
+\mathsf{Prog}_\Phi
+\]
+of Mealy executions.
+
+\item The input and output components define internal functors
+\[
+I_\Phi:\mathsf{Prog}_\Phi\to\mathbb A^{\mathrm{op}},
+\qquad
+\Omega_\Phi:\mathsf{Prog}_\Phi\to\mathbb B^{\mathrm{op}}.
+\]
+
+\item More invariantly, Mealy morphisms
+\[
+\mathbb A\rightsquigarrow\mathbb B
+\]
+are equivalently labelled input-discrete internal categories: internal categories
+\[
+\mathbb P
+\]
+equipped with an input-discrete functor
+\[
+\mathbb P\to\mathbb A^{\mathrm{op}}
+\]
+and an output labelling functor
+\[
+\mathbb P\to\mathbb B^{\mathrm{op}}.
+\]
+
+\item Mealy transformations are equivalently functors between the associated labelled input-discrete categories over both
+\[
+\mathbb A^{\mathrm{op}}
+\qquad
+\text{and}
+\qquad
+\mathbb B^{\mathrm{op}}.
+\]
+
+\item If the Mealy morphism is representable and induced by an internal functor
+\[
+F:\mathbb A\to\mathbb B,
+\]
+then
+\[
+\mathsf{Prog}_F\cong\mathbb A^{\mathrm{op}},
+\qquad
+I_F=1_{\mathbb A^{\mathrm{op}}},
+\qquad
+\Omega_F=F^{\mathrm{op}}.
+\]
+
+\item If \(\mathcal E\) is regular, every execution span
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right)
+\]
+acts on subobject predicates by the existential diamond
+\[
+\langle R\rangle\varphi
+=
+\exists_\ell(r^\ast\varphi),
+\]
+and these diamonds satisfy
+\[
+\langle 1_X\rangle=\mathrm{id},
+\qquad
+\langle R;S\rangle=\langle R\rangle\circ\langle S\rangle.
+\]
+
+\item The diamond semantics is the functorial extension from map spans and reverse map spans determined by
+\[
+\langle f_!\rangle=f^\ast,
+\qquad
+\langle f^\ast_{\mathrm{sp}}\rangle=\exists_f.
+\]
+
+\item In a regular category, state predicates embed as tests via subidentity spans and satisfy
+\[
+\langle\theta?\rangle\varphi
+=
+\theta\wedge\varphi.
+\]
+
+\item If \(\mathcal E\) is coherent, finite joins of subprograms exist and satisfy the finite choice law
+\[
+\langle U\vee V\rangle\varphi
+=
+\langle U\rangle\varphi
+\vee
+\langle V\rangle\varphi.
+\]
+
+\item If \(\mathcal E\) is a first-order Heyting category, every execution span also acts by the universal box
+\[
+[R]\varphi
+=
+\forall_\ell(r^\ast\varphi),
+\]
+and boxes satisfy
+\[
+[1_X]=\mathrm{id},
+\qquad
+[R;S]=[R]\circ[S].
+\]
+For tests one obtains
+\[
+[\theta?]\varphi=\theta\Rightarrow\varphi.
+\]
+
+\item The box semantics is the functorial extension from map spans and reverse map spans determined by
+\[
+[f_!]=f^\ast,
+\qquad
+[f^\ast_{\mathrm{sp}}]=\forall_f.
+\]
+
+\item If \(\mathcal E\) is an \(\omega\)-iterative first-order Heyting category, every endoprogram \(U:P\nrightarrow P\) has a finite-path star
+\[
+U^\star_{\mathrm{path}}
+=
+\coprod_{n\ge0}U^n,
+\]
+where the coproduct is taken over the apexes of the powers \(U^n\).
+
+\item The path star
+\[
+U^\star_{\mathrm{path}}
+\]
+is the free monoid on \(U\) in the monoidal category
+\[
+\operatorname{EndSpan}_{\mathcal E}(P).
+\]
+
+\item In an \(\omega\)-iterative first-order Heyting category, the diamond and box iteration modalities are fibrewise fixed points:
+\[
+\langle U^\star_{\mathrm{path}}\rangle\varphi
+=
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr),
+\]
+and
+\[
+[U^\star_{\mathrm{path}}]\varphi
+=
+\nu X.\bigl(\varphi\wedge[U]X\bigr).
+\]
+The first is an initial algebra in the fibre \(\mathrm{Sub}(P)\), and the second is a final coalgebra in that fibre.
+
+\item If
+\[
+i:U\to\mathbf m_\Phi
+\]
+is a subprogram of the primitive execution monoid, the folded trace map
+\[
+\operatorname{fold}_U:
+U^\star_{\mathrm{path}}\to\mathbf m_\Phi
+\]
+is the unique monoid morphism extending \(i\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Part (1) is Definition~\ref{def:primitive-mealy-execution-span} and Proposition~\ref{prop:primitive-execution-is-endospan}. Part (2) is Theorem~\ref{thm:mealy-program-category}. Part (3) is Proposition~\ref{prop:input-labelling-functor} and Theorem~\ref{thm:output-labelling-functor}. Part (4) is Theorem~\ref{thm:mealy-as-labelled-discrete-opfibrations}. Part (5) is Proposition~\ref{prop:transformations-labelled-functors}. Part (6) is Theorem~\ref{thm:program-category-representable}. Part (7) is Proposition~\ref{prop:span-diamond-functoriality}. Part (8) is Theorem~\ref{thm:universal-diamond-extension}. Part (9) is Proposition~\ref{prop:test-law-regular}. Part (10) is Proposition~\ref{prop:choice-law-coherent}. Part (11) is Proposition~\ref{prop:box-functoriality} and Proposition~\ref{prop:box-law-tests}. Part (12) is Theorem~\ref{thm:universal-box-extension}. Part (13) is Definition~\ref{def:path-star-span}. Part (14) is Theorem~\ref{thm:path-star-free-monoid}. Part (15) is Theorem~\ref{thm:path-fixed-point-comparison}. Part (16) is Proposition~\ref{prop:fold-maps-are-span-maps}.
+\end{proof}
+
+\begin{remark}
+\label{rem:hierarchy-of-structure}
+The chapter therefore has the following structural progression:
+\[
+\begin{array}{c|c|c}
+\text{level} & \text{categorical structure} & \text{operation obtained}\\
+\hline
+0 & \text{pullbacks} & \mathsf{Prog}_\Phi \\
+1 & \text{regular images} & \diamond\text{-modalities} \\
+2 & \text{coherent finite joins} & \text{finite subprogram choice} \\
+3 & \text{right adjoints to pullback} & [R]\text{-modalities and implication tests} \\
+4 & \omega\text{-iterative first-order Heyting structure} & U^\star_{\mathrm{path}}\text{ and fibrewise }\mu,\nu
+\end{array}
+\]
+Thus dynamic logic is not added to Mealy morphisms by fiat. Each logical operation appears when the corresponding categorical construction becomes available. Grothendieck topoi remain important as a robust class of examples, but they are not the primitive assumption behind the iteration theorem.
+\end{remark}
+
+\begin{remark}
+\label{rem:final-conceptual-summary}
+The conceptual form is:
+\[
+\text{Mealy morphism}
+\Rightarrow
+\text{labelled input-discrete action category}
+\Rightarrow
+\text{program category}
+\Rightarrow
+\text{regular existential semantics}
+\Rightarrow
+\text{coherent choice}
+\Rightarrow
+\text{Heyting boxes}
+\Rightarrow
+\text{free path monoid and fibrewise }\mu,\nu.
+\]
+The Mealy morphism supplies the operational substrate. The ambient categorical structure supplies the progressively richer logical operations. The ordinary functorial case is recovered by representable carriers, where the labelled input-discrete category becomes trivial:
+\[
+\mathsf{Prog}_F\cong
+\mathbb A^{\mathrm{op}}.
+\]
+\end{remark}

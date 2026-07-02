@@ -1,0 +1,1850 @@
+\chapter{Partial Trace and Feedback for Mealy Morphisms}
+\label{ch:partial-trace-feedback-mealy}
+
+\section{Overview}
+\label{sec:partial-trace-feedback-overview}
+
+The preceding chapters developed internal categories as monads in
+\(\mathbf{Span}(\mathcal E)\), Mealy morphisms as stateful morphisms between
+internal categories, and relative program categories as their induced execution
+semantics.  The present chapter shows that this structure carries a canonical
+partial trace.
+
+The trace construction is not imposed as an additional operation.  It is
+induced by the labelled input-discrete presentation of Mealy morphisms.  A
+Mealy morphism
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+is equivalently represented by a span of internal categories
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}
+&
+\mathbb P
+  \arrow[l, "I"']
+  \arrow[r, "\Omega"]
+&
+\mathbb B^{\mathrm{op}},
+\end{tikzcd}
+\]
+whose left leg \(I\) is input-discrete.  Thus Mealy morphisms form a symmetric
+monoidal subcategory of the span category of internal categories.
+
+The ambient span category
+\[
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E))
+\]
+has the standard total trace associated to spans.  The trace domain for Mealy
+morphisms is forced by this embedding: a feedback composite is admissible
+exactly when the ambient traced span still lies in the input-discrete
+subcategory.  Equivalently, the hidden feedback equation has a unique internal
+solution over each visible input and closed state.
+
+The main construction is as follows.  Given a Mealy morphism
+\[
+\Phi:\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U,
+\]
+write its labelled input-discrete presentation as
+\[
+\begin{tikzcd}[column sep=large]
+(\mathbb A\times\mathbb U)^{\mathrm{op}}
+&
+\mathbb P
+  \arrow[l, "I"']
+  \arrow[r, "\Omega"]
+&
+(\mathbb B\times\mathbb U)^{\mathrm{op}} .
+\end{tikzcd}
+\]
+Using the canonical product-opposite identifications
+\[
+(\mathbb A\times\mathbb U)^{\mathrm{op}}
+\cong
+\mathbb A^{\mathrm{op}}\times\mathbb U^{\mathrm{op}},
+\qquad
+(\mathbb B\times\mathbb U)^{\mathrm{op}}
+\cong
+\mathbb B^{\mathrm{op}}\times\mathbb U^{\mathrm{op}},
+\]
+write
+\[
+I=(I_A,I_U),
+\qquad
+\Omega=(\Omega_B,\Omega_U).
+\]
+The ambient span trace closes the hidden \(\mathbb U\)-interface by forming
+the equalizer
+\[
+\mathbb P^\circ
+:=
+\operatorname{Eq}(I_U,\Omega_U).
+\]
+The trace is defined precisely when the remaining visible input projection
+\[
+I_A:\mathbb P^\circ\to\mathbb A^{\mathrm{op}}
+\]
+is input-discrete.  In that case, the traced Mealy morphism is represented by
+the span
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}
+&
+\mathbb P^\circ
+  \arrow[l, "I_A"']
+  \arrow[r, "\Omega_B"]
+&
+\mathbb B^{\mathrm{op}} .
+\end{tikzcd}
+\]
+
+In component notation, if
+\[
+\Phi=(P,\delta,\omega):
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U,
+\]
+the trace-class condition says that the internal feedback equation
+\[
+h=\omega_U((a,h),x)
+\]
+has a unique solution for every closed state \(x\) and every visible input
+arrow \(a\) admissible at \(x\).  Thus trace-class morphisms are precisely
+those Mealy morphisms for which the hidden feedback interface can be closed
+while remaining deterministic in the Mealy sense.
+
+The central slogan of the chapter is therefore:
+\[
+\boxed{
+\text{partial trace for Mealy morphisms}
+=
+\text{ambient span trace restricted to input-discrete spans}.
+}
+\]
+Equivalently, in component form:
+\[
+\boxed{
+\text{trace-class}
+=
+\text{unique solvability of the Mealy feedback equation}.
+}
+\]
+
+The chapter also proves the compatibility of staged and simultaneous feedback.
+For a morphism with two hidden interfaces,
+\[
+\Phi:
+\mathbb A\times\mathbb U\times\mathbb V
+\rightsquigarrow
+\mathbb B\times\mathbb U\times\mathbb V,
+\]
+staged feedback agrees with simultaneous feedback whenever the staged feedback
+problems are trace-class.  This is the Mealy form of the vanishing law for the
+ambient span trace.
+
+\section{Standing hypotheses and span conventions}
+\label{sec:partial-trace-standing-hypotheses}
+
+Throughout this chapter, assume that \(\mathcal E\) has finite limits.  Then
+the category
+\[
+\mathbf{Cat}_{\mathrm{int}}(\mathcal E)
+\]
+of internal categories and internal functors has finite limits, computed
+componentwise.  In particular, products, pullbacks, and equalizers of internal
+categories exist and are created by the object-of-objects and object-of-arrows
+projections.
+
+The partial-trace construction itself uses only these finite-limit hypotheses.
+Whenever predicate-transformer, fixed-point, or polynomial-response structures
+from previous chapters are invoked, the corresponding additional hypotheses
+from those chapters are assumed.
+
+We write
+\[
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E))
+\]
+for the ordinary span category whose morphisms are isomorphism classes of spans
+of internal categories.  Equivalently, one may work with chosen pullbacks and
+read all span equalities up to the canonical apex isomorphisms.
+
+An ordinary span in this category is displayed as
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb X
+&
+\mathbb R
+  \arrow[l, "\ell"']
+  \arrow[r, "r"]
+&
+\mathbb Y .
+\end{tikzcd}
+\]
+Given spans
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb X
+&
+\mathbb R
+  \arrow[l, "\ell"']
+  \arrow[r, "r"]
+&
+\mathbb Y
+\end{tikzcd}
+\qquad
+\text{and}
+\qquad
+\begin{tikzcd}[column sep=large]
+\mathbb Y
+&
+\mathbb S
+  \arrow[l, "s"']
+  \arrow[r, "u"]
+&
+\mathbb Z,
+\end{tikzcd}
+\]
+their composite is represented by
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb X
+&
+\mathbb R\times_{\mathbb Y}\mathbb S
+  \arrow[l, "\ell\pi_{\mathbb R}"']
+  \arrow[r, "u\pi_{\mathbb S}"]
+&
+\mathbb Z .
+\end{tikzcd}
+\]
+
+All references to input-discreteness use the convention fixed in the preceding
+chapters.  Thus an internal functor
+\[
+J:\mathbb X\to\mathbb A^{\mathrm{op}}
+\]
+is input-discrete when the square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+X_1
+  \arrow[r,"J_1"]
+  \arrow[d,"s_X"']
+&
+A_1
+  \arrow[d,"t_A"]
+\\
+X_0
+  \arrow[r,"J_0"']
+&
+A_0
+\end{tikzcd}
+\]
+is a pullback.  This convention is adapted to right internal actions: an arrow
+\((a,x)\) starts at a state \(x\) lying over \(t_A(a)\), and executes along
+\(a\) to a state lying over \(s_A(a)\).
+
+\section{The Mealy category inside spans of internal categories}
+\label{sec:mealy-category-inside-spans}
+
+We write
+\[
+\mathsf{Mly}(\mathcal E)
+\]
+for the ordinary category whose objects are internal categories in
+\(\mathcal E\) and whose morphisms are Mealy morphisms, taken up to the
+canonical isomorphisms of carrier spans generated by chosen pullbacks.
+Composition and identities are those constructed in
+Chapter~\ref{ch:spans-internal-categories-mealy}.
+
+The tensor product on objects is product of internal categories.  If
+\[
+\Phi=(P,\delta_\Phi,\omega_\Phi):
+\mathbb A\rightsquigarrow\mathbb B
+\]
+and
+\[
+\Psi=(Q,\delta_\Psi,\omega_\Psi):
+\mathbb C\rightsquigarrow\mathbb D,
+\]
+then their tensor product
+\[
+\Phi\times\Psi:
+\mathbb A\times\mathbb C
+\rightsquigarrow
+\mathbb B\times\mathbb D
+\]
+has carrier \(P\times Q\), transition map
+\[
+\delta_{\Phi\times\Psi}
+=
+\delta_\Phi\times\delta_\Psi,
+\]
+and output map
+\[
+\omega_{\Phi\times\Psi}
+=
+\omega_\Phi\times\omega_\Psi.
+\]
+
+\begin{proposition}
+\label{prop:mly-symmetric-monoidal}
+The category
+\[
+\mathsf{Mly}(\mathcal E)
+\]
+is symmetric monoidal under product of internal categories.
+\end{proposition}
+
+\begin{proof}
+Products of internal categories are computed componentwise, and the product of
+two Mealy morphisms is defined componentwise on carriers, transitions, and
+outputs.  The Mealy unit and multiplication laws hold componentwise.  The
+associativity, unit, and symmetry constraints are inherited from products of
+internal categories and from the span calculus.  Hence
+\(\mathsf{Mly}(\mathcal E)\) is symmetric monoidal.
+\end{proof}
+
+Recall that a Mealy morphism
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+is equivalently a labelled input-discrete internal category
+\[
+\begin{tikzcd}[column sep=large]
+&
+\mathbb P
+  \arrow[dl, "I"']
+  \arrow[dr, "\Omega"]
+\\
+\mathbb A^{\mathrm{op}}
+&&
+\mathbb B^{\mathrm{op}},
+\end{tikzcd}
+\]
+with \(I\) input-discrete.  Equivalently, it is a span of internal categories
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}
+&
+\mathbb P
+  \arrow[l, "I"']
+  \arrow[r, "\Omega"]
+&
+\mathbb B^{\mathrm{op}}
+\end{tikzcd}
+\]
+whose left leg is input-discrete.
+
+\begin{definition}[The span subcategory of Mealy morphisms]
+\label{def:span-subcategory-mealy}
+Let
+\[
+\mathcal S_{\mathrm{Mly}}
+\subseteq
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E))
+\]
+be the subcategory whose objects are internal categories of the form
+\(\mathbb A^{\mathrm{op}}\), and whose morphisms are spans
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}
+&
+\mathbb P
+  \arrow[l, "I"']
+  \arrow[r, "\Omega"]
+&
+\mathbb B^{\mathrm{op}}
+\end{tikzcd}
+\]
+with \(I\) input-discrete, taken up to labelled isomorphism of apex internal
+categories.
+\end{definition}
+
+\begin{theorem}[Mealy morphisms as input-discrete spans]
+\label{thm:mealy-as-input-discrete-spans}
+The labelled input-discrete construction gives a symmetric monoidal
+equivalence of ordinary categories
+\[
+\mathsf{Mly}(\mathcal E)
+\simeq
+\mathcal S_{\mathrm{Mly}}.
+\]
+Composed with the inclusion
+\[
+\mathcal S_{\mathrm{Mly}}
+\hookrightarrow
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E)),
+\]
+this gives a faithful symmetric monoidal span representation of Mealy
+morphisms.
+\end{theorem}
+
+\begin{proof}
+The equivalence on hom-sets is the labelled input-discrete characterization of
+Mealy morphisms established in
+Chapter~\ref{ch:relative-mealy-program-categories}.  The quotient by labelled
+isomorphism of apex internal categories matches the quotient by canonical
+carrier-span isomorphisms in \(\mathsf{Mly}(\mathcal E)\).
+
+Identities correspond to identity input-discrete spans.  Composition
+corresponds to pullback of labelled input-discrete spans.  Given spans
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}
+&
+\mathbb P
+  \arrow[l, "I"']
+  \arrow[r, "\Omega"]
+&
+\mathbb B^{\mathrm{op}}
+\end{tikzcd}
+\qquad
+\text{and}
+\qquad
+\begin{tikzcd}[column sep=large]
+\mathbb B^{\mathrm{op}}
+&
+\mathbb Q
+  \arrow[l, "J"']
+  \arrow[r, "\Theta"]
+&
+\mathbb C^{\mathrm{op}},
+\end{tikzcd}
+\]
+their composite has apex
+\[
+\mathbb P\times_{\mathbb B^{\mathrm{op}}}\mathbb Q.
+\]
+The left leg of the composite is
+\[
+I\pi_{\mathbb P}:
+\mathbb P\times_{\mathbb B^{\mathrm{op}}}\mathbb Q
+\longrightarrow
+\mathbb A^{\mathrm{op}}.
+\]
+
+Concretely, given an object \((p,q)\) of the pullback apex and an
+\(\mathbb A\)-arrow \(a\) with \(t_A(a)=I_0(p)\), input-discreteness of \(I\)
+gives a unique arrow of \(\mathbb P\) over \(a\) with source \(p\).  Its
+\(\mathbb B^{\mathrm{op}}\)-label then determines, by input-discreteness of
+\(J\), a unique compatible arrow of \(\mathbb Q\) with source \(q\).  Hence the
+composite left leg is input-discrete.
+
+The construction is compatible with products, since products of internal
+categories are computed componentwise and products of pullback squares are
+pullback squares.  Therefore the equivalence is symmetric monoidal.
+\end{proof}
+
+\section{The ambient total trace on spans of internal categories}
+\label{sec:ambient-total-trace-spans}
+
+The ambient category
+\[
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E))
+\]
+has the standard total trace of spans with respect to the product monoidal
+structure.
+
+Let
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb X\times\mathbb U
+&
+\mathbb R
+  \arrow[l, "\ell"']
+  \arrow[r, "r"]
+&
+\mathbb Y\times\mathbb U
+\end{tikzcd}
+\]
+be a span of internal categories.  Write
+\[
+\ell=(\ell_X,\ell_U),
+\qquad
+r=(r_Y,r_U).
+\]
+The trace over \(\mathbb U\) is the span
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb X
+&
+\mathbb R^\circ
+  \arrow[l, "\ell_X\iota"']
+  \arrow[r, "r_Y\iota"]
+&
+\mathbb Y,
+\end{tikzcd}
+\]
+where
+\[
+\mathbb R^\circ
+:=
+\operatorname{Eq}(\ell_U,r_U),
+\]
+with inclusion
+\[
+\iota:\mathbb R^\circ\hookrightarrow\mathbb R.
+\]
+Equivalently,
+\[
+\mathbb R^\circ
+=
+\mathbb R\times_{\mathbb U\times\mathbb U}\mathbb U,
+\]
+using
+\[
+(\ell_U,r_U):\mathbb R\to\mathbb U\times\mathbb U
+\]
+and the diagonal
+\[
+\Delta_{\mathbb U}:\mathbb U\to\mathbb U\times\mathbb U.
+\]
+
+\begin{proposition}[Total trace of spans]
+\label{prop:ambient-span-total-trace}
+The operation above is the standard total trace on
+\[
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E))
+\]
+with respect to the product monoidal structure.
+\end{proposition}
+
+\begin{proof}
+The span category of any finitely complete category is compact closed under
+the product monoidal structure.  The dual of an object \(\mathbb U\) is
+\(\mathbb U\) itself.  The coevaluation and evaluation are represented by the
+diagonal spans
+\[
+\mathbf 1
+\longleftarrow
+\mathbb U
+\xrightarrow{\Delta_{\mathbb U}}
+\mathbb U\times\mathbb U
+\]
+and
+\[
+\mathbb U\times\mathbb U
+\xleftarrow{\Delta_{\mathbb U}}
+\mathbb U
+\longrightarrow
+\mathbf 1.
+\]
+The trace of a span
+\[
+\mathbb X\times\mathbb U
+\xleftarrow{\ell}
+\mathbb R
+\xrightarrow{r}
+\mathbb Y\times\mathbb U
+\]
+is obtained by composing with these evaluation and coevaluation spans.  The
+resulting apex is canonically isomorphic to
+\[
+\mathbb R\times_{\mathbb U\times\mathbb U}\mathbb U,
+\]
+where
+\[
+\mathbb R\to\mathbb U\times\mathbb U
+\]
+is \((\ell_U,r_U)\) and
+\[
+\mathbb U\to\mathbb U\times\mathbb U
+\]
+is the diagonal.  This is precisely
+\[
+\operatorname{Eq}(\ell_U,r_U).
+\]
+The trace axioms are the yanking, sliding, superposing, and vanishing
+identities of the compact closed trace, and hold up to the canonical span apex
+isomorphisms.
+\end{proof}
+
+\section{Trace class for Mealy morphisms}
+\label{sec:trace-class-mealy-morphisms}
+
+Let
+\[
+\Phi:
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U
+\]
+be a Mealy morphism.  Present it as a labelled input-discrete span
+\[
+\begin{tikzcd}[column sep=large]
+(\mathbb A\times\mathbb U)^{\mathrm{op}}
+&
+\mathbb P
+  \arrow[l, "I"']
+  \arrow[r, "\Omega"]
+&
+(\mathbb B\times\mathbb U)^{\mathrm{op}} .
+\end{tikzcd}
+\]
+Using the canonical identifications
+\[
+(\mathbb A\times\mathbb U)^{\mathrm{op}}
+\cong
+\mathbb A^{\mathrm{op}}\times\mathbb U^{\mathrm{op}},
+\qquad
+(\mathbb B\times\mathbb U)^{\mathrm{op}}
+\cong
+\mathbb B^{\mathrm{op}}\times\mathbb U^{\mathrm{op}},
+\]
+write
+\[
+I=(I_A,I_U),
+\qquad
+\Omega=(\Omega_B,\Omega_U).
+\]
+
+\begin{definition}[Closed-loop category]
+\label{def:closed-loop-category}
+The \textbf{closed-loop category} of \(\Phi\) over \(\mathbb U\) is
+\[
+\mathbb P^\circ
+:=
+\operatorname{Eq}(I_U,\Omega_U).
+\]
+Thus \(\mathbb P^\circ\) is the internal subcategory of \(\mathbb P\) whose
+hidden \(\mathbb U\)-input and hidden \(\mathbb U\)-output labels agree.
+\end{definition}
+
+Equivalently, \(\mathbb P^\circ\) is characterized by the pullback square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathbb P^\circ
+  \arrow[r, hook, "\iota"]
+  \arrow[d]
+&
+\mathbb P
+  \arrow[d, "{(I_U,\Omega_U)}"]
+\\
+\mathbb U^{\mathrm{op}}
+  \arrow[r, "\Delta_{\mathbb U^{\mathrm{op}}}"']
+&
+\mathbb U^{\mathrm{op}}\times\mathbb U^{\mathrm{op}} .
+\end{tikzcd}
+\]
+
+The ambient span trace of the labelled input-discrete span representing
+\(\Phi\) is
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}
+&
+\mathbb P^\circ
+  \arrow[l, "I_A\iota"']
+  \arrow[r, "\Omega_B\iota"]
+&
+\mathbb B^{\mathrm{op}} .
+\end{tikzcd}
+\]
+We suppress \(\iota\) from the notation when no confusion can arise.
+
+Although the ambient span trace is formally taken over
+\[
+\mathbb U^{\mathrm{op}},
+\]
+we denote the resulting Mealy trace by
+\[
+\operatorname{Tr}^{\mathbb U},
+\]
+since \(\mathbb U\) is the hidden interface in the original Mealy morphism.
+
+\begin{definition}[Trace-class Mealy morphism]
+\label{def:trace-class-mealy}
+The Mealy morphism
+\[
+\Phi:
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U
+\]
+is \textbf{trace-class over \(\mathbb U\)} if
+\[
+I_A:\mathbb P^\circ\to\mathbb A^{\mathrm{op}}
+\]
+is input-discrete.
+\end{definition}
+
+\begin{definition}[Partial trace of a trace-class Mealy morphism]
+\label{def:partial-trace-mealy}
+If \(\Phi\) is trace-class over \(\mathbb U\), its \textbf{partial trace} is the
+Mealy morphism
+\[
+\operatorname{Tr}^{\mathbb U}(\Phi):
+\mathbb A\rightsquigarrow\mathbb B
+\]
+represented by the labelled input-discrete span
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}
+&
+\mathbb P^\circ
+  \arrow[l, "I_A"']
+  \arrow[r, "\Omega_B"]
+&
+\mathbb B^{\mathrm{op}} .
+\end{tikzcd}
+\]
+Equivalently, this is the ambient span trace over
+\(\mathbb U^{\mathrm{op}}\), transported through the opposite convention used
+in the Mealy-span representation.
+\end{definition}
+
+\begin{proposition}[Trace class as closure under ambient trace]
+\label{prop:trace-class-ambient-closure}
+For a Mealy morphism
+\[
+\Phi:
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U,
+\]
+the following are equivalent:
+\begin{enumerate}
+\item \(\Phi\) is trace-class over \(\mathbb U\);
+\item the ambient span trace of the labelled input-discrete span associated to
+\(\Phi\) lies again in the Mealy span subcategory
+\[
+\mathcal S_{\mathrm{Mly}}
+\subseteq
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E)).
+\]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The ambient span trace is
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}
+&
+\mathbb P^\circ
+  \arrow[l, "I_A"']
+  \arrow[r, "\Omega_B"]
+&
+\mathbb B^{\mathrm{op}} .
+\end{tikzcd}
+\]
+By definition of \(\mathcal S_{\mathrm{Mly}}\), this span lies in the Mealy
+subcategory exactly when its left leg \(I_A\) is input-discrete.  This is
+precisely the trace-class condition.
+\end{proof}
+
+\section{The internal feedback equation}
+\label{sec:internal-feedback-equation}
+
+We now unpack the trace-class condition in the original component notation of
+Mealy morphisms.
+
+Let
+\[
+\Phi=(P,\delta,\omega):
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U.
+\]
+The carrier span has the form
+\[
+\begin{tikzcd}[column sep=large]
+A_0\times U_0
+&
+P
+  \arrow[l, "p"']
+  \arrow[r, "q"]
+&
+B_0\times U_0 .
+\end{tikzcd}
+\]
+Write
+\[
+p=(p_A,p_U),
+\qquad
+q=(q_B,q_U).
+\]
+The transition and output maps are defined on admissible triples
+\[
+(a,h,x)
+\]
+with
+\[
+t_A(a)=p_A(x),
+\qquad
+t_U(h)=p_U(x).
+\]
+The output component decomposes as
+\[
+\omega=(\omega_B,\omega_U).
+\]
+
+\begin{definition}[Closed state object]
+\label{def:closed-state-object}
+The \textbf{closed state object} of \(\Phi\) over \(\mathbb U\) is
+\[
+P^\circ:=\operatorname{Eq}(p_U,q_U).
+\]
+A generalized element of \(P^\circ\) is a state \(x\in P\) satisfying
+\[
+p_U(x)=q_U(x).
+\]
+\end{definition}
+
+Equivalently, \(P^\circ\) is given by the pullback
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+P^\circ
+  \arrow[r, hook, "\iota_P"]
+  \arrow[d]
+&
+P
+  \arrow[d, "{(p_U,q_U)}"]
+\\
+U_0
+  \arrow[r, "\Delta_{U_0}"']
+&
+U_0\times U_0 .
+\end{tikzcd}
+\]
+
+Let
+\[
+D_\Phi
+:=
+A_1\times_{t_A,A_0,p_A}P^\circ.
+\]
+A generalized element of \(D_\Phi\) is an admissible visible input/closed-state
+pair
+\[
+(a,x)
+\]
+with
+\[
+t_A(a)=p_A(x).
+\]
+
+Define
+\[
+H_\Phi
+:=
+D_\Phi\times_{p_U\pi_P,U_0,t_U}U_1.
+\]
+A generalized element of \(H_\Phi\) is a triple
+\[
+(a,x,h)
+\]
+such that
+\[
+t_A(a)=p_A(x),
+\qquad
+t_U(h)=p_U(x)=q_U(x).
+\]
+
+There are two maps
+\[
+H_\Phi\to U_1.
+\]
+The first is the projection
+\[
+\pi_U:H_\Phi\to U_1,
+\qquad
+(a,x,h)\longmapsto h.
+\]
+The second is induced by the hidden output component:
+\[
+\chi_\Phi:H_\Phi\to U_1,
+\qquad
+(a,x,h)\longmapsto\omega_U((a,h),x).
+\]
+This map is well-defined because \((a,h)\) is an admissible arrow of
+\(\mathbb A\times\mathbb U\) at \(x\), and because
+\[
+t_U\omega_U((a,h),x)=q_U(x)=p_U(x)=t_U(h).
+\]
+
+\begin{definition}[Feedback witness object]
+\label{def:feedback-witness-object}
+The \textbf{feedback witness object} of \(\Phi\) over \(\mathbb U\) is the
+equalizer
+\[
+W_\Phi
+:=
+\operatorname{Eq}(\pi_U,\chi_\Phi)
+\hookrightarrow
+H_\Phi.
+\]
+Thus a generalized element of \(W_\Phi\) is a triple
+\[
+(a,x,h)
+\]
+with
+\[
+t_A(a)=p_A(x),
+\qquad
+t_U(h)=p_U(x)=q_U(x),
+\qquad
+h=\omega_U((a,h),x).
+\]
+There is a canonical projection
+\[
+\pi_\Phi:W_\Phi\to D_\Phi,
+\qquad
+(a,x,h)\longmapsto(a,x).
+\]
+\end{definition}
+
+\begin{theorem}[Internal trace-class criterion]
+\label{thm:internal-trace-class-criterion}
+For
+\[
+\Phi:
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U,
+\]
+the following are equivalent:
+\begin{enumerate}
+\item \(\Phi\) is trace-class over \(\mathbb U\);
+\item the functor
+\[
+I_A:\mathbb P^\circ\to\mathbb A^{\mathrm{op}}
+\]
+is input-discrete;
+\item the projection
+\[
+\pi_\Phi:W_\Phi\to D_\Phi
+\]
+is an isomorphism.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The equivalence between (1) and (2) is the definition of trace-class.
+
+It remains to identify input-discreteness of
+\[
+I_A:\mathbb P^\circ\to\mathbb A^{\mathrm{op}}
+\]
+with the assertion that
+\[
+\pi_\Phi:W_\Phi\to D_\Phi
+\]
+is an isomorphism.
+
+Since
+\[
+I:\mathbb P\to(\mathbb A\times\mathbb U)^{\mathrm{op}}
+\]
+is input-discrete, the square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+P_1
+  \arrow[r, "I_1"]
+  \arrow[d, "s_P"']
+&
+A_1\times U_1
+  \arrow[d, "t_A\times t_U"]
+\\
+P_0
+  \arrow[r, "p_A\times p_U"']
+&
+A_0\times U_0
+\end{tikzcd}
+\]
+is a pullback.  Hence
+\[
+P_1
+\cong
+(A_1\times U_1)
+\times_{t_A\times t_U,A_0\times U_0,p_A\times p_U}
+P.
+\]
+Thus an arrow of \(\mathbb P\) is represented uniquely by a triple
+\[
+(a,h,x)
+\]
+with
+\[
+t_A(a)=p_A(x),
+\qquad
+t_U(h)=p_U(x).
+\]
+Its target in \(\mathbb P\) is
+\[
+\delta((a,h),x),
+\]
+and its output label in
+\[
+(\mathbb B\times\mathbb U)^{\mathrm{op}}
+\]
+is
+\[
+(\omega_B((a,h),x),\omega_U((a,h),x)).
+\]
+
+The closed-loop category
+\[
+\mathbb P^\circ=\operatorname{Eq}(I_U,\Omega_U)
+\]
+has object object
+\[
+P^\circ=\operatorname{Eq}(p_U,q_U).
+\]
+Its arrow object is obtained by equalizing the hidden input and hidden output
+labels on arrows.  Therefore, under the displayed identification of \(P_1\),
+an arrow of \(\mathbb P^\circ\) is precisely a triple
+\[
+(a,h,x)
+\]
+such that
+\[
+x\in P^\circ,
+\qquad
+t_A(a)=p_A(x),
+\qquad
+t_U(h)=p_U(x),
+\qquad
+h=\omega_U((a,h),x).
+\]
+Since \(x\in P^\circ\), the condition \(t_U(h)=p_U(x)\) is equivalently
+\[
+t_U(h)=p_U(x)=q_U(x).
+\]
+Hence
+\[
+P^\circ_1\cong W_\Phi.
+\]
+
+The defining input-discreteness square for
+\[
+I_A:\mathbb P^\circ\to\mathbb A^{\mathrm{op}}
+\]
+has comparison map
+\[
+P^\circ_1
+\longrightarrow
+A_1\times_{t_A,A_0,p_A}P^\circ
+=
+D_\Phi.
+\]
+Under the identification
+\[
+P^\circ_1\cong W_\Phi,
+\]
+this comparison map is exactly
+\[
+\pi_\Phi:W_\Phi\to D_\Phi.
+\]
+Therefore \(I_A\) is input-discrete if and only if
+\(\pi_\Phi\) is an isomorphism.
+\end{proof}
+
+\begin{remark}[Trace class as unique feedback solvability]
+\label{rem:trace-class-unique-feedback}
+The ambient span trace keeps all hidden witnesses satisfying the feedback
+equation
+\[
+h=\omega_U((a,h),x).
+\]
+The Mealy trace is defined exactly when this hidden-witness relation is
+functional and total over visible admissible inputs and closed states.  Thus
+trace class is the internal unique-solvability condition for the feedback
+equation.
+\end{remark}
+
+When \(\Phi\) is trace-class, the isomorphism
+\[
+\pi_\Phi:W_\Phi\to D_\Phi
+\]
+defines an internal morphism
+\[
+h_\Phi:D_\Phi\to U_1
+\]
+by
+\[
+h_\Phi=\pi_U\circ\pi_\Phi^{-1}.
+\]
+Thus \(h_\Phi(a,x)\) is the unique hidden arrow satisfying
+\[
+h_\Phi(a,x)=\omega_U((a,h_\Phi(a,x)),x).
+\]
+
+\section{Component formula for the partial trace}
+\label{sec:component-formula-partial-trace}
+
+\begin{proposition}[Component formula for the partial trace]
+\label{prop:component-formula-partial-trace}
+Let
+\[
+\Phi=(P,\delta,\omega):
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U
+\]
+be trace-class over \(\mathbb U\).  Then
+\[
+\operatorname{Tr}^{\mathbb U}(\Phi):
+\mathbb A\rightsquigarrow\mathbb B
+\]
+has carrier span
+\[
+\begin{tikzcd}[column sep=large]
+A_0
+&
+P^\circ
+  \arrow[l, "p_A"']
+  \arrow[r, "q_B"]
+&
+B_0,
+\end{tikzcd}
+\]
+and its transition and output maps are
+\[
+\delta^{\operatorname{tr}}(a,x)
+=
+\delta((a,h_\Phi(a,x)),x),
+\]
+and
+\[
+\omega^{\operatorname{tr}}(a,x)
+=
+\omega_B((a,h_\Phi(a,x)),x).
+\]
+\end{proposition}
+
+\begin{proof}
+By definition, the traced Mealy morphism is represented by the input-discrete
+span
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}
+&
+\mathbb P^\circ
+  \arrow[l, "I_A"']
+  \arrow[r, "\Omega_B"]
+&
+\mathbb B^{\mathrm{op}} .
+\end{tikzcd}
+\]
+The object part of this span is
+\[
+\begin{tikzcd}[column sep=large]
+A_0
+&
+P^\circ
+  \arrow[l, "p_A"']
+  \arrow[r, "q_B"]
+&
+B_0.
+\end{tikzcd}
+\]
+
+Since \(I_A\) is input-discrete, for each visible input \(a\) and closed state
+\(x\) there is a unique arrow of \(\mathbb P^\circ\) over \(a\).  By
+Theorem~\ref{thm:internal-trace-class-criterion}, this arrow is represented by
+the unique feedback witness
+\[
+h_\Phi(a,x)
+\]
+satisfying
+\[
+h_\Phi(a,x)=\omega_U((a,h_\Phi(a,x)),x).
+\]
+Transporting the target and output components of this unique arrow gives
+\[
+\delta^{\operatorname{tr}}(a,x)
+=
+\delta((a,h_\Phi(a,x)),x)
+\]
+and
+\[
+\omega^{\operatorname{tr}}(a,x)
+=
+\omega_B((a,h_\Phi(a,x)),x).
+\]
+
+It remains to check that the transition lands in \(P^\circ\).  By the typing
+equations for the original Mealy morphism,
+\[
+p_U\delta((a,h_\Phi(a,x)),x)
+=
+s_Uh_\Phi(a,x),
+\]
+while
+\[
+q_U\delta((a,h_\Phi(a,x)),x)
+=
+s_U\omega_U((a,h_\Phi(a,x)),x).
+\]
+Since
+\[
+h_\Phi(a,x)=\omega_U((a,h_\Phi(a,x)),x),
+\]
+these two objects agree.  Hence
+\[
+\delta^{\operatorname{tr}}(a,x)\in P^\circ.
+\]
+\end{proof}
+
+\section{Restricted trace along the Mealy subcategory}
+\label{sec:restricted-trace-along-mealy-subcategory}
+
+The preceding sections define the traced Mealy morphism by applying the total
+span trace and then asking whether the resulting span is again input-discrete.
+We now record why this gives a genuine partial trace operation on Mealy
+morphisms, rather than an ad hoc construction.
+
+Let
+\[
+\mathcal C:=\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E)).
+\]
+By Proposition~\ref{prop:ambient-span-total-trace}, \(\mathcal C\) is a traced
+symmetric monoidal category.  Let
+\[
+\mathcal S_{\mathrm{Mly}}
+\subseteq
+\mathcal C
+\]
+be the symmetric monoidal subcategory of input-discrete labelled spans.
+
+For a morphism
+\[
+f:
+\mathbb A^{\mathrm{op}}\times\mathbb U^{\mathrm{op}}
+\longrightarrow
+\mathbb B^{\mathrm{op}}\times\mathbb U^{\mathrm{op}}
+\]
+in \(\mathcal S_{\mathrm{Mly}}\), represented by
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}\times\mathbb U^{\mathrm{op}}
+&
+\mathbb P
+  \arrow[l, "I"']
+  \arrow[r, "\Omega"]
+&
+\mathbb B^{\mathrm{op}}\times\mathbb U^{\mathrm{op}},
+\end{tikzcd}
+\]
+define
+\[
+\operatorname{Tr}^{\mathbb U}(f)
+\]
+to be defined precisely when the ambient trace
+\[
+\operatorname{Tr}^{\mathbb U^{\mathrm{op}}}_{\mathcal C}(f)
+\]
+belongs again to \(\mathcal S_{\mathrm{Mly}}\).  In that case,
+\[
+\operatorname{Tr}^{\mathbb U}(f)
+:=
+\operatorname{Tr}^{\mathbb U^{\mathrm{op}}}_{\mathcal C}(f).
+\]
+Thus the trace is not an additional operation.  It is the restriction of the
+ambient total trace along the inclusion
+\[
+\mathcal S_{\mathrm{Mly}}\hookrightarrow\mathcal C.
+\]
+
+\begin{theorem}[Restricted span trace]
+\label{thm:restricted-span-trace}
+The operation above defines the partial trace on
+\[
+\mathcal S_{\mathrm{Mly}}
+\]
+induced by the ambient total trace on
+\[
+\mathcal C=
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E)).
+\]
+
+For every traced expression built from Mealy morphisms, its value is defined
+exactly when the corresponding ambient traced span has input-discrete visible
+left leg.  Whenever the relevant traced expressions are trace-class, the trace
+equations hold in
+\[
+\mathcal S_{\mathrm{Mly}}.
+\]
+Equivalently, \(\mathcal S_{\mathrm{Mly}}\) inherits the trace theory of
+\(\mathcal C\) on the full trace-class domain cut out by input-discreteness.
+\end{theorem}
+
+\begin{proof}
+Every traced expression in
+\[
+\mathcal S_{\mathrm{Mly}}
+\]
+has an underlying traced expression in
+\[
+\mathcal C.
+\]
+The inclusion
+\[
+\mathcal S_{\mathrm{Mly}}\hookrightarrow\mathcal C
+\]
+is faithful and symmetric monoidal.  Hence, whenever a traced expression is
+defined in \(\mathcal S_{\mathrm{Mly}}\), its value is exactly the corresponding
+ambient traced span.
+
+The trace equations hold in \(\mathcal C\).  Therefore, if a traced equation is
+formed from trace-class expressions in \(\mathcal S_{\mathrm{Mly}}\), its two
+sides have the same image in \(\mathcal C\).  Faithfulness of the inclusion
+then implies equality in \(\mathcal S_{\mathrm{Mly}}\).
+
+It remains to identify the domain of definition.  For a span
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}\times\mathbb U^{\mathrm{op}}
+&
+\mathbb P
+  \arrow[l, "I"']
+  \arrow[r, "\Omega"]
+&
+\mathbb B^{\mathrm{op}}\times\mathbb U^{\mathrm{op}},
+\end{tikzcd}
+\]
+write
+\[
+I=(I_A,I_U),
+\qquad
+\Omega=(\Omega_B,\Omega_U).
+\]
+The ambient trace has apex
+\[
+\mathbb P^\circ=\operatorname{Eq}(I_U,\Omega_U)
+\]
+and visible left leg
+\[
+I_A:\mathbb P^\circ\to\mathbb A^{\mathrm{op}}.
+\]
+By definition of
+\[
+\mathcal S_{\mathrm{Mly}},
+\]
+the traced span belongs to \(\mathcal S_{\mathrm{Mly}}\) exactly when this
+visible left leg is input-discrete.  This is precisely the trace-class
+condition.
+\end{proof}
+
+\section{Simultaneous and staged feedback}
+\label{sec:simultaneous-staged-feedback}
+
+The total span trace satisfies the vanishing and nesting laws because
+equalizers of products of interfaces may be computed as iterated equalizers.
+In the Mealy subcategory, the same statement has a deterministic
+interpretation: staged feedback is available exactly when the corresponding
+intermediate feedback problems remain uniquely solvable.
+
+Let
+\[
+\Phi:
+\mathbb A\times\mathbb U\times\mathbb V
+\rightsquigarrow
+\mathbb B\times\mathbb U\times\mathbb V
+\]
+be a Mealy morphism.  In components, write the hidden output parts as
+\[
+\omega_U,
+\qquad
+\omega_V.
+\]
+A simultaneous closed-loop witness consists of hidden arrows
+\[
+h_U\in U_1,
+\qquad
+h_V\in V_1
+\]
+satisfying
+\[
+h_U=\omega_U((a,h_U,h_V),x),
+\qquad
+h_V=\omega_V((a,h_U,h_V),x).
+\]
+
+Let
+\[
+W_\Phi^{U,V}
+\]
+be the internal object of such simultaneous witnesses, and let
+\[
+D_\Phi^{U,V}
+\]
+be the object of visible admissible input/closed-state pairs.  Thus
+\[
+\Phi
+\]
+is trace-class over
+\[
+\mathbb U\times\mathbb V
+\]
+precisely when
+\[
+W_\Phi^{U,V}\to D_\Phi^{U,V}
+\]
+is an isomorphism.
+
+Suppose first that \(\Phi\) is trace-class over \(\mathbb V\), treating
+\(\mathbb U\) as part of the visible interface.  Then there is an internal
+solution
+\[
+h_V=h_V(a,h_U,x)
+\]
+of
+\[
+h_V=\omega_V((a,h_U,h_V),x),
+\]
+natural in the visible data \((a,h_U,x)\).  Substitution gives a traced Mealy
+morphism
+\[
+\operatorname{Tr}^{\mathbb V}(\Phi):
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U.
+\]
+Its remaining \(\mathbb U\)-feedback equation is
+\[
+h_U=
+\omega_U((a,h_U,h_V(a,h_U,x)),x).
+\]
+
+\begin{theorem}[Staged feedback theorem]
+\label{thm:staged-feedback}
+Let
+\[
+\Phi:
+\mathbb A\times\mathbb U\times\mathbb V
+\rightsquigarrow
+\mathbb B\times\mathbb U\times\mathbb V
+\]
+be a Mealy morphism.
+
+If
+\[
+\operatorname{Tr}^{\mathbb V}(\Phi)
+\]
+is defined and
+\[
+\operatorname{Tr}^{\mathbb U}
+\bigl(\operatorname{Tr}^{\mathbb V}(\Phi)\bigr)
+\]
+is defined, then the simultaneous trace over
+\[
+\mathbb U\times\mathbb V
+\]
+is defined and there is a canonical equality
+\[
+\operatorname{Tr}^{\mathbb U}
+\bigl(\operatorname{Tr}^{\mathbb V}(\Phi)\bigr)
+=
+\operatorname{Tr}^{\mathbb U\times\mathbb V}(\Phi).
+\]
+
+On components, the staged solution
+\[
+h_V=h_V(a,h_U,x)
+\]
+and then
+\[
+h_U=h_U(a,x)
+\]
+determine the simultaneous solution
+\[
+(h_U(a,x),h_V(a,h_U(a,x),x)).
+\]
+Conversely, whenever the simultaneous solution factors through a unique
+intermediate \(\mathbb V\)-solution natural in \((a,h_U,x)\), the staged trace
+is defined and agrees with the simultaneous trace.
+\end{theorem}
+
+\begin{proof}
+In the ambient span category, the equality
+\[
+\operatorname{Tr}^{\mathbb U}
+\bigl(\operatorname{Tr}^{\mathbb V}(-)\bigr)
+=
+\operatorname{Tr}^{\mathbb U\times\mathbb V}(-)
+\]
+is the vanishing-II law of the total trace.
+
+The apex of the simultaneous trace is the equalizer imposing both hidden
+matching equations
+\[
+I_U=\Omega_U,
+\qquad
+I_V=\Omega_V.
+\]
+Equivalently, it is the iterated equalizer obtained by first imposing
+\[
+I_V=\Omega_V
+\]
+and then imposing
+\[
+I_U=\Omega_U
+\]
+on the result.  Since finite limits in
+\[
+\mathbf{Cat}_{\mathrm{int}}(\mathcal E)
+\]
+are computed componentwise, these two constructions give canonically
+isomorphic internal categories.
+
+If the staged trace is defined, then after the first equalizer the remaining
+visible left leg is input-discrete, and after the second equalizer the final
+visible left leg is input-discrete.  Hence the staged trace is a morphism of
+\[
+\mathcal S_{\mathrm{Mly}}.
+\]
+The ambient vanishing-II isomorphism identifies this staged traced span with
+the simultaneous traced span.  Therefore the simultaneous traced span is also
+input-discrete over the final visible input, and the two Mealy morphisms agree.
+
+In component notation, the first input-discreteness condition says that for
+each visible tuple \((a,h_U,x)\) there is a unique
+\[
+h_V=h_V(a,h_U,x)
+\]
+solving
+\[
+h_V=\omega_V((a,h_U,h_V),x).
+\]
+The second says that for each \((a,x)\) there is a unique
+\[
+h_U=h_U(a,x)
+\]
+solving
+\[
+h_U=\omega_U((a,h_U,h_V(a,h_U,x)),x).
+\]
+Substitution gives the unique simultaneous pair
+\[
+(h_U(a,x),h_V(a,h_U(a,x),x)),
+\]
+which satisfies both hidden feedback equations.  The visible transition and
+output obtained by substituting this pair are exactly those obtained by the
+ambient simultaneous trace.
+\end{proof}
+
+\section{The partial trace theorem}
+\label{sec:partial-trace-theorem}
+
+\begin{theorem}[Partial trace on Mealy morphisms]
+\label{thm:mly-partially-traced}
+The symmetric monoidal category
+\[
+\mathsf{Mly}(\mathcal E)
+\]
+carries the canonical partial trace obtained by restricting the total trace of
+\[
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E))
+\]
+to the input-discrete span representation of Mealy morphisms.
+
+Explicitly, for
+\[
+\Phi:
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U,
+\]
+the trace
+\[
+\operatorname{Tr}^{\mathbb U}(\Phi):
+\mathbb A\rightsquigarrow\mathbb B
+\]
+is defined precisely when \(\Phi\) is trace-class over \(\mathbb U\), i.e.
+when the closed-loop visible input projection
+\[
+I_A:\mathbb P^\circ\to\mathbb A^{\mathrm{op}}
+\]
+is input-discrete.  Equivalently, the internal feedback projection
+\[
+\pi_\Phi:W_\Phi\to D_\Phi
+\]
+is an isomorphism.
+
+When defined, the trace is represented by the ambient span trace
+\[
+\begin{tikzcd}[column sep=large]
+\mathbb A^{\mathrm{op}}
+&
+\mathbb P^\circ
+  \arrow[l, "I_A"']
+  \arrow[r, "\Omega_B"]
+&
+\mathbb B^{\mathrm{op}} .
+\end{tikzcd}
+\]
+The trace equations are inherited from the total trace on spans on their
+trace-class domains.  In particular, staged feedback agrees with simultaneous
+feedback whenever the staged feedbacks are trace-class.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:mealy-as-input-discrete-spans}, Mealy morphisms are
+faithfully represented as the symmetric monoidal subcategory
+\[
+\mathcal S_{\mathrm{Mly}}
+\subseteq
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E))
+\]
+of labelled spans whose left leg is input-discrete.
+
+The ambient span category is traced by
+Proposition~\ref{prop:ambient-span-total-trace}.  For a Mealy morphism
+\[
+\Phi:
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U,
+\]
+the ambient trace of its labelled span has apex
+\[
+\mathbb P^\circ=\operatorname{Eq}(I_U,\Omega_U)
+\]
+and visible left leg
+\[
+I_A:\mathbb P^\circ\to\mathbb A^{\mathrm{op}}.
+\]
+The traced span lies again in
+\[
+\mathcal S_{\mathrm{Mly}}
+\]
+exactly when this left leg is input-discrete.  This is the trace-class
+condition.
+
+The equivalence with
+\[
+\pi_\Phi:W_\Phi\to D_\Phi
+\]
+being an isomorphism is Theorem~\ref{thm:internal-trace-class-criterion}.
+The component formula is Proposition~\ref{prop:component-formula-partial-trace}.
+
+Finally, every trace equation for trace-class Mealy morphisms is the image of
+the corresponding trace equation in the ambient traced span category.  Since
+the inclusion of
+\[
+\mathcal S_{\mathrm{Mly}}
+\]
+into the ambient span category is faithful, the equality holds in
+\[
+\mathsf{Mly}(\mathcal E).
+\]
+The staged-feedback statement is Theorem~\ref{thm:staged-feedback}.
+\end{proof}
+
+\section{Interface privacy}
+\label{sec:interface-privacy}
+
+The trace operation has a simple operational interpretation.  A Mealy morphism
+\[
+\Phi:
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U
+\]
+has a visible interface
+\[
+\mathbb A\rightsquigarrow\mathbb B
+\]
+and a hidden interface
+\[
+\mathbb U\rightsquigarrow\mathbb U.
+\]
+Tracing over \(\mathbb U\) hides the internal \(\mathbb U\)-conversation by
+forcing the hidden output to match the hidden input.
+
+The ambient span trace remembers all hidden witnesses satisfying this matching
+condition.  The Mealy trace exists exactly when these hidden witnesses are
+unique over each visible input and closed state.  Thus trace-class feedback is
+the condition under which the hidden interface can be eliminated without
+leaving the deterministic Mealy world.
+
+In component form, the hidden witness is the solution of
+\[
+h=\omega_U((a,h),x).
+\]
+When this solution is unique, the visible behaviour is obtained by substituting
+the solution back into the original Mealy transition and output:
+\[
+\delta^{\operatorname{tr}}(a,x)
+=
+\delta((a,h_\Phi(a,x)),x),
+\qquad
+\omega^{\operatorname{tr}}(a,x)
+=
+\omega_B((a,h_\Phi(a,x)),x).
+\]
+
+\section{Feedback and relative execution semantics}
+\label{sec:feedback-relative-execution-semantics}
+
+We finally record how the partial trace interacts with the relative execution
+semantics developed earlier.
+
+Let
+\[
+\Phi:
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U
+\]
+be trace-class over \(\mathbb U\), and let
+\[
+Y
+\]
+be a right \(\mathbb B\)-action.  The traced Mealy morphism
+\[
+\operatorname{Tr}^{\mathbb U}(\Phi):
+\mathbb A\rightsquigarrow\mathbb B
+\]
+therefore determines a relative program category
+\[
+\mathsf{Prog}_{\operatorname{Tr}^{\mathbb U}(\Phi),Y}.
+\]
+
+The states of this program category are closed relative states
+\[
+(x,y)
+\]
+with
+\[
+x\in P^\circ,
+\qquad
+q_B(x)=r(y).
+\]
+For an admissible visible input
+\[
+a:u\to p_A(x),
+\]
+the transition is computed by first solving the feedback equation
+\[
+h_\Phi(a,x)=\omega_U((a,h_\Phi(a,x)),x),
+\]
+and then applying the original relative transition:
+\[
+(a,x,y)
+\longmapsto
+\left(
+\delta((a,h_\Phi(a,x)),x),
+\,
+\sigma(\omega_B((a,h_\Phi(a,x)),x),y)
+\right).
+\]
+
+Thus relative execution after feedback is obtained by closing the hidden
+interface first and then running the resulting visible Mealy morphism.
+
+\begin{proposition}[Relative execution after feedback]
+\label{prop:relative-execution-after-feedback}
+Let
+\[
+\Phi:
+\mathbb A\times\mathbb U
+\rightsquigarrow
+\mathbb B\times\mathbb U
+\]
+be trace-class over \(\mathbb U\), and let \(Y\) be a right
+\(\mathbb B\)-action.  Then the relative program category of
+\[
+\operatorname{Tr}^{\mathbb U}(\Phi)
+\]
+has object object
+\[
+P^\circ\times_{q_B,B_0,r}Y
+\]
+and arrow object
+\[
+A_1\times_{t_A,A_0,p_A}
+\left(P^\circ\times_{q_B,B_0,r}Y\right).
+\]
+Its source, target, identities, and composition are those induced by the
+transition and output maps of
+\[
+\operatorname{Tr}^{\mathbb U}(\Phi).
+\]
+Equivalently, its one-step execution is computed by substituting the unique
+feedback solution \(h_\Phi(a,x)\) into the original Mealy transition.
+\end{proposition}
+
+\begin{proof}
+This is the relative program-category construction applied to the traced Mealy
+morphism.  The carrier of
+\[
+\operatorname{Tr}^{\mathbb U}(\Phi)
+\]
+is
+\[
+A_0\xleftarrow{p_A}P^\circ\xrightarrow{q_B}B_0,
+\]
+and its transition and output maps are given by
+Proposition~\ref{prop:component-formula-partial-trace}.  Substituting these
+maps into the definition of the relative action yields the displayed object
+and arrow objects and the stated one-step transition formula.
+
+The emitted visible output arrow is
+\[
+\omega^{\operatorname{tr}}(a,x)
+=
+\omega_B((a,h_\Phi(a,x)),x),
+\]
+and the downstream state is obtained by applying the \(Y\)-action to this
+arrow:
+\[
+\sigma(\omega^{\operatorname{tr}}(a,x),y).
+\]
+\end{proof}
+
+\section{Conceptual summary}
+\label{sec:partial-trace-conceptual-summary}
+
+The construction of this chapter can be summarized in two equivalent ways.
+
+First, categorically:
+\[
+\boxed{
+\mathsf{Mly}(\mathcal E)
+\text{ is a symmetric monoidal subcategory of }
+\mathbf{Span}(\mathbf{Cat}_{\mathrm{int}}(\mathcal E)),
+}
+\]
+and the latter has a total trace.  The Mealy trace is the restriction of this
+ambient trace to the morphisms whose traced spans remain input-discrete.
+
+Second, operationally:
+\[
+\boxed{
+\operatorname{Tr}^{\mathbb U}(\Phi)
+\text{ is defined exactly when the feedback equation }
+h=\omega_U((a,h),x)
+\text{ has a unique solution.}
+}
+\]
+When this holds, the traced transition and output are obtained by substituting
+the unique feedback solution into the original Mealy transition:
+\[
+\delta^{\operatorname{tr}}(a,x)
+=
+\delta((a,h_\Phi(a,x)),x),
+\qquad
+\omega^{\operatorname{tr}}(a,x)
+=
+\omega_B((a,h_\Phi(a,x)),x).
+\]
+
+For multiple hidden interfaces, staged feedback agrees with simultaneous
+feedback on the trace-class staged domain:
+\[
+\operatorname{Tr}^{\mathbb U}
+\bigl(\operatorname{Tr}^{\mathbb V}(\Phi)\bigr)
+=
+\operatorname{Tr}^{\mathbb U\times\mathbb V}(\Phi)
+\]
+whenever the staged traces are defined.  This is the deterministic Mealy form
+of the vanishing law for the compact-closed trace of spans.
+
+Thus the partial trace is not an additional axiom on Mealy morphisms.  It is
+the canonical feedback operation inherited from spans, restricted by the
+requirement that closed-loop execution remain input-discrete.

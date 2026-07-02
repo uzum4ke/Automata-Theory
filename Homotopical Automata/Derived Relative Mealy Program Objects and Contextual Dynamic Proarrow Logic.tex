@@ -1,0 +1,2617 @@
+\chapter{\texorpdfstring{Derived Relative Mealy Program Objects and Contextual Dynamic Proarrow Logic}{Derived Relative Mealy Program Objects and Contextual Dynamic Proarrow Logic}}
+\label{ch:derived-relative-mealy-program-objects}
+
+\section{Orientation: contextualizing derived Mealy morphisms}
+\label{sec:derived-relative-orientation}
+
+In Chapter~\ref{ch:derived-mealy-morphisms}, a derived Mealy morphism from
+\(\mathbb A\) to \(\mathbb B\) was defined as a derived correspondence
+\[
+\chi:\mathbb X\to \mathbb A\times \mathbb B
+\]
+in the localized homotopy theory of internal categories. We write its two
+components as
+\[
+\pi:\mathbb X\to\mathbb A,
+\qquad
+\Omega:\mathbb X\to\mathbb B.
+\]
+The object \(\mathbb X\) is the derived execution object, \(\pi\) records
+input semantics, and \(\Omega\) is the derived \(\mathbb B\)-valued output
+\(1\)-cocycle.
+
+The purpose of this chapter is to develop the relative, contextual version of
+this construction. The strict relative theory begins with a Mealy morphism
+\[
+\Phi=(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+and a downstream right \(\mathbb B\)-action
+\[
+Y\to B_0.
+\]
+It forms the coupled state object
+\[
+P\times_{B_0}Y
+\]
+and the relative program category
+\[
+\mathsf{Prog}_{\Phi,Y}
+=
+\int_{\mathbb A}\Phi^\ast Y.
+\]
+
+In the derived theory, the strict pullback
+\[
+P\times_{B_0}Y
+\]
+is replaced by the homotopy-correct pullback of the derived output cocycle
+against a downstream behaviour
+\[
+\rho:\mathbb Y\to\mathbb B.
+\]
+Thus the fundamental contextual execution object is
+\[
+\mathbb X\times_{\mathbb B}\mathbb Y.
+\]
+
+The guiding principle is:
+\[
+\boxed{
+\text{derived contextual Mealy logic is dynamic proarrow logic on the
+homotopy pullback of an output cocycle with a downstream behaviour.}
+}
+\]
+
+There is a minor orientation issue which must be fixed explicitly. In the
+derived Mealy chapter, a strict Mealy morphism determines the action category
+\[
+P\rtimes\mathbb A
+\]
+whose arrows are written
+\[
+\delta(a,x)\longrightarrow x.
+\]
+This is the contravariant, or backward, execution orientation. By contrast,
+dynamic program categories are often displayed in the forward execution
+orientation
+\[
+x\longrightarrow \delta(a,x).
+\]
+In this chapter the intrinsic derived object will be the backward execution
+object
+\[
+\mathsf{Exec}^h_{\chi,\rho}.
+\]
+Whenever a forward dynamic-program orientation is desired, it is obtained by
+passing to an opposite representative. Thus, when opposites are available, one
+may write
+\[
+\mathsf{Prog}^h_{\chi,\rho}
+:=
+\left(\mathsf{Exec}^h_{\chi,\rho}\right)^{\mathrm{op}}.
+\]
+The derived construction itself is made before choosing this forward
+orientation.
+
+\section{Homotopical setting and conventions}
+\label{sec:derived-relative-homotopical-setting}
+
+Throughout this chapter, let
+\[
+\mathcal E
+\]
+be a Grothendieck topos. Let
+\[
+\mathcal M:=\mathbf{Cat}(\mathcal E)_{JT}
+\]
+be the Joyal--Tierney model category of internal categories in \(\mathcal E\),
+and let
+\[
+\mathcal C
+:=
+\mathcal M_\infty
+:=
+L_{DK}(\mathcal M,W_{JT})
+\]
+be its Dwyer--Kan localization.
+
+All products, pullbacks, slices, mapping spaces, and correspondences in this
+chapter are taken in the \(\infty\)-category
+\[
+\mathcal C,
+\]
+unless explicitly stated otherwise. Point-set internal categories and internal
+functors are used only as representatives of objects and morphisms in
+\(\mathcal C\).
+
+Recall from Chapter~\ref{ch:derived-mealy-morphisms} that the derived Mealy
+moduli theory from \(\mathbb A\) to \(\mathbb B\) is
+\[
+\mathsf{Mealy}^h(\mathbb A,\mathbb B)
+:=
+\mathcal C/(\mathbb A\times\mathbb B).
+\]
+An object
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\]
+is a derived Mealy morphism
+\[
+\mathbb A\rightsquigarrow^h\mathbb B.
+\]
+By the product universal property, it is equivalently a pair
+\[
+\pi:\mathbb X\to\mathbb A,
+\qquad
+\Omega:\mathbb X\to\mathbb B.
+\]
+
+\begin{remark}
+\label{rem:derived-relative-not-localization-only}
+The derived construction is not merely the localization of the external
+category of strict Mealy machines. A strict Mealy morphism first determines a
+point-set fibrational representative
+\[
+\mathbb A
+\xleftarrow{\pi_P}
+P\rtimes\mathbb A
+\xrightarrow{\Omega_P}
+\mathbb B.
+\]
+The derived Mealy morphism represented by it is the induced object
+\[
+(P\rtimes\mathbb A\to\mathbb A\times\mathbb B)
+\]
+of
+\[
+\mathcal C/(\mathbb A\times\mathbb B).
+\]
+Thus the strict state object \(P\) is not itself the derived execution object;
+the derived execution object is represented by the action category
+\(P\rtimes\mathbb A\).
+\end{remark}
+
+\begin{definition}[Correspondence notation]
+\label{def:derived-relative-corr-notation}
+For objects
+\[
+\mathbb X,\mathbb Y\in\mathcal C,
+\]
+we write
+\[
+\operatorname{Corr}(\mathcal C)(\mathbb X,\mathbb Y)
+:=
+\mathcal C/(\mathbb X\times\mathbb Y)
+\]
+for the \(\infty\)-category of correspondences from \(\mathbb X\) to
+\(\mathbb Y\). Thus a correspondence
+\[
+\mathbb X\nrightarrow\mathbb Y
+\]
+is a span
+\[
+\mathbb X
+\longleftarrow
+\mathbb R
+\longrightarrow
+\mathbb Y
+\]
+in \(\mathcal C\). Composition is by pullback in \(\mathcal C\).
+\end{definition}
+
+\section{Derived downstream behaviours}
+\label{sec:derived-downstream-behaviours}
+
+\begin{definition}[Derived downstream behaviour]
+\label{def:derived-downstream-behaviour}
+Let
+\[
+\mathbb B\in\mathcal C.
+\]
+The \(\infty\)-category of \textbf{derived downstream \(\mathbb B\)-behaviours}
+is the slice
+\[
+\mathsf{Beh}^h(\mathbb B)
+:=
+\mathcal C/\mathbb B.
+\]
+An object
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+of this slice is called a derived downstream \(\mathbb B\)-behaviour.
+\end{definition}
+
+A derived downstream behaviour should be read as a homotopy-coherent system
+whose observable behaviour is classified by \(\mathbb B\). It may represent
+ordinary states, executions, refinements of executions, equivalences between
+executions, and higher coherences.
+
+Strict right actions give a supply of point-set representatives.
+
+\begin{proposition}[Strict actions as derived downstream behaviours]
+\label{prop:strict-actions-derived-behaviours}
+Let
+\[
+(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a strict right action of an internal category
+\[
+\mathbb B.
+\]
+Then its backward action category
+\[
+Y\rtimes\mathbb B
+\]
+has object object \(Y\), arrow object
+\[
+B_1\times_{t_B,B_0,r}Y,
+\]
+and arrows
+\[
+\sigma(b,y)\longrightarrow y.
+\]
+The projection
+\[
+\pi_Y:Y\rtimes\mathbb B\to\mathbb B
+\]
+is a split internal discrete fibration, hence a Joyal--Tierney fibration. It
+therefore represents an object
+\[
+\pi_Y:Y\rtimes\mathbb B\to\mathbb B
+\]
+of
+\[
+\mathcal C/\mathbb B.
+\]
+\end{proposition}
+
+\begin{proof}
+This is the action-category construction of
+Chapter~\ref{ch:derived-mealy-morphisms} applied to the right action
+\[
+\sigma:B_1\times_{t_B,B_0,r}Y\to Y.
+\]
+The arrow \((b,y)\) has source \(\sigma(b,y)\) and target \(y\), and the
+projection to \(\mathbb B\) sends it to \(b\). The defining pullback square
+for the arrow object is precisely the discrete-fibration square. The strict
+action unit and associativity laws give the split compatibility with
+identities and composition. By the result that split internal discrete
+fibrations are Joyal--Tierney fibrations, \(\pi_Y\) is a fibrational point-set
+representative of an object of the derived slice.
+\end{proof}
+
+\begin{remark}
+\label{rem:derived-behaviours-broader-than-actions}
+The slice
+\[
+\mathcal C/\mathbb B
+\]
+is broader than the strict category of right \(\mathbb B\)-actions. Strict
+right actions give rigid fibrational representatives, but a general derived
+downstream behaviour is an arbitrary object over \(\mathbb B\) in the
+localized homotopy theory.
+\end{remark}
+
+\section{Contextual restriction along a derived Mealy morphism}
+\label{sec:contextual-restriction-derived-mealy}
+
+Let
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\]
+be a derived Mealy morphism, with components
+\[
+\pi:\mathbb X\to\mathbb A,
+\qquad
+\Omega:\mathbb X\to\mathbb B.
+\]
+
+\begin{definition}[Contextual restriction]
+\label{def:contextual-restriction-derived}
+The \textbf{contextual restriction functor}
+\[
+\chi^\ast:
+\mathcal C/\mathbb B
+\longrightarrow
+\mathcal C/\mathbb A
+\]
+is defined on a downstream behaviour
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+by
+\[
+\chi^\ast(\rho)
+:=
+\left(
+\mathbb X\times_{\mathbb B}\mathbb Y
+\xrightarrow{\operatorname{pr}_{\mathbb X}}
+\mathbb X
+\xrightarrow{\pi}
+\mathbb A
+\right),
+\]
+where the pullback is taken over
+\[
+\Omega:\mathbb X\to\mathbb B
+\qquad
+\text{and}
+\qquad
+\rho:\mathbb Y\to\mathbb B.
+\]
+Equivalently,
+\[
+\chi^\ast
+=
+\pi_!\Omega^\ast,
+\]
+where
+\[
+\Omega^\ast:\mathcal C/\mathbb B\to\mathcal C/\mathbb X
+\]
+is pullback and
+\[
+\pi_!:\mathcal C/\mathbb X\to\mathcal C/\mathbb A
+\]
+is postcomposition with \(\pi\).
+\end{definition}
+
+\[
+\begin{tikzcd}[column sep=large, row sep=large]
+\mathbb X\times_{\mathbb B}\mathbb Y
+\arrow[r, "\operatorname{pr}_{\mathbb Y}"]
+\arrow[d, "\operatorname{pr}_{\mathbb X}"']
+&
+\mathbb Y
+\arrow[d, "\rho"]
+\\
+\mathbb X
+\arrow[r, "\Omega"']
+\arrow[dr, "\pi"']
+&
+\mathbb B
+\\
+&
+\mathbb A
+\end{tikzcd}
+\]
+
+\begin{theorem}[Derived contextual restriction]
+\label{thm:derived-contextual-restriction}
+Every derived Mealy morphism
+\[
+\chi:\mathbb A\rightsquigarrow^h\mathbb B
+\]
+induces a functor
+\[
+\chi^\ast:
+\mathsf{Beh}^h(\mathbb B)\to\mathsf{Beh}^h(\mathbb A).
+\]
+This construction is invariant under equivalence of derived Mealy
+representatives.
+\end{theorem}
+
+\begin{proof}
+The assignment
+\[
+\rho:\mathbb Y\to\mathbb B
+\longmapsto
+\mathbb X\times_{\mathbb B}\mathbb Y\to\mathbb A
+\]
+is the composite of pullback along \(\Omega\) and postcomposition along
+\(\pi\). Both operations are functorial in an \(\infty\)-category with
+pullbacks.
+
+If \(\chi\) is replaced by an equivalent object of
+\[
+\mathcal C/(\mathbb A\times\mathbb B),
+\]
+then the corresponding diagrams over \(\mathbb B\) are equivalent. Pullbacks
+in \(\mathcal C\) are invariant under equivalence of diagrams, so the induced
+contextual restrictions are equivalent.
+\end{proof}
+
+\begin{remark}[Operational reading]
+\label{rem:contextual-restriction-operational-reading}
+The functor
+\[
+\chi^\ast
+\]
+places the derived Mealy transducer in front of the downstream behaviour
+\[
+\rho:\mathbb Y\to\mathbb B.
+\]
+An execution of the resulting contextual system is a compatible pair:
+an execution of the Mealy transducer and an execution of the downstream
+behaviour whose intermediate \(\mathbb B\)-behaviours agree coherently.
+\end{remark}
+
+\section{Derived relative execution objects}
+\label{sec:derived-relative-execution-objects}
+
+\begin{definition}[Derived relative execution object]
+\label{def:derived-relative-execution-object}
+Let
+\[
+\chi=(\pi,\Omega):\mathbb X\to\mathbb A\times\mathbb B
+\]
+be a derived Mealy morphism and let
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+be a derived downstream behaviour. The \textbf{derived relative execution
+object} of \(\chi\) in the context \(\rho\) is
+\[
+\mathsf{Exec}^h_{\chi,\rho}
+:=
+\mathbb X\times_{\mathbb B}\mathbb Y.
+\]
+\end{definition}
+
+It comes equipped with canonical maps
+\[
+\operatorname{pr}_{\mathbb X}:
+\mathsf{Exec}^h_{\chi,\rho}\to\mathbb X,
+\qquad
+\operatorname{pr}_{\mathbb Y}:
+\mathsf{Exec}^h_{\chi,\rho}\to\mathbb Y.
+\]
+
+\begin{definition}[Input and downstream projections]
+\label{def:derived-input-downstream-projections}
+The \textbf{derived input projection} is
+\[
+I^h_{\chi,\rho}:
+\mathsf{Exec}^h_{\chi,\rho}
+\to
+\mathbb A
+\]
+defined by
+\[
+I^h_{\chi,\rho}
+=
+\pi\operatorname{pr}_{\mathbb X}.
+\]
+The \textbf{derived downstream comparison} is
+\[
+\Lambda^h_{\chi,\rho}:
+\mathsf{Exec}^h_{\chi,\rho}
+\to
+\mathbb Y
+\]
+defined by
+\[
+\Lambda^h_{\chi,\rho}
+=
+\operatorname{pr}_{\mathbb Y}.
+\]
+\end{definition}
+
+\[
+\begin{tikzcd}[column sep=large]
+&
+\mathsf{Exec}^h_{\chi,\rho}
+\arrow[dl, "I^h_{\chi,\rho}"']
+\arrow[dr, "\Lambda^h_{\chi,\rho}"]
+&
+\\
+\mathbb A
+&
+&
+\mathbb Y
+\arrow[d, "\rho"]
+\\
+&
+&
+\mathbb B
+\end{tikzcd}
+\]
+
+\begin{remark}[Forward program orientation]
+\label{rem:forward-program-orientation-derived}
+The object
+\[
+\mathsf{Exec}^h_{\chi,\rho}
+\]
+is the invariant derived execution object. In point-set representatives coming
+from strict Mealy machines, its arrows are naturally oriented
+target-to-source with respect to input arrows. If a forward dynamic-program
+orientation is required, one passes to an opposite representative and writes
+formally
+\[
+\mathsf{Prog}^h_{\chi,\rho}
+:=
+\left(\mathsf{Exec}^h_{\chi,\rho}\right)^{\mathrm{op}},
+\]
+when the opposite operation is available in the relevant model or localized
+setting.
+\end{remark}
+
+\begin{proposition}[Labelled contextual execution object]
+\label{prop:labelled-contextual-execution-object}
+For every derived Mealy morphism
+\[
+\chi:\mathbb A\rightsquigarrow^h\mathbb B
+\]
+and downstream behaviour
+\[
+\rho:\mathbb Y\to\mathbb B,
+\]
+there is a canonical derived labelled execution diagram
+\[
+\mathbb A
+\longleftarrow
+\mathsf{Exec}^h_{\chi,\rho}
+\longrightarrow
+\mathbb Y.
+\]
+If the product
+\[
+\mathbb A\times\mathbb Y
+\]
+is formed in \(\mathcal C\), this diagram is equivalently a single map
+\[
+\mathsf{Exec}^h_{\chi,\rho}
+\to
+\mathbb A\times\mathbb Y.
+\]
+\end{proposition}
+
+\begin{proof}
+The two maps are the input projection
+\[
+I^h_{\chi,\rho}
+\]
+and downstream comparison
+\[
+\Lambda^h_{\chi,\rho}.
+\]
+The final statement is the product universal property in \(\mathcal C\).
+\end{proof}
+
+\section{Terminal trace and stateless cases}
+\label{sec:derived-terminal-stateless-cases}
+
+The terminal downstream behaviour is the identity map
+\[
+1_{\mathbb B}:\mathbb B\to\mathbb B.
+\]
+
+\begin{proposition}[Terminal trace case]
+\label{prop:derived-terminal-trace-case}
+For every derived Mealy morphism
+\[
+\chi=(\pi,\Omega):\mathbb X\to\mathbb A\times\mathbb B,
+\]
+there is a canonical equivalence
+\[
+\mathsf{Exec}^h_{\chi,1_{\mathbb B}}
+=
+\mathbb X\times_{\mathbb B}\mathbb B
+\simeq
+\mathbb X.
+\]
+Under this equivalence, the input projection is \(\pi\), and the downstream
+comparison is the output cocycle
+\[
+\Omega:\mathbb X\to\mathbb B.
+\]
+\end{proposition}
+
+\begin{proof}
+The pullback of
+\[
+\Omega:\mathbb X\to\mathbb B
+\]
+along the identity map
+\[
+1_{\mathbb B}:\mathbb B\to\mathbb B
+\]
+is canonically equivalent to \(\mathbb X\). The two structural maps identify
+with \(\pi\) and \(\Omega\).
+\end{proof}
+
+\begin{remark}[Trace interpretation]
+\label{rem:derived-terminal-trace-interpretation}
+The terminal downstream behaviour imposes no additional downstream dynamics.
+Thus the terminal trace object of a derived Mealy morphism is simply its
+derived execution object \(\mathbb X\), equipped with the output cocycle
+\[
+\Omega:\mathbb X\to\mathbb B.
+\]
+This is the derived version of the strict isomorphism
+\[
+P\times_{B_0}B_0\cong P.
+\]
+\end{remark}
+
+\begin{definition}[Stateless derived Mealy morphism]
+\label{def:stateless-derived-mealy-relative}
+A derived Mealy morphism
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\]
+is \textbf{stateless} if its input map
+\[
+\pi:\mathbb X\to\mathbb A
+\]
+is equivalent in
+\[
+\mathcal C/\mathbb A
+\]
+to the identity map
+\[
+1_{\mathbb A}:\mathbb A\to\mathbb A.
+\]
+\end{definition}
+
+A strict representative of a stateless derived Mealy morphism is supplied by a
+derived internal functor
+\[
+F:\mathbb A\to\mathbb B.
+\]
+It determines
+\[
+\chi_F:\mathbb A\to\mathbb A\times\mathbb B
+\]
+classified by
+\[
+1_{\mathbb A}:\mathbb A\to\mathbb A,
+\qquad
+F:\mathbb A\to\mathbb B.
+\]
+
+\begin{proposition}[Stateless contextual restriction]
+\label{prop:derived-stateless-contextual-restriction}
+Let
+\[
+F:\mathbb A\to\mathbb B
+\]
+be a derived internal functor, and let
+\[
+\chi_F:\mathbb A\to\mathbb A\times\mathbb B
+\]
+be the associated stateless derived Mealy morphism. For every downstream
+behaviour
+\[
+\rho:\mathbb Y\to\mathbb B,
+\]
+there is a canonical equivalence
+\[
+\mathsf{Exec}^h_{\chi_F,\rho}
+\simeq
+\mathbb A\times_{\mathbb B}\mathbb Y,
+\]
+where the pullback is taken over
+\[
+F:\mathbb A\to\mathbb B
+\qquad
+\text{and}
+\qquad
+\rho:\mathbb Y\to\mathbb B.
+\]
+Thus stateless contextual restriction is ordinary derived pullback of
+downstream behaviours along \(F\).
+\end{proposition}
+
+\begin{proof}
+For \(\chi_F\), the execution object is \(\mathbb A\) and the output map is
+\(F\). Hence the contextual execution object is
+\[
+\mathbb A\times_{\mathbb B}\mathbb Y.
+\]
+\end{proof}
+
+\begin{corollary}[Terminal stateless case]
+\label{cor:derived-terminal-stateless-case}
+For a stateless derived Mealy morphism classified by
+\[
+F:\mathbb A\to\mathbb B,
+\]
+one has
+\[
+\mathsf{Exec}^h_{\chi_F,1_{\mathbb B}}
+\simeq
+\mathbb A.
+\]
+Under the forward-opposite convention, this corresponds to the strict
+identification
+\[
+\mathsf{Prog}_{F,\mathbf 1_{\mathbb B}}
+\cong
+\mathbb A^{\mathrm{op}}.
+\]
+\end{corollary}
+
+\section{Functoriality in behaviours and Mealy morphisms}
+\label{sec:derived-relative-functoriality}
+
+Let
+\[
+\chi=(\pi,\Omega):\mathbb X\to\mathbb A\times\mathbb B
+\]
+be fixed.
+
+\begin{proposition}[Functoriality in downstream behaviour]
+\label{prop:derived-functoriality-downstream}
+Let
+\[
+f:
+(\rho:\mathbb Y\to\mathbb B)
+\longrightarrow
+(\rho':\mathbb Y'\to\mathbb B)
+\]
+be a morphism in
+\[
+\mathcal C/\mathbb B.
+\]
+Then there is an induced map
+\[
+\mathsf{Exec}^h_{\chi,\rho}
+\longrightarrow
+\mathsf{Exec}^h_{\chi,\rho'}
+\]
+given by
+\[
+1_{\mathbb X}\times_{\mathbb B}f.
+\]
+These maps are functorial in \(f\), and the resulting functor
+\[
+\mathcal C/\mathbb B\to\mathcal C/\mathbb A
+\]
+is precisely the contextual restriction functor
+\[
+\chi^\ast.
+\]
+\end{proposition}
+
+\begin{proof}
+The map
+\[
+f:\mathbb Y\to\mathbb Y'
+\]
+over \(\mathbb B\) induces a map of pullbacks
+\[
+\mathbb X\times_{\mathbb B}\mathbb Y
+\to
+\mathbb X\times_{\mathbb B}\mathbb Y'.
+\]
+Functoriality follows from functoriality of pullback in the slice. The map to
+\(\mathbb A\) is obtained by composing with
+\[
+\pi:\mathbb X\to\mathbb A,
+\]
+which is exactly the definition of \(\chi^\ast\).
+\end{proof}
+
+Now let
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B
+\qquad
+\text{and}
+\qquad
+\psi:\mathbb X'\to\mathbb A\times\mathbb B
+\]
+be derived Mealy morphisms.
+
+\begin{definition}[Derived Mealy transformation]
+\label{def:derived-mealy-transformation-relative}
+A \textbf{derived Mealy transformation}
+\[
+\theta:\chi\to\psi
+\]
+is a morphism in the slice \(\infty\)-category
+\[
+\mathcal C/(\mathbb A\times\mathbb B).
+\]
+Thus it is represented by a map
+\[
+\theta:\mathbb X\to\mathbb X'
+\]
+compatible with the maps to \(\mathbb A\) and \(\mathbb B\).
+\end{definition}
+
+\begin{proposition}[Contextual functoriality of derived Mealy transformations]
+\label{prop:derived-mealy-transformations-contextual}
+Let
+\[
+\theta:\chi\to\psi
+\]
+be a derived Mealy transformation. For every downstream behaviour
+\[
+\rho:\mathbb Y\to\mathbb B,
+\]
+there is an induced map
+\[
+\theta_\rho:
+\mathsf{Exec}^h_{\chi,\rho}
+\to
+\mathsf{Exec}^h_{\psi,\rho}
+\]
+given by
+\[
+\theta\times_{\mathbb B}1_{\mathbb Y}.
+\]
+It commutes with the input maps to \(\mathbb A\) and with the downstream
+comparison maps to \(\mathbb Y\). The assignment
+\[
+\rho\longmapsto\theta_\rho
+\]
+is natural in \(\rho\).
+\end{proposition}
+
+\begin{proof}
+Since \(\theta\) is a morphism over \(\mathbb B\), it induces a map of
+pullbacks
+\[
+\mathbb X\times_{\mathbb B}\mathbb Y
+\to
+\mathbb X'\times_{\mathbb B}\mathbb Y.
+\]
+Compatibility with the input maps follows from the fact that \(\theta\) is
+also a morphism over \(\mathbb A\). Compatibility with the downstream
+projections is immediate from the definition. Naturality in \(\rho\) follows
+from functoriality of pullback.
+\end{proof}
+
+\begin{remark}
+\label{rem:higher-transformations-contextual}
+Because transformations of derived Mealy morphisms live in an
+\(\infty\)-categorical slice, they have higher homotopies. A path between
+derived Mealy transformations induces a homotopy between the corresponding
+contextual execution maps, and higher paths induce higher coherences.
+\end{remark}
+
+\section{Recovery of strict relative program categories}
+\label{sec:strict-relative-recovery-derived}
+
+We now compare the intrinsic derived construction with the strict relative
+program categories of the previous chapter.
+
+Let
+\[
+\Phi=(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a strict Mealy morphism. It determines the backward action category
+\[
+P\rtimes\mathbb A
+\]
+and a point-set representative
+\[
+\mathbb A
+\xleftarrow{\pi_P}
+P\rtimes\mathbb A
+\xrightarrow{\Omega_P}
+\mathbb B.
+\]
+Here
+\[
+(P\rtimes\mathbb A)_0=P,
+\qquad
+(P\rtimes\mathbb A)_1=A_1\times_{t_A,A_0,p}P,
+\]
+and an arrow
+\[
+(a,x)
+\]
+has source \(\delta(a,x)\) and target \(x\).
+
+Let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a strict right \(\mathbb B\)-action. It determines the backward action
+category
+\[
+Y\rtimes\mathbb B
+\]
+and a split internal discrete fibration
+\[
+\pi_Y:Y\rtimes\mathbb B\to\mathbb B.
+\]
+
+\begin{theorem}[Strict relative program categories as representatives]
+\label{thm:strict-relative-programs-as-derived-representatives}
+There is a canonical isomorphism of internal categories
+\[
+(P\rtimes\mathbb A)
+\times_{\mathbb B}
+(Y\rtimes\mathbb B)
+\cong
+\left(\mathsf{Prog}_{\Phi,Y}\right)^{\mathrm{op}},
+\]
+where the pullback on the left is the ordinary point-set pullback in
+\(\mathbf{Cat}(\mathcal E)\), and \(\mathsf{Prog}_{\Phi,Y}\) is the
+forward-oriented strict relative program category.
+
+If the point-set cospan
+\[
+P\rtimes\mathbb A
+\xrightarrow{\Omega_P}
+\mathbb B
+\xleftarrow{\pi_Y}
+Y\rtimes\mathbb B
+\]
+is homotopy-pullback-ready, then this ordinary pullback represents the derived
+execution object
+\[
+\mathsf{Exec}^h_{\chi_\Phi,\pi_Y}
+\]
+in
+\[
+\mathcal C.
+\]
+\end{theorem}
+
+\begin{proof}
+On objects, the pullback category has object object
+\[
+P\times_{q,B_0,r}Y,
+\]
+the strict relative state object.
+
+An arrow in the pullback category consists of an arrow
+\[
+(a,x)
+\]
+of
+\[
+P\rtimes\mathbb A
+\]
+and an arrow
+\[
+(\beta,y)
+\]
+of
+\[
+Y\rtimes\mathbb B
+\]
+with the same image in \(\mathbb B\). Equality in the pullback forces
+\[
+\beta=\omega(a,x).
+\]
+Thus an arrow is uniquely of the form
+\[
+\bigl((a,x),(\omega(a,x),y)\bigr).
+\]
+Its source is
+\[
+\left(
+\delta(a,x),
+\sigma(\omega(a,x),y)
+\right),
+\]
+and its target is
+\[
+(x,y).
+\]
+This is exactly the reverse of the forward strict relative transition
+\[
+(x,y)
+\longrightarrow
+\left(
+\delta(a,x),
+\sigma(\omega(a,x),y)
+\right)
+\]
+in
+\[
+\mathsf{Prog}_{\Phi,Y}.
+\]
+The identity and composition maps agree after taking opposites, using the
+Mealy unit and multiplication laws together with the action laws for \(Y\).
+
+The final statement follows from the point-set pullback convention: whenever
+the displayed cospan has been arranged to compute the homotopy pullback, its
+ordinary pullback presents the corresponding pullback in \(\mathcal C\).
+\end{proof}
+
+\begin{corollary}[Strict restriction as derived contextual restriction]
+\label{cor:strict-restriction-derived-contextual}
+Under the representative comparison of
+Theorem~\ref{thm:strict-relative-programs-as-derived-representatives}, the
+derived contextual restriction functor
+\[
+\chi_\Phi^\ast:\mathcal C/\mathbb B\to\mathcal C/\mathbb A
+\]
+recovers the strict restriction of actions
+\[
+\Phi^\ast:\mathbf{Act}(\mathbb B)\to\mathbf{Act}(\mathbb A)
+\]
+after passing through split discrete-fibration representatives and applying
+the chosen opposite convention.
+\end{corollary}
+
+\begin{remark}
+\label{rem:opposite-convention-strict-derived}
+The opposite in
+\[
+(P\rtimes\mathbb A)\times_{\mathbb B}(Y\rtimes\mathbb B)
+\cong
+\left(\mathsf{Prog}_{\Phi,Y}\right)^{\mathrm{op}}
+\]
+is not a defect. It records the same contravariant input-processing
+orientation already present in the Mealy structure cell
+\[
+\Phi:P\circ A\Rightarrow B\circ P.
+\]
+The intrinsic derived execution object keeps this contravariant orientation.
+The forward program category is obtained by reversing it.
+\end{remark}
+
+\section{Derived proarrow programs over contextual executions}
+\label{sec:derived-proarrow-programs-contextual}
+
+Let
+\[
+\chi:\mathbb A\rightsquigarrow^h\mathbb B
+\]
+be a derived Mealy morphism, let
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+be a downstream behaviour, and write
+\[
+\mathbb Z
+:=
+\mathsf{Exec}^h_{\chi,\rho}
+=
+\mathbb X\times_{\mathbb B}\mathbb Y.
+\]
+
+\begin{definition}[Derived contextual program]
+\label{def:derived-contextual-program}
+A \textbf{derived contextual program} on
+\[
+\mathbb Z
+\]
+is an endocorrespondence
+\[
+R:\mathbb Z\nrightarrow\mathbb Z,
+\]
+that is, a span
+\[
+\mathbb Z
+\xleftarrow{\ell}
+\mathbb R
+\xrightarrow{r}
+\mathbb Z
+\]
+in
+\[
+\mathcal C.
+\]
+The \(\infty\)-category of derived contextual programs on \(\mathbb Z\) is
+\[
+\operatorname{Corr}(\mathcal C)(\mathbb Z,\mathbb Z).
+\]
+\end{definition}
+
+\begin{remark}
+\label{rem:no-automatic-primitive-span-derived}
+In the strict relative chapter, the primitive execution span is automatically
+the arrow span of the program category
+\[
+\mathsf{Prog}_{\Phi,Y}.
+\]
+In the intrinsic derived setting, the contextual execution object
+\[
+\mathbb Z
+\]
+does not by itself determine a primitive endoprogram. A primitive program must
+be supplied either by a point-set representative, by an additional derived
+endocorrespondence, or by a derived execution monoid.
+\end{remark}
+
+\begin{definition}[Derived primitive program and subprogram]
+\label{def:derived-primitive-program-subprogram}
+A \textbf{derived primitive program} on
+\[
+\mathbb Z
+\]
+is a chosen endocorrespondence
+\[
+\mathbf m:\mathbb Z\nrightarrow\mathbb Z.
+\]
+A \textbf{subprogram} of \(\mathbf m\) is a morphism of endocorrespondences
+\[
+U\to\mathbf m.
+\]
+When the relevant correspondence category is posetal over \(\mathbf m\), such
+a subprogram may be regarded as a subobject of the apex of \(\mathbf m\).
+\end{definition}
+
+\section{Derived predicate semantics}
+\label{sec:derived-predicate-semantics}
+
+The strict dynamic proarrow logic of the previous chapter was expressed using
+ordinary subobject lattices and regular images. In the derived setting this
+must be separated into two levels: representative-level predicate semantics
+and intrinsic derived predicate semantics.
+
+\subsection{Representative-level predicate semantics}
+\label{subsec:representative-level-predicate-semantics}
+
+Given a point-set representative of a derived contextual execution object,
+one may apply the strict predicate semantics to the corresponding point-set
+state object and execution spans. This gives formulas involving
+\[
+\mathrm{Sub}(S),
+\qquad
+\exists_f,
+\qquad
+\forall_f.
+\]
+This semantics is useful for recovering the strict relative chapter, but it is
+not by itself an invariant derived definition unless the chosen representative
+and predicate semantics are known to respect weak equivalences.
+
+\subsection{Intrinsic derived predicate semantics}
+\label{subsec:intrinsic-derived-predicate-semantics}
+
+For intrinsic derived proarrow logic we assume an abstract predicate theory on
+\[
+\mathcal C.
+\]
+
+\begin{definition}[Derived regular predicate theory]
+\label{def:derived-regular-predicate-theory}
+A \textbf{derived regular predicate theory} on \(\mathcal C\) consists of:
+\begin{enumerate}
+\item for every object \(\mathbb Z\in\mathcal C\), a poset
+\[
+\mathrm{Pred}(\mathbb Z)
+\]
+of predicates on \(\mathbb Z\);
+\item for every morphism
+\[
+f:\mathbb X\to\mathbb Y
+\]
+a pullback operation
+\[
+f^\ast:\mathrm{Pred}(\mathbb Y)\to\mathrm{Pred}(\mathbb X);
+\]
+\item for every such \(f\), a left adjoint
+\[
+\Sigma_f:\mathrm{Pred}(\mathbb X)\to\mathrm{Pred}(\mathbb Y)
+\]
+to \(f^\ast\);
+\item Beck--Chevalley equivalences for \(\Sigma\) along pullback squares in
+\(\mathcal C\).
+\end{enumerate}
+Thus
+\[
+\Sigma_f\dashv f^\ast.
+\]
+\end{definition}
+
+\begin{definition}[Derived first-order Heyting predicate theory]
+\label{def:derived-heyting-predicate-theory}
+A \textbf{derived first-order Heyting predicate theory} on \(\mathcal C\) is a
+derived regular predicate theory such that:
+\begin{enumerate}
+\item each fibre \(\mathrm{Pred}(\mathbb Z)\) has finite meets, finite joins,
+and Heyting implication;
+\item every pullback functor
+\[
+f^\ast:\mathrm{Pred}(\mathbb Y)\to\mathrm{Pred}(\mathbb X)
+\]
+has a right adjoint
+\[
+\Pi_f:\mathrm{Pred}(\mathbb X)\to\mathrm{Pred}(\mathbb Y);
+\]
+\item the right adjoints \(\Pi_f\) satisfy Beck--Chevalley for pullback
+squares.
+\end{enumerate}
+Thus, for every \(f\), there is an adjoint triple
+\[
+\Sigma_f\dashv f^\ast\dashv \Pi_f.
+\]
+\end{definition}
+
+\begin{remark}
+\label{rem:predicate-theory-not-automatic}
+We do not assert that
+\[
+\mathcal C=\mathbf{Cat}(\mathcal E)_{JT,\infty}
+\]
+automatically carries the full predicate structure above. The logical layer of
+this chapter is conditional on the chosen derived predicate theory. In
+applications, such a predicate theory may come from an ambient
+\(\infty\)-topos, a stack semantics, or a suitably homotopy-invariant
+point-set predicate doctrine.
+\end{remark}
+
+\section{Diamonds, boxes, and tests for derived proarrows}
+\label{sec:derived-diamonds-boxes-tests}
+
+Assume first that \(\mathcal C\) is equipped with a derived regular predicate
+theory.
+
+\begin{definition}[Derived diamond of a correspondence]
+\label{def:derived-diamond-correspondence}
+Let
+\[
+R=
+\left(
+\mathbb X
+\xleftarrow{\ell}
+\mathbb R
+\xrightarrow{r}
+\mathbb Y
+\right)
+\]
+be a correspondence in \(\mathcal C\). Its \textbf{diamond modality} is
+\[
+\langle R\rangle:
+\mathrm{Pred}(\mathbb Y)\to\mathrm{Pred}(\mathbb X)
+\]
+defined by
+\[
+\langle R\rangle\varphi
+:=
+\Sigma_\ell(r^\ast\varphi).
+\]
+\end{definition}
+
+\begin{proposition}[Functoriality of derived diamonds]
+\label{prop:derived-diamond-functoriality}
+For correspondences
+\[
+R:\mathbb X\nrightarrow\mathbb Y
+\qquad
+\text{and}
+\qquad
+S:\mathbb Y\nrightarrow\mathbb Z,
+\]
+one has
+\[
+\langle 1_{\mathbb X}\rangle=\mathrm{id}_{\mathrm{Pred}(\mathbb X)}
+\]
+and
+\[
+\langle R;S\rangle
+=
+\langle R\rangle\circ\langle S\rangle.
+\]
+\end{proposition}
+
+\begin{proof}
+The identity law follows from the unit correspondence. For composition, write
+\[
+R=(\mathbb X\xleftarrow{\ell}\mathbb R\xrightarrow{r}\mathbb Y),
+\qquad
+S=(\mathbb Y\xleftarrow{m}\mathbb S\xrightarrow{n}\mathbb Z).
+\]
+Their composite has apex
+\[
+\mathbb R\times_{\mathbb Y}\mathbb S.
+\]
+Thus
+\[
+\langle R;S\rangle\varphi
+=
+\Sigma_{\ell\pi_{\mathbb R}}
+\bigl((n\pi_{\mathbb S})^\ast\varphi\bigr).
+\]
+Using functoriality of \(\Sigma\) and Beck--Chevalley for the pullback square
+defining \(\mathbb R\times_{\mathbb Y}\mathbb S\), this becomes
+\[
+\Sigma_\ell r^\ast\Sigma_m n^\ast\varphi
+=
+\langle R\rangle(\langle S\rangle\varphi).
+\]
+\end{proof}
+
+Now assume that the predicate theory is derived first-order Heyting.
+
+\begin{definition}[Derived box of a correspondence]
+\label{def:derived-box-correspondence}
+Let
+\[
+R=
+\left(
+\mathbb X
+\xleftarrow{\ell}
+\mathbb R
+\xrightarrow{r}
+\mathbb Y
+\right)
+\]
+be a correspondence. Its \textbf{box modality} is
+\[
+[R]:
+\mathrm{Pred}(\mathbb Y)\to\mathrm{Pred}(\mathbb X)
+\]
+defined by
+\[
+[R]\varphi
+:=
+\Pi_\ell(r^\ast\varphi).
+\]
+\end{definition}
+
+\begin{proposition}[Functoriality of derived boxes]
+\label{prop:derived-box-functoriality}
+For correspondences
+\[
+R:\mathbb X\nrightarrow\mathbb Y
+\qquad
+\text{and}
+\qquad
+S:\mathbb Y\nrightarrow\mathbb Z,
+\]
+one has
+\[
+[1_{\mathbb X}]=\mathrm{id}_{\mathrm{Pred}(\mathbb X)}
+\]
+and
+\[
+[R;S]=[R]\circ[S].
+\]
+\end{proposition}
+
+\begin{proof}
+The proof is the same as the proof of
+Proposition~\ref{prop:derived-diamond-functoriality}, using the right
+adjoints
+\[
+\Pi_f
+\]
+and their Beck--Chevalley equivalences instead of the left adjoints
+\[
+\Sigma_f.
+\]
+\end{proof}
+
+\begin{definition}[Derived test]
+\label{def:derived-test}
+Let
+\[
+\theta\in\mathrm{Pred}(\mathbb Z)
+\]
+be represented by a predicate inclusion
+\[
+\Theta\hookrightarrow\mathbb Z.
+\]
+The corresponding \textbf{test correspondence} is
+\[
+\theta?
+=
+\left(
+\mathbb Z
+\xleftarrow{\theta}
+\Theta
+\xrightarrow{\theta}
+\mathbb Z
+\right).
+\]
+\end{definition}
+
+\begin{proposition}[Diamond law for derived tests]
+\label{prop:derived-test-diamond-law}
+For every predicate
+\[
+\varphi\in\mathrm{Pred}(\mathbb Z),
+\]
+one has
+\[
+\langle\theta?\rangle\varphi
+=
+\theta\wedge\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+\langle\theta?\rangle\varphi
+=
+\Sigma_\theta(\theta^\ast\varphi).
+\]
+For a predicate inclusion, the dependent sum along \(\theta\) identifies
+predicates on \(\Theta\) with predicates on \(\mathbb Z\) lying below
+\(\theta\). Hence the image of \(\theta^\ast\varphi\) is
+\[
+\theta\wedge\varphi.
+\]
+\end{proof}
+
+\begin{proposition}[Box law for derived tests]
+\label{prop:derived-test-box-law}
+In a derived first-order Heyting predicate theory,
+\[
+[\theta?]\varphi
+=
+\theta\Rightarrow\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+[\theta?]\varphi
+=
+\Pi_\theta(\theta^\ast\varphi).
+\]
+For any predicate \(\psi\in\mathrm{Pred}(\mathbb Z)\),
+\[
+\psi\le \Pi_\theta(\theta^\ast\varphi)
+\]
+if and only if
+\[
+\theta^\ast\psi\le \theta^\ast\varphi.
+\]
+Since \(\theta\) is a predicate inclusion, this is equivalent to
+\[
+\psi\wedge\theta\le \varphi.
+\]
+By the defining property of Heyting implication, this is equivalent to
+\[
+\psi\le \theta\Rightarrow\varphi.
+\]
+\end{proof}
+
+\section{Contextual relative modalities}
+\label{sec:contextual-relative-modalities-derived}
+
+Let
+\[
+\chi:\mathbb A\rightsquigarrow^h\mathbb B
+\]
+be a derived Mealy morphism, let
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+be a downstream behaviour, and write
+\[
+\mathbb Z
+:=
+\mathsf{Exec}^h_{\chi,\rho}.
+\]
+
+\begin{definition}[Derived contextual modality]
+\label{def:derived-contextual-modality}
+Let
+\[
+U:\mathbb Z\nrightarrow\mathbb Z
+\]
+be a derived contextual program. Its diamond is
+\[
+\langle U\rangle:
+\mathrm{Pred}(\mathbb Z)\to\mathrm{Pred}(\mathbb Z),
+\]
+given by
+\[
+\langle U\rangle\varphi
+=
+\Sigma_\ell(r^\ast\varphi)
+\]
+for
+\[
+U=(\mathbb Z\xleftarrow{\ell}\mathbb U\xrightarrow{r}\mathbb Z).
+\]
+If the predicate theory is first-order Heyting, its box is
+\[
+[U]\varphi
+=
+\Pi_\ell(r^\ast\varphi).
+\]
+\end{definition}
+
+\begin{remark}[Interpretation]
+\label{rem:contextual-modality-interpretation}
+The predicate
+\[
+\langle U\rangle\varphi
+\]
+means that there exists a \(U\)-execution from the current derived contextual
+state to a derived contextual state satisfying \(\varphi\). The predicate
+\[
+[U]\varphi
+\]
+means that every \(U\)-execution from the current derived contextual state
+lands in a state satisfying \(\varphi\).
+\end{remark}
+
+\begin{definition}[Label-restricted derived subprogram]
+\label{def:label-restricted-derived-subprogram}
+Suppose a derived contextual program
+\[
+U=(\mathbb Z\xleftarrow{\ell}\mathbb U\xrightarrow{r}\mathbb Z)
+\]
+is equipped with a label map
+\[
+\lambda:\mathbb U\to\mathbb L.
+\]
+For a predicate
+\[
+R\in\mathrm{Pred}(\mathbb L),
+\]
+the \textbf{restriction of \(U\) by \(R\)} is the subprogram obtained by
+pulling \(R\) back along \(\lambda\):
+\[
+U|_R
+\hookrightarrow
+U.
+\]
+Its modality is denoted
+\[
+\langle U|_R\rangle.
+\]
+\end{definition}
+
+\begin{remark}
+\label{rem:label-maps-not-automatic-derived}
+In the intrinsic derived setting, label maps on the apex of a program
+correspondence are additional structure. They may arise from a point-set
+representative, from a chosen primitive correspondence, or from a richer
+universal construction. This is the derived replacement of the strict
+restrictions by input, raw-output, and downstream-transition predicates.
+\end{remark}
+
+\section{Finite choice of derived subprograms}
+\label{sec:finite-choice-derived-subprograms}
+
+Assume that the relevant predicate fibres and subprogram fibres have finite
+joins stable under pullback.
+
+Let
+\[
+\mathbf m:\mathbb Z\nrightarrow\mathbb Z
+\]
+be a chosen derived primitive program, and let
+\[
+U,V\to\mathbf m
+\]
+be subprograms. Their finite choice is written
+\[
+U\vee V\to\mathbf m.
+\]
+
+\begin{proposition}[Finite choice law]
+\label{prop:derived-finite-choice-law}
+For every predicate
+\[
+\varphi\in\mathrm{Pred}(\mathbb Z),
+\]
+one has
+\[
+\langle U\vee V\rangle\varphi
+=
+\langle U\rangle\varphi
+\vee
+\langle V\rangle\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+Regard \(U\) and \(V\) as predicates on the apex of \(\mathbf m\). If
+\[
+\mathbf m=(\mathbb Z\xleftarrow{s}\mathbb M\xrightarrow{t}\mathbb Z),
+\]
+then
+\[
+\langle U\rangle\varphi
+=
+\Sigma_s(U\wedge t^\ast\varphi).
+\]
+Hence
+\[
+\langle U\vee V\rangle\varphi
+=
+\Sigma_s((U\vee V)\wedge t^\ast\varphi).
+\]
+By distributivity of finite joins over finite meets,
+\[
+(U\vee V)\wedge t^\ast\varphi
+=
+(U\wedge t^\ast\varphi)
+\vee
+(V\wedge t^\ast\varphi).
+\]
+Since \(\Sigma_s\) is a left adjoint, it preserves finite joins. Therefore
+\[
+\langle U\vee V\rangle\varphi
+=
+\langle U\rangle\varphi
+\vee
+\langle V\rangle\varphi.
+\]
+\end{proof}
+
+\begin{remark}
+\label{rem:derived-choice-fixed-primitive}
+This is finite choice of subprograms inside a fixed primitive program
+\[
+\mathbf m.
+\]
+It should not be confused with arbitrary coproducts of unrelated
+correspondences unless the relevant coproduct hypotheses have been imposed.
+\end{remark}
+
+\section{Path star in the derived correspondence category}
+\label{sec:path-star-derived-corr}
+
+Let
+\[
+\mathbb Z\in\mathcal C
+\]
+and let
+\[
+U:\mathbb Z\nrightarrow\mathbb Z
+\]
+be an endocorrespondence.
+
+Assume that the hom-\(\infty\)-category
+\[
+\operatorname{Corr}(\mathcal C)(\mathbb Z,\mathbb Z)
+\]
+has countable coproducts and that composition preserves these coproducts
+separately in each variable.
+
+Define powers by
+\[
+U^0:=1_{\mathbb Z},
+\qquad
+U^{n+1}:=U;U^n.
+\]
+
+\begin{definition}[Derived finite-path star]
+\label{def:derived-path-star}
+The \textbf{finite-path star} of \(U\) is
+\[
+U^\star_{\mathrm{path}}
+:=
+\coprod_{n\ge0}U^n.
+\]
+\end{definition}
+
+\begin{proposition}[Derived path-star equation]
+\label{prop:derived-path-star-equation}
+There is a canonical equivalence of endocorrespondences
+\[
+U^\star_{\mathrm{path}}
+\simeq
+1_{\mathbb Z}\oplus U;U^\star_{\mathrm{path}}.
+\]
+\end{proposition}
+
+\begin{proof}
+By definition,
+\[
+U^\star_{\mathrm{path}}
+=
+\coprod_{n\ge0}U^n.
+\]
+Separating the \(0\)-summand gives
+\[
+\coprod_{n\ge0}U^n
+\simeq
+U^0\oplus\coprod_{n\ge0}U^{n+1}.
+\]
+Since
+\[
+U^0=1_{\mathbb Z}
+\]
+and
+\[
+U^{n+1}=U;U^n,
+\]
+and since composition with \(U\) preserves the relevant countable coproducts,
+\[
+\coprod_{n\ge0}U^{n+1}
+\simeq
+U;\left(\coprod_{n\ge0}U^n\right)
+=
+U;U^\star_{\mathrm{path}}.
+\]
+\end{proof}
+
+\begin{theorem}[Derived path star as free monoid]
+\label{thm:derived-path-star-free-monoid}
+Under the hypotheses above,
+\[
+U^\star_{\mathrm{path}}
+=
+\coprod_{n\ge0}U^n
+\]
+is the free monoid on \(U\) in the monoidal \(\infty\)-category
+\[
+\operatorname{Corr}(\mathcal C)(\mathbb Z,\mathbb Z).
+\]
+\end{theorem}
+
+\begin{proof}
+The monoidal product is correspondence composition. Because this product
+preserves countable coproducts separately in each variable, the usual tensor
+algebra construction applies.
+
+The unit is the inclusion of the \(0\)-summand
+\[
+1_{\mathbb Z}=U^0\to U^\star_{\mathrm{path}}.
+\]
+Multiplication is induced summandwise by the canonical equivalences
+\[
+U^m;U^n\simeq U^{m+n}
+\]
+followed by the coproduct inclusion
+\[
+U^{m+n}\to \coprod_{k\ge0}U^k.
+\]
+Associativity and the unit laws follow from associativity and unitality of
+correspondence composition together with associativity and unitality of
+addition of natural numbers.
+
+Given any monoid object \(M\) and a map \(U\to M\), the induced maps
+\[
+U^n\to M
+\]
+are defined by iterated multiplication in \(M\). The coproduct universal
+property gives a unique map
+\[
+U^\star_{\mathrm{path}}\to M
+\]
+compatible with these maps, and the compatibility is exactly the monoid
+morphism condition.
+\end{proof}
+
+\section{Fixed-point semantics for derived path star}
+\label{sec:derived-fixed-point-semantics}
+
+Assume now that the derived predicate theory has countable joins and countable
+meets in predicate fibres, and that the modalities considered below preserve
+the relevant countable joins or meets.
+
+Let
+\[
+U:\mathbb Z\nrightarrow\mathbb Z
+\]
+be an endocorrespondence and let
+\[
+\varphi\in\mathrm{Pred}(\mathbb Z).
+\]
+
+\subsection{Diamond fixed points}
+\label{subsec:derived-diamond-fixed-points}
+
+Define
+\[
+F^\Diamond_{U,\varphi}:\mathrm{Pred}(\mathbb Z)\to
+\mathrm{Pred}(\mathbb Z)
+\]
+by
+\[
+F^\Diamond_{U,\varphi}(X)
+:=
+\varphi\vee\langle U\rangle X.
+\]
+Assume that
+\[
+\langle U\rangle
+\]
+preserves countable joins. Define
+\[
+\mu F^\Diamond_{U,\varphi}
+:=
+\bigvee_{n\ge0}(F^\Diamond_{U,\varphi})^n(\bot).
+\]
+
+\begin{lemma}[Derived diamond approximants]
+\label{lem:derived-diamond-approximants}
+For every \(n\ge0\),
+\[
+(F^\Diamond_{U,\varphi})^n(\bot)
+=
+\bigvee_{0\le k<n}\langle U^k\rangle\varphi.
+\]
+\end{lemma}
+
+\begin{proof}
+The case \(n=0\) is the empty join. The induction step uses
+\[
+F^\Diamond_{U,\varphi}(X)=\varphi\vee\langle U\rangle X,
+\]
+preservation of joins by \(\langle U\rangle\), and functoriality of diamonds:
+\[
+\langle U\rangle\langle U^k\rangle
+=
+\langle U;U^k\rangle
+=
+\langle U^{k+1}\rangle.
+\]
+\end{proof}
+
+\begin{theorem}[Derived diamond least fixed point]
+\label{thm:derived-diamond-lfp}
+One has
+\[
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr)
+=
+\bigvee_{n\ge0}\langle U^n\rangle\varphi.
+\]
+This predicate is the least pre-fixed point of
+\[
+X\longmapsto \varphi\vee\langle U\rangle X.
+\]
+\end{theorem}
+
+\begin{proof}
+The displayed formula follows from
+Lemma~\ref{lem:derived-diamond-approximants}. Let
+\[
+\chi:=
+\bigvee_{n\ge0}\langle U^n\rangle\varphi.
+\]
+Then
+\[
+\begin{aligned}
+\varphi\vee\langle U\rangle\chi
+&=
+\langle U^0\rangle\varphi
+\vee
+\bigvee_{n\ge0}\langle U\rangle\langle U^n\rangle\varphi
+\\
+&=
+\langle U^0\rangle\varphi
+\vee
+\bigvee_{n\ge0}\langle U^{n+1}\rangle\varphi
+\\
+&=
+\chi.
+\end{aligned}
+\]
+If
+\[
+\varphi\vee\langle U\rangle\psi\le\psi,
+\]
+then \(\varphi\le\psi\) and \(\langle U\rangle\psi\le\psi\). By induction,
+\[
+\langle U^n\rangle\varphi\le\psi
+\]
+for all \(n\), hence
+\[
+\chi\le\psi.
+\]
+Thus \(\chi\) is the least pre-fixed point.
+\end{proof}
+
+\subsection{Box fixed points}
+\label{subsec:derived-box-fixed-points}
+
+Assume the predicate theory is first-order Heyting and that
+\[
+[U]
+\]
+preserves countable meets. Define
+\[
+F^\Box_{U,\varphi}(X)
+:=
+\varphi\wedge[U]X.
+\]
+Set
+\[
+\nu F^\Box_{U,\varphi}
+:=
+\bigwedge_{n\ge0}(F^\Box_{U,\varphi})^n(\top).
+\]
+
+\begin{lemma}[Derived box approximants]
+\label{lem:derived-box-approximants}
+For every \(n\ge0\),
+\[
+(F^\Box_{U,\varphi})^n(\top)
+=
+\bigwedge_{0\le k<n}[U^k]\varphi.
+\]
+\end{lemma}
+
+\begin{proof}
+The proof is dual to Lemma~\ref{lem:derived-diamond-approximants}, using
+preservation of meets by \([U]\) and functoriality of boxes:
+\[
+[U][U^k]=[U;U^k]=[U^{k+1}].
+\]
+\end{proof}
+
+\begin{theorem}[Derived box greatest fixed point]
+\label{thm:derived-box-gfp}
+One has
+\[
+\nu X.\bigl(\varphi\wedge[U]X\bigr)
+=
+\bigwedge_{n\ge0}[U^n]\varphi.
+\]
+This predicate is the greatest post-fixed point of
+\[
+X\longmapsto \varphi\wedge[U]X.
+\]
+\end{theorem}
+
+\begin{proof}
+Let
+\[
+\chi:=
+\bigwedge_{n\ge0}[U^n]\varphi.
+\]
+By Lemma~\ref{lem:derived-box-approximants}, this is the displayed
+\(\nu\)-approximant. Moreover,
+\[
+\begin{aligned}
+\varphi\wedge[U]\chi
+&=
+[U^0]\varphi
+\wedge
+\bigwedge_{n\ge0}[U][U^n]\varphi
+\\
+&=
+[U^0]\varphi
+\wedge
+\bigwedge_{n\ge0}[U^{n+1}]\varphi
+\\
+&=
+\chi.
+\end{aligned}
+\]
+If
+\[
+\psi\le \varphi\wedge[U]\psi,
+\]
+then \(\psi\le\varphi\) and \(\psi\le[U]\psi\). By induction,
+\[
+\psi\le[U^n]\varphi
+\]
+for all \(n\), hence
+\[
+\psi\le\chi.
+\]
+Thus \(\chi\) is the greatest post-fixed point.
+\end{proof}
+
+\begin{theorem}[Derived path/fixed-point comparison]
+\label{thm:derived-path-fixed-point-comparison}
+Assume the modalities of countable coproducts satisfy
+\[
+\left\langle\coprod_{n\ge0}R_n\right\rangle\varphi
+=
+\bigvee_{n\ge0}\langle R_n\rangle\varphi
+\]
+and, in the box case,
+\[
+\left[\coprod_{n\ge0}R_n\right]\varphi
+=
+\bigwedge_{n\ge0}[R_n]\varphi.
+\]
+Then
+\[
+\langle U^\star_{\mathrm{path}}\rangle\varphi
+=
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr),
+\]
+and, when boxes exist,
+\[
+[U^\star_{\mathrm{path}}]\varphi
+=
+\nu X.\bigl(\varphi\wedge[U]X\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+By definition,
+\[
+U^\star_{\mathrm{path}}
+=
+\coprod_{n\ge0}U^n.
+\]
+Using the coproduct modality formula,
+\[
+\langle U^\star_{\mathrm{path}}\rangle\varphi
+=
+\bigvee_{n\ge0}\langle U^n\rangle\varphi.
+\]
+By Theorem~\ref{thm:derived-diamond-lfp}, this is
+\[
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr).
+\]
+The box statement is the same, using the coproduct formula for boxes and
+Theorem~\ref{thm:derived-box-gfp}.
+\end{proof}
+
+\begin{corollary}[Derived induction and coinduction]
+\label{cor:derived-induction-coinduction}
+If
+\[
+\varphi\vee\langle U\rangle\psi\le\psi,
+\]
+then
+\[
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr)\le\psi.
+\]
+If boxes exist and
+\[
+\psi\le\varphi\wedge[U]\psi,
+\]
+then
+\[
+\psi\le\nu X.\bigl(\varphi\wedge[U]X\bigr).
+\]
+\end{corollary}
+
+\section{Derived folded trace semantics}
+\label{sec:derived-folded-trace-semantics}
+
+Let
+\[
+\mathbb Z=\mathsf{Exec}^h_{\chi,\rho}.
+\]
+A folded trace construction requires more than the contextual execution object:
+it requires a chosen execution monoid.
+
+\begin{definition}[Derived execution monoid]
+\label{def:derived-execution-monoid}
+A \textbf{derived execution monoid} on
+\[
+\mathbb Z
+\]
+is a monoid object
+\[
+\mathbf m:\mathbb Z\nrightarrow\mathbb Z
+\]
+in the monoidal \(\infty\)-category
+\[
+\operatorname{Corr}(\mathcal C)(\mathbb Z,\mathbb Z).
+\]
+\end{definition}
+
+Let
+\[
+i:U\to\mathbf m
+\]
+be a subprogram of a derived execution monoid.
+
+\begin{definition}[Derived folded trace map]
+\label{def:derived-folded-trace-map}
+The \textbf{derived folded trace map} of
+\[
+i:U\to\mathbf m
+\]
+is the unique monoid morphism
+\[
+\operatorname{fold}_U:
+U^\star_{\mathrm{path}}\to\mathbf m
+\]
+whose restriction to the \(1\)-step summand \(U\) is \(i\).
+\end{definition}
+
+\begin{proposition}[Meaning of the folded trace map]
+\label{prop:meaning-derived-folded-trace}
+The map
+\[
+\operatorname{fold}_U:
+U^\star_{\mathrm{path}}\to\mathbf m
+\]
+sends a finite path of \(U\)-steps to its composite execution in the derived
+execution monoid
+\[
+\mathbf m.
+\]
+\end{proposition}
+
+\begin{proof}
+The path star
+\[
+U^\star_{\mathrm{path}}
+\]
+is the free monoid on \(U\). A map
+\[
+i:U\to\mathbf m
+\]
+into a monoid object \(\mathbf m\) therefore extends uniquely to a monoid
+morphism
+\[
+U^\star_{\mathrm{path}}\to\mathbf m.
+\]
+On the \(n\)-step summand \(U^n\), this map is given by iterated
+multiplication in \(\mathbf m\). Hence it folds a finite path into its
+composite execution.
+\end{proof}
+
+\begin{remark}[Strict comparison]
+\label{rem:strict-comparison-folded-derived}
+For a strict Mealy morphism and a strict downstream action, the primitive
+execution span of the forward program category
+\[
+\mathsf{Prog}_{\Phi,Y}
+\]
+is a monoid object in the appropriate endospan category. Its derived
+representative supplies an execution monoid. The derived folded trace map then
+recovers the strict folded trace map after applying the point-set comparison
+and the chosen opposite convention.
+\end{remark}
+
+\section{Representative-level primitive semantics}
+\label{sec:representative-level-primitive-semantics}
+
+We spell out how the familiar strict formulas are recovered from
+representatives.
+
+Let
+\[
+\Phi=(P,\delta,\omega):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a strict Mealy morphism and let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a strict right \(\mathbb B\)-action. The forward relative state object is
+\[
+S_{\Phi,Y}:=P\times_{q,B_0,r}Y.
+\]
+The forward primitive execution object is
+\[
+M_{\Phi,Y}
+:=
+A_1\times_{t_A,A_0,p\pi_P}S_{\Phi,Y}.
+\]
+A generalized element is a triple
+\[
+(a,x,y)
+\]
+with
+\[
+t_A(a)=p(x),
+\qquad
+q(x)=r(y).
+\]
+The source and target maps are
+\[
+s_{\Phi,Y}(a,x,y)=(x,y),
+\]
+and
+\[
+t_{\Phi,Y}(a,x,y)
+=
+\left(
+\delta(a,x),
+\sigma(\omega(a,x),y)
+\right).
+\]
+
+\begin{definition}[Representative primitive diamond]
+\label{def:representative-primitive-diamond}
+In a regular point-set predicate semantics, the representative primitive
+diamond is
+\[
+\langle\mathbf m_{\Phi,Y}\rangle\varphi
+:=
+\exists_{s_{\Phi,Y}}\bigl(t_{\Phi,Y}^\ast\varphi\bigr).
+\]
+\end{definition}
+
+\begin{proposition}[External reading of representative primitive diamonds]
+\label{prop:representative-primitive-diamond-reading}
+In \(\mathbf{Set}\),
+\[
+(x,y)\models\langle\mathbf m_{\Phi,Y}\rangle\varphi
+\]
+if and only if there exists an admissible input arrow
+\[
+a:u\to p(x)
+\]
+such that
+\[
+\left(
+\delta(a,x),
+\sigma(\omega(a,x),y)
+\right)
+\models\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+This is the elementwise interpretation of
+\[
+\exists_{s_{\Phi,Y}}\bigl(t_{\Phi,Y}^\ast\varphi\bigr).
+\]
+A witness is a primitive execution
+\[
+(a,x,y)\in M_{\Phi,Y}
+\]
+with source \((x,y)\) and target
+\[
+\left(
+\delta(a,x),
+\sigma(\omega(a,x),y)
+\right).
+\]
+\end{proof}
+
+\begin{remark}
+\label{rem:representative-semantics-not-intrinsic}
+The modality in
+Definition~\ref{def:representative-primitive-diamond} is a point-set
+representative semantics. It is the correct way to recover the strict relative
+program logic, but it is not the intrinsic derived definition unless the
+chosen representative predicate semantics is known to be homotopy invariant.
+\end{remark}
+
+\section{Classical and relational special cases}
+\label{sec:derived-relative-classical-special-cases}
+
+\begin{example}[Classical Mealy cascades]
+\label{ex:derived-classical-mealy-cascades}
+Let
+\[
+\mathcal E=\mathbf{Set}
+\]
+and suppose that \(\mathbb A\) and \(\mathbb B\) each have one object. Then
+they are monoids, say
+\[
+M
+\qquad
+\text{and}
+\qquad
+N.
+\]
+A strict Mealy morphism consists of a set \(P\) and functions
+\[
+\delta:M\times P\to P,
+\qquad
+\omega:M\times P\to N
+\]
+satisfying the unit and cocycle laws.
+
+A right \(N\)-action is a set \(Y\) with an action
+\[
+N\times Y\to Y.
+\]
+The contextual state object is
+\[
+P\times Y,
+\]
+and the induced \(M\)-action is
+\[
+m\cdot(x,y)
+=
+\left(
+\delta(m,x),
+\omega(m,x)\cdot y
+\right).
+\]
+Thus the strict representative of the derived contextual execution object is
+the ordinary automata-theoretic cascade of a Mealy transducer followed by an
+\(N\)-automaton.
+\end{example}
+
+\begin{example}[Relational dynamic logic]
+\label{ex:derived-relative-relational-pdl}
+In \(\mathbf{Set}\), after quotienting spans by their extensional binary
+relations, a span
+\[
+S\xleftarrow{\ell}R\xrightarrow{r}S
+\]
+determines a relation
+\[
+s\,\overline R\,s'
+\]
+if and only if there exists \(\rho\in R\) such that
+\[
+\ell(\rho)=s,
+\qquad
+r(\rho)=s'.
+\]
+The diamond becomes the usual relational dynamic-logic modality:
+\[
+s\models\langle R\rangle\varphi
+\]
+if and only if there exists \(s'\) such that
+\[
+s\,\overline R\,s'
+\]
+and
+\[
+s'\models\varphi.
+\]
+For a relative Mealy system, this relation lives on the contextual state space
+\[
+P\times_{B_0}Y.
+\]
+\end{example}
+
+\begin{example}[Relational Kleene algebra with tests]
+\label{ex:derived-relative-relational-kat}
+In \(\mathbf{Set}\), after passing from spans to extensional relations,
+endoprograms on a state set \(S\) form the relation algebra
+\[
+\mathcal P(S\times S).
+\]
+Sequential composition is relational composition, finite choice is union,
+tests are subidentity relations, and path star is reflexive-transitive
+closure. For a relative Mealy system, this gives a Kleene algebra with tests
+on the coupled state object
+\[
+P\times_{B_0}Y.
+\]
+\end{example}
+
+\section{Main consolidation}
+\label{sec:derived-relative-main-consolidation}
+
+\begin{theorem}[Derived contextual Mealy proarrow logic]
+\label{thm:derived-contextual-mealy-proarrow-logic}
+Let
+\[
+\mathcal E
+\]
+be a Grothendieck topos, let
+\[
+\mathcal M=\mathbf{Cat}(\mathcal E)_{JT},
+\]
+and let
+\[
+\mathcal C=\mathcal M_\infty
+\]
+be the Joyal--Tierney localized \(\infty\)-category of internal categories.
+
+\begin{enumerate}
+\item A derived Mealy morphism from \(\mathbb A\) to \(\mathbb B\) is a
+derived correspondence
+\[
+\chi:\mathbb X\to\mathbb A\times\mathbb B.
+\]
+
+\item A derived downstream \(\mathbb B\)-behaviour is an object
+\[
+\rho:\mathbb Y\to\mathbb B
+\]
+of the slice
+\[
+\mathcal C/\mathbb B.
+\]
+
+\item Every derived Mealy morphism
+\[
+\chi=(\pi,\Omega):\mathbb X\to\mathbb A\times\mathbb B
+\]
+induces a contextual restriction functor
+\[
+\chi^\ast:\mathcal C/\mathbb B\to\mathcal C/\mathbb A
+\]
+given by
+\[
+\rho:\mathbb Y\to\mathbb B
+\longmapsto
+\left(
+\mathbb X\times_{\mathbb B}\mathbb Y\to\mathbb A
+\right).
+\]
+
+\item The derived relative execution object in context \(\rho\) is
+\[
+\mathsf{Exec}^h_{\chi,\rho}
+=
+\mathbb X\times_{\mathbb B}\mathbb Y.
+\]
+
+\item It carries canonical structural maps
+\[
+\mathsf{Exec}^h_{\chi,\rho}\to\mathbb A
+\qquad
+\text{and}
+\qquad
+\mathsf{Exec}^h_{\chi,\rho}\to\mathbb Y.
+\]
+
+\item The terminal downstream behaviour gives
+\[
+\mathsf{Exec}^h_{\chi,1_{\mathbb B}}
+\simeq
+\mathbb X.
+\]
+
+\item If \(\chi\) is stateless and classified by a derived functor
+\[
+F:\mathbb A\to\mathbb B,
+\]
+then
+\[
+\mathsf{Exec}^h_{\chi,\rho}
+\simeq
+\mathbb A\times_{\mathbb B}\mathbb Y.
+\]
+
+\item Strict Mealy morphisms and strict downstream actions give point-set
+representatives
+\[
+(P\rtimes\mathbb A)\times_{\mathbb B}(Y\rtimes\mathbb B)
+\]
+of the derived contextual execution object whenever the cospan computes the
+homotopy pullback.
+
+\item Up to the forward-opposite convention, these representatives recover the
+strict relative program categories
+\[
+\mathsf{Prog}_{\Phi,Y}.
+\]
+
+\item A derived contextual program on
+\[
+\mathsf{Exec}^h_{\chi,\rho}
+\]
+is an endocorrespondence in
+\[
+\operatorname{Corr}(\mathcal C).
+\]
+
+\item Under a derived regular predicate theory, every correspondence
+\[
+R=(\mathbb X\xleftarrow{\ell}\mathbb R\xrightarrow{r}\mathbb Y)
+\]
+acts on predicates by
+\[
+\langle R\rangle\varphi
+=
+\Sigma_\ell(r^\ast\varphi).
+\]
+
+\item Under a derived first-order Heyting predicate theory, every such
+correspondence also acts by
+\[
+[R]\varphi
+=
+\Pi_\ell(r^\ast\varphi).
+\]
+
+\item Tests satisfy
+\[
+\langle\theta?\rangle\varphi
+=
+\theta\wedge\varphi,
+\]
+and, when implication exists,
+\[
+[\theta?]\varphi
+=
+\theta\Rightarrow\varphi.
+\]
+
+\item Under suitable finite-join hypotheses, finite choice of subprograms
+satisfies
+\[
+\langle U\vee V\rangle\varphi
+=
+\langle U\rangle\varphi
+\vee
+\langle V\rangle\varphi.
+\]
+
+\item Under suitable countable-coproduct hypotheses, every endoprogram
+\[
+U:\mathbb Z\nrightarrow\mathbb Z
+\]
+has a finite-path star
+\[
+U^\star_{\mathrm{path}}
+=
+\coprod_{n\ge0}U^n,
+\]
+satisfying
+\[
+U^\star_{\mathrm{path}}
+\simeq
+1_{\mathbb Z}\oplus U;U^\star_{\mathrm{path}}.
+\]
+
+\item This path star is the free monoid on \(U\) in
+\[
+\operatorname{Corr}(\mathcal C)(\mathbb Z,\mathbb Z)
+\]
+under the corresponding coproduct-distributivity hypotheses.
+
+\item Under suitable continuity and completeness hypotheses,
+\[
+\langle U^\star_{\mathrm{path}}\rangle\varphi
+=
+\mu X.\bigl(\varphi\vee\langle U\rangle X\bigr),
+\]
+and, when boxes exist,
+\[
+[U^\star_{\mathrm{path}}]\varphi
+=
+\nu X.\bigl(\varphi\wedge[U]X\bigr).
+\]
+
+\item If a derived execution monoid
+\[
+\mathbf m:\mathbb Z\nrightarrow\mathbb Z
+\]
+is chosen, every subprogram
+\[
+U\to\mathbf m
+\]
+has a folded trace map
+\[
+U^\star_{\mathrm{path}}\to\mathbf m
+\]
+which folds finite paths into composite executions.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Parts (1) and (2) are the definitions of derived Mealy morphisms and derived
+downstream behaviours. Part (3) is
+Theorem~\ref{thm:derived-contextual-restriction}. Parts (4) and (5) are
+Definitions~\ref{def:derived-relative-execution-object} and
+\ref{def:derived-input-downstream-projections}. Part (6) is
+Proposition~\ref{prop:derived-terminal-trace-case}. Part (7) is
+Proposition~\ref{prop:derived-stateless-contextual-restriction}. Parts (8)
+and (9) are Theorem~\ref{thm:strict-relative-programs-as-derived-representatives}
+and Corollary~\ref{cor:strict-restriction-derived-contextual}. Part (10) is
+Definition~\ref{def:derived-contextual-program}. Parts (11) and (12) are
+Definitions~\ref{def:derived-diamond-correspondence} and
+\ref{def:derived-box-correspondence}. Part (13) follows from
+Propositions~\ref{prop:derived-test-diamond-law} and
+\ref{prop:derived-test-box-law}. Part (14) is
+Proposition~\ref{prop:derived-finite-choice-law}. Part (15) is
+Definition~\ref{def:derived-path-star} and
+Proposition~\ref{prop:derived-path-star-equation}. Part (16) is
+Theorem~\ref{thm:derived-path-star-free-monoid}. Part (17) is
+Theorem~\ref{thm:derived-path-fixed-point-comparison}. Part (18) is
+Definition~\ref{def:derived-folded-trace-map} and
+Proposition~\ref{prop:meaning-derived-folded-trace}.
+\end{proof}
+
+\begin{remark}[Hierarchy of structure]
+\label{rem:derived-relative-hierarchy}
+The derived relative theory separates three layers.
+
+First, the operational layer only uses finite limits in
+\[
+\mathcal C.
+\]
+A derived Mealy morphism and a downstream behaviour combine by homotopy
+pullback:
+\[
+\mathbb X\times_{\mathbb B}\mathbb Y.
+\]
+
+Second, the program layer studies correspondences on this contextual execution
+object:
+\[
+\mathbb Z\nleftarrow \mathbb U\nrightarrow \mathbb Z.
+\]
+
+Third, the logical layer requires a predicate theory. Diamonds require
+dependent sums, boxes require dependent products, tests require finite
+Heyting structure, finite choice requires finite joins, and path/fixed-point
+comparisons require countable and continuity hypotheses.
+\end{remark}
+
+\begin{remark}[Final conceptual summary]
+\label{rem:derived-relative-final-summary}
+The strict relative theory says:
+\[
+\text{Mealy adapter}
++
+\text{downstream action}
+\quad\leadsto\quad
+\text{coupled program category}.
+\]
+The derived relative theory says:
+\[
+\text{derived output cocycle}
++
+\text{derived downstream behaviour}
+\quad\leadsto\quad
+\text{homotopy pullback execution object}.
+\]
+Dynamic proarrow logic is then the modal and fixed-point logic of
+correspondences on this contextual execution object.
+
+In the strict case, the primitive execution span is visible directly as the
+arrow span of a program category. In the derived case, primitive programs are
+additional endocorrespondences, induced by representatives or supplied as a
+chosen derived execution monoid. This is the structural clarification provided
+by the derived presentation.
+\end{remark}

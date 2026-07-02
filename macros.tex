@@ -1,0 +1,48 @@
+\makeatletter
+\newcommand{\Mlongrightarrow}{%
+  \mathrel{\mathpalette\Mlongrightarrow@{}}%
+}
+
+\newcommand{\Mlongrightarrow@}[2]{%
+  \ooalign{%
+    \hfil\scalebox{0.75}{$\m@th#1 \mathsf{M}$}\hfil\cr
+    $#1\relbar\joinrel\relbar\joinrel\rightarrow$\cr
+  }%
+}
+
+
+\newcommand{\Mleadsto}{%
+  \mathrel{\mathpalette\Mleadsto@{}}%
+}
+
+\newcommand{\Mleadsto@}[2]{%
+  \ooalign{%
+    \hfil\scalebox{0.75}{$\m@th#1 \mathsf{m}$}\hfil\cr
+    $#1\relbar\joinrel\rightarrow$\cr
+  }%
+}
+
+\makeatother
+
+%\providecommand{\Set}{\mathbf{Set}}
+%\providecommand{\Cat}{\mathbf{Cat}}
+%\providecommand{\FinSet}{\mathbf{FinSet}}
+%\providecommand{\Span}{\mathrm{Span}}
+%\providecommand{\Kl}{\mathbf{Kl}}
+%\providecommand{\Mnd}{\mathrm{Mnd}}
+%\providecommand{\Mod}{\mathrm{Mod}}
+%\providecommand{\Th}{\mathbb{T}}
+%\providecommand{\CatTh}{\mathsf{Cat}}
+%\providecommand{\CartCatTh}{\mathsf{CartCat}}
+%\providecommand{\ConvCatTh}{\mathsf{ConvCat}}
+%\providecommand{\ConvMnd}{\mathsf{ConvMnd}}
+%\providecommand{\Ob}{\mathrm{Ob}}
+%\providecommand{\Mor}{\mathrm{Mor}}
+%\providecommand{\id}{\mathrm{id}}
+%\providecommand{\op}{\mathrm{op}}
+%\providecommand{\cod}{\mathrm{cod}}
+%\providecommand{\dom}{\mathrm{dom}}
+%\providecommand{\Conway}{\operatorname{Conway}}
+
+%\newcommand{\parr}{\mathbin{\bindnasrepma}}
+%\newcommand{\beh}{\mathrm{beh}}

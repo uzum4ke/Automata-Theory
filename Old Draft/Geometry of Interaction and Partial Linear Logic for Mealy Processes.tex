@@ -1,0 +1,1936 @@
+\chapter{Geometry of Interaction and Partial Linear Logic for Mealy Processes}
+\label{ch:goi-partial-linear-logic-mealy}
+
+\section{Overview}
+\label{sec:goi-overview}
+
+The previous chapter showed that the symmetric monoidal category
+\[
+\mathsf{Mly}(\mathcal E)
+\]
+of internal categories and Mealy morphisms carries a canonical partial trace.
+This trace is inherited from the total compact-closed trace on spans of
+internal categories.  It is defined precisely for those Mealy morphisms whose
+closed-loop span remains input-discrete.  Equivalently, in component form, the
+trace is defined precisely when the internal feedback equation
+\[
+h=\omega_U((a,h),x)
+\]
+has a unique solution over every visible input and closed state.
+
+This chapter applies that partial trace to Geometry of Interaction.  The
+guiding principle is that a bidirectional process from an interface
+\(\mathbb A\) to an interface \(\mathbb B\) is a Mealy morphism
+\[
+\mathbb A^+\times\mathbb B^-
+\rightsquigarrow
+\mathbb B^+\times\mathbb A^-.
+\]
+The positive component flows forward, while the negative component flows
+backward.  Composition is not ordinary sequential composition of the displayed
+Mealy morphisms.  Instead, composition is Geometry-of-Interaction execution:
+one first forms an open pipeline and then closes the shared counterflow
+interface by the partial trace.
+
+Thus, for bidirectional Mealy processes
+\[
+F:\mathbb A\to\mathbb B,
+\qquad
+G:\mathbb B\to\mathbb C,
+\]
+their composite is defined by
+\[
+G\circ_{\partial}F
+=
+\operatorname{Tr}^{\mathbb B^-}(H_{G,F}),
+\]
+where \(H_{G,F}\) is the open pipeline from \(\mathbb A\) to \(\mathbb C\)
+with the \(\mathbb B^-\)-interface still exposed.  The composite is defined
+exactly when this open pipeline is trace-class.
+
+In component notation, suppose
+\[
+F=(P_F,\delta_F,\omega_F):
+\mathbb A^+\times\mathbb B^-
+\rightsquigarrow
+\mathbb B^+\times\mathbb A^-,
+\]
+and
+\[
+G=(P_G,\delta_G,\omega_G):
+\mathbb B^+\times\mathbb C^-
+\rightsquigarrow
+\mathbb C^+\times\mathbb B^-.
+\]
+For a visible input \((a^+,c^-)\) and a compatible closed pipeline state
+\((x,y)\), the hidden counterflow witness \(h\in B^-_1\) must satisfy
+\[
+h
+=
+\omega_G^-
+\left(
+\left(
+\omega_F^+((a^+,h),x),
+c^-
+\right),
+y
+\right).
+\]
+When this equation has a unique solution, denoted
+\[
+h_{G,F}(a^+,c^-,x,y),
+\]
+the composite process is obtained by substituting that solution into the
+transitions and outputs of \(F\) and \(G\).
+
+The resulting structure is a symmetric monoidal paracategory
+\[
+\operatorname{Int}_{\partial}(\mathsf{Mly}(\mathcal E)).
+\]
+Its objects are bidirectional Mealy interfaces, its morphisms are
+bidirectional Mealy processes, and its partial composition is GoI execution by
+trace-class feedback.
+
+This paracategory gives the process semantics of multiplicative linear logic
+with partial cut.  Formulas are interpreted as bidirectional Mealy interfaces,
+proofs as bidirectional Mealy processes, tensor as parallel composition,
+linear negation as reversal of polarity, and cut as partial GoI execution.
+A cut is defined precisely when the associated feedback equation is
+trace-class.
+
+The central slogans are:
+\[
+\boxed{
+\text{GoI composition}
+=
+\text{open pipeline}
++
+\text{trace-class feedback}.
+}
+\]
+and
+\[
+\boxed{
+\text{cut admissibility}
+=
+\text{unique solvability of the feedback equation}.
+}
+\]
+
+\section{Standing assumptions and conventions}
+\label{sec:goi-standing-assumptions}
+
+Throughout this chapter, assume that \(\mathcal E\) has finite limits.  Then
+the category
+\[
+\mathbf{Cat}_{\mathrm{int}}(\mathcal E)
+\]
+of internal categories and internal functors has finite limits, computed
+componentwise.
+
+By the previous chapter, the symmetric monoidal category
+\[
+\mathsf{Mly}(\mathcal E)
+\]
+of internal categories and Mealy morphisms carries a canonical partial trace.
+The trace of a Mealy morphism is defined exactly when the corresponding
+ambient traced span of internal categories remains input-discrete.
+
+All equalities of products, spans, Mealy morphisms, traces, and composites are
+read up to the canonical associativity, unit, symmetry, pullback, and span-apex
+isomorphisms.  Equivalently, one may work in the quotient where such canonical
+isomorphisms are identified.
+
+We use the term \emph{paracategory} for a category-like structure with partial
+composition.  In the present case, a composite is defined exactly when the
+corresponding GoI feedback problem is trace-class.  Associativity and unit laws
+are read on their common trace-class domains and are inherited from the trace
+identities of the previous chapter.
+
+\section{Bidirectional Mealy interfaces}
+\label{sec:bidirectional-mealy-interfaces}
+
+\begin{definition}[Bidirectional Mealy interface]
+\label{def:bidirectional-mealy-interface}
+A \textbf{bidirectional Mealy interface} is a pair
+\[
+\mathbb A=(\mathbb A^+,\mathbb A^-)
+\]
+of internal categories in \(\mathcal E\).
+\end{definition}
+
+The component \(\mathbb A^+\) is the positive or forward interface.  The
+component \(\mathbb A^-\) is the negative or counterflow interface.
+
+\begin{definition}[Dual interface]
+\label{def:bidirectional-dual-interface}
+The \textbf{dual} of a bidirectional interface
+\[
+\mathbb A=(\mathbb A^+,\mathbb A^-)
+\]
+is
+\[
+\mathbb A^\bot:=(\mathbb A^-,\mathbb A^+).
+\]
+\end{definition}
+
+Thus there is a strict equality
+\[
+(\mathbb A^\bot)^\bot=\mathbb A.
+\]
+
+\begin{definition}[Tensor of interfaces]
+\label{def:tensor-bidirectional-interfaces}
+The tensor product of bidirectional interfaces is defined componentwise:
+\[
+\mathbb A\otimes\mathbb B
+:=
+(\mathbb A^+\times\mathbb B^+,\,
+ \mathbb A^-\times\mathbb B^-).
+\]
+The tensor unit is
+\[
+\mathbf I:=(\mathbf 1,\mathbf 1),
+\]
+where \(\mathbf 1\) is the terminal internal category.
+\end{definition}
+
+The associativity, unit, and symmetry constraints for \(\otimes\) are inherited
+from products of internal categories.
+
+\begin{definition}[Par of interfaces]
+\label{def:par-bidirectional-interfaces}
+The par interface is defined by De Morgan duality:
+\[
+\mathbb A\parr\mathbb B
+:=
+(\mathbb A^\bot\otimes\mathbb B^\bot)^\bot.
+\]
+The par unit is
+\[
+\bot:=\mathbf I^\bot.
+\]
+\end{definition}
+
+Since
+\[
+\mathbb A^\bot\otimes\mathbb B^\bot
+=
+(\mathbb A^-\times\mathbb B^-,\,
+ \mathbb A^+\times\mathbb B^+),
+\]
+one has a canonical isomorphism
+\[
+\mathbb A\parr\mathbb B
+\cong
+(\mathbb A^+\times\mathbb B^+,\,
+ \mathbb A^-\times\mathbb B^-).
+\]
+Thus tensor and par have canonically isomorphic underlying bidirectional
+interfaces.  Their logical distinction is supplied by their polarity and by
+the proof rules in which they occur.
+
+\begin{proposition}[Interface-level linear structure]
+\label{prop:interface-level-linear-structure}
+Bidirectional Mealy interfaces carry a symmetric monoidal structure
+\[
+(\otimes,\mathbf I)
+\]
+with involutive duality
+\[
+(-)^\bot.
+\]
+Moreover,
+\[
+(\mathbb A\otimes\mathbb B)^\bot
+\cong
+\mathbb A^\bot\parr\mathbb B^\bot,
+\qquad
+(\mathbb A\parr\mathbb B)^\bot
+\cong
+\mathbb A^\bot\otimes\mathbb B^\bot,
+\]
+and
+\[
+\mathbf I^\bot=\bot,
+\qquad
+\bot^\bot=\mathbf I.
+\]
+\end{proposition}
+
+\begin{proof}
+All claims follow immediately from the definitions and from the associativity,
+unit, and symmetry isomorphisms for products of internal categories.
+\end{proof}
+
+\section{Bidirectional Mealy processes}
+\label{sec:bidirectional-mealy-processes}
+
+\begin{definition}[Bidirectional Mealy process]
+\label{def:bidirectional-mealy-process}
+Let
+\[
+\mathbb A=(\mathbb A^+,\mathbb A^-),
+\qquad
+\mathbb B=(\mathbb B^+,\mathbb B^-)
+\]
+be bidirectional Mealy interfaces.  A \textbf{bidirectional Mealy process}
+\[
+F:\mathbb A\to\mathbb B
+\]
+is a Mealy morphism
+\[
+F:
+\mathbb A^+\times\mathbb B^-
+\rightsquigarrow
+\mathbb B^+\times\mathbb A^-.
+\]
+\end{definition}
+
+Thus a process from \(\mathbb A\) to \(\mathbb B\) consumes positive input
+from \(\mathbb A^+\) and negative counterflow input from \(\mathbb B^-\), and
+produces positive output in \(\mathbb B^+\) and negative counterflow output in
+\(\mathbb A^-\).
+
+Let
+\[
+F=(P_F,\delta_F,\omega_F):
+\mathbb A^+\times\mathbb B^-
+\rightsquigarrow
+\mathbb B^+\times\mathbb A^-.
+\]
+The carrier span has the form
+\[
+\begin{tikzcd}[column sep=large]
+A_0^+\times B_0^-
+&
+P_F
+  \arrow[l, "p_F"']
+  \arrow[r, "q_F"]
+&
+B_0^+\times A_0^- .
+\end{tikzcd}
+\]
+Write
+\[
+p_F=(p_F^+,p_F^-),
+\qquad
+q_F=(q_F^+,q_F^-).
+\]
+The output map decomposes as
+\[
+\omega_F=(\omega_F^+,\omega_F^-).
+\]
+
+Given an admissible input arrow
+\[
+(a^+,b^-)
+\]
+at a state \(x\in P_F\), the process produces a new state
+\[
+\delta_F((a^+,b^-),x)
+\]
+and output arrows
+\[
+\omega_F^+((a^+,b^-),x)\in B_1^+,
+\qquad
+\omega_F^-((a^+,b^-),x)\in A_1^-.
+\]
+
+The Mealy typing equations say
+\[
+p_F\delta_F((a^+,b^-),x)
+=
+(s_{A^+}a^+,s_{B^-}b^-),
+\]
+and
+\[
+s_{B^+\times A^-}\omega_F((a^+,b^-),x)
+=
+q_F\delta_F((a^+,b^-),x),
+\]
+\[
+t_{B^+\times A^-}\omega_F((a^+,b^-),x)
+=
+q_F(x).
+\]
+Equivalently, componentwise,
+\[
+s_{B^+}\omega_F^+((a^+,b^-),x)
+=
+q_F^+\delta_F((a^+,b^-),x),
+\]
+\[
+t_{B^+}\omega_F^+((a^+,b^-),x)
+=
+q_F^+(x),
+\]
+and
+\[
+s_{A^-}\omega_F^-((a^+,b^-),x)
+=
+q_F^-\delta_F((a^+,b^-),x),
+\]
+\[
+t_{A^-}\omega_F^-((a^+,b^-),x)
+=
+q_F^-(x).
+\]
+
+\section{Identity and tensor of processes}
+\label{sec:identity-tensor-processes}
+
+\begin{definition}[Identity process]
+\label{def:identity-process}
+For a bidirectional interface
+\[
+\mathbb A=(\mathbb A^+,\mathbb A^-),
+\]
+the identity process
+\[
+1_{\mathbb A}:\mathbb A\to\mathbb A
+\]
+is the identity Mealy morphism
+\[
+1_{\mathbb A^+\times\mathbb A^-}:
+\mathbb A^+\times\mathbb A^-
+\rightsquigarrow
+\mathbb A^+\times\mathbb A^-.
+\]
+\end{definition}
+
+Operationally, \(1_{\mathbb A}\) is the wire process: it passes positive
+behaviour forward and negative behaviour backward.
+
+\begin{definition}[Tensor of processes]
+\label{def:tensor-processes}
+Let
+\[
+F:\mathbb A\to\mathbb B
+\]
+and
+\[
+G:\mathbb C\to\mathbb D
+\]
+be bidirectional Mealy processes.  Their tensor product
+\[
+F\otimes G:
+\mathbb A\otimes\mathbb C
+\to
+\mathbb B\otimes\mathbb D
+\]
+is the process induced by the product Mealy morphism
+\[
+F\times G
+\]
+after the canonical associativity and symmetry identifications
+\[
+(\mathbb A^+\times\mathbb C^+)
+\times
+(\mathbb B^-\times\mathbb D^-)
+\cong
+(\mathbb A^+\times\mathbb B^-)
+\times
+(\mathbb C^+\times\mathbb D^-),
+\]
+and
+\[
+(\mathbb B^+\times\mathbb A^-)
+\times
+(\mathbb D^+\times\mathbb C^-)
+\cong
+(\mathbb B^+\times\mathbb D^+)
+\times
+(\mathbb A^-\times\mathbb C^-).
+\]
+\end{definition}
+
+\begin{proposition}[Tensor of processes]
+\label{prop:tensor-processes-well-typed}
+The tensor of processes is well typed.  Together with the wire processes, it
+makes bidirectional Mealy interfaces and processes into a symmetric monoidal
+partial graph before composition is specified.
+\end{proposition}
+
+\begin{proof}
+The tensor product of Mealy morphisms is defined componentwise in
+\(\mathsf{Mly}(\mathcal E)\).  Products of internal categories are computed
+componentwise, and the Mealy unit and multiplication laws hold componentwise.
+The required source and target objects are related by canonical product
+associativity and symmetry isomorphisms.  Therefore \(F\otimes G\) has the
+stated type.  The associativity, unit, and symmetry constraints are inherited
+from the symmetric monoidal structure on \(\mathsf{Mly}(\mathcal E)\).
+\end{proof}
+
+\section{Open pipelines}
+\label{sec:open-pipelines}
+
+Let
+\[
+F:\mathbb A\to\mathbb B
+\]
+and
+\[
+G:\mathbb B\to\mathbb C
+\]
+be bidirectional Mealy processes.  Thus
+\[
+F:
+\mathbb A^+\times\mathbb B^-
+\rightsquigarrow
+\mathbb B^+\times\mathbb A^-,
+\]
+and
+\[
+G:
+\mathbb B^+\times\mathbb C^-
+\rightsquigarrow
+\mathbb C^+\times\mathbb B^-.
+\]
+
+The open pipeline connects the positive \(\mathbb B^+\)-wire from \(F\) to
+\(G\), while leaving the negative \(\mathbb B^-\)-wire exposed.  This exposed
+negative wire is later closed by the partial trace.
+
+\begin{definition}[Open pipeline]
+\label{def:open-pipeline}
+The \textbf{open pipeline} of
+\[
+F:\mathbb A\to\mathbb B
+\]
+and
+\[
+G:\mathbb B\to\mathbb C
+\]
+is the Mealy morphism
+\[
+H_{G,F}:
+\mathbb A^+\times\mathbb C^-\times\mathbb B^-
+\rightsquigarrow
+\mathbb C^+\times\mathbb A^-\times\mathbb B^-,
+\]
+obtained by first running \(F\) on the \(\mathbb A^+\)-input and exposed
+\(\mathbb B^-\)-input, then running \(G\) on the \(\mathbb B^+\)-output of
+\(F\) and the \(\mathbb C^-\)-input.
+\end{definition}
+
+Categorically, \(H_{G,F}\) is the ordinary Mealy composite formed by connecting
+the visible \(\mathbb B^+\)-component, after the canonical product
+reassociations.  The \(\mathbb B^-\)-component is not composed away; it is
+kept as an exposed hidden interface for the later trace.
+
+We now spell this out in component notation.  Let
+\[
+F=(P_F,\delta_F,\omega_F),
+\qquad
+G=(P_G,\delta_G,\omega_G).
+\]
+Write
+\[
+p_F=(p_F^+,p_F^-):P_F\to A_0^+\times B_0^-,
+\]
+\[
+q_F=(q_F^+,q_F^-):P_F\to B_0^+\times A_0^-,
+\]
+and
+\[
+p_G=(p_G^+,p_G^-):P_G\to B_0^+\times C_0^-,
+\]
+\[
+q_G=(q_G^+,q_G^-):P_G\to C_0^+\times B_0^-.
+\]
+
+The carrier of the open pipeline is
+\[
+P_{G,F}
+:=
+P_F\times_{q_F^+,B_0^+,p_G^+}P_G.
+\]
+A state is a pair
+\[
+(x,y)
+\]
+with
+\[
+q_F^+(x)=p_G^+(y).
+\]
+
+The source map of \(H_{G,F}\) is
+\[
+p_{G,F}:P_{G,F}\to A_0^+\times C_0^-\times B_0^-,
+\]
+given by
+\[
+p_{G,F}(x,y)
+=
+(p_F^+(x),p_G^-(y),p_F^-(x)).
+\]
+The target map is
+\[
+q_{G,F}:P_{G,F}\to C_0^+\times A_0^-\times B_0^-,
+\]
+given by
+\[
+q_{G,F}(x,y)
+=
+(q_G^+(y),q_F^-(x),q_G^-(y)).
+\]
+
+Given an admissible input arrow
+\[
+(a^+,c^-,h)
+\]
+at a state \((x,y)\), first compute
+\[
+x'
+=
+\delta_F((a^+,h),x),
+\]
+and
+\[
+(b^+,a^-)
+=
+\omega_F((a^+,h),x).
+\]
+Then compute
+\[
+y'
+=
+\delta_G((b^+,c^-),y),
+\]
+and
+\[
+(c^+,\bar h)
+=
+\omega_G((b^+,c^-),y).
+\]
+The open-pipeline transition and output are
+\[
+\delta_{G,F}((a^+,c^-,h),(x,y))
+=
+(x',y'),
+\]
+and
+\[
+\omega_{G,F}((a^+,c^-,h),(x,y))
+=
+(c^+,a^-,\bar h).
+\]
+
+\begin{proposition}[Well-definedness of open pipelines]
+\label{prop:open-pipeline-well-defined}
+The open pipeline \(H_{G,F}\) is a well-defined Mealy morphism
+\[
+\mathbb A^+\times\mathbb C^-\times\mathbb B^-
+\rightsquigarrow
+\mathbb C^+\times\mathbb A^-\times\mathbb B^-.
+\]
+\end{proposition}
+
+\begin{proof}
+The output arrow \(b^+\) of \(F\) has target
+\[
+t_{B^+}(b^+)=q_F^+(x)=p_G^+(y),
+\]
+so it is admissible as the \(\mathbb B^+\)-input to \(G\) at state \(y\).
+Moreover,
+\[
+s_{B^+}(b^+)=q_F^+(x'),
+\]
+while the Mealy typing equation for \(G\) gives
+\[
+p_G^+(y')=s_{B^+}(b^+).
+\]
+Thus
+\[
+q_F^+(x')=p_G^+(y'),
+\]
+so the pair \((x',y')\) is again a state of \(P_{G,F}\).
+
+The source and target equations for the output
+\[
+(c^+,a^-,\bar h)
+\]
+follow componentwise from the Mealy typing equations for \(F\) and \(G\).  The
+unit and multiplication laws for \(H_{G,F}\) follow from the unit and
+multiplication laws for \(F\) and \(G\), together with the compatibility of the
+output \(b^+\) of \(F\) with the input of \(G\).  Thus \(H_{G,F}\) is a Mealy
+morphism of the displayed type.
+\end{proof}
+
+\section{Partial GoI composition}
+\label{sec:partial-goi-composition}
+
+The open pipeline still exposes the negative interface \(\mathbb B^-\).  The
+Geometry-of-Interaction composite is obtained by closing this exposed
+interface using the partial trace of the previous chapter.
+
+\begin{definition}[Partial GoI composition]
+\label{def:partial-goi-composition}
+Let
+\[
+F:\mathbb A\to\mathbb B,
+\qquad
+G:\mathbb B\to\mathbb C
+\]
+be bidirectional Mealy processes.  Their partial GoI composite is
+\[
+G\circ_{\partial}F
+:=
+\operatorname{Tr}^{\mathbb B^-}(H_{G,F}),
+\]
+whenever the open pipeline
+\[
+H_{G,F}:
+\mathbb A^+\times\mathbb C^-\times\mathbb B^-
+\rightsquigarrow
+\mathbb C^+\times\mathbb A^-\times\mathbb B^-
+\]
+is trace-class over \(\mathbb B^-\).
+\end{definition}
+
+When defined, the result has type
+\[
+G\circ_{\partial}F:
+\mathbb A^+\times\mathbb C^-
+\rightsquigarrow
+\mathbb C^+\times\mathbb A^-,
+\]
+and hence is a bidirectional Mealy process
+\[
+G\circ_{\partial}F:\mathbb A\to\mathbb C.
+\]
+
+Thus
+\[
+\boxed{
+G\circ_{\partial}F
+=
+\operatorname{Tr}^{\mathbb B^-}(H_{G,F}).
+}
+\]
+
+Composition is partial because the exposed counterflow feedback equation may
+fail to have a unique internal solution.
+
+\section{Execution witnesses and the feedback equation}
+\label{sec:execution-witnesses-feedback-equation}
+
+We now unpack the trace-class condition for the open pipeline.
+
+Let
+\[
+F:\mathbb A\to\mathbb B
+\]
+and
+\[
+G:\mathbb B\to\mathbb C
+\]
+be as above.  The open pipeline has carrier
+\[
+P_{G,F}=P_F\times_{B_0^+}P_G.
+\]
+The hidden input object for the trace is the \(\mathbb B^-\)-component of the
+source:
+\[
+p_F^-:P_F\to B_0^-.
+\]
+The hidden output object for the trace is the \(\mathbb B^-\)-component of the
+target:
+\[
+q_G^-:P_G\to B_0^-.
+\]
+
+\begin{definition}[Closed pipeline state object]
+\label{def:closed-pipeline-state-object}
+The \textbf{closed pipeline state object} is
+\[
+P_{G,F}^{\circ}
+:=
+\operatorname{Eq}
+\left(
+p_F^-\pi_F,\,
+q_G^-\pi_G
+\right)
+\subseteq
+P_F\times_{B_0^+}P_G.
+\]
+A generalized element is a compatible pair \((x,y)\) such that
+\[
+q_F^+(x)=p_G^+(y)
+\]
+and
+\[
+p_F^-(x)=q_G^-(y).
+\]
+\end{definition}
+
+Let
+\[
+D_{G,F}
+:=
+(A_1^+\times C_1^-)
+\times_{t_{A^+}\times t_{C^-},\,
+        A_0^+\times C_0^-,\,
+        p_F^+\times p_G^-}
+P_{G,F}^{\circ}.
+\]
+A generalized element of \(D_{G,F}\) is a visible input and closed state
+\[
+(a^+,c^-,x,y)
+\]
+with
+\[
+t_{A^+}(a^+)=p_F^+(x),
+\qquad
+t_{C^-}(c^-)=p_G^-(y),
+\]
+and \((x,y)\in P_{G,F}^{\circ}\).
+
+Define
+\[
+H_{G,F}^{\mathrm{wit}}
+:=
+D_{G,F}
+\times_{p_F^-\pi_F,\,B_0^-,\,t_{B^-}}
+B_1^-.
+\]
+A generalized element is a tuple
+\[
+(a^+,c^-,x,y,h)
+\]
+such that
+\[
+(a^+,c^-,x,y)\in D_{G,F}
+\]
+and
+\[
+t_{B^-}(h)=p_F^-(x)=q_G^-(y).
+\]
+
+There are two maps
+\[
+H_{G,F}^{\mathrm{wit}}\to B_1^-.
+\]
+The first is projection:
+\[
+\pi_{B^-}(a^+,c^-,x,y,h)=h.
+\]
+The second is the hidden output produced by the open pipeline.  Define
+\[
+b^+
+:=
+\omega_F^+((a^+,h),x).
+\]
+Then set
+\[
+\chi_{G,F}(a^+,c^-,x,y,h)
+:=
+\omega_G^-((b^+,c^-),y).
+\]
+Equivalently,
+\[
+\chi_{G,F}(a^+,c^-,x,y,h)
+=
+\omega_G^-
+\left(
+\left(
+\omega_F^+((a^+,h),x),
+c^-
+\right),
+y
+\right).
+\]
+
+\begin{definition}[Execution witness object]
+\label{def:execution-witness-object}
+The \textbf{execution witness object} for the pair \((G,F)\) is the equalizer
+\[
+W_{G,F}
+:=
+\operatorname{Eq}
+\left(
+\pi_{B^-},\chi_{G,F}
+\right)
+\hookrightarrow
+H_{G,F}^{\mathrm{wit}}.
+\]
+Thus a generalized element of \(W_{G,F}\) is a tuple
+\[
+(a^+,c^-,x,y,h)
+\]
+satisfying the feedback equation
+\[
+h
+=
+\omega_G^-
+\left(
+\left(
+\omega_F^+((a^+,h),x),
+c^-
+\right),
+y
+\right).
+\]
+There is a canonical projection
+\[
+\pi_{G,F}:W_{G,F}\to D_{G,F}.
+\]
+\end{definition}
+
+\begin{theorem}[Execution criterion]
+\label{thm:goi-execution-criterion}
+For bidirectional Mealy processes
+\[
+F:\mathbb A\to\mathbb B
+\]
+and
+\[
+G:\mathbb B\to\mathbb C,
+\]
+the composite
+\[
+G\circ_{\partial}F
+\]
+is defined if and only if the projection
+\[
+\pi_{G,F}:W_{G,F}\to D_{G,F}
+\]
+is an isomorphism.
+\end{theorem}
+
+\begin{proof}
+By definition,
+\[
+G\circ_{\partial}F
+=
+\operatorname{Tr}^{\mathbb B^-}(H_{G,F})
+\]
+is defined exactly when the open pipeline \(H_{G,F}\) is trace-class over
+\(\mathbb B^-\).  By the internal trace-class criterion from the previous
+chapter, trace-class is equivalent to the assertion that the feedback witness
+projection for \(H_{G,F}\) over the visible input object is an isomorphism.
+
+The object \(D_{G,F}\) is precisely the visible input and closed state object
+for the trace of \(H_{G,F}\), while \(W_{G,F}\) is precisely the object of
+hidden feedback witnesses satisfying the equation
+\[
+h=\chi_{G,F}(a^+,c^-,x,y,h).
+\]
+Thus the trace-class comparison map for \(H_{G,F}\) is exactly
+\[
+\pi_{G,F}:W_{G,F}\to D_{G,F}.
+\]
+Therefore \(G\circ_{\partial}F\) is defined if and only if
+\(\pi_{G,F}\) is an isomorphism.
+\end{proof}
+
+When \(\pi_{G,F}\) is an isomorphism, denote the unique solution of the
+feedback equation by
+\[
+h_{G,F}(a^+,c^-,x,y).
+\]
+
+\section{Component execution formula}
+\label{sec:component-execution-formula}
+
+\begin{theorem}[Component execution formula]
+\label{thm:component-execution-formula}
+Suppose
+\[
+F:\mathbb A\to\mathbb B
+\]
+and
+\[
+G:\mathbb B\to\mathbb C
+\]
+are bidirectional Mealy processes and that
+\[
+G\circ_{\partial}F
+\]
+is defined.  Let
+\[
+h_{G,F}(a^+,c^-,x,y)
+\]
+be the unique solution of
+\[
+h
+=
+\omega_G^-
+\left(
+\left(
+\omega_F^+((a^+,h),x),
+c^-
+\right),
+y
+\right).
+\]
+Then the composite
+\[
+G\circ_{\partial}F:\mathbb A\to\mathbb C
+\]
+has carrier
+\[
+P_{G,F}^{\circ}
+=
+\operatorname{Eq}(p_F^-\pi_F,q_G^-\pi_G)
+\subseteq
+P_F\times_{B_0^+}P_G.
+\]
+For a visible input
+\[
+(a^+,c^-)
+\]
+at a closed state \((x,y)\), set
+\[
+h:=h_{G,F}(a^+,c^-,x,y),
+\]
+\[
+x':=\delta_F((a^+,h),x),
+\]
+\[
+(b^+,a^-):=\omega_F((a^+,h),x),
+\]
+\[
+y':=\delta_G((b^+,c^-),y),
+\]
+and
+\[
+(c^+,\bar h):=\omega_G((b^+,c^-),y).
+\]
+Then
+\[
+\delta_{G\circ_{\partial}F}((a^+,c^-),(x,y))
+=
+(x',y'),
+\]
+and
+\[
+\omega_{G\circ_{\partial}F}((a^+,c^-),(x,y))
+=
+(c^+,a^-).
+\]
+\end{theorem}
+
+\begin{proof}
+The composite
+\[
+G\circ_{\partial}F
+\]
+is the partial trace of the open pipeline
+\[
+H_{G,F}
+\]
+over \(\mathbb B^-\).  By the component formula for partial trace in the
+previous chapter, the carrier of the trace is the closed state object for the
+hidden interface, namely
+\[
+P_{G,F}^{\circ}.
+\]
+The transition and output of the traced Mealy morphism are obtained by
+substituting the unique hidden feedback solution into the transition and
+output of \(H_{G,F}\).
+
+The transition and output of \(H_{G,F}\) are, by definition,
+\[
+(x,y)
+\longmapsto
+\left(
+\delta_F((a^+,h),x),
+\delta_G((b^+,c^-),y)
+\right),
+\]
+with
+\[
+b^+=\omega_F^+((a^+,h),x),
+\]
+and output
+\[
+(c^+,a^-,\bar h),
+\]
+where
+\[
+(c^+,\bar h)=\omega_G((b^+,c^-),y),
+\qquad
+a^-=\omega_F^-((a^+,h),x).
+\]
+The hidden output \(\bar h\) is discarded by the trace after being identified
+with the hidden input \(h\).  Hence the visible output is
+\[
+(c^+,a^-).
+\]
+This gives the displayed formula.
+\end{proof}
+
+\section{The partial Int paracategory}
+\label{sec:partial-int-paracategory}
+
+\begin{definition}[The partial Int paracategory of Mealy processes]
+\label{def:partial-int-mly}
+Define
+\[
+\operatorname{Int}_{\partial}(\mathsf{Mly}(\mathcal E))
+\]
+as follows:
+\begin{enumerate}
+\item objects are bidirectional Mealy interfaces
+\[
+\mathbb A=(\mathbb A^+,\mathbb A^-);
+\]
+\item morphisms
+\[
+F:\mathbb A\to\mathbb B
+\]
+are bidirectional Mealy processes, equivalently Mealy morphisms
+\[
+F:\mathbb A^+\times\mathbb B^-
+\rightsquigarrow
+\mathbb B^+\times\mathbb A^-;
+\]
+\item identities are the wire processes
+\[
+1_{\mathbb A}:=1_{\mathbb A^+\times\mathbb A^-};
+\]
+\item tensor is defined componentwise on interfaces and by product on
+processes;
+\item composition is the partial GoI composition
+\[
+G\circ_{\partial}F
+=
+\operatorname{Tr}^{\mathbb B^-}(H_{G,F})
+\]
+when the open pipeline \(H_{G,F}\) is trace-class.
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[Partial Int paracategory]
+\label{thm:partial-int-paracategory}
+The structure
+\[
+\operatorname{Int}_{\partial}(\mathsf{Mly}(\mathcal E))
+\]
+is a symmetric monoidal paracategory with involutive duality.  Its partial
+composition is Geometry-of-Interaction execution by trace-class feedback.
+\end{theorem}
+
+\begin{proof}
+The previous chapter proves that
+\[
+\mathsf{Mly}(\mathcal E)
+\]
+is a partially traced symmetric monoidal category.  Applying the partial Int
+construction gives the displayed objects, morphisms, identities, tensor, and
+partial composition.
+
+The identity laws follow from the yanking law for the inherited partial trace.
+Composing a process with a wire process forms an open pipeline whose feedback
+equation is the wire equation, and the trace reduces to the original process.
+
+Associativity follows from staged and simultaneous feedback.  Given three
+processes
+\[
+F:\mathbb A\to\mathbb B,
+\qquad
+G:\mathbb B\to\mathbb C,
+\qquad
+H:\mathbb C\to\mathbb D,
+\]
+both bracketings
+\[
+H\circ_{\partial}(G\circ_{\partial}F)
+\]
+and
+\[
+(H\circ_{\partial}G)\circ_{\partial}F
+\]
+are obtained from the same three-stage open pipeline by tracing the same
+internal counterflow interfaces in different orders.  The staged-feedback
+theorem from the previous chapter identifies these iterated traces with the
+simultaneous trace whenever the relevant trace-class conditions hold.
+
+Tensor compatibility follows from the superposing law for the partial trace.
+The open pipeline of
+\[
+F_1\otimes F_2
+\]
+and
+\[
+G_1\otimes G_2
+\]
+is canonically the tensor of the open pipelines of \((F_1,G_1)\) and
+\((F_2,G_2)\), and tracing the tensor is identified with tensoring the traces
+on the common trace-class domain.
+
+The involutive duality is given by
+\[
+(\mathbb A^+,\mathbb A^-)^\bot=(\mathbb A^-,\mathbb A^+).
+\]
+Thus
+\[
+\operatorname{Int}_{\partial}(\mathsf{Mly}(\mathcal E))
+\]
+is a symmetric monoidal paracategory with involutive duality.
+\end{proof}
+
+\section{Linear structure of the partial Int paracategory}
+\label{sec:linear-structure-partial-int}
+
+The partial Int paracategory supports the multiplicative linear connectives.
+
+The tensor is
+\[
+\mathbb A\otimes\mathbb B
+=
+(\mathbb A^+\times\mathbb B^+,\,
+ \mathbb A^-\times\mathbb B^-),
+\]
+with unit
+\[
+\mathbf I=(\mathbf 1,\mathbf 1).
+\]
+Linear negation is the involution
+\[
+\mathbb A^\bot=(\mathbb A^-,\mathbb A^+).
+\]
+Par is defined by De Morgan duality:
+\[
+\mathbb A\parr\mathbb B
+=
+(\mathbb A^\bot\otimes\mathbb B^\bot)^\bot,
+\]
+and its unit is
+\[
+\bot=\mathbf I^\bot.
+\]
+
+For processes, tensor is parallel execution and cut is partial GoI
+composition.  Thus the partial Int paracategory gives a process semantics for
+the multiplicative fragment of linear logic in which cut is a partial
+operation.
+
+\begin{proposition}[Bidirectional currying]
+\label{prop:bidirectional-currying}
+For bidirectional interfaces
+\[
+\mathbb A,\mathbb B,\mathbb C,
+\]
+there is a canonical bijection of process collections
+\[
+\operatorname{Proc}_{\partial}(\mathbb A\otimes\mathbb B,\mathbb C)
+\cong
+\operatorname{Proc}_{\partial}(\mathbb A,\mathbb B^\bot\parr\mathbb C),
+\]
+where both sides denote the same underlying Mealy morphisms after the
+canonical product reassociations and polarity identifications.
+\end{proposition}
+
+\begin{proof}
+A process
+\[
+\mathbb A\otimes\mathbb B\to\mathbb C
+\]
+is a Mealy morphism
+\[
+(\mathbb A^+\times\mathbb B^+)\times\mathbb C^-
+\rightsquigarrow
+\mathbb C^+\times(\mathbb A^-\times\mathbb B^-).
+\]
+A process
+\[
+\mathbb A\to\mathbb B^\bot\parr\mathbb C
+\]
+is a Mealy morphism
+\[
+\mathbb A^+\times(\mathbb B^\bot\parr\mathbb C)^-
+\rightsquigarrow
+(\mathbb B^\bot\parr\mathbb C)^+\times\mathbb A^-.
+\]
+Using
+\[
+\mathbb B^\bot\parr\mathbb C
+=
+((\mathbb B^\bot)^\bot\otimes\mathbb C^\bot)^\bot
+=
+(\mathbb B\otimes\mathbb C^\bot)^\bot,
+\]
+one identifies
+\[
+(\mathbb B^\bot\parr\mathbb C)^-
+\cong
+\mathbb B^+\times\mathbb C^-,
+\]
+and
+\[
+(\mathbb B^\bot\parr\mathbb C)^+
+\cong
+\mathbb B^-\times\mathbb C^+.
+\]
+Thus the second process type is canonically
+\[
+\mathbb A^+\times\mathbb B^+\times\mathbb C^-
+\rightsquigarrow
+\mathbb B^-\times\mathbb C^+\times\mathbb A^-,
+\]
+which is the same Mealy type as the first, up to product symmetry.
+\end{proof}
+
+\section{Multiplicative partial linear syntax}
+\label{sec:multiplicative-partial-linear-syntax}
+
+We now define the multiplicative linear syntax interpreted by bidirectional
+Mealy processes.  The proof theory is multiplicative linear logic with partial
+cut.
+
+\begin{definition}[Formulas]
+\label{def:mll-formulas}
+Formulas are generated by
+\[
+A,B
+::=
+X
+\mid
+A^\bot
+\mid
+A\otimes B
+\mid
+\mathbf 1
+\mid
+A\parr B
+\mid
+\bot,
+\]
+where \(X\) ranges over atomic formulas.
+\end{definition}
+
+Linear negation is involutive and satisfies the De Morgan equations
+\[
+(A^\bot)^\bot=A,
+\]
+\[
+(A\otimes B)^\bot=A^\bot\parr B^\bot,
+\]
+\[
+(A\parr B)^\bot=A^\bot\otimes B^\bot,
+\]
+\[
+\mathbf 1^\bot=\bot,
+\qquad
+\bot^\bot=\mathbf 1.
+\]
+Linear implication is treated as an abbreviation:
+\[
+A\multimap B:=A^\bot\parr B.
+\]
+
+\begin{definition}[Contexts]
+\label{def:mll-contexts}
+A context is a finite list
+\[
+\Gamma=A_1,\dots,A_n.
+\]
+The empty context is denoted by
+\[
+\cdot.
+\]
+Contexts are considered up to exchange, but not up to weakening or
+contraction.
+\end{definition}
+
+We use single-conclusion judgments
+\[
+\Gamma\vdash A.
+\]
+A derivation of such a judgment will denote a bidirectional Mealy process
+\[
+\llbracket \Gamma\rrbracket\to \llbracket A\rrbracket.
+\]
+
+\section{Interface interpretation of formulas}
+\label{sec:interface-semantics-formulas}
+
+Fix an assignment sending each atomic formula \(X\) to a bidirectional Mealy
+interface
+\[
+\llbracket X\rrbracket
+=
+(\mathbb X^+,\mathbb X^-).
+\]
+
+\begin{definition}[Interface interpretation]
+\label{def:interface-interpretation}
+The interpretation of formulas as bidirectional Mealy interfaces is defined
+recursively by:
+\[
+\llbracket A^\bot\rrbracket
+=
+\llbracket A\rrbracket^\bot,
+\]
+\[
+\llbracket A\otimes B\rrbracket
+=
+\llbracket A\rrbracket\otimes\llbracket B\rrbracket,
+\]
+\[
+\llbracket \mathbf 1\rrbracket
+=
+\mathbf I,
+\]
+\[
+\llbracket A\parr B\rrbracket
+=
+\left(
+\llbracket A^\bot\rrbracket
+\otimes
+\llbracket B^\bot\rrbracket
+\right)^\bot,
+\]
+and
+\[
+\llbracket \bot\rrbracket
+=
+\mathbf I^\bot.
+\]
+\end{definition}
+
+Since
+\[
+\mathbf I^\bot=\mathbf I,
+\]
+the interface interpretations of \(\mathbf 1\) and \(\bot\) have canonically
+isomorphic underlying interfaces.  Likewise, at the raw interface level,
+\(\parr\) is canonically related to \(\otimes\) by duality.
+
+\begin{definition}[Context interpretation]
+\label{def:context-interpretation}
+For a context
+\[
+\Gamma=A_1,\dots,A_n,
+\]
+define
+\[
+\llbracket \Gamma\rrbracket
+:=
+\llbracket A_1\rrbracket\otimes\cdots\otimes
+\llbracket A_n\rrbracket.
+\]
+For the empty context,
+\[
+\llbracket \cdot\rrbracket=\mathbf I.
+\]
+\end{definition}
+
+\begin{proposition}[Interpretation respects De Morgan duality]
+\label{prop:interface-semantics-demorgan}
+The interface interpretation satisfies the linear negation equations up to the
+canonical bidirectional interface isomorphisms:
+\[
+\llbracket (A^\bot)^\bot\rrbracket
+\cong
+\llbracket A\rrbracket,
+\]
+\[
+\llbracket (A\otimes B)^\bot\rrbracket
+\cong
+\llbracket A^\bot\parr B^\bot\rrbracket,
+\]
+\[
+\llbracket (A\parr B)^\bot\rrbracket
+\cong
+\llbracket A^\bot\otimes B^\bot\rrbracket,
+\]
+and
+\[
+\llbracket \mathbf 1^\bot\rrbracket
+\cong
+\llbracket \bot\rrbracket.
+\]
+\end{proposition}
+
+\begin{proof}
+This follows directly from the definitions of formula interpretation, duality,
+tensor, and par on bidirectional interfaces.
+\end{proof}
+
+\section{Proof rules and process interpretation}
+\label{sec:proof-rules-process-interpretation}
+
+A derivation
+\[
+\pi:\Gamma\vdash A
+\]
+is interpreted as a bidirectional Mealy process
+\[
+\llbracket \pi\rrbracket:
+\llbracket \Gamma\rrbracket
+\to
+\llbracket A\rrbracket.
+\]
+
+We list the basic rules and their interpretations.
+
+\subsection{Identity}
+
+The identity rule is
+\[
+\mathrm{infer}[\mathrm{id}]
+      {A\vdash A}
+      {}
+\]
+and is interpreted by the identity process
+\[
+\llbracket \mathrm{id}_A\rrbracket
+=
+1_{\llbracket A\rrbracket}.
+\]
+
+\subsection{Exchange}
+
+Exchange permutes the order of formulas in a context.  It is interpreted by
+the symmetry isomorphisms of the tensor product of bidirectional interfaces.
+
+\subsection{Tensor introduction}
+
+The tensor introduction rule is
+\[
+\mathrm{infer}[\otimes I]
+      {\Gamma,\Delta\vdash A\otimes B}
+      {\Gamma\vdash A \& \Delta\vdash B}.
+\]
+If
+\[
+\llbracket \pi\rrbracket:
+\llbracket\Gamma\rrbracket\to\llbracket A\rrbracket
+\]
+and
+\[
+\llbracket \rho\rrbracket:
+\llbracket\Delta\rrbracket\to\llbracket B\rrbracket,
+\]
+then
+\[
+\llbracket \pi\otimes\rho\rrbracket
+=
+\llbracket \pi\rrbracket\otimes\llbracket \rho\rrbracket,
+\]
+after the canonical context reassociations.
+
+\subsection{Tensor unit}
+
+The tensor unit introduction rule is
+\[
+\mathrm{infer}[\mathbf 1 I]
+      {\cdot\vdash\mathbf 1}
+      {}
+\]
+and is interpreted by the identity process on the unit interface
+\[
+1_{\mathbf I}:\mathbf I\to\mathbf I.
+\]
+
+\subsection{Linear implication}
+
+Linear implication is the abbreviation
+\[
+A\multimap B:=A^\bot\parr B.
+\]
+The introduction rule is
+\[
+\mathrm{infer}[\multimap I]
+      {\Gamma\vdash A\multimap B}
+      {\Gamma,A\vdash B}.
+\]
+It is interpreted by the canonical bidirectional currying isomorphism
+\[
+\operatorname{Proc}_{\partial}
+(\llbracket\Gamma\rrbracket\otimes\llbracket A\rrbracket,
+ \llbracket B\rrbracket)
+\cong
+\operatorname{Proc}_{\partial}
+(\llbracket\Gamma\rrbracket,
+ \llbracket A\multimap B\rrbracket),
+\]
+from Proposition~\ref{prop:bidirectional-currying}.  This isomorphism is
+induced by polarity reversal and product reassociation; it is not an additional
+closed-structure operation.
+
+The elimination rule is
+\[
+\mathrm{infer}[\multimap E]
+      {\Gamma,\Delta\vdash B}
+      {\Gamma\vdash A\multimap B \& \Delta\vdash A}.
+\]
+It is interpreted by partial GoI composition, after the canonical
+reassociations identifying the function process with a process consuming an
+\(A\)-input.  The rule is defined precisely when the resulting feedback
+problem is trace-class.
+
+\subsection{Cut}
+
+The cut rule is
+\[
+\mathrm{infer}[\mathrm{cut}]
+      {\Gamma,\Delta\vdash B}
+      {\Gamma\vdash A \& \Delta,A\vdash B}.
+\]
+It is a partial rule.  If
+\[
+\llbracket\pi\rrbracket:
+\llbracket\Gamma\rrbracket\to\llbracket A\rrbracket
+\]
+and
+\[
+\llbracket\rho\rrbracket:
+\llbracket\Delta\rrbracket\otimes\llbracket A\rrbracket
+\to
+\llbracket B\rrbracket,
+\]
+then, after the canonical associativity and symmetry identifications,
+\[
+\llbracket \operatorname{cut}(\pi,\rho)\rrbracket
+=
+\llbracket\rho\rrbracket
+\circ_{\partial}
+(\llbracket\pi\rrbracket\otimes 1_{\llbracket\Delta\rrbracket}),
+\]
+provided this partial composite is defined.
+
+Thus cut is admissible precisely when the corresponding open pipeline is
+trace-class.
+
+\section{Soundness of multiplicative partial linear logic}
+\label{sec:soundness-multiplicative-partial-linear-logic}
+
+\begin{definition}[Defined derivation]
+\label{def:defined-derivation}
+A derivation is \textbf{defined} if every partial composition required in its
+process interpretation is trace-class.
+\end{definition}
+
+\begin{theorem}[Soundness]
+\label{thm:soundness-partial-mll}
+Every defined derivation
+\[
+\pi:\Gamma\vdash A
+\]
+denotes a bidirectional Mealy process
+\[
+\llbracket\pi\rrbracket:
+\llbracket\Gamma\rrbracket\to\llbracket A\rrbracket
+\]
+in
+\[
+\operatorname{Int}_{\partial}(\mathsf{Mly}(\mathcal E)).
+\]
+The interpretation of cut is partial GoI composition, and is defined exactly
+when the associated open pipeline is trace-class.
+\end{theorem}
+
+\begin{proof}
+The proof is by induction on derivations.
+
+The identity rule is interpreted by the identity process.  Exchange is
+interpreted by the symmetry of the tensor product.  Tensor introduction is
+interpreted by tensoring processes, which is well typed by
+Proposition~\ref{prop:tensor-processes-well-typed}.  The tensor unit rule is
+interpreted by the identity process on the unit interface.
+
+The implication introduction rule is interpreted by the bidirectional currying
+isomorphism of Proposition~\ref{prop:bidirectional-currying}.  Implication
+elimination and cut are interpreted by partial GoI composition.  By definition
+of a defined derivation, the necessary partial composites are trace-class.
+Hence the interpretation exists as a bidirectional Mealy process.
+
+Therefore every defined derivation has a well-defined process interpretation
+of the required type.
+\end{proof}
+
+\section{Cut execution}
+\label{sec:cut-execution}
+
+The semantic meaning of cut is not merely that two processes are composed.
+Cut is executed by solving the hidden feedback equation of the associated GoI
+pipeline.
+
+\begin{theorem}[Cut execution]
+\label{thm:cut-execution}
+Let
+\[
+\pi:\Gamma\vdash A
+\]
+and
+\[
+\rho:\Delta,A\vdash B
+\]
+be derivations.  Suppose the denotational cut
+\[
+\llbracket\rho\rrbracket
+\circ_{\partial}
+(\llbracket\pi\rrbracket\otimes 1_{\llbracket\Delta\rrbracket})
+\]
+is defined.  Then the denotation of the cut is computed by solving the unique
+feedback equation of the corresponding open pipeline and substituting the
+solution into the transition and output maps of the two processes.
+\end{theorem}
+
+\begin{proof}
+Let
+\[
+F=
+\llbracket\pi\rrbracket\otimes 1_{\llbracket\Delta\rrbracket}
+\]
+and
+\[
+G=
+\llbracket\rho\rrbracket.
+\]
+The denotational cut is
+\[
+G\circ_{\partial}F.
+\]
+By assumption, this partial composite is defined.  Hence, by
+Theorem~\ref{thm:goi-execution-criterion}, the feedback witness projection
+\[
+\pi_{G,F}:W_{G,F}\to D_{G,F}
+\]
+is an isomorphism.  Therefore the feedback equation
+\[
+h
+=
+\omega_G^-
+\left(
+\left(
+\omega_F^+((a^+,h),x),
+c^-
+\right),
+y
+\right)
+\]
+has a unique internal solution
+\[
+h_{G,F}(a^+,c^-,x,y).
+\]
+The component execution formula of
+Theorem~\ref{thm:component-execution-formula} says that the transition and
+output of the cut are obtained by substituting this solution into the open
+pipeline.  This gives the claimed computation of the cut.
+\end{proof}
+
+\begin{remark}[Semantic cut execution]
+\label{rem:semantic-cut-execution}
+The theorem is a semantic cut-execution result.  It does not assert a
+syntactic normalization theorem for a proof-rewriting system.  It says that
+whenever a cut is denotationally defined, its interpretation is computed by
+Geometry-of-Interaction feedback.
+\end{remark}
+
+\section{Structural laws for partial cut}
+\label{sec:structural-laws-partial-cut}
+
+The paracategory laws give the structural equations of partial cut.
+
+\begin{proposition}[Identity cut]
+\label{prop:identity-cut}
+For every process
+\[
+F:\mathbb A\to\mathbb B,
+\]
+one has
+\[
+F\circ_{\partial}1_{\mathbb A}=F,
+\qquad
+1_{\mathbb B}\circ_{\partial}F=F,
+\]
+on the trace-class domains of the displayed composites.
+\end{proposition}
+
+\begin{proof}
+These are the yanking equations for the partial trace inherited from the
+previous chapter.  Composing with a wire process forms an open pipeline whose
+feedback equation is the wire equation, and the traced result is canonically
+identified with \(F\).
+\end{proof}
+
+\begin{proposition}[Associativity of partial cut]
+\label{prop:associativity-partial-cut}
+Let
+\[
+F:\mathbb A\to\mathbb B,
+\qquad
+G:\mathbb B\to\mathbb C,
+\qquad
+H:\mathbb C\to\mathbb D
+\]
+be bidirectional Mealy processes.  Whenever the two bracketed composites are
+defined, one has
+\[
+H\circ_{\partial}(G\circ_{\partial}F)
+=
+(H\circ_{\partial}G)\circ_{\partial}F.
+\]
+\end{proposition}
+
+\begin{proof}
+Both sides are obtained by forming the same three-stage open pipeline and
+closing the same hidden counterflow interfaces.  The two bracketings correspond
+to tracing these interfaces in different orders.  The staged-feedback theorem
+from the previous chapter identifies the iterated traces with the simultaneous
+trace on their common trace-class domain.  Hence the two composites agree.
+\end{proof}
+
+\begin{proposition}[Tensor compatibility]
+\label{prop:tensor-compatibility-partial-cut}
+Let
+\[
+F_i:\mathbb A_i\to\mathbb B_i,
+\qquad
+G_i:\mathbb B_i\to\mathbb C_i
+\]
+for \(i=1,2\).  Whenever the relevant partial composites are defined, one has
+\[
+(G_1\circ_{\partial}F_1)\otimes(G_2\circ_{\partial}F_2)
+\cong
+(G_1\otimes G_2)\circ_{\partial}(F_1\otimes F_2).
+\]
+\end{proposition}
+
+\begin{proof}
+The open pipeline for
+\[
+F_1\otimes F_2
+\]
+followed by
+\[
+G_1\otimes G_2
+\]
+is canonically the tensor of the two open pipelines for \((F_1,G_1)\) and
+\((F_2,G_2)\).  The superposing law for the partial trace identifies the trace
+of the tensor with the tensor of the traces on the common trace-class domain.
+\end{proof}
+
+\section{Partial linear logic of Mealy GoI}
+\label{sec:partial-linear-logic-mealy-goi}
+
+\begin{theorem}[Partial linear logic of Mealy GoI]
+\label{thm:partial-linear-logic-mealy-goi}
+Let \(\mathcal E\) have finite limits.  The partial Int construction applied
+to the partially traced symmetric monoidal category
+\[
+\mathsf{Mly}(\mathcal E)
+\]
+yields a symmetric monoidal paracategory
+\[
+\operatorname{Int}_{\partial}(\mathsf{Mly}(\mathcal E))
+\]
+with involutive duality.
+
+This structure interprets multiplicative linear logic with partial cut:
+\begin{enumerate}
+\item formulas are interpreted as bidirectional Mealy interfaces;
+\item proofs are interpreted as bidirectional Mealy processes;
+\item tensor is interpreted by product of interfaces and parallel composition
+of processes;
+\item linear negation is interpreted by reversal of polarity;
+\item par is interpreted by De Morgan duality;
+\item cut is interpreted by partial GoI composition.
+\end{enumerate}
+A cut is defined precisely when the associated open pipeline is trace-class,
+equivalently when its hidden feedback equation has a unique internal solution.
+When defined, the denotation of the cut is computed by substituting that unique
+solution into the open-pipeline transition and output maps.
+\end{theorem}
+
+\begin{proof}
+The existence of the partial trace on
+\[
+\mathsf{Mly}(\mathcal E)
+\]
+is the main result of the previous chapter.  The construction of
+\[
+\operatorname{Int}_{\partial}(\mathsf{Mly}(\mathcal E))
+\]
+and its symmetric monoidal paracategory structure is
+Theorem~\ref{thm:partial-int-paracategory}.  The involutive duality is given
+by reversal of bidirectional polarity.
+
+The interpretation of formulas and contexts is
+Definition~\ref{def:interface-interpretation} and
+Definition~\ref{def:context-interpretation}.  The interpretation of proof
+rules is given in Section~\ref{sec:proof-rules-process-interpretation}.
+Soundness for defined derivations is Theorem~\ref{thm:soundness-partial-mll}.
+
+The characterization of defined cut as trace-class feedback is
+Theorem~\ref{thm:goi-execution-criterion}.  The component computation of a
+defined cut by substituting the unique feedback solution is
+Theorem~\ref{thm:component-execution-formula} and
+Theorem~\ref{thm:cut-execution}.
+\end{proof}
+
+\section{Conceptual summary}
+\label{sec:goi-conceptual-summary}
+
+The construction of this chapter may be summarized as follows.
+
+First, a bidirectional Mealy process
+\[
+F:\mathbb A\to\mathbb B
+\]
+is a Mealy morphism
+\[
+F:
+\mathbb A^+\times\mathbb B^-
+\rightsquigarrow
+\mathbb B^+\times\mathbb A^-.
+\]
+It carries positive behaviour forward and negative behaviour backward.
+
+Second, the composite of
+\[
+F:\mathbb A\to\mathbb B
+\]
+and
+\[
+G:\mathbb B\to\mathbb C
+\]
+is not ordinary sequential composition.  It is Geometry-of-Interaction
+execution:
+\[
+G\circ_{\partial}F
+=
+\operatorname{Tr}^{\mathbb B^-}(H_{G,F}).
+\]
+Thus composition is defined precisely when the hidden counterflow equation has
+a unique internal solution.
+
+Third, the proof-theoretic cut rule is interpreted by this same operation.  A
+cut is admissible exactly when the corresponding feedback equation is
+trace-class.
+
+Finally, when a cut is defined, its denotation is computed by solving the
+feedback equation
+\[
+h
+=
+\omega_G^-
+\left(
+\left(
+\omega_F^+((a^+,h),x),
+c^-
+\right),
+y
+\right)
+\]
+and substituting the unique solution into the open-pipeline transition and
+output maps.
+
+Thus the chapter identifies the chain
+\[
+\boxed{
+\text{partial trace}
+\quad\Longrightarrow\quad
+\text{partial GoI execution}
+\quad\Longrightarrow\quad
+\text{partial cut}
+\quad\Longrightarrow\quad
+\text{multiplicative linear process logic}.
+}
+\]
