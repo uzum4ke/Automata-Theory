@@ -1,0 +1,1013 @@
+\chapter{Systems, Interfaces, and Feedback}
+\label{chap:systems-interfaces-feedback}
+
+\section{Why state changes category theory}
+\label{sec:why-state-changes-category-theory}
+
+Category theory is a theory of typed composition.  A morphism
+\[
+  f:X\to Y
+\]
+has a source, a target, and a rule for composing with other morphisms.  This
+discipline is powerful because it separates the type of a process from the
+process itself: a process can be composed precisely when its boundary matches
+the boundary of another process.
+
+Automata theory adds something that ordinary morphisms do not visibly carry:
+state.  A stateful process does not merely transform an input boundary into an
+output boundary.  It remembers, updates, responds, and exposes different
+future behavior depending on its current state.  Once state is carried
+categorically, composition is no longer only composition of arrows.  It is
+composition of open systems whose internal states must be coupled along shared
+interfaces.
+
+This manuscript develops such a state-bearing categorical theory.  Its basic
+morphisms are not ordinary arrows
+\[
+  A\to B,
+\]
+but Mealy morphisms
+\[
+  A\rightsquigarrow B.
+\]
+A Mealy morphism has an internal state object, typed input and output
+interfaces, transition structure, and output structure.  It is therefore both
+a categorical generalization of automata and a mathematical model of an open
+system.
+
+The central philosophical point of the manuscript is this:
+\[
+  \boxed{
+  \text{category theory with persistent state naturally becomes
+  categorical systems theory.}
+  }
+\]
+This is not merely an analogy.  The formal objects developed below directly
+realize the basic vocabulary of systems and cybernetics.  Interfaces are
+internal categories.  Open systems are Mealy morphisms.  Maps of systems are
+Mealy simulations.  Interconnection is pullback over shared interface data.
+Behavior is residual semantics.  Specifications are subobjects of behavior
+space.  Environments are downstream actions.  Feedback is trace over a hidden
+interface.  Parallelism is product tensor.  True concurrency is cubical
+execution.
+
+Thus the abstract mathematics is not abstraction for its own sake.  It gives a
+typed compositional language for systems with state, interaction, behavior,
+feedback, and concurrent execution.
+
+A first comparison is:
+\[
+\begin{array}{c|c|c}
+\text{level}
+&
+\text{ordinary categorical form}
+&
+\text{state-bearing form in this manuscript}
+\\
+\hline
+\text{interface}
+&
+\text{object}
+&
+\text{internal category}
+\\
+\text{process}
+&
+\text{morphism }X\to Y
+&
+\text{Mealy morphism }A\rightsquigarrow B
+\\
+\text{composition}
+&
+\text{ordinary composition}
+&
+\text{state coupling by pullback}
+\\
+\text{comparison}
+&
+\text{commuting diagram}
+&
+\text{Mealy simulation}
+\\
+\text{semantics}
+&
+\text{functorial interpretation}
+&
+\text{residual behavior assignment}
+\\
+\text{iteration}
+&
+\text{trace or fixed point}
+&
+\text{finite-path execution}
+\\
+\text{parallelism}
+&
+\text{monoidal tensor}
+&
+\text{product execution and cubical resolution}
+\end{array}
+\]
+
+The conceptual movement can be displayed as:
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+  \text{ordinary morphism}
+    \ar[r,"\text{add state}"]
+  &
+  \text{Mealy morphism}
+    \ar[r,"\text{compose through interfaces}"]
+  &
+  \text{open system}
+  \\
+  X\to Y
+    \ar[r,phantom,"\leadsto" description]
+  &
+  A\rightsquigarrow B
+    \ar[r,phantom,"\leadsto" description]
+  &
+  \text{typed stateful interaction}
+\end{tikzcd}
+\]
+
+The rest of the manuscript develops this idea formally.  This chapter explains
+the systems-theoretic and cybernetic reading that motivates the construction.
+
+\section{Systems and cybernetics as motivation}
+\label{sec:systems-and-cybernetics-motivation}
+
+Cybernetics began as the study of control and communication in animals and
+machines.  Wiener's \emph{Cybernetics} gave the field its canonical
+formulation as a study of messages, feedback, regulation, control, and
+communication across biological and mechanical systems
+\cite{Wiener1948Cybernetics}.  For the purposes of this manuscript, the
+cybernetic lesson is that regulated behavior can often be analyzed through
+loops of action, observation, correction, and further action.
+
+Ashby gave cybernetics a sharper theory of state, transformation, black boxes,
+regulation, and variety.  His \emph{Introduction to Cybernetics} develops a
+formal vocabulary for adaptive and regulatory systems
+\cite{Ashby1956IntroductionCybernetics}.  Ashby's law of requisite variety
+says, roughly, that an effective regulator must possess enough variety to
+counter the variety of relevant disturbances.  That law remains background
+rather than a theorem of this manuscript.  Ashby's perspective is nevertheless
+important: a system is partly characterized by the structured repertoire of
+responses available to it.
+
+General systems theory broadened the frame.  Bertalanffy argued that many
+scientific objects should be understood as open systems: organized wholes
+which persist through exchange with an environment
+\cite{Bertalanffy1968GeneralSystemTheory}.  The relevant notions are system,
+environment, boundary, exchange, organization, and emergence.  A living
+organism, an ecological network, a firm, and a machine can share the same
+structural problem: they maintain organization through interaction with what
+lies outside them.
+
+The behavioral approach to systems theory, developed by Willems and others,
+moves still closer to the semantic side of this manuscript.  Willems argued
+that systems should be described by their behavior: the set of admissible
+trajectories or outcomes.  His mature account of open and interconnected
+systems treats systems as things that are torn apart, linked, and reassembled
+through shared variables \cite{Willems2007BehavioralApproach}.  His work on
+interconnection by sharing variables is especially important for the present
+viewpoint \cite{Willems2007InterconnectionSharingVariables}.  Interconnection
+can mean identifying variables, imposing compatibility, or gluing systems
+along a common boundary.
+
+Adam and Dahleh extract an abstract categorical pattern from this behavioral
+approach.  They emphasize that a behavioral system is naturally represented by
+an inclusion
+\[
+  \mathcal B\hookrightarrow \mathbb U,
+\]
+where \(\mathbb U\) is a universe of possible outcomes and \(\mathcal B\) is
+the admissible behavior.  They also distinguish syntax from semantics and
+describe interconnection by variable sharing as a gluing operation
+\cite{AdamDahleh2019AbstractBehavioralApproach}.  This is one of the closest
+external precedents for the semantic parts of this manuscript.  Later chapters
+treat specifications as subobjects of canonical behavior, systems as models
+of those specifications, and interconnection as pullback-mediated
+compatibility of typed interface data.
+
+Categorical open-systems theory provides another point of contact.  Decorated
+cospans, structured cospans, corelations, double categories, and hypergraph
+categories have been used to model open networks and their compositional
+semantics
+\cite{Fong2015DecoratedCospans,Courser2020OpenSystemsDoubleCategories}.  This
+literature uses technical foundations different from the span-based Mealy
+calculus used here, while addressing the same philosophical problem: a theory
+of systems must be a theory of composition through explicit boundaries.
+
+Recent work in categorical systems theory makes this boundary-first
+perspective explicit.  Myers emphasizes that a system interacts with its
+environment through an interface that can be described separately from the
+system itself \cite{MyersCategoricalSystemsTheory}.  Libkind and Myers
+organize open systems, their interactions, and their maps over a double
+category of interfaces and interactions
+\cite{LibkindMyers2025DoubleSystems}.  The present manuscript uses a
+different technical foundation: internal categories, spans, Mealy morphisms,
+Mealy simulations, residual behavior, dynamic span logic, product
+concurrency, polynomial response, and coproduct feedback.  The same
+philosophical constraint is operative throughout: systems, interfaces,
+interactions, and system maps are distinct layers of structure.
+
+Categorical cybernetics is another recent development.  Work on lenses,
+optics, open games, learning systems, and bidirectional processes studies
+systems that interact with both environments and controllers
+\cite{CapucciGavranovicHedgesRischel2021CategoricalCybernetics}.  The present
+manuscript develops a span-based theory of typed Mealy systems.  Categorical
+cybernetics confirms the same methodological lesson: cybernetic language has
+mathematical force when attached to precise categorical structure.
+
+\section{From automata to open systems}
+\label{sec:from-automata-to-open-systems}
+
+A classical automaton has states, inputs, transitions, and sometimes outputs.
+A Mealy machine, in particular, updates its state while producing an output.
+The theory developed here keeps that intuition but removes the restriction
+that inputs and outputs are merely symbols.  Inputs and outputs are typed
+events belonging to internal categories.
+
+Thus an input interface is not just a set of letters.  It is an internal
+category \(A\).  Its objects are boundary modes, and its arrows are admissible
+input events between those modes.  Likewise, the output interface is an
+internal category \(B\).
+
+A system from \(A\) to \(B\) is then a Mealy morphism
+\[
+  \Phi:A\rightsquigarrow B.
+\]
+It has a carrier span
+\[
+\begin{tikzcd}[column sep=large]
+  A_0
+  &
+  P
+    \ar[l,"p"']
+    \ar[r,"q"]
+  &
+  B_0 .
+\end{tikzcd}
+\]
+The object \(P\) is the state object.  A state is not untyped: it has an
+input-side exposure \(p(x)\in A_0\) and an output-side exposure
+\(q(x)\in B_0\).
+
+If \(a:u\to v\) is an input event of \(A\), and \(x\) is a state with
+\(p(x)=v\), then the system may process \(a\).  It updates to a state
+\[
+  \delta(a,x)
+\]
+with input-side exposure
+\[
+  p(\delta(a,x))=u,
+\]
+and emits an output event
+\[
+  \omega(a,x):q(\delta(a,x))\to q(x)
+\]
+in \(B\).  This target-to-source orientation is used throughout the
+manuscript.
+
+A Mealy morphism is therefore a typed, categorical version of the
+Mealy-machine idea.  But it is also more than automata theory.  Because
+interfaces are categories and systems compose through spans, Mealy morphisms
+form a calculus of open systems.
+
+\section{Interfaces, systems, interactions, and maps}
+\label{sec:interfaces-systems-interactions-maps}
+
+The theory separates four levels that are often conflated in informal systems
+language:
+\[
+  \text{interfaces,}
+  \qquad
+  \text{systems,}
+  \qquad
+  \text{interactions,}
+  \qquad
+  \text{maps of systems.}
+\]
+Each level has a distinct formal role.
+
+\[
+\begin{array}{c|c|c}
+\text{layer}
+&
+\text{formal object}
+&
+\text{systems reading}
+\\
+\hline
+\text{interface}
+&
+\text{internal category}
+&
+\text{typed boundary of interaction}
+\\
+\text{system}
+&
+\text{Mealy morphism}
+&
+\text{stateful open process inhabiting interfaces}
+\\
+\text{system map}
+&
+\text{Mealy simulation}
+&
+\text{structured comparison of systems}
+\\
+\text{interaction}
+&
+\text{composition, tensor, trace, execution}
+&
+\text{ways systems are coupled, run, hidden, or composed}
+\\
+\text{semantics}
+&
+\text{residual behavior}
+&
+\text{observable behavior under future interaction}
+\end{array}
+\]
+
+Interfaces type interaction.  Systems inhabit interfaces.  Interactions
+combine systems through interfaces.  Maps of systems compare systems while
+respecting their transition-output structure.  Behavior records what remains
+observable when the system is tested through future interface events.
+
+This separation is the reason the formalism can be read systems-theoretically.
+An open system is not merely a map.  It is a stateful process with a boundary.
+Its boundary has its own transition structure.  Its internal state mediates
+future response.  Its comparisons must preserve both update and output.  Its
+behavior is obtained semantically rather than by inspecting implementation
+witnesses.
+
+\section{The systems dictionary}
+\label{sec:systems-dictionary}
+
+The systems-theoretic reading used throughout the manuscript is summarized by
+the following dictionary:
+\[
+\begin{array}{c|c}
+\text{systems-theoretic language}
+&
+\text{categorical structure}
+\\
+\hline
+\text{interface}
+&
+\text{internal category}
+\\
+\text{open system}
+&
+\text{Mealy morphism}
+\\
+\text{state}
+&
+\text{generalized element of the Mealy carrier}
+\\
+\text{input event}
+&
+\text{arrow of the input interface}
+\\
+\text{output event}
+&
+\text{arrow of the output interface}
+\\
+\text{interaction}
+&
+\text{operation combining systems through interfaces}
+\\
+\text{interconnection}
+&
+\text{pullback over shared interface data}
+\\
+\text{downstream environment}
+&
+\text{right action of the output interface}
+\\
+\text{one-step execution}
+&
+\text{primitive execution span}
+\\
+\text{execution structure}
+&
+\text{relative program category}
+\\
+\text{map of systems}
+&
+\text{Mealy simulation}
+\\
+\text{behavior space}
+&
+\text{canonical residual behavior object}
+\\
+\text{system behavior}
+&
+\text{semantic image of the behavior assignment}
+\\
+\text{state observation}
+&
+\text{behavior assignment}
+\\
+\text{specification}
+&
+\text{coequational subobject of behavior}
+\\
+\text{black-boxing}
+&
+\text{semantic image or residual quotient}
+\\
+\text{may modality}
+&
+\text{diamond}
+\\
+\text{must modality}
+&
+\text{box}
+\\
+\text{guard}
+&
+\text{subobject represented as a test span}
+\\
+\text{iteration}
+&
+\text{finite-path construction}
+\\
+\text{feedback}
+&
+\text{coproduct trace over a hidden interface}
+\\
+\text{choice}
+&
+\text{homwise coproduct}
+\\
+\text{parallelism}
+&
+\text{product tensor}
+\\
+\text{true concurrency}
+&
+\text{cubical resolution of product execution}
+\\
+\text{response repertoire}
+&
+\text{polynomial response profile}.
+\end{array}
+\]
+
+The table should be read as a disciplined interpretation rather than as a
+loose metaphor.  The point is not that every word from systems theory is
+automatically available.  The point is that the central structural words of
+systems theory---interface, system, interaction, behavior, specification,
+environment, feedback, and concurrency---already have precise mathematical
+realizations in the categorical automata developed here.
+
+\section{Composition as interconnection}
+\label{sec:composition-as-interconnection}
+
+The basic operation on open systems is composition.  Suppose
+\[
+  P:A\rightsquigarrow B,
+  \qquad
+  Q:B\rightsquigarrow C.
+\]
+The two systems share the interface \(B\).  The output boundary of \(P\) must
+match the input boundary of \(Q\).  Categorically, this matching is expressed
+by the pullback
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  P\times_{B_0}Q
+    \ar[r]
+    \ar[d]
+  &
+  Q
+    \ar[d,"p_Q"]
+  \\
+  P
+    \ar[r,"q_P"']
+  &
+  B_0 .
+\end{tikzcd}
+\]
+Thus a state of the composite is a compatible pair \((x,y)\) with
+\[
+  q_P(x)=p_Q(y).
+\]
+
+This is the formal meaning of interconnection in the span-based Mealy
+calculus:
+\[
+  \boxed{
+  \text{interconnection is pullback over shared interface data.}
+  }
+\]
+Systems do not compose by forgetting their boundaries.  They compose by
+identifying the boundary data through which one system can drive, constrain,
+or inform another.
+
+This gives a categorical version of a central systems-theoretic idea.
+Willems's behavioral approach treats interconnection as sharing variables
+\cite{Willems2007InterconnectionSharingVariables}.  In the present manuscript,
+shared variables are replaced by typed interface data, and compatibility is
+expressed by pullback.
+
+\section{Environments and execution}
+\label{sec:environments-and-execution}
+
+An open system has an output interface.  An environment is something on which
+outputs can act.
+
+If
+\[
+  \Phi:A\rightsquigarrow B
+\]
+is an open system, then \(B\) is the output interface.  A downstream
+environment for \(\Phi\) is represented by a right internal \(B\)-action
+\(Y\).  The coupled state object is
+\[
+  S_{\Phi,Y}=P\times_{B_0}Y.
+\]
+A point of \(S_{\Phi,Y}\) is a system state together with a compatible
+environment state:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  S_{\Phi,Y}
+    \ar[r]
+    \ar[d]
+  &
+  Y
+    \ar[d]
+  \\
+  P
+    \ar[r,"q"']
+  &
+  B_0 .
+\end{tikzcd}
+\]
+
+When the system emits a \(B\)-arrow, that arrow acts on the environment
+component.  The result is a right \(A\)-action, whose action category is the
+relative program category
+\[
+  \mathsf{Prog}_{\Phi,Y}.
+\]
+
+Execution therefore belongs to the system-in-environment.  The Mealy morphism
+is the open system.  The pair \((\Phi,Y)\) is the system placed downstream in
+an environment.  The relative program category is its generated execution
+structure.
+
+This gives a precise cybernetic reading of output.  An output is not merely a
+label.  It is an interface event capable of acting on a downstream system.
+
+\section{Maps and simulations}
+\label{sec:maps-and-simulations}
+
+A theory of systems needs maps of systems.  In this manuscript, maps of
+systems are Mealy simulations.
+
+A displayed simulation
+\[
+  \Theta:\Phi\Rightarrow\Psi
+\]
+is a structured comparison of Mealy morphisms.  Its variance is important.
+Although the displayed simulation points from \(\Phi\) to \(\Psi\), its
+carrier comparison is directed from the carrier of \(\Psi\) to the carrier of
+\(\Phi\), together with an output-comparison arrow in the output interface.
+
+This variance is not an accident.  It is what makes simulations act
+contravariantly on evaluated execution.  For a fixed downstream action \(Y\),
+a simulation
+\[
+  \Theta:\Phi\Rightarrow\Psi
+\]
+induces a functor
+\[
+  H_{\Theta,Y}:
+  \mathsf{Prog}_{\Psi,Y}
+  \longrightarrow
+  \mathsf{Prog}_{\Phi,Y}.
+\]
+Thus comparison of systems transports executions in the opposite direction.
+
+This is the comparison discipline used throughout the manuscript: displayed
+simulation direction and execution-transport direction are opposite at the
+level of evaluated program categories.  A Mealy simulation is therefore not
+just a map of state sets.  It is a structured comparison respecting input
+processing and output comparison.
+
+\section{Behavior and black-boxing}
+\label{sec:behavior-and-black-boxing}
+
+A system has internal state, but its externally meaningful content is its
+behavior.  In this manuscript, behavior is residual: it records what the
+system can do under all future typed interactions.
+
+For fixed interfaces \(A\) and \(B\), there is a canonical behavior object
+\[
+  \mathrm{Beh}^{\mathrm{can}}_{A,B}.
+\]
+Every Mealy morphism
+\[
+  P:A\rightsquigarrow B
+\]
+has a semantic map
+\[
+  \beta_P:P\longrightarrow \mathrm{Beh}^{\mathrm{can}}_{A,B}.
+\]
+This map sends a state to its residual behavior.
+
+The semantic image
+\[
+  \mathrm{Beh}(P)\hookrightarrow \mathrm{Beh}^{\mathrm{can}}_{A,B}
+\]
+is the behavior generated by the system.  Passing from \(P\) to
+\(\mathrm{Beh}(P)\) is a categorical black-boxing operation.  The internal
+implementation witnesses in \(P\) are forgotten; the residual observable
+behavior remains.
+
+The same theme appears in the Myhill--Nerode construction.  States that
+determine the same residual behavior are identified.  The resulting minimal
+residual realization is the behaviorally separated system obtained by
+quotienting away redundant implementation state.
+
+This is where the present theory meets the behavioral tradition in systems
+theory most directly.  A system is not only a state machine.  It is also a
+generator of admissible behavior inside a universe of possible behavior
+\cite{Willems2007BehavioralApproach,AdamDahleh2019AbstractBehavioralApproach}.
+
+\section{Specifications and requirements}
+\label{sec:specifications-and-requirements}
+
+Specifications are behavioral constraints.  Locally, a specification is a
+subobject of canonical behavior:
+\[
+  V\hookrightarrow \mathrm{Beh}^{\mathrm{can}}_{A,B}.
+\]
+A system
+\[
+  P:A\rightsquigarrow B
+\]
+satisfies the specification when its semantic map factors through \(V\):
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  P
+    \ar[rr,"\beta_P"]
+    \ar[dr,dashed]
+  &&
+  \mathrm{Beh}^{\mathrm{can}}_{A,B}
+  \\
+  &
+  V
+    \ar[ur,hook]
+  &
+\end{tikzcd}
+\]
+The class of all such systems is the model class of \(V\).
+
+Thus requirements are semantic before they are syntactic.  Syntax is later
+extracted from behavior through transition-output images, operational
+congruences, and syntactic transition-output categories.  This reverses a
+common order of presentation.  Rather than beginning with an algebra of syntax
+and then assigning semantics, the manuscript first constructs behavior space
+and then extracts the algebraic syntax recognized by behavioral constraints.
+
+The Birkhoff theorems express this idea categorically.  Behaviorally
+definable classes of systems are exactly those closed under the appropriate
+system-theoretic operations: homomorphic preimage, quotient, coproduct, and
+reindexing, depending on the local or global setting.  The result is a
+categorical theory of requirements and model classes.
+
+\section{Observation and dynamic logic}
+\label{sec:observation-and-dynamic-logic}
+
+Observation appears in several related forms.  At the semantic level,
+observation is the behavior assignment.  At the execution level, observation
+is given by output labelling and downstream comparison.  At the logical level,
+observation is represented by predicate transformers.
+
+For a span
+\[
+  R=
+  \left(
+    X\xleftarrow{\ell}R\xrightarrow{r}Y
+  \right),
+\]
+the diamond modality is
+\[
+  \langle R\rangle\varphi
+  :=
+  \exists_{\ell}(r^\ast\varphi),
+\]
+and the box modality is
+\[
+  [R]\varphi
+  :=
+  \forall_{\ell}(r^\ast\varphi).
+\]
+The diamond is the may modality: there exists an \(R\)-execution reaching
+\(\varphi\).  The box is the must modality: every \(R\)-execution satisfies
+\(\varphi\).
+
+The modal reading is:
+\[
+\begin{array}{c|c|c}
+\text{logical form}
+&
+\text{categorical definition}
+&
+\text{systems reading}
+\\
+\hline
+\langle R\rangle\varphi
+&
+\exists_{\ell}(r^\ast\varphi)
+&
+\text{some execution reaches }\varphi
+\\
+\left[R\right]\varphi
+&
+\forall_{\ell}(r^\ast\varphi)
+&
+\text{all executions satisfy }\varphi
+\\
+T_\theta
+&
+S\xleftarrow{\theta}\Theta\xrightarrow{\theta}S
+&
+\text{test or guard}
+\\
+\mathsf{Path}(U)
+&
+\coprod_{n\geq 0}U^{[n]}
+&
+\text{finite iteration}
+\end{array}
+\]
+
+A test is a predicate regarded as a program.  If
+\[
+  \theta:\Theta\hookrightarrow S
+\]
+is a subobject, its test span is
+\[
+  T_\theta=
+  \left(
+    S\xleftarrow{\theta}\Theta\xrightarrow{\theta}S
+  \right).
+\]
+Finite iteration is represented by the finite-path construction
+\[
+  \mathsf{Path}(U)
+  =
+  \coprod_{n\geq 0}U^{[n]}.
+\]
+Its modal semantics is fixed-point semantics:
+\[
+  \langle\mathsf{Path}(U)\rangle\varphi
+  =
+  \mu X.(\varphi\vee\langle U\rangle X),
+\]
+and
+\[
+  [\mathsf{Path}(U)]\varphi
+  =
+  \nu X.(\varphi\wedge[U]X).
+\]
+Thus may, must, test, guard, and finite iteration have direct categorical
+content.
+
+\section{Feedback as hidden-interface closure}
+\label{sec:feedback-as-hidden-interface-closure}
+
+Feedback is the cybernetic idea most directly realized by the mathematics of
+this manuscript.  A feedback situation separates visible interface from
+hidden interface:
+\[
+  X+H\longrightarrow Y+H.
+\]
+The visible source is \(X\), the visible target is \(Y\), and \(H\) is the
+interface through which execution may circulate internally.
+
+The block form is
+\[
+  R=
+  \begin{pmatrix}
+    R_{XY} & R_{XH}\\
+    R_{HY} & R_{HH}
+  \end{pmatrix}.
+\]
+The block \(R_{XH}\) enters the hidden interface, \(R_{HH}\) moves within the
+hidden interface, \(R_{HY}\) exits the hidden interface, and \(R_{XY}\) exits
+immediately through the visible target.
+
+The feedback trace over \(H\) is
+\[
+  \operatorname{Tr}^{H}(R)
+  =
+  R_{XY}
+  \boxplus
+  R_{HY}\circ
+  \mathsf{Path}(R_{HH})
+  \circ
+  R_{XH}.
+\]
+Thus a visible execution either exits immediately through \(R_{XY}\), or it
+enters the hidden interface, follows finitely many hidden \(H\)-steps, and
+then exits through \(Y\).
+
+\[
+  \boxed{
+  \text{feedback is finite hidden-path closure.}
+  }
+\]
+
+This is why the trace construction is not merely a formal categorical
+operation.  It is the mathematical form of closing an internal loop while
+retaining the externally visible behavior of the resulting system.  The
+formal trace used later is the coproduct trace on spans, related to the
+general theory of traced monoidal categories
+\cite{JoyalStreetVerity1996TracedMonoidalCategories} and to categorical
+feedback semantics
+\cite{KatisSabadiniWalters2002FeedbackTraceFixedPoint}.
+
+Guarded feedback is obtained by inserting tests.  A guarded while program has
+the form
+\[
+  (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?,
+\]
+where \(\theta\) is the continuation guard and \(\epsilon\) is the exit
+condition.  Its diamond semantics is a least fixed point, and its box
+semantics is a greatest fixed point.  This is the point at which cybernetic
+feedback, program iteration, and dynamic logic meet.
+
+\section{Choice, parallelism, and true concurrency}
+\label{sec:choice-parallelism-true-concurrency}
+
+The theory distinguishes choice, parallelism, and true concurrency.
+
+Choice is homwise coproduct.  If
+\[
+  R,S:X\to Y
+\]
+are parallel spans, then
+\[
+  R\boxplus S:X\to Y
+\]
+is the span whose witnesses are either \(R\)-witnesses or \(S\)-witnesses.
+This is a witness-retaining form of nondeterministic alternative.
+
+Parallelism is product tensor.  Products expose simultaneous coordinates.  The
+product tensor places systems side by side.
+
+True concurrency is obtained by resolving product execution into cubical
+execution.  A product of independent systems gives independent execution
+coordinates.  The cubical construction records filled cells together with
+their boundary paths.  Boundary linearizations are sequential observations of
+a higher-dimensional execution.
+
+The distinction is:
+\[
+\begin{array}{c|c|c}
+\text{systems notion}
+&
+\text{categorical operation}
+&
+\text{interpretation}
+\\
+\hline
+\text{choice}
+&
+R\boxplus S
+&
+\text{alternative witnesses}
+\\
+\text{parallelism}
+&
+R\times S
+&
+\text{simultaneous coordinates}
+\\
+\text{true concurrency}
+&
+\text{cubical execution}
+&
+\text{higher-dimensional event structure}
+\\
+\text{feedback}
+&
+\operatorname{Tr}^{H}(R)
+&
+\text{hidden-interface closure}
+\end{array}
+\]
+
+This distinction keeps concurrency separate from nondeterministic
+interleaving.  Parallel systems do not merely interleave their steps.  Their
+independent coordinates support higher-dimensional cells, and the cubical
+semantics records that independence.
+
+\section{Response repertoires}
+\label{sec:response-repertoires}
+
+The response-profile chapter supplies one more cybernetic term with a precise
+formal reading:
+\[
+  \text{response repertoire}
+  =
+  \text{one-step polynomial response profile}.
+\]
+A response profile records the one-step query-response structure available at
+a state.  It is obtained by currying relative Mealy execution data.  Flattening
+the response profile returns the primitive execution span.
+
+The word ``repertoire'' is appropriate here.  The response profile records the
+structured set of possible one-step responses available to the system at a
+state and interface.  It is related in spirit to cybernetic discussions of
+variety, while the stronger phrase ``requisite variety'' is reserved for a
+setting with an additional theorem comparing disturbance variety with response
+variety.
+
+\section{What the theory does not yet claim}
+\label{sec:what-the-theory-does-not-yet-claim}
+
+The systems reading is precise, but it is not unlimited.  The manuscript
+formalizes typed openness, interaction, behavior, specification, execution,
+feedback, and concurrency.  It does not automatically formalize every term
+from cybernetics or systems theory.
+
+For example, homeostasis would require a theorem saying that some controlled
+quantity is maintained under a class of disturbances.  Learning would require
+training, update, or adaptation dynamics.  Agency would require goals,
+preferences, choices, or evaluation structure.  Autopoiesis would require a
+theory of self-production.  Ashby's law of requisite variety would require a
+formal comparison between disturbance variety and response variety.
+
+These are not rejected.  They are simply not smuggled in by terminology.  The
+method of the manuscript is to use systems-theoretic language exactly where
+the categorical structure supports it.
+
+\section{Reading guide}
+\label{sec:systems-reading-guide}
+
+The chapters that follow develop the formal machinery behind the dictionary.
+
+The first technical layer constructs Mealy morphisms between internal
+categories and Mealy simulations between them.  This gives the basic calculus
+of typed open systems and their maps.
+
+The second layer develops residual behavior, canonical behavior objects,
+semantic maps, Myhill--Nerode quotients, and minimal residual realizations.
+This is the semantic and behavioral part of the theory.
+
+The third layer studies specifications as coequational subobjects of behavior
+and proves Birkhoff-style theorems relating behavioral theories to closure
+properties of system classes.
+
+The fourth layer extracts algebraic syntax from behavior through
+transition-output images, operational congruences, and syntactic
+transition-output categories.
+
+The fifth layer places systems in downstream environments, producing relative
+program categories and dynamic span logic.
+
+The sixth layer curries relative execution into polynomial response profiles,
+making precise the one-step response repertoire of a system.
+
+The seventh layer studies product execution and cubical concurrency,
+distinguishing true concurrent structure from mere interleaving.
+
+The feedback chapter then studies coproduct trace, finite hidden paths,
+guarded iteration, signed interfaces, and feedback semantics.
+
+Together these layers support the thesis of this chapter:
+\[
+  \boxed{
+  \text{stateful categorical automata form a typed categorical theory of
+  open systems.}
+  }
+\]
+
+\section{Summary}
+\label{sec:systems-summary}
+
+This manuscript develops a typed open-systems calculus.
+
+Internal categories are interfaces.  Mealy morphisms are open systems
+inhabiting pairs of interfaces.  Mealy simulations are maps or comparisons of
+systems.  Interactions are the operations that compose, couple, tensor,
+execute, iterate, or trace systems.  Pullbacks express interconnection by
+shared interface data.  Downstream actions provide environments.  Relative
+program categories describe execution in an environment.  Residual semantics
+gives behavior.  Coequational subobjects give specifications.  Homwise
+coproduct gives choice.  Product tensor gives parallelism and, after cubical
+resolution, true concurrency.  Coproduct trace gives feedback by finite
+hidden-path closure.
+
+The point is not metaphorical.  The categorical structures themselves carry
+the systems-theoretic interpretation.  Category theory with persistent state
+naturally becomes a theory of typed open systems, their interfaces, their
+interactions, their maps, their behavior, their feedback, and their concurrent
+execution.

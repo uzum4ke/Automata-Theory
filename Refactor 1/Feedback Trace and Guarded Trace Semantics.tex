@@ -1,0 +1,5581 @@
+\chapter{Feedback Trace and Guarded Trace Semantics}
+\label{ch:feedback-trace}
+
+\section{Orientation}
+\label{sec:feedback-trace-orientation}
+
+Chapter~\ref{ch:cubical-mealy-execution-concurrency-types} used products to represent
+simultaneous execution. Product coordinates expose components executed side by
+side. Feedback has a different interface shape. To hide an internal interface,
+one separates the visible source and target summands from the hidden summand:
+\[
+  X+H \longrightarrow Y+H .
+\]
+The visible source and target interfaces are \(X\) and \(Y\), while \(H\) is
+the hidden interface through which execution may circulate internally before
+returning to the visible boundary.
+
+Thus this chapter uses the coproduct monoidal structure
+\[
+  \otimes := +,
+  \qquad
+  I:=0.
+\]
+For a morphism
+\[
+  R:X+H\to Y+H
+\]
+the feedback operation has the Joyal--Street--Verity type
+\[
+  \operatorname{Tr}^{H}_{X,Y}:
+  \mathcal C(X+H,Y+H)
+  \longrightarrow
+  \mathcal C(X,Y),
+\]
+as in the theory of traced monoidal categories
+\cite{JoyalStreetVerity1996TracedMonoidalCategories}.
+
+In span semantics, the trace is the finite hidden-path construction
+\[
+  \operatorname{Tr}^{H}(R)
+  =
+  R_{XY}
+  \boxplus
+  R_{HY}\circ
+  \mathsf{Path}(R_{HH})
+  \circ
+  R_{XH}.
+\]
+Here \(R_{XY}\) records paths that immediately leave through the visible
+target. The second summand records paths that enter the hidden interface,
+execute zero or more hidden \(H\)-to-\(H\) steps, and then exit through the
+visible target.
+
+The block shape is
+\[
+  R =
+  \begin{pmatrix}
+    R_{XY} & R_{XH}\\
+    R_{HY} & R_{HH}
+  \end{pmatrix}
+  :
+  X+H \longrightarrow Y+H .
+\]
+The first index records the source summand and the second records the target
+summand. Thus \(R_{XH}:X\to H\) is the entrance block, and
+\(R_{HY}:H\to Y\) is the exit block. A mnemonic for the four block spans is
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+  X_{\mathrm{src}}
+    \ar[r,bend left=10,"R_{XY}"]
+    \ar[dr,"R_{XH}"']
+  &
+  Y_{\mathrm{tgt}}
+  \\
+  H_{\mathrm{src}}
+    \ar[ur,"R_{HY}"']
+    \ar[r,bend right=10,swap,"R_{HH}"]
+  &
+  H_{\mathrm{tgt}} .
+\end{tikzcd}
+\]
+This diagram is only a mnemonic for the four restrictions of a single span
+over \(X+H\) and \(Y+H\). The source and target decompositions are the
+coproduct decompositions
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+  X
+    \ar[d,phantom,"\oplus" description]
+  &
+  Y
+    \ar[d,phantom,"\oplus" description]
+  \\
+  H
+  &
+  H .
+\end{tikzcd}
+\]
+The actual block data are obtained by pulling the source and target legs of
+\(R\) back along the corresponding coproduct inclusions.
+
+The guiding distinction is therefore
+\[
+  \text{product tensor for concurrency,}
+  \qquad
+  \text{coproduct tensor for feedback.}
+\]
+Products expose simultaneous coordinates. Coproducts expose visible summands
+and allow an internal summand to be hidden by trace. This is the same
+graphical intuition underlying string-diagrammatic tensor calculus and
+categorical feedback semantics
+\cite{JoyalStreet1991GeometryTensorCalculus,KatisSabadiniWalters2002FeedbackTraceFixedPoint},
+but in this chapter we use only block and \texttt{tikzcd} diagrams.
+
+This chapter is the unique location where the trace, feedback, finite-path,
+guarded-loop, folded-execution, bidirectional signed-interface, and
+fixed-point dynamic semantics are developed. Earlier chapters supply the
+stateful Mealy, relative execution, and polynomial response-profile
+constructions; this chapter supplies the feedback and iteration structure that
+acts on those constructions.
+
+The chapter develops the construction in a sequence of layers.
+
+First, we construct the coproduct symmetric monoidal category of spans and its
+block-matrix calculus. Then we isolate the finite-path construction
+\[
+  U\longmapsto \mathsf{Path}(U)
+\]
+as the free-endospan-monoid construction. The trace on spans is then obtained
+by closing a hidden summand and summing over finite hidden paths.
+
+Second, the trace induces the usual iteration operator associated to a
+coproduct trace,
+\[
+  f:X\to Y+X
+  \quad\mapsto\quad
+  f^\dagger:X\to Y
+\]
+by solving the recursive \(X\)-summand through finite paths. The connection
+between traces and iteration is classical; see
+\cite{BloomEsik1993IterationTheories,Hasegawa1997RecursionCyclicSharing,Hasegawa2004Uniformity}.
+
+Third, the coproduct tensor and trace are lifted to internal categories,
+Mealy morphisms, and Mealy simulations. The span-level hidden-path normal
+forms lift summandwise to Mealy transition-output data and to simulation
+cells.
+
+Fourth, the Int construction packages traced feedback into compact closed
+signed-interface categories
+\[
+  (X^+,X^-).
+\]
+The Int construction is due to Joyal--Street--Verity
+\cite{JoyalStreetVerity1996TracedMonoidalCategories}. Its signed-interface
+form is closely related to Girard's Geometry of Interaction and its
+categorical formulation by Abramsky, Haghverdi, and Scott
+\cite{Girard1989GeometryInteractionI,Girard1989TowardsGeometryInteraction,AbramskyHaghverdiScott2002GeometryInteractionLCA}.
+
+Finally, feedback is interpreted logically. Finite paths give the dynamic
+logic star, diamonds give least fixed points, boxes give greatest fixed
+points, and guarded while programs arise as guarded feedback traces. This is
+the dynamic-logic reading of finite program iteration
+\cite{HarelKozenTiurynDynamicLogic}, expressed through the subobject-fibration
+semantics of categorical logic
+\cite{Jacobs1999CategoricalLogic}. Our guarded construction is a
+predicate-guarded specialization internal to a total traced span category.
+Abstract guarded trace, where trace is available only under guardedness
+conditions, is treated in
+\cite{GoncharovSchroder2018GuardedTracedCategories}.
+
+We keep three notational levels separate. Composition of spans and Mealy
+morphisms is written in ordinary categorical order:
+\[
+  S\circ R
+\]
+means first \(R:X\to Y\), then \(S:Y\to Z\). The coproduct tensor is written
+\[
+  +.
+\]
+The homwise coproduct of parallel spans is written
+\[
+  R\boxplus S.
+\]
+Thus if \(R,S:X\to Y\) are parallel spans, then
+\(R\boxplus S:X\to Y\) is the span with apex \(R+S\) and legs induced by the
+two pairs of legs.
+
+For objects \(X,Y\), write
+\[
+  0_{X,Y}
+  :=
+  \left(
+    X\xleftarrow{!}0\xrightarrow{!}Y
+  \right)
+\]
+for the initial span from \(X\) to \(Y\).
+
+The finite-path endospan generated by an endospan \(U:S\to S\) is written
+\[
+  \mathsf{Path}(U).
+\]
+The symbols \(;\), \(\cup\), and \((-)^{\star_{\mathrm{path}}}\) are reserved
+for the dynamic-logic program syntax introduced later. This notation avoids
+conflict with the pullback notation \(f^\ast\).
+
+\section{Feedback span bases}
+\label{sec:feedback-span-bases}
+
+The constructions in this chapter use a layered discipline. The purely
+feedback-theoretic constructions require finite limits and coproducts
+compatible with pullback. The modal interpretation requires additional
+regular, Heyting, and \(\omega\)-iterative structure introduced later.
+
+\begin{definition}[Feedback span base]
+\label{def:feedback-span-base}
+A \textbf{feedback span base} is a finitely complete category \(\mathcal E\)
+equipped with the finite and countable coproducts used below such that these
+coproducts are disjoint and stable under pullback. Equivalently, whenever
+\[
+  A\cong\coprod_{i\in I}A_i
+\]
+is one of the finite or countable coproduct decompositions used in this
+chapter, and \(X\to A\) is any morphism, the canonical comparison
+\[
+  \coprod_{i\in I}(X\times_A A_i)\longrightarrow X
+\]
+is an isomorphism.
+
+We also require the canonical reindexing isomorphisms for countable
+coproducts indexed by countable sets, in particular by \(\mathbb N^2\) and by
+the set \(\mathbb N^\ast\) of finite lists of natural numbers. These
+reindexing isomorphisms are required to be compatible with pullback-stability
+of the coproducts.
+\end{definition}
+
+The base condition can be displayed as the following pullback-stable
+decomposition:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  X\times_A A_i
+    \ar[r]
+    \ar[d]
+  &
+  A_i
+    \ar[d,"\iota_i"]
+  \\
+  X
+    \ar[r]
+  &
+  A .
+\end{tikzcd}
+\qquad
+\leadsto
+\qquad
+\coprod_i(X\times_A A_i)\cong X .
+\]
+Consequently pullback distributes over the relevant coproducts. In particular,
+for spans
+\[
+  R:X\to Y,
+  \qquad
+  S:Y\to Z,
+\]
+and
+\[
+  R':X'\to Y',
+  \qquad
+  S':Y'\to Z',
+\]
+there is a canonical isomorphism
+\[
+  (R+R')\times_{Y+Y'}(S+S')
+  \cong
+  (R\times_Y S)+(R'\times_{Y'}S').
+\]
+Equivalently,
+\[
+  (S+S')\circ(R+R')
+  \cong
+  (S\circ R)+(S'\circ R')
+\]
+as spans. The comparison can be displayed as
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+  (R\times_Y S)+(R'\times_{Y'}S')
+    \ar[r,"\cong"]
+    \ar[d]
+  &
+  (R+R')\times_{Y+Y'}(S+S')
+    \ar[d]
+  \\
+  R+R'
+    \ar[r,equal]
+  &
+  R+R' .
+\end{tikzcd}
+\qquad
+\begin{tikzcd}[column sep=huge,row sep=large]
+  (R\times_Y S)+(R'\times_{Y'}S')
+    \ar[r,"\cong"]
+    \ar[d]
+  &
+  (R+R')\times_{Y+Y'}(S+S')
+    \ar[d]
+  \\
+  S+S'
+    \ar[r,equal]
+  &
+  S+S' .
+\end{tikzcd}
+\]
+
+All equalities of spans before quotienting by isomorphism are read as
+canonical isomorphisms of spans. After passing to isomorphism classes, these
+canonical isomorphisms become equalities. Structure maps such as path-flattening are not included in this convention;
+they are genuine maps of spans, not generally isomorphisms.
+
+\section{The coproduct symmetric monoidal category of spans}
+\label{sec:coproduct-symmetric-monoidal-category-spans}
+
+Let
+\[
+  \mathbf{Span}^{+}_{\omega}(\mathcal E)
+\]
+denote the bicategory whose objects are the objects of \(\mathcal E\), whose
+1-cells are spans, and whose 2-cells are maps of spans. The underlying
+bicategory is the ordinary bicategory of spans. The subscript reminds us that
+the countable coproducts used for finite paths are available; the superscript
+reminds us that the monoidal structure is coproduct.
+
+The coproduct tensor on objects is
+\[
+  X\otimes Y:=X+Y,
+  \qquad
+  I:=0.
+\]
+For spans
+\[
+  R=
+  \left(
+    X\xleftarrow{\ell}R\xrightarrow{r}Y
+  \right),
+  \qquad
+  R'=
+  \left(
+    X'\xleftarrow{\ell'}R'\xrightarrow{r'}Y'
+  \right),
+\]
+their tensor is the span
+\[
+  R+R'
+  :=
+  \left(
+    X+X'
+    \xleftarrow{\ell+\ell'}
+    R+R'
+    \xrightarrow{r+r'}
+    Y+Y'
+  \right).
+\]
+For maps of spans
+\[
+  \alpha:R\to S,
+  \qquad
+  \beta:R'\to S',
+\]
+their tensor is
+\[
+  \alpha+\beta:R+R'\to S+S'.
+\]
+
+\begin{proposition}[Coproduct tensor as a pseudofunctor]
+\label{prop:coproduct-tensor-pseudofunctor-spans}
+The coproduct operation extends to a pseudofunctor
+\[
+  +:
+  \mathbf{Span}^{+}_{\omega}(\mathcal E)
+  \times
+  \mathbf{Span}^{+}_{\omega}(\mathcal E)
+  \longrightarrow
+  \mathbf{Span}^{+}_{\omega}(\mathcal E).
+\]
+\end{proposition}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Define the object, 1-cell, and 2-cell parts.}
+  The object and 1-cell parts are defined by coproduct in \(\mathcal E\). The
+  2-cell part is given by coproduct of apex maps.
+
+  \item \textbf{Construct the composition comparison.}
+  Let
+  \[
+    R:X\to Y,\quad S:Y\to Z,\quad
+    R':X'\to Y',\quad S':Y'\to Z'
+  \]
+  be spans. The apex of
+  \[
+    (S+S')\circ(R+R')
+  \]
+  is
+  \[
+    (R+R')\times_{Y+Y'}(S+S').
+  \]
+  Since the relevant coproducts are disjoint and stable under pullback, the
+  canonical comparison
+  \[
+    (R\times_Y S)+(R'\times_{Y'}S')
+    \longrightarrow
+    (R+R')\times_{Y+Y'}(S+S')
+  \]
+  is an isomorphism. Diagrammatically, it is characterized by
+  \[
+  \begin{tikzcd}[column sep=huge,row sep=large]
+    (R\times_Y S)+(R'\times_{Y'}S')
+      \ar[r,"\cong"]
+      \ar[d]
+    &
+    (R+R')\times_{Y+Y'}(S+S')
+      \ar[d]
+    \\
+    R+R'
+      \ar[r,equal]
+    &
+    R+R'
+  \end{tikzcd}
+  \qquad
+  \begin{tikzcd}[column sep=huge,row sep=large]
+    (R\times_Y S)+(R'\times_{Y'}S')
+      \ar[r,"\cong"]
+      \ar[d]
+    &
+    (R+R')\times_{Y+Y'}(S+S')
+      \ar[d]
+    \\
+    S+S'
+      \ar[r,equal]
+    &
+    S+S' .
+  \end{tikzcd}
+  \]
+
+  \item \textbf{Identify the resulting composite spans.}
+  The preceding isomorphism is compatible with source and target legs, so it
+  identifies
+  \[
+    (S+S')\circ(R+R')
+    \cong
+    (S\circ R)+(S'\circ R').
+  \]
+
+  \item \textbf{Construct the unit comparison.}
+  The unit comparison is the canonical identification
+  \[
+    1_{X+X'}\cong 1_X+1_{X'}.
+  \]
+  In span form this is the isomorphism
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+    X+X'
+      \ar[d,equal]
+      \ar[r,equal]
+    &
+    X+X'
+      \ar[d,equal]
+  \\
+    X+X'
+      \ar[r,equal]
+    &
+    X+X' .
+  \end{tikzcd}
+  \]
+
+  \item \textbf{Verify coherence.}
+  The pseudofunctor coherence diagrams compare canonical maps between the same
+  finite pullback-coproduct decompositions. They commute by uniqueness of the
+  corresponding universal maps.
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Coproduct symmetric monoidal bicategory of spans]
+\label{thm:coproduct-symmetric-monoidal-bicategory-spans}
+The bicategory
+\[
+  \mathbf{Span}^{+}_{\omega}(\mathcal E)
+\]
+is a symmetric monoidal bicategory with tensor \(+\) and unit \(0\).
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use the tensor pseudofunctor.}
+  The tensor pseudofunctor is given by
+  Proposition~\ref{prop:coproduct-tensor-pseudofunctor-spans}.
+
+  \item \textbf{Transport coproduct coherence.}
+  The associator, left and right unitors, and symmetry are induced by the
+  corresponding coproduct isomorphisms in \(\mathcal E\):
+  \[
+    (X+Y)+Z\cong X+(Y+Z),
+    \qquad
+    0+X\cong X,
+  \]
+  \[
+    X+0\cong X,
+    \qquad
+    X+Y\cong Y+X.
+  \]
+
+  \item \textbf{View these isomorphisms as invertible spans.}
+  Each of these isomorphisms determines an invertible span, and hence an
+  equivalence in the bicategory of spans.
+
+  \item \textbf{Check monoidal coherence.}
+  The monoidal coherence diagrams are the usual coproduct coherence diagrams
+  transported through the span construction. Compatibility with span
+  composition is exactly the distributivity comparison of
+  Proposition~\ref{prop:coproduct-tensor-pseudofunctor-spans}. Thus the data
+  form a symmetric monoidal bicategory.
+\end{enumerate}
+\end{proof}
+
+Let
+\[
+  \mathbf{Span}^{+}_{\omega,0}(\mathcal E)
+\]
+denote the ordinary category with the same objects as
+\(\mathbf{Span}^{+}_{\omega}(\mathcal E)\) and with morphisms isomorphism
+classes of spans. The preceding theorem descends to a symmetric monoidal
+category
+\[
+  \bigl(\mathbf{Span}^{+}_{\omega,0}(\mathcal E),+,0\bigr).
+\]
+
+\section{Block decomposition and matrix calculus}
+\label{sec:block-decomposition-feedback}
+
+Let
+\[
+  R:X+H\to Y+H
+\]
+be a span
+\[
+  X+H\xleftarrow{\ell}R\xrightarrow{r}Y+H.
+\]
+Define four blocks by pulling back the two legs along the coproduct inclusions:
+\[
+  R_{XY}:=
+  X\times_{X+H}R\times_{Y+H}Y,
+\]
+\[
+  R_{XH}:=
+  X\times_{X+H}R\times_{Y+H}H,
+\]
+\[
+  R_{HY}:=
+  H\times_{X+H}R\times_{Y+H}Y,
+\]
+and
+\[
+  R_{HH}:=
+  H\times_{X+H}R\times_{Y+H}H.
+\]
+These are spans
+\[
+  R_{XY}:X\to Y,
+  \qquad
+  R_{XH}:X\to H,
+\]
+\[
+  R_{HY}:H\to Y,
+  \qquad
+  R_{HH}:H\to H.
+\]
+
+The four blocks fit into the pullback-stable decomposition
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  R_{XY}
+    \ar[r]
+    \ar[d]
+  &
+  R
+    \ar[d,"{(\ell,r)}"]
+  &
+  R_{XH}
+    \ar[l]
+    \ar[d]
+  \\
+  X\times Y
+    \ar[r,"{\iota_X\times\iota_Y}"']
+  &
+  (X+H)\times(Y+H)
+  &
+  X\times H
+    \ar[l,"{\iota_X\times\iota_H}"]
+  \\
+  R_{HY}
+    \ar[r]
+    \ar[d]
+  &
+  R
+    \ar[u,"{(\ell,r)}"']
+  &
+  R_{HH}
+    \ar[l]
+    \ar[d]
+  \\
+  H\times Y
+    \ar[r,"{\iota_H\times\iota_Y}"']
+  &
+  (X+H)\times(Y+H)
+  &
+  H\times H
+    \ar[l,"{\iota_H\times\iota_H}"]
+\end{tikzcd}
+\]
+Equivalently, the apex \(R\) decomposes into the four possible source-target
+summand choices.
+
+\begin{proposition}[Block decomposition]
+\label{prop:block-decomposition-feedback}
+For every span \(R:X+H\to Y+H\), the canonical map
+\[
+  R_{XY}+R_{XH}+R_{HY}+R_{HH}\longrightarrow R
+\]
+is an isomorphism of spans over \(X+H\) and \(Y+H\).
+\end{proposition}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Decompose along the source leg.}
+  First decompose \(R\) along its left leg
+  \[
+    \ell:R\to X+H.
+  \]
+  The feedback base condition gives
+  \[
+    R\cong R_X+R_H,
+  \]
+  where
+  \[
+    R_X:=X\times_{X+H}R,
+    \qquad
+    R_H:=H\times_{X+H}R.
+  \]
+
+  \item \textbf{Decompose each source summand along the target leg.}
+  Now decompose each summand along the right leg into \(Y+H\). Again by
+  pullback-stable disjoint coproducts,
+  \[
+    R_X\cong R_{XY}+R_{XH},
+    \qquad
+    R_H\cong R_{HY}+R_{HH}.
+  \]
+
+  \item \textbf{Assemble the four blocks.}
+  Combining these decompositions gives
+  \[
+    R\cong R_{XY}+R_{XH}+R_{HY}+R_{HH}.
+  \]
+
+  \item \textbf{Check compatibility with the span legs.}
+  The compatibility with the two span legs follows directly from the pullback
+  definitions of the four blocks.
+\end{enumerate}
+\end{proof}
+
+We write this decomposition as a block matrix
+\[
+  R=
+  \begin{pmatrix}
+    R_{XY} & R_{XH}\\
+    R_{HY} & R_{HH}
+  \end{pmatrix}.
+\]
+The first index records the source summand and the second records the target
+summand.
+
+\begin{lemma}[Matrix multiplication for spans]
+\label{lem:span-matrix-multiplication}
+Let
+\[
+  R:X_1+X_2\to Y_1+Y_2,
+  \qquad
+  S:Y_1+Y_2\to Z_1+Z_2
+\]
+be spans. Then the \((i,k)\)-block of \(S\circ R\) is canonically
+\[
+  (S\circ R)_{ik}
+  \cong
+  \boxplus_{j=1}^{2}
+  S_{jk}\circ R_{ij}.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Start from the composite apex.}
+  The apex of \(S\circ R\) is
+  \[
+    R\times_{Y_1+Y_2}S.
+  \]
+  Restricting to the \((i,k)\)-block gives the part of this pullback sourced
+  at \(X_i\) and targeted at \(Z_k\).
+
+  \item \textbf{Decompose the middle interface.}
+  Decompose the \(R\)-factor by its target summand and the \(S\)-factor by its
+  source summand:
+  \[
+    R_i\cong R_{i1}+R_{i2},
+    \qquad
+    S_k\cong S_{1k}+S_{2k}.
+  \]
+
+  \item \textbf{Use disjointness to remove cross terms.}
+  Pullback-stable disjoint coproducts give
+  \[
+    (R_{i1}+R_{i2})\times_{Y_1+Y_2}(S_{1k}+S_{2k})
+    \cong
+    (R_{i1}\times_{Y_1}S_{1k})
+    +
+    (R_{i2}\times_{Y_2}S_{2k}).
+  \]
+  The comparison is displayed by
+  \[
+  \begin{tikzcd}[column sep=huge,row sep=large]
+    (R_{i1}\times_{Y_1}S_{1k})+(R_{i2}\times_{Y_2}S_{2k})
+      \ar[r,"\cong"]
+      \ar[d]
+    &
+    (R_i)\times_{Y_1+Y_2}(S_k)
+      \ar[d]
+    \\
+    R_i
+      \ar[r,equal]
+    &
+    R_i .
+  \end{tikzcd}
+  \qquad
+  \begin{tikzcd}[column sep=huge,row sep=large]
+    (R_{i1}\times_{Y_1}S_{1k})+(R_{i2}\times_{Y_2}S_{2k})
+      \ar[r,"\cong"]
+      \ar[d]
+    &
+    (R_i)\times_{Y_1+Y_2}(S_k)
+      \ar[d]
+    \\
+    S_k
+      \ar[r,equal]
+    &
+    S_k .
+  \end{tikzcd}
+  \]
+
+  \item \textbf{Read the two summands as span composites.}
+  These are precisely the apexes of
+  \[
+    (S_{1k}\circ R_{i1})
+    \boxplus
+    (S_{2k}\circ R_{i2}).
+  \]
+  The source and target maps agree by construction.
+\end{enumerate}
+\end{proof}
+
+The same proof gives finite block-matrix multiplication for any finite
+coproduct decomposition. For two-by-two matrices the rule is the span-valued
+analogue of matrix multiplication, with multiplication given by span
+composition and addition given by homwise coproduct.
+
+\section{Finite paths and the path monad}
+\label{sec:finite-paths-and-path-monad}
+
+Let
+\[
+  U:S\to S
+\]
+be an endospan. Define its categorical iterates by
+\[
+  U^{[0]}:=1_S,
+  \qquad
+  U^{[n+1]}:=U^{[n]}\circ U.
+\]
+Thus \(U^{[n]}\) represents \(n\) successive \(U\)-steps.
+
+\begin{definition}[Finite-path endospan]
+\label{def:finite-path-endospan}
+The \textbf{finite-path endospan} generated by \(U\) is
+\[
+  \mathsf{Path}(U)
+  :=
+  \coprod_{n\geq 0}U^{[n]},
+\]
+where the coproduct is the homwise coproduct of parallel endospans
+\(S\to S\).
+\end{definition}
+
+This is the linear finite-path/free-monoid analogue of the familiar
+polynomial tree and free-monad constructions
+\cite{Kock2011PolynomialTrees}; here the generated shapes are finite
+linear paths rather than branching trees.
+
+The first few summands are
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  S
+    \ar[r,"1_S"]
+  &
+  S
+\end{tikzcd}
+\qquad
+\begin{tikzcd}[column sep=large,row sep=large]
+  S
+    \ar[r,"U"]
+  &
+  S
+\end{tikzcd}
+\qquad
+\begin{tikzcd}[column sep=large,row sep=large]
+  S
+    \ar[r,"U"]
+  &
+  S
+    \ar[r,"U"]
+  &
+  S .
+\end{tikzcd}
+\]
+
+\begin{lemma}[Functoriality of finite paths]
+\label{lem:path-functoriality-endospans}
+Let
+\[
+  \alpha:U\longrightarrow V
+\]
+be a map of endospans on \(S\). Define
+\[
+  \alpha^{[0]}:=1_{1_S},
+\]
+and recursively
+\[
+  \alpha^{[n+1]}
+  :=
+  \alpha^{[n]}\ast_{\mathrm h}\alpha:
+  U^{[n+1]}\longrightarrow V^{[n+1]}.
+\]
+Here \(\ast_{\mathrm h}\) denotes horizontal composition of maps of spans.
+Then the coproduct map
+\[
+  \mathsf{Path}(\alpha)
+  :=
+  \coprod_{n\geq 0}\alpha^{[n]}
+  :
+  \mathsf{Path}(U)\longrightarrow\mathsf{Path}(V)
+\]
+is a map of endospans. This assignment preserves identities and composition.
+Hence
+\[
+  \mathsf{Path}_S:
+  \mathrm{EndSpan}_{\mathcal E}(S)
+  \longrightarrow
+  \mathrm{EndSpan}_{\mathcal E}(S)
+\]
+is an endofunctor.
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Induce maps on iterated composites.}
+  Horizontal composition of span maps is induced by the universal property of
+  pullback. Therefore a map
+  \[
+    \alpha:U\to V
+  \]
+  induces maps on all iterated composites
+  \[
+    \alpha^{[n]}:U^{[n]}\to V^{[n]}.
+  \]
+
+  \item \textbf{Take the coproduct of the iterated maps.}
+  The coproduct universal property gives the map
+  \[
+    \coprod_{n\geq 0}\alpha^{[n]}:
+    \coprod_{n\geq 0}U^{[n]}
+    \longrightarrow
+    \coprod_{n\geq 0}V^{[n]}.
+  \]
+  It is a map of endospans because each summand map is a map of endospans.
+
+  \item \textbf{Verify identity preservation.}
+  For identities, every iterated map is the identity.
+
+  \item \textbf{Verify composition preservation.}
+  For composable maps
+  \[
+    U\xrightarrow{\alpha}V\xrightarrow{\beta}W,
+  \]
+  the equality
+  \[
+    (\beta\alpha)^{[n]}=\beta^{[n]}\alpha^{[n]}
+  \]
+  follows by induction from functoriality of horizontal composition of span
+  maps. Since coproduct injections jointly detect equality, the induced path
+  maps preserve identities and composition.
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[Two-sided path decomposition]
+\label{lem:two-sided-path-decomposition-feedback}
+For every endospan \(U:S\to S\), there are canonical isomorphisms
+\[
+  \mathsf{Path}(U)
+  \cong
+  1_S\boxplus\bigl(\mathsf{Path}(U)\circ U\bigr)
+\]
+and
+\[
+  \mathsf{Path}(U)
+  \cong
+  1_S\boxplus\bigl(U\circ\mathsf{Path}(U)\bigr).
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Split off the zero-length path for the right decomposition.}
+  For the first isomorphism,
+  \[
+    \mathsf{Path}(U)
+    =
+    U^{[0]}\boxplus\coprod_{n\geq 0}U^{[n+1]}.
+  \]
+  Since \(U^{[0]}=1_S\) and \(U^{[n+1]}=U^{[n]}\circ U\), this is
+  \[
+    1_S
+    \boxplus
+    \coprod_{n\geq 0}(U^{[n]}\circ U).
+  \]
+
+  \item \textbf{Move composition past the coproduct.}
+  Composition with \(U\) preserves the countable coproducts used here because
+  span composition is pullback and these coproducts are stable under pullback.
+  Hence
+  \[
+    \coprod_{n\geq 0}(U^{[n]}\circ U)
+    \cong
+    \left(\coprod_{n\geq 0}U^{[n]}\right)\circ U
+    =
+    \mathsf{Path}(U)\circ U.
+  \]
+
+  \item \textbf{Repeat the argument on the other side.}
+  For the second isomorphism, use associativity of iterated endospan
+  composition to identify
+  \[
+    U^{[n+1]}\cong U\circ U^{[n]}
+  \]
+  canonically for each \(n\). The same coproduct argument gives
+  \[
+    \coprod_{n\geq 0}U^{[n+1]}
+    \cong
+    U\circ\mathsf{Path}(U).
+  \]
+\end{enumerate}
+\end{proof}
+
+Let
+\[
+  \mathrm{EndSpan}_{\mathcal E}(S)
+  :=
+  \mathbf{Span}(\mathcal E)(S,S)
+\]
+be the hom-category of endospans on \(S\), with tensor product given by span
+composition and tensor unit \(1_S\).
+
+\begin{theorem}[Free endospan monoid generated by one step]
+\label{thm:free-endospan-monoid-feedback}
+The endospan \(\mathsf{Path}(U)\) is the free monoid on \(U\) in the monoidal
+category
+\[
+  \mathrm{EndSpan}_{\mathcal E}(S).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Define the unit and generator.}
+  The monoid unit
+  \[
+    1_S\longrightarrow\mathsf{Path}(U)
+  \]
+  is the inclusion of the \(0\)-summand, and the generator
+  \[
+    U\longrightarrow\mathsf{Path}(U)
+  \]
+  is the inclusion of the \(1\)-summand.
+
+  \item \textbf{Define multiplication by adding lengths.}
+  Since composition distributes over the relevant countable coproducts,
+  \[
+    \mathsf{Path}(U)\circ\mathsf{Path}(U)
+    \cong
+    \coprod_{m,n\geq 0}U^{[m]}\circ U^{[n]}.
+  \]
+  Associativity of span composition gives canonical isomorphisms
+  \[
+    U^{[m]}\circ U^{[n]}
+    \cong
+    U^{[m+n]}.
+  \]
+  The multiplication
+  \[
+    \mathsf{Path}(U)\circ\mathsf{Path}(U)
+    \longrightarrow
+    \mathsf{Path}(U)
+  \]
+  is induced summandwise by these isomorphisms followed by the coproduct
+  inclusion of the \((m+n)\)-summand.
+
+  \item \textbf{Construct the universal extension.}
+  Let \(M:S\to S\) be a monoid object in
+  \(\mathrm{EndSpan}_{\mathcal E}(S)\), with unit
+  \[
+    \eta:1_S\to M
+  \]
+  and multiplication
+  \[
+    \mu:M\circ M\to M.
+  \]
+  Given a map of endospans
+  \[
+    f:U\longrightarrow M,
+  \]
+  define
+  \[
+    f_n:U^{[n]}\longrightarrow M
+  \]
+  recursively by
+  \[
+    f_0:=\eta,
+    \qquad
+    f_1:=f,
+  \]
+  and
+  \[
+    f_{n+1}:
+    U^{[n+1]}=U^{[n]}\circ U
+    \xrightarrow{f_n\ast_{\mathrm h} f}
+    M\circ M
+    \xrightarrow{\mu}
+    M.
+  \]
+  The coproduct universal property gives a unique map
+  \[
+    f^\sharp:\mathsf{Path}(U)\longrightarrow M
+  \]
+  whose restriction to \(U^{[n]}\) is \(f_n\).
+
+  \item \textbf{Check multiplicativity.}
+  We prove by induction on \(n\) that
+  \[
+    f_{m+n}
+    =
+    \mu\circ(f_m\ast_{\mathrm h} f_n):
+    U^{[m]}\circ U^{[n]}\longrightarrow M
+  \]
+  after the canonical associativity identification
+  \[
+    U^{[m]}\circ U^{[n]}\cong U^{[m+n]}.
+  \]
+  For \(n=0\), this is the right unit law for \(M\). The successor step
+  follows from the recursive definition of \(f_{n+1}\) and the associativity
+  law for \(\mu\). Hence \(f^\sharp\) preserves multiplication. Preservation
+  of the unit is exactly the equation \(f_0=\eta\).
+
+  \item \textbf{Prove uniqueness.}
+  Conversely, any monoid morphism
+  \[
+    g:\mathsf{Path}(U)\to M
+  \]
+  extending \(f\) is forced to agree with \(\eta\) on the \(0\)-summand and
+  with \(f\) on the \(1\)-summand. Multiplicativity then forces the
+  restriction to each \(U^{[n]}\) by induction. Thus \(g=f^\sharp\).
+\end{enumerate}
+\end{proof}
+
+\begin{definition}[Path monad on endospans]
+\label{def:path-monad-endospans}
+The \textbf{path monad} on endospans over \(S\) is the endofunctor
+\[
+  \mathsf{Path}_S:
+  \mathrm{EndSpan}_{\mathcal E}(S)
+  \longrightarrow
+  \mathrm{EndSpan}_{\mathcal E}(S)
+\]
+of Lemma~\ref{lem:path-functoriality-endospans}. Its monad unit
+\[
+  U\longrightarrow\mathsf{Path}(U)
+\]
+is the inclusion of the one-step summand, and its monad multiplication
+\[
+  \mathsf{Path}_S(\mathsf{Path}_S(U))
+  \longrightarrow
+  \mathsf{Path}_S(U)
+\]
+is finite-path flattening.
+\end{definition}
+
+There are therefore two unit maps in play. The monoid unit of the free monoid
+\(\mathsf{Path}(U)\) is the inclusion
+\[
+  1_S=U^{[0]}\longrightarrow\mathsf{Path}(U),
+\]
+whereas the monad unit of the free-monoid monad is the inclusion
+\[
+  U=U^{[1]}\longrightarrow\mathsf{Path}(U).
+\]
+
+\begin{proposition}[Path monad laws]
+\label{prop:path-monad-laws}
+The unit and multiplication of Definition~\ref{def:path-monad-endospans} make
+\(\mathsf{Path}_S\) a monad.
+\end{proposition}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Describe the multiplication summands.}
+  The apex of
+  \[
+    \mathsf{Path}_S(\mathsf{Path}_S(U))
+  \]
+  decomposes as the coproduct indexed by finite lists of finite
+  natural-number lengths. Multiplication concatenates such a list to a single
+  finite \(U\)-path using the associativity constraints of span composition.
+
+  \item \textbf{Check associativity on summands.}
+  The two sides of the associativity law agree after restriction to each
+  summand indexed by a finite list of finite lists of natural numbers. Both
+  sides send such a summand to the summand
+  \[
+    U^{[n_1+\cdots+n_k]}
+  \]
+  given by the total concatenated length, and the induced map is the same
+  iterated associativity isomorphism for span composition.
+
+  \item \textbf{Check the unit laws.}
+  The left and right unit laws are the corresponding cases for singleton
+  lists and the one-step summand. Since coproduct injections jointly detect
+  equality, the monad equations hold.
+\end{enumerate}
+\end{proof}
+
+\section{The coproduct feedback trace on spans}
+\label{sec:coproduct-feedback-trace-spans}
+
+Let
+\[
+  R:X+H\to Y+H
+\]
+be a span with block decomposition
+\[
+  R=
+  \begin{pmatrix}
+    R_{XY} & R_{XH}\\
+    R_{HY} & R_{HH}
+  \end{pmatrix}.
+\]
+
+\begin{definition}[Coproduct feedback trace]
+\label{def:coproduct-feedback-trace}
+The \textbf{coproduct feedback trace} of \(R\) over \(H\) is
+\[
+  \operatorname{Tr}^{H}_{X,Y}(R)
+  :=
+  R_{XY}
+  \boxplus
+  R_{HY}\circ\mathsf{Path}(R_{HH})\circ R_{XH}.
+\]
+Equivalently,
+\[
+  \operatorname{Tr}^{H}_{X,Y}(R)
+  \cong
+  R_{XY}
+  \boxplus
+  \coprod_{n\geq 0}
+  R_{HY}\circ R_{HH}^{[n]}\circ R_{XH}.
+\]
+\end{definition}
+
+The hidden-path summands have the form
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  X
+    \ar[r,"R_{XH}"]
+  &
+  H
+    \ar[r,"R_{HH}^{[n]}"]
+  &
+  H
+    \ar[r,"R_{HY}"]
+  &
+  Y .
+\end{tikzcd}
+\]
+The direct summand is
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  X
+    \ar[r,"R_{XY}"]
+  &
+  Y .
+\end{tikzcd}
+\]
+
+\begin{theorem}[Hidden-path normal form]
+\label{thm:hidden-path-normal-form}
+The span \(\operatorname{Tr}^{H}_{X,Y}(R)\) classifies finite \(R\)-paths
+that start in \(X\), end in \(Y\), and whose intermediate interfaces lie in
+\(H\).
+
+More explicitly, its apex is canonically the coproduct of:
+\begin{enumerate}
+  \item the direct visible block \(R_{XY}\);
+  \item for each \(n\geq 0\), the composite apex of paths
+  \[
+    X\xrightarrow{R_{XH}}H
+    \xrightarrow{R_{HH}}\cdots
+    \xrightarrow{R_{HH}}H
+    \xrightarrow{R_{HY}}Y
+  \]
+  with exactly \(n\) hidden \(H\)-to-\(H\) steps.
+\end{enumerate}
+In span semantics these paths retain their witnessing apex data; passing to
+relational images later forgets this witness multiplicity.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Identify the direct visible paths.}
+  The direct visible paths are represented by the block
+  \[
+    R_{XY}:X\to Y.
+  \]
+
+  \item \textbf{Identify the non-direct hidden paths.}
+  A non-direct hidden path first enters \(H\), then takes \(n\) hidden loop
+  steps, then exits to \(Y\). Such paths are represented by
+  \[
+    R_{HY}\circ R_{HH}^{[n]}\circ R_{XH}.
+  \]
+
+  \item \textbf{Sum over all finite hidden lengths.}
+  Taking the homwise coproduct over \(n\geq 0\) gives
+  \[
+    R_{HY}\circ\mathsf{Path}(R_{HH})\circ R_{XH}.
+  \]
+
+  \item \textbf{Adjoin the direct summand.}
+  The homwise coproduct with \(R_{XY}\) therefore classifies exactly the
+  finite hidden-path normal forms.
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[Finite-word expansion for traced span expressions]
+\label{lem:finite-word-expansion-traced-spans}
+Every expression built from span composition, coproduct tensor, symmetry, and
+a finite sequence of feedback traces admits a canonical expansion, up to the
+associator, unitor, symmetry, and coproduct reindexing isomorphisms, as a
+coproduct indexed by finite hidden-interface words. For each word, the
+associated summand is an iterated span composite determined by the visible
+entry, hidden steps, and visible exit appearing in that word.
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Proceed by structural induction.}
+  We argue by induction on the construction of the traced expression.
+
+  \item \textbf{Handle composition.}
+  Composition concatenates visible composites and pulls back adjacent
+  interface summands. The relevant comparison is always a canonical
+  associativity isomorphism for iterated pullbacks.
+
+  \item \textbf{Handle coproduct tensor.}
+  Coproduct tensor forms disjoint sums of word-indexed families.
+
+  \item \textbf{Handle symmetry.}
+  Symmetry renames summands.
+
+  \item \textbf{Handle trace.}
+  A trace over a hidden interface replaces a block by the coproduct of all
+  finite words in that hidden interface, as in
+  Theorem~\ref{thm:hidden-path-normal-form}.
+
+  \item \textbf{Assemble the canonical summandwise maps.}
+  The associated summandwise span maps are obtained from associativity of span
+  composition, unitors, symmetries, and pullback-coproduct comparison
+  isomorphisms. These canonical isomorphisms are the only ambiguity in the
+  word-indexed expansion.
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[Hidden-path substitution]
+\label{lem:hidden-path-substitution}
+Let
+\[
+  R:X+H+K\to Y+H+K
+\]
+be a span. There is a canonical isomorphism
+\[
+  \operatorname{Tr}^{H}
+  \bigl(
+    \operatorname{Tr}^{K}(R)
+  \bigr)
+  \cong
+  \operatorname{Tr}^{H+K}(R).
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Describe the one-step trace.}
+  By Theorem~\ref{thm:hidden-path-normal-form}, the right-hand side classifies
+  finite \(R\)-paths from \(X\) to \(Y\) whose intermediate interfaces lie in
+  \(H+K\).
+
+  \item \textbf{Saturate the \(K\)-interface first.}
+  Tracing first over \(K\) replaces every block between the remaining summands
+  \(X,H,Y\) by the corresponding \(K\)-saturated block: either a single
+  original step not entering \(K\), or a finite path that enters \(K\), follows
+  a finite \(K\)-path, and exits \(K\).
+
+  \item \textbf{Trace over \(H\).}
+  Tracing the resulting span over \(H\) forms finite strings of these
+  \(K\)-saturated \(H\)-steps.
+
+  \item \textbf{Expand the saturated strings.}
+  Expanding those finite strings gives exactly the finite paths in the
+  original span whose intermediate interfaces lie in \(H+K\).
+
+  \item \textbf{Construct the inverse decomposition.}
+  Conversely, every finite path with intermediate interfaces in \(H+K\)
+  decomposes uniquely into maximal \(K\)-excursions separated by visits to
+  \(H\). This gives inverse canonical maps between the two hidden-path
+  coproduct decompositions.
+
+  \item \textbf{Check the span legs.}
+  The source and target legs agree under these maps, so the two spans are
+  canonically isomorphic.
+\end{enumerate}
+\end{proof}
+
+\section{The traced span category}
+\label{sec:traced-span-category-feedback}
+
+\begin{theorem}[Traced span category]
+\label{thm:span-traced-smc}
+The symmetric monoidal category
+\[
+  \bigl(\mathbf{Span}^{+}_{\omega,0}(\mathcal E),+,0\bigr)
+\]
+is traced, with trace given by
+Definition~\ref{def:coproduct-feedback-trace}.
+\end{theorem}
+
+\begin{proof}
+All equations are equations of isomorphism classes of spans. Before passing
+to isomorphism classes, they are canonical isomorphisms.
+
+\begin{enumerate}
+  \item \textbf{Verify naturality.}
+  Let
+  \[
+    S:W\to X,
+    \qquad
+    T:Y\to Z,
+    \qquad
+    R:X+H\to Y+H.
+  \]
+  The span
+  \[
+    (T+1_H)\circ R\circ(S+1_H)
+  \]
+  has hidden block \(R_{HH}\), entrance block \(R_{XH}\circ S\), exit block
+  \(T\circ R_{HY}\), and direct block \(T\circ R_{XY}\circ S\). Thus
+  \[
+  \begin{aligned}
+    \operatorname{Tr}^{H}
+    \bigl((T+1_H)\circ R\circ(S+1_H)\bigr)
+    &\cong
+    T\circ R_{XY}\circ S
+    \\
+    &\quad\boxplus
+    T\circ R_{HY}\circ\mathsf{Path}(R_{HH})
+    \circ R_{XH}\circ S
+    \\
+    &\cong
+    T\circ\operatorname{Tr}^{H}(R)\circ S.
+  \end{aligned}
+  \]
+  The equality is represented by the block-composition diagram
+  \[
+  \begin{tikzcd}[column sep=huge,row sep=large]
+    W
+      \ar[r,"S"]
+    &
+    X
+      \ar[r,"R_{XH}"]
+    &
+    H
+      \ar[r,"\mathsf{Path}(R_{HH})"]
+    &
+    H
+      \ar[r,"R_{HY}"]
+    &
+    Y
+      \ar[r,"T"]
+    &
+    Z .
+  \end{tikzcd}
+  \]
+
+  \item \textbf{Verify dinaturality.}
+  Let
+  \[
+    f:H'\to H
+  \]
+  be a span and let
+  \[
+    R:X+H\to Y+H'
+  \]
+  be a span. The required equation is
+  \[
+    \operatorname{Tr}^{H}
+    \bigl((1_Y+f)\circ R\bigr)
+    =
+    \operatorname{Tr}^{H'}
+    \bigl(R\circ(1_X+f)\bigr).
+  \]
+  Write the blocks of \(R\) as
+  \[
+    R_{XY}:X\to Y,\qquad R_{XH'}:X\to H',
+  \]
+  \[
+    R_{HY}:H\to Y,\qquad R_{HH'}:H\to H'.
+  \]
+  The \(n\)-hidden-step summand on the left is
+  \[
+    R_{HY}
+    \circ
+    (f\circ R_{HH'})^{[n]}
+    \circ
+    f
+    \circ
+    R_{XH'}.
+  \]
+  The \(n\)-hidden-step summand on the right is
+  \[
+    R_{HY}
+    \circ
+    f
+    \circ
+    (R_{HH'}\circ f)^{[n]}
+    \circ
+    R_{XH'}.
+  \]
+  Associativity of span composition gives, by induction on \(n\),
+  \[
+    (f\circ R_{HH'})^{[n]}\circ f
+    \cong
+    f\circ(R_{HH'}\circ f)^{[n]}.
+  \]
+  The comparison is the finite path-sliding diagram
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+    H'
+      \ar[r,"f"]
+    &
+    H
+      \ar[r,"R_{HH'}"]
+    &
+    H'
+      \ar[r,"f"]
+    &
+    H
+      \ar[r,"R_{HH'}"]
+    &
+    H'
+      \ar[r,"\cdots"]
+    &
+    H'
+  \end{tikzcd}
+  \]
+  rewritten by associativity as
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+    H'
+      \ar[r,"f\circ R_{HH'}"]
+    &
+    H'
+      \ar[r,"f\circ R_{HH'}"]
+    &
+    H'
+      \ar[r,"\cdots"]
+    &
+    H'
+  \end{tikzcd}
+  \]
+  on the left and as
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+    H'
+      \ar[r,"f"]
+    &
+    H
+      \ar[r,"R_{HH'}\circ f"]
+    &
+    H
+      \ar[r,"R_{HH'}\circ f"]
+    &
+    H
+      \ar[r,"\cdots"]
+    &
+    H
+  \end{tikzcd}
+  \]
+  on the right. Thus the \(n\)-summands agree canonically for every \(n\),
+  and the direct \(X\to Y\) summand is the same on both sides.
+
+  \item \textbf{Verify Vanishing I.}
+  When \(H=0\), all hidden blocks are initial and the trace reduces to the
+  visible block \(R\).
+
+  \item \textbf{Verify Vanishing II.}
+  Vanishing II is exactly Lemma~\ref{lem:hidden-path-substitution}.
+
+  \item \textbf{Verify superposing.}
+  If
+  \[
+    Q:W\to Z,
+  \]
+  then \(Q+R\) has \(Q\) entirely in the visible-visible block and has the
+  same hidden dynamics as \(R\). Hence
+  \[
+    \operatorname{Tr}^{H}(Q+R)
+    \cong
+    Q+\operatorname{Tr}^{H}(R).
+  \]
+
+  \item \textbf{Verify yanking.}
+  Let
+  \[
+    \sigma_{H,H}:H+H\to H+H
+  \]
+  be the symmetry span, with the first copy of \(H\) visible and the second
+  copy hidden. Its blocks are
+  \[
+    R_{\mathrm{vis},\mathrm{vis}}=0_{H,H},
+    \qquad
+    R_{\mathrm{vis},\mathrm{hid}}=1_H,
+  \]
+  \[
+    R_{\mathrm{hid},\mathrm{vis}}=1_H,
+    \qquad
+    R_{\mathrm{hid},\mathrm{hid}}=0_{H,H}.
+  \]
+  Since all positive powers of \(0_{H,H}\) are initial spans,
+  \[
+    \mathsf{Path}(0_{H,H})
+    =
+    1_H\boxplus 0_{H,H}\boxplus 0_{H,H}\boxplus\cdots
+    \cong 1_H.
+  \]
+  Therefore the trace is
+  \[
+    0_{H,H}\boxplus 1_H\circ1_H\circ1_H
+    \cong
+    1_H.
+  \]
+  Diagrammatically, the hidden wire is immediately returned:
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+    H
+      \ar[r,"1_H"]
+    &
+    H
+      \ar[r,"1_H"]
+    &
+    H .
+  \end{tikzcd}
+  \]
+
+  \item \textbf{Conclude the trace axioms.}
+  For each Joyal--Street--Verity axiom, expand both sides by
+  Lemma~\ref{lem:finite-word-expansion-traced-spans}. The two sides are
+  indexed by canonically isomorphic finite hidden-word sets, and the
+  corresponding summand spans agree by associativity, unitality, symmetry, and
+  pullback-coproduct distributivity. Hence the two sides are canonically
+  isomorphic before quotienting and equal after passing to isomorphism
+  classes. Thus the trace axioms of
+  \cite{JoyalStreetVerity1996TracedMonoidalCategories} hold.
+\end{enumerate}
+\end{proof}
+
+At the bicategorical level, the same formula defines hom-category trace
+functors
+\[
+  \operatorname{Tr}^{H}_{X,Y}:
+  \mathbf{Span}^{+}_{\omega}(\mathcal E)(X+H,Y+H)
+  \longrightarrow
+  \mathbf{Span}^{+}_{\omega}(\mathcal E)(X,Y).
+\]
+If
+\[
+  \alpha:R\to R'
+\]
+is a map of spans \(R,R':X+H\to Y+H\), then block restriction gives maps
+\[
+  \alpha_{XY},\alpha_{XH},\alpha_{HY},\alpha_{HH}.
+\]
+The traced map
+\[
+  \operatorname{Tr}^{H}(\alpha):
+  \operatorname{Tr}^{H}(R)\to \operatorname{Tr}^{H}(R')
+\]
+is
+\[
+  \alpha_{XY}
+  \boxplus
+  \bigl(
+    \alpha_{HY}\circ
+    \mathsf{Path}(\alpha_{HH})\circ
+    \alpha_{XH}
+  \bigr),
+\]
+using functoriality of \(\mathsf{Path}\) and horizontal composition of span
+maps. The trace axioms are witnessed by the canonical invertible 2-cells
+supplied by the hidden-path normal-form isomorphisms.
+
+\section{The trace-induced Conway dagger}
+\label{sec:trace-induced-conway-dagger}
+
+The feedback trace induces an iteration operation for morphisms of the form
+\[
+  f:X\to Y+X.
+\]
+Write the two blocks of \(f\) as
+\[
+  f_Y:X\to Y,
+  \qquad
+  f_X:X\to X.
+\]
+
+\begin{definition}[Trace-induced dagger]
+\label{def:trace-induced-dagger-feedback}
+The \textbf{trace-induced dagger} of
+\[
+  f:X\to Y+X
+\]
+is the span
+\[
+  f^\dagger
+  :=
+  f_Y\circ\mathsf{Path}(f_X)
+  :
+  X\to Y.
+\]
+\end{definition}
+
+Equivalently, define a span
+\[
+  L_f:X+X\to Y+X
+\]
+by
+\[
+  L_f=
+  \begin{pmatrix}
+    0_{X,Y} & 1_X\\
+    f_Y & f_X
+  \end{pmatrix},
+\]
+where the first copy of \(X\) is visible and the second copy is hidden.
+
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  X_{\mathrm{vis}}
+    \ar[r,"1_X"]
+  &
+  X_{\mathrm{hid}}
+    \ar[r,"\mathsf{Path}(f_X)"]
+  &
+  X_{\mathrm{hid}}
+    \ar[r,"f_Y"]
+  &
+  Y .
+\end{tikzcd}
+\]
+
+\begin{proposition}[Dagger as trace]
+\label{prop:dagger-as-trace-feedback}
+There is a canonical isomorphism
+\[
+  \operatorname{Tr}^{X}(L_f)
+  \cong
+  f^\dagger.
+\]
+\end{proposition}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Apply the trace formula.}
+  By the trace formula,
+  \[
+    \operatorname{Tr}^{X}(L_f)
+    =
+    0_{X,Y}
+    \boxplus
+    f_Y\circ\mathsf{Path}(f_X)\circ1_X.
+  \]
+
+  \item \textbf{Remove the initial and identity factors.}
+  Removing the initial summand and the identity span gives
+  \[
+    \operatorname{Tr}^{X}(L_f)
+    \cong
+    f_Y\circ\mathsf{Path}(f_X)
+    =
+    f^\dagger.
+  \]
+\end{enumerate}
+\end{proof}
+
+\subsection{Finite approximants and unfolding}
+\label{subsec:dagger-approximants-feedback}
+
+The dagger is the collation of all finite approximants.
+
+\begin{definition}[Finite approximants]
+\label{def:finite-approximants-dagger}
+The \textbf{finite approximants} of \(f^\dagger\) are the spans
+\[
+  f^{\langle 0\rangle}:=0_{X,Y},
+\]
+and
+\[
+  f^{\langle n+1\rangle}
+  :=
+  f_Y\boxplus
+  \bigl(f^{\langle n\rangle}\circ f_X\bigr).
+\]
+\end{definition}
+
+\begin{lemma}[Approximant expansion]
+\label{lem:approximant-expansion-dagger}
+For every \(n\geq 0\), there is a canonical isomorphism
+\[
+  f^{\langle n\rangle}
+  \cong
+  \coprod_{0\leq k<n}
+  f_Y\circ f_X^{[k]}.
+\]
+Consequently,
+\[
+  f^\dagger
+  \cong
+  \coprod_{k\geq 0}
+  f_Y\circ f_X^{[k]}.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Prove the finite expansion by induction.}
+  The first statement is by induction on \(n\). For \(n=0\), both sides are
+  the initial span \(0_{X,Y}\).
+
+  \item \textbf{Compute the successor case.}
+  If the result holds for \(n\), then
+  \[
+  \begin{aligned}
+    f^{\langle n+1\rangle}
+    &=
+    f_Y\boxplus
+    \bigl(f^{\langle n\rangle}\circ f_X\bigr)
+    \\
+    &\cong
+    f_Y
+    \boxplus
+    \left(
+      \coprod_{0\leq k<n}
+      f_Y\circ f_X^{[k]}
+    \right)
+    \circ f_X
+    \\
+    &\cong
+    f_Y
+    \boxplus
+    \coprod_{0\leq k<n}
+    f_Y\circ f_X^{[k+1]}
+    \\
+    &\cong
+    \coprod_{0\leq k<n+1}
+    f_Y\circ f_X^{[k]}.
+  \end{aligned}
+  \]
+
+  \item \textbf{Take the countable collation.}
+  The final statement follows from the definition
+  \[
+    f^\dagger=f_Y\circ\mathsf{Path}(f_X)
+  \]
+  and the decomposition
+  \[
+    \mathsf{Path}(f_X)=\coprod_{k\geq 0}f_X^{[k]}.
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Conway fixpoint identity]
+\label{thm:conway-fixpoint-identity-feedback}
+For every span
+\[
+  f:X\to Y+X,
+\]
+there is a canonical isomorphism
+\[
+  f^\dagger
+  \cong
+  f_Y\boxplus(f^\dagger\circ f_X).
+\]
+Equivalently,
+\[
+  f^\dagger
+  \cong
+  [1_Y,f^\dagger]\circ f,
+\]
+where
+\[
+  [1_Y,f^\dagger]:Y+X\to Y
+\]
+is the copairing span obtained from \(1_Y:Y\to Y\) and
+\(f^\dagger:X\to Y\).
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Unfold the path object.}
+  Using Lemma~\ref{lem:two-sided-path-decomposition-feedback},
+  \[
+    \mathsf{Path}(f_X)
+    \cong
+    1_X\boxplus\bigl(\mathsf{Path}(f_X)\circ f_X\bigr).
+  \]
+
+  \item \textbf{Compose with the exit block.}
+  Composing on the left with \(f_Y\), and using distributivity of composition
+  over homwise coproducts, gives
+  \[
+  \begin{aligned}
+    f^\dagger
+    &=
+    f_Y\circ\mathsf{Path}(f_X)
+    \\
+    &\cong
+    f_Y\circ1_X
+    \boxplus
+    f_Y\circ\mathsf{Path}(f_X)\circ f_X
+    \\
+    &\cong
+    f_Y\boxplus(f^\dagger\circ f_X).
+  \end{aligned}
+  \]
+
+  \item \textbf{Rewrite by copairing.}
+  The second displayed form is the same equation written after decomposing
+  \[
+    [1_Y,f^\dagger]\circ f
+  \]
+  into the \(Y\)-exit and \(X\)-recursive blocks of \(f\).
+\end{enumerate}
+\end{proof}
+
+\subsection{Naturality, uniformity, and sliding}
+\label{subsec:dagger-naturality-uniformity-feedback}
+
+\begin{theorem}[Output naturality]
+\label{thm:conway-output-naturality-feedback}
+Let
+\[
+  f:X\to Y+X
+\]
+and
+\[
+  g:Y\to Z
+\]
+be spans. Then
+\[
+  \bigl((g+1_X)\circ f\bigr)^\dagger
+  \cong
+  g\circ f^\dagger.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Identify the recursive and exit blocks.}
+  The recursive block of \((g+1_X)\circ f\) is still \(f_X\), while the exit
+  block is \(g\circ f_Y\).
+
+  \item \textbf{Apply the dagger formula.}
+  Therefore
+  \[
+    \bigl((g+1_X)\circ f\bigr)^\dagger
+    =
+    (g\circ f_Y)\circ\mathsf{Path}(f_X)
+    \cong
+    g\circ f_Y\circ\mathsf{Path}(f_X)
+    =
+    g\circ f^\dagger.
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Uniformity]
+\label{thm:conway-uniformity-feedback}
+Let
+\[
+  f:X\to Y+X,
+  \qquad
+  g:X'\to Y+X',
+  \qquad
+  h:X\to X'
+\]
+be spans. Suppose there is a canonical isomorphism
+\[
+  g\circ h
+  \cong
+  (1_Y+h)\circ f
+\]
+as spans \(X\to Y+X'\). Then
+\[
+  g^\dagger\circ h
+  \cong
+  f^\dagger.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Decompose the simulation square by blocks.}
+  Decomposing the given isomorphism by blocks gives canonical isomorphisms
+  \[
+    g_Y\circ h\cong f_Y
+  \]
+  and
+  \[
+    g_X\circ h\cong h\circ f_X.
+  \]
+
+  \item \textbf{Iterate the recursive square.}
+  By induction on \(n\),
+  \[
+    g_X^{[n]}\circ h
+    \cong
+    h\circ f_X^{[n]}.
+  \]
+  Diagrammatically, the \(n=1\) square is
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+    X
+      \ar[r,"f_X"]
+      \ar[d,"h"']
+    &
+    X
+      \ar[d,"h"]
+    \\
+    X'
+      \ar[r,"g_X"']
+    &
+    X' .
+  \end{tikzcd}
+  \]
+
+  \item \textbf{Attach the exit block.}
+  Thus for every \(n\geq 0\),
+  \[
+    g_Y\circ g_X^{[n]}\circ h
+    \cong
+    f_Y\circ f_X^{[n]}.
+  \]
+
+  \item \textbf{Sum over all finite lengths.}
+  Taking the coproduct over all \(n\geq 0\) gives
+  \[
+    g_Y\circ\mathsf{Path}(g_X)\circ h
+    \cong
+    f_Y\circ\mathsf{Path}(f_X),
+  \]
+  which is precisely
+  \[
+    g^\dagger\circ h
+    \cong
+    f^\dagger.
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Sliding]
+\label{thm:conway-sliding-feedback}
+Let
+\[
+  f:X\to Y+Z,
+  \qquad
+  g:Z\to Y+X
+\]
+be spans. Let
+\[
+  \iota_{Y,X}:Y\to Y+X,
+  \qquad
+  \iota_{Y,Z}:Y\to Y+Z
+\]
+denote the left coproduct injections. Then
+\[
+  \bigl([\iota_{Y,X},g]\circ f\bigr)^\dagger
+  \cong
+  [1_Y,\bigl([\iota_{Y,Z},f]\circ g\bigr)^\dagger]\circ f.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Expand the left-hand dagger.}
+  The left-hand side classifies finite alternating paths that begin with an
+  \(f\)-step and then alternate between \(g\)-steps and \(f\)-steps until an
+  exit through the \(Y\)-summand occurs.
+
+  \item \textbf{Expand the right-hand dagger.}
+  The right-hand side regards the recursive interface as \(Z\) after the
+  first \(f\)-step. It therefore classifies the same alternating paths, but
+  grouped after the first \(f\)-transition.
+
+  \item \textbf{Compare the word-indexed coproducts.}
+  Expanding both daggers by
+  Lemma~\ref{lem:approximant-expansion-dagger}, the two sides decompose into
+  the same word-indexed coproduct:
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+    X
+      \ar[r,"f"]
+    &
+    Y+Z
+      \ar[r,"g\text{ on }Z"]
+    &
+    Y+X
+      \ar[r,"f\text{ on }X"]
+    &
+    Y+Z
+      \ar[r,"\cdots"]
+    &
+    Y .
+  \end{tikzcd}
+  \]
+  The summands are canonically identified by associativity of span
+  composition and the coproduct symmetry.
+
+  \item \textbf{Assemble the canonical isomorphism.}
+  The coproduct universal property assembles these summandwise
+  identifications into the required canonical isomorphism of spans.
+\end{enumerate}
+\end{proof}
+
+\subsection{Nested iteration and double dagger}
+\label{subsec:dagger-double-feedback}
+
+The double-dagger identity says that two copies of the same recursive
+interface may either be solved one after the other or first folded into one
+recursive interface and then solved once. In finite-path terms, this is the
+unique decomposition of a word in two recursive step types.
+
+\begin{lemma}[Binary path decomposition]
+\label{lem:binary-path-decomposition-feedback}
+For parallel endospans
+\[
+  u,v:X\to X,
+\]
+there is a canonical isomorphism
+\[
+  \mathsf{Path}(u\boxplus v)
+  \cong
+  \mathsf{Path}(v)\circ
+  \mathsf{Path}\bigl(u\circ\mathsf{Path}(v)\bigr).
+\]
+It sends a finite word in \(u\) and \(v\) to its unique decomposition into
+\(v\)-runs separated by \(u\)-steps.
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Expand the left-hand side as words.}
+  The endospan
+  \[
+    u\boxplus v:X\to X
+  \]
+  has one-step summands labelled by \(u\) and \(v\). Therefore
+  \[
+    \mathsf{Path}(u\boxplus v)
+  \]
+  decomposes as the coproduct over all finite words in the alphabet
+  \(\{u,v\}\), with a word interpreted by the corresponding iterated
+  composite.
+
+  \item \textbf{Decompose words into \(v\)-runs.}
+  With categorical composition read right-to-left operationally, the
+  right-hand side classifies words of the form
+  \[
+    v^{[k_0]}\,u\,v^{[k_1]}\,u\,\cdots\,u\,v^{[k_m]},
+  \]
+  read operationally from left to right. In categorical composite notation the
+  corresponding summand is
+  \[
+    v^{[k_m]}
+    \circ
+    (u\circ v^{[k_{m-1}]})
+    \circ
+    \cdots
+    \circ
+    (u\circ v^{[k_0]}).
+  \]
+
+  \item \textbf{Identify the right-hand side.}
+  Thus every finite word in \(u\) and \(v\) is uniquely decomposed into
+  \(v\)-runs separated by \(u\)-steps, with a final \(v\)-run. This is
+  precisely the summand decomposition of
+  \[
+    \mathsf{Path}(v)\circ
+    \mathsf{Path}\bigl(u\circ\mathsf{Path}(v)\bigr).
+  \]
+
+  \item \textbf{Assemble the comparison.}
+  On each word-indexed summand the comparison is the canonical associativity
+  isomorphism for span composition, and the coproduct universal property
+  assembles these summandwise isomorphisms.
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Double dagger]
+\label{thm:conway-double-dagger-feedback}
+Let
+\[
+  f:X\to Y+X+X
+\]
+be a span, and let
+\[
+  \nabla_X:X+X\to X
+\]
+be the codiagonal span induced by the codiagonal map in \(\mathcal E\). If
+\(f^{\dagger_2}:X\to Y+X\) denotes the span obtained by solving the second
+recursive \(X\)-summand first, then there is a canonical isomorphism
+\[
+  \bigl(f^{\dagger_2}\bigr)^{\dagger_1}
+  \cong
+  \bigl((1_Y+\nabla_X)\circ f\bigr)^\dagger .
+\]
+Equivalently, the dagger induced by
+Definition~\ref{def:trace-induced-dagger-feedback} satisfies the
+double-dagger identity.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Name the three blocks.}
+  Write the three blocks of
+  \[
+    f:X\to Y+X+X
+  \]
+  as
+  \[
+    f_Y:X\to Y,
+    \qquad
+    f_1:X\to X,
+    \qquad
+    f_2:X\to X.
+  \]
+
+  \item \textbf{Solve the second recursive summand first.}
+  Solving the second recursive summand first treats
+  \[
+    f_Y\boxplus f_1:X\to Y+X
+  \]
+  as the exit block and \(f_2:X\to X\) as the recursive block. Hence the
+  partially solved span
+  \[
+    f^{\dagger_2}:X\to Y+X
+  \]
+  has blocks
+  \[
+    (f^{\dagger_2})_Y
+    =
+    f_Y\circ\mathsf{Path}(f_2),
+    \qquad
+    (f^{\dagger_2})_X
+    =
+    f_1\circ\mathsf{Path}(f_2).
+  \]
+
+  \item \textbf{Solve the remaining recursive summand.}
+  Solving the remaining recursive summand gives
+  \[
+    (f^{\dagger_2})^{\dagger_1}
+    \cong
+    f_Y\circ
+    \mathsf{Path}(f_2)
+    \circ
+    \mathsf{Path}\bigl(f_1\circ\mathsf{Path}(f_2)\bigr).
+  \]
+
+  \item \textbf{Solve after folding.}
+  Folding the two recursive summands by the codiagonal
+  \[
+    \nabla_X:X+X\to X
+  \]
+  gives recursive block
+  \[
+    f_1\boxplus f_2:X\to X,
+  \]
+  so
+  \[
+    \bigl((1_Y+\nabla_X)\circ f\bigr)^\dagger
+    \cong
+    f_Y\circ\mathsf{Path}(f_1\boxplus f_2).
+  \]
+
+  \item \textbf{Apply binary path decomposition.}
+  By Lemma~\ref{lem:binary-path-decomposition-feedback}, with \(u=f_1\) and
+  \(v=f_2\), there is a canonical isomorphism
+  \[
+    \mathsf{Path}(f_1\boxplus f_2)
+    \cong
+    \mathsf{Path}(f_2)
+    \circ
+    \mathsf{Path}\bigl(f_1\circ\mathsf{Path}(f_2)\bigr).
+  \]
+
+  \item \textbf{Attach the exit block.}
+  Composing on the left with \(f_Y\) identifies the folded solution with the
+  iterated solution. Therefore the double-dagger identity holds.
+\end{enumerate}
+\end{proof}
+
+In this chapter, a trace-induced Conway operator means a dagger satisfying the
+fixpoint, output-naturality, uniformity, sliding, and double-dagger identities
+displayed above.
+
+\begin{theorem}[Trace-induced Conway operator]
+\label{thm:trace-induced-conway-operator}
+The operation
+\[
+  f\longmapsto f^\dagger
+\]
+defined by
+\[
+  f^\dagger=f_Y\circ\mathsf{Path}(f_X)
+\]
+is the dagger induced by the coproduct trace. It satisfies the Conway
+fixpoint, output-naturality, uniformity, sliding, and double-dagger
+identities.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Identify the dagger as a trace.}
+  By Proposition~\ref{prop:dagger-as-trace-feedback}, the operation is
+  obtained from the coproduct trace.
+
+  \item \textbf{Collect the Conway laws.}
+  The fixpoint identity is
+  Theorem~\ref{thm:conway-fixpoint-identity-feedback}. Output naturality is
+  Theorem~\ref{thm:conway-output-naturality-feedback}. Uniformity is
+  Theorem~\ref{thm:conway-uniformity-feedback}. Sliding is
+  Theorem~\ref{thm:conway-sliding-feedback}. The double-dagger identity is
+  Theorem~\ref{thm:conway-double-dagger-feedback}.
+
+  \item \textbf{Relate the result to the trace/iteration correspondence.}
+  This is the span-theoretic instance of the trace/iteration correspondence
+  studied in
+  \cite{BloomEsik1993IterationTheories,Hasegawa1997RecursionCyclicSharing,Hasegawa2004Uniformity}.
+\end{enumerate}
+\end{proof}
+
+\section{The coproduct symmetric monoidal bicategory of Mealy morphisms}
+\label{sec:coproduct-symmetric-monoidal-bicategory-mealy}
+
+Let \(A\) and \(C\) be internal categories in \(\mathcal E\). Their coproduct
+internal category \(A+C\) is defined componentwise:
+\[
+  (A+C)_0=A_0+C_0,
+  \qquad
+  (A+C)_1=A_1+C_1.
+\]
+The identity and composition maps are defined summandwise. The feedback base
+condition gives
+\[
+  (A_1+C_1)\times_{A_0+C_0}(A_1+C_1)
+  \cong
+  (A_1\times_{A_0}A_1)
+  +
+  (C_1\times_{C_0}C_1).
+\]
+Thus there are no cross-summand composable pairs.
+
+\begin{lemma}[No cross arrows in coproduct internal categories]
+\label{lem:no-cross-arrows-coproduct-internal-categories}
+In the coproduct internal category \(A+C\), every arrow lies entirely in the
+\(A\)-summand or entirely in the \(C\)-summand. Equivalently, the mixed
+objects
+\[
+  A_0\times_{A_0+C_0}(A_1+C_1)\times_{A_0+C_0}C_0
+\]
+and
+\[
+  C_0\times_{A_0+C_0}(A_1+C_1)\times_{A_0+C_0}A_0
+\]
+are initial.
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use the coproduct description of arrows.}
+  Since
+  \[
+    (A+C)_1=A_1+C_1
+  \]
+  and coproducts are disjoint and stable under pullback, pulling the source
+  and target maps back along different summand inclusions gives an initial
+  object.
+
+  \item \textbf{Recover the same-summand arrows.}
+  Pulling back along the same summand recovers the corresponding arrow object
+  of \(A\) or of \(C\). Hence arrows in \(A+C\) have both endpoints in the
+  same summand.
+\end{enumerate}
+\end{proof}
+
+Let
+\[
+  \mathbf{Mly}^{+}_{\omega}(\mathcal E)
+\]
+denote the bicategory whose objects are internal categories in \(\mathcal E\),
+whose 1-cells are Mealy morphisms, and whose 2-cells are Mealy simulations.
+The tensor on objects is componentwise coproduct. For Mealy morphisms
+\[
+  \Phi:A\rightsquigarrow B,
+  \qquad
+  \Psi:C\rightsquigarrow D
+\]
+with carriers
+\[
+  A_0\xleftarrow{p}P\xrightarrow{q}B_0,
+  \qquad
+  C_0\xleftarrow{p'}Q\xrightarrow{q'}D_0,
+\]
+define
+\[
+  \Phi+\Psi:A+C\rightsquigarrow B+D
+\]
+to have carrier
+\[
+  A_0+C_0
+  \xleftarrow{p+p'}
+  P+Q
+  \xrightarrow{q+q'}
+  B_0+D_0.
+\]
+The transition-output structure is defined summandwise.
+
+For simulations
+\[
+  \Theta:\Phi\Rightarrow\Phi',
+  \qquad
+  \Lambda:\Psi\Rightarrow\Psi',
+\]
+define
+\[
+  \Theta+\Lambda:\Phi+\Psi\Rightarrow\Phi'+\Psi'
+\]
+by coproduct of the carrier comparison maps and coproduct of the output
+comparison arrows.
+
+\begin{theorem}[Coproduct symmetric monoidal bicategory of Mealy morphisms]
+\label{thm:coproduct-symmetric-monoidal-bicategory-mealy}
+The bicategory
+\[
+  \mathbf{Mly}^{+}_{\omega}(\mathcal E)
+\]
+is a symmetric monoidal bicategory with tensor \(+\) and unit the initial
+internal category.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Define the tensor componentwise.}
+  The construction on objects, 1-cells, and 2-cells is componentwise
+  coproduct.
+
+  \item \textbf{Compare tensor with horizontal composition.}
+  By Proposition~\ref{prop:coproduct-tensor-pseudofunctor-spans}, coproduct
+  of carrier spans is compatible with horizontal composition up to the
+  canonical pullback-coproduct isomorphism
+  \[
+    (P+Q)\times_{B_0+D_0}(P'+Q')
+    \cong
+    (P\times_{B_0}P')+(Q\times_{D_0}Q').
+  \]
+  The comparison is
+  \[
+  \begin{tikzcd}[column sep=huge,row sep=large]
+    (P\times_{B_0}P')+(Q\times_{D_0}Q')
+      \ar[r,"\cong"]
+      \ar[d]
+    &
+    (P+Q)\times_{B_0+D_0}(P'+Q')
+      \ar[d]
+    \\
+    P+Q
+      \ar[r,equal]
+    &
+    P+Q .
+  \end{tikzcd}
+  \]
+
+  \item \textbf{Check the Mealy structure summandwise.}
+  The Mealy transition-output maps on the two sides agree summandwise under
+  this identification. The unit comparison is inherited from
+  \[
+    1_{A+C}\cong 1_A+1_C.
+  \]
+
+  \item \textbf{Transport the monoidal constraints.}
+  The associator, unitors, and symmetry are induced by the coproduct
+  isomorphisms of internal categories and carrier spans.
+
+  \item \textbf{Check coherence.}
+  The Mealy coherence diagrams reduce to the corresponding coherence diagrams
+  for coproducts and to the bicategorical coherence already present for Mealy
+  composition. Hence \(\mathbf{Mly}^{+}_{\omega}(\mathcal E)\) is symmetric
+  monoidal.
+\end{enumerate}
+\end{proof}
+
+Let
+\[
+  \mathbf{Mly}^{+}_{\omega,0}(\mathcal E)
+\]
+denote the ordinary category whose objects are internal categories in
+\(\mathcal E\) and whose morphisms are isomorphism classes of Mealy
+morphisms. The preceding theorem descends to a symmetric monoidal category
+\[
+  \bigl(\mathbf{Mly}^{+}_{\omega,0}(\mathcal E),+,0\bigr).
+\]
+
+\section{Coproduct trace for Mealy morphisms}
+\label{sec:coproduct-trace-mealy}
+
+Let
+\[
+  \Phi:A+C\rightsquigarrow B+C
+\]
+be a Mealy morphism with carrier span
+\[
+  A_0+C_0
+  \xleftarrow{p}
+  P
+  \xrightarrow{q}
+  B_0+C_0.
+\]
+By block decomposition, the carrier splits into four blocks
+\[
+  P_{AB},
+  \qquad
+  P_{AC},
+  \qquad
+  P_{CB},
+  \qquad
+  P_{CC}.
+\]
+
+\begin{lemma}[Block restriction of Mealy morphisms]
+\label{lem:mealy-block-restriction-feedback}
+Each carrier block inherits a Mealy morphism:
+\[
+  \Phi_{AB}:A\rightsquigarrow B,
+  \qquad
+  \Phi_{AC}:A\rightsquigarrow C,
+\]
+\[
+  \Phi_{CB}:C\rightsquigarrow B,
+  \qquad
+  \Phi_{CC}:C\rightsquigarrow C.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Treat one block.}
+  We prove the assertion for \(P_{AC}\); the other cases are identical.
+
+  \item \textbf{Restrict the input object.}
+  The input object for the restricted transition is
+  \[
+    (A_1+C_1)\times_{A_0+C_0}P_{AC}.
+  \]
+  Since \(P_{AC}\) lies over the \(A_0\)-summand on the left,
+  pullback-stable disjoint coproducts give
+  \[
+    (A_1+C_1)\times_{A_0+C_0}P_{AC}
+    \cong
+    A_1\times_{A_0}P_{AC}.
+  \]
+
+  \item \textbf{Show the transition stays in the source block.}
+  The Mealy transition equation for the input interface says that the new left
+  interface is obtained from the endpoint of the input arrow. Since the input
+  arrow lies in \(A_1\), the new left interface lies in \(A_0\).
+
+  \item \textbf{Use absence of cross arrows for the output.}
+  The old output object \(q(x)\) lies in \(C_0\). The Mealy output arrow has
+  the standing orientation
+  \[
+    \omega(a,x):q(\delta(a,x))\longrightarrow q(x).
+  \]
+  Thus it is an arrow of \(B+C\) whose target lies in \(C_0\). By
+  Lemma~\ref{lem:no-cross-arrows-coproduct-internal-categories}, there are no
+  arrows from the \(B\)-summand to the \(C\)-summand or conversely. Hence
+  \(q(\delta(a,x))\) also lies in \(C_0\), and the output arrow lies in
+  \(C_1\).
+
+  \item \textbf{Express the restricted structure categorically.}
+  Under the decomposition
+  \[
+    (A_1+C_1)\times_{A_0+C_0}P_{AC}
+    \cong
+    A_1\times_{A_0}P_{AC},
+  \]
+  the original Mealy transition-output map factors through the corresponding
+  restricted transition-output object for a Mealy morphism
+  \(A\rightsquigarrow C\). This factorization is unique because block
+  inclusions are disjoint and jointly detect maps out of the decomposed
+  domain.
+
+  \item \textbf{Restrict the equations.}
+  The unit and multiplication axioms restrict because block inclusions jointly
+  detect equality after the block decomposition.
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[Countable homwise sums of parallel Mealy morphisms]
+\label{lem:homwise-countable-coproducts-mealy}
+Let
+\[
+  (\Phi_n)_{n\geq 0}:A\rightsquigarrow B
+\]
+be a countable family of parallel Mealy morphisms. Under the feedback span
+base hypotheses, the carrier coproduct
+\[
+  \coprod_{n\geq 0}P_n
+\]
+carries a canonical Mealy morphism
+\[
+  \boxplus_{n\geq 0}\Phi_n:A\rightsquigarrow B
+\]
+whose transition and output maps restrict to those of \(\Phi_n\) on the
+\(n\)-th summand. This construction is functorial in Mealy simulations and is
+preserved by horizontal composition in each variable up to the canonical
+pullback-coproduct isomorphisms. It is a homwise sum construction; no
+universal property in the simulation hom-category is asserted here.
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Decompose the transition object.}
+  The transition object for the carrier coproduct is
+  \[
+    A_1\times_{A_0}\left(\coprod_{n\geq 0}P_n\right).
+  \]
+  By pullback-stability of the relevant countable coproducts, this is
+  canonically isomorphic to
+  \[
+    \coprod_{n\geq 0}(A_1\times_{A_0}P_n).
+  \]
+
+  \item \textbf{Define the structure summandwise.}
+  Define the transition-output map summandwise using the corresponding
+  structure map of \(\Phi_n\).
+
+  \item \textbf{Verify the Mealy equations.}
+  The Mealy unit and multiplication equations hold after restriction to every
+  summand, hence globally because coproduct injections jointly detect
+  equality. The same argument applies to simulations.
+
+  \item \textbf{Check compatibility with horizontal composition.}
+  Compatibility with horizontal composition follows because the carrier of a
+  horizontal composite is a pullback, and pullback distributes over the
+  countable coproducts used here.
+\end{enumerate}
+\end{proof}
+
+For an endo-Mealy morphism
+\[
+  \Psi:C\rightsquigarrow C,
+\]
+define
+\[
+  \Psi^{[0]}:=1_C,
+  \qquad
+  \Psi^{[n+1]}:=\Psi^{[n]}\circ\Psi,
+\]
+and
+\[
+  \mathsf{Path}(\Psi):=\boxplus_{n\geq 0}\Psi^{[n]}.
+\]
+This is well-defined by
+Lemma~\ref{lem:homwise-countable-coproducts-mealy}.
+
+\begin{definition}[Coproduct trace of a Mealy morphism]
+\label{def:mealy-coproduct-trace}
+For
+\[
+  \Phi:A+C\rightsquigarrow B+C,
+\]
+the \textbf{coproduct trace} of \(\Phi\) over \(C\) is
+\[
+  \operatorname{Tr}^{C}_{A,B}(\Phi)
+  :=
+  \Phi_{AB}
+  \boxplus
+  \Phi_{CB}\circ\mathsf{Path}(\Phi_{CC})\circ\Phi_{AC}.
+\]
+\end{definition}
+
+\begin{theorem}[Traced Mealy category]
+\label{thm:mly-traced-smc}
+The symmetric monoidal category
+\[
+  \bigl(\mathbf{Mly}^{+}_{\omega,0}(\mathcal E),+,0\bigr)
+\]
+is traced. The trace is given by
+Definition~\ref{def:mealy-coproduct-trace}.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Restrict to blocks.}
+  By Lemma~\ref{lem:mealy-block-restriction-feedback}, every Mealy morphism
+  \[
+    \Phi:A+C\rightsquigarrow B+C
+  \]
+  decomposes into four Mealy blocks.
+
+  \item \textbf{Build the hidden-path Mealy morphism.}
+  For each \(n\geq 0\), the composite
+  \[
+    \Phi_{CB}\circ\Phi_{CC}^{[n]}\circ\Phi_{AC}
+  \]
+  is a Mealy morphism \(A\rightsquigarrow B\). The homwise sum over all
+  \(n\), together with the direct block \(\Phi_{AB}\), is again a Mealy
+  morphism by Lemma~\ref{lem:homwise-countable-coproducts-mealy}.
+
+  \item \textbf{Check the Mealy laws summandwise.}
+  The Mealy unit and multiplication laws hold summandwise. On each hidden-path
+  summand, the transition-output structure is the iterated composite
+  transition-output structure of the corresponding finite Mealy path. Since
+  coproduct injections jointly detect equality, the laws hold for the whole
+  trace.
+
+  \item \textbf{Lift the span trace axioms.}
+  The trace axioms are inherited from the span trace axioms by hidden-path
+  normal forms. For each trace axiom, the two sides decompose into the same
+  finite hidden Mealy paths. The carrier spans are canonically isomorphic by
+  Theorem~\ref{thm:span-traced-smc}, and under these isomorphisms the Mealy
+  transition maps agree summandwise.
+
+  \item \textbf{Check output data.}
+  The output data agree summandwise because both sides apply the same iterated
+  Mealy transition-output composite along the same hidden path: the
+  intermediate \(C\)-outputs are consumed as the inputs of the next hidden
+  block, and the final \(B\)-output is produced by the same exit block.
+
+  \item \textbf{Pass to isomorphism classes.}
+  Therefore the canonical span isomorphisms lift to isomorphisms of Mealy
+  morphisms. Passing to isomorphism classes gives the Joyal--Street--Verity
+  trace axioms.
+\end{enumerate}
+\end{proof}
+
+\section{Trace on Mealy simulations}
+\label{sec:trace-simulations-feedback}
+
+Let
+\[
+  \Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation between Mealy morphisms
+\[
+  \Phi,\Psi:A+C\rightsquigarrow B+C.
+\]
+Let \(P\) be the carrier of \(\Phi\), and let \(Q\) be the carrier of
+\(\Psi\). We write the output-comparison Kleisli datum in component form as a
+carrier comparison
+\[
+  \theta:Q\to P
+\]
+together with an output-comparison arrow
+\[
+  \alpha:Q\to (B+C)_1.
+\]
+These satisfy the source, target, input-processing, and output-lax equations
+of the Mealy simulation definition:
+\[
+  p_P\theta=p_Q,
+  \qquad
+  s_{B+C}\alpha=q_P\theta,
+  \qquad
+  t_{B+C}\alpha=q_Q,
+\]
+together with the transition-output compatibility equations.
+
+\begin{lemma}[Block restriction of simulations]
+\label{lem:simulation-block-restriction-feedback}
+The simulation \(\Theta\) decomposes into block simulations
+\[
+  \Theta_{AB},
+  \qquad
+  \Theta_{AC},
+  \qquad
+  \Theta_{CB},
+  \qquad
+  \Theta_{CC}.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Treat one block.}
+  We prove the assertion for the \(AC\)-block.
+
+  \item \textbf{Use preservation of the input interface.}
+  Let \(y\in Q_{AC}\). Then the left interface of \(y\) lies in \(A_0\), and
+  its output interface lies in \(C_0\). The carrier comparison \(\theta\)
+  preserves the left interface, so \(\theta(y)\) also lies over \(A_0\) on
+  the left.
+
+  \item \textbf{Use absence of cross arrows for the output comparison.}
+  The output-comparison arrow \(\alpha_y\) has endpoints the output interface
+  of \(\theta(y)\) and the output interface of \(y\), both regarded as objects
+  of \(B+C\). Since the output interface of \(y\) lies in \(C_0\), and \(B+C\)
+  has no cross-summand arrows, the output interface of \(\theta(y)\) also
+  lies in \(C_0\). Hence \(\theta(y)\in P_{AC}\), and \(\alpha_y\) lies in
+  \(C_1\).
+
+  \item \textbf{Restrict the simulation equations.}
+  The source, target, input-processing, and output-lax equations restrict
+  because block inclusions jointly detect equality after the coproduct
+  decomposition. The same argument applies to the other blocks.
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[Coproducts and composites of simulations]
+\label{lem:coproducts-composites-simulations-feedback}
+Mealy simulations are closed under horizontal composition, finite and
+countable homwise sums, and block restriction along coproduct decompositions.
+Moreover these operations are compatible with vertical composition.
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use horizontal composition in the Mealy bicategory.}
+  Horizontal composition is the horizontal composition of Mealy simulations
+  from the bicategory of Mealy morphisms.
+
+  \item \textbf{Form homwise sums summandwise.}
+  Homwise sums are formed by taking coproducts of carrier comparison maps and
+  coproducts of output-comparison arrows. Since the relevant pullbacks
+  distribute over these coproducts, the simulation equations hold summandwise
+  and hence globally.
+
+  \item \textbf{Use block restriction.}
+  Block restriction is Lemma~\ref{lem:simulation-block-restriction-feedback}.
+
+  \item \textbf{Check compatibility with vertical composition.}
+  Compatibility with vertical composition follows because vertical composition
+  is ordinary composition of the carrier comparison maps together with
+  composition of the output-comparison arrows, and coproduct decomposition is
+  obtained by pullback along coproduct injections. Pullback commutes with
+  these compositions.
+\end{enumerate}
+\end{proof}
+
+For each \(n\geq 0\), define
+\[
+  \Theta_{CC}^{[n]}:
+  \Phi_{CC}^{[n]}\Rightarrow\Psi_{CC}^{[n]}
+\]
+by iterated horizontal composition of simulations, with
+\[
+  \Theta_{CC}^{[0]}:=1_{1_C}.
+\]
+
+\begin{lemma}[Finite hidden composites of simulations]
+\label{lem:finite-hidden-composites-simulations}
+For every \(n\geq 0\), the horizontal composite
+\[
+  \Theta_{CB}
+  \ast_{\mathrm h}
+  \Theta_{CC}^{[n]}
+  \ast_{\mathrm h}
+  \Theta_{AC}
+\]
+is a Mealy simulation
+\[
+  \Phi_{CB}\circ\Phi_{CC}^{[n]}\circ\Phi_{AC}
+  \Rightarrow
+  \Psi_{CB}\circ\Psi_{CC}^{[n]}\circ\Psi_{AC}.
+\]
+These composites are compatible with vertical composition by interchange.
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use block simulations.}
+  Each displayed block simulation exists by
+  Lemma~\ref{lem:simulation-block-restriction-feedback}.
+
+  \item \textbf{Compose horizontally.}
+  Horizontal composition of Mealy simulations supplies the displayed composite
+  simulation. For \(n=0\), the middle factor is the identity simulation on the
+  identity Mealy morphism. For \(n+1\), the middle factor is obtained by
+  composing \(\Theta_{CC}^{[n]}\) with \(\Theta_{CC}\).
+
+  \item \textbf{Use interchange.}
+  Compatibility with vertical composition is the interchange law in the
+  bicategory of Mealy morphisms. The source, target, input-processing, and
+  output-lax equations are preserved by horizontal composition.
+\end{enumerate}
+\end{proof}
+
+Because the displayed simulation direction is opposite to the carrier-map
+direction, the block simulation
+\[
+  \Theta_{CB}:\Phi_{CB}\Rightarrow\Psi_{CB}
+\]
+has carrier map from the \(\Psi_{CB}\)-block carrier to the
+\(\Phi_{CB}\)-block carrier. The horizontal composite below is formed in the
+hom-category of Mealy simulations with this displayed simulation direction.
+
+\begin{definition}[Trace of a simulation]
+\label{def:trace-simulation-feedback}
+The \textbf{trace} of the simulation \(\Theta\) over \(C\) is
+\[
+  \operatorname{Tr}^{C}(\Theta)
+  :=
+  \Theta_{AB}
+  \boxplus
+  \coprod_{n\geq 0}
+  \left(
+    \Theta_{CB}
+    \ast_{\mathrm h}
+    \Theta_{CC}^{[n]}
+    \ast_{\mathrm h}
+    \Theta_{AC}
+  \right),
+\]
+where \(\ast_{\mathrm h}\) denotes horizontal composition of simulations. The
+order of \(\ast_{\mathrm h}\) follows the standing categorical convention:
+\(\Theta_{AC}\) is applied first, then \(\Theta_{CC}^{[n]}\), then
+\(\Theta_{CB}\).
+\end{definition}
+
+\begin{theorem}[Hom-category trace for Mealy simulations]
+\label{thm:hom-category-trace-mealy-bicategory}
+For internal categories \(A,B,C\), the assignment
+\[
+  \operatorname{Tr}^{C}_{A,B}:
+  \mathbf{Mly}^{+}_{\omega}(\mathcal E)(A+C,B+C)
+  \longrightarrow
+  \mathbf{Mly}^{+}_{\omega}(\mathcal E)(A,B)
+\]
+defined on 1-cells by Definition~\ref{def:mealy-coproduct-trace} and on
+2-cells by Definition~\ref{def:trace-simulation-feedback} is a functor. The
+trace coherence equations are witnessed by canonical invertible simulation
+2-cells.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Preserve identities.}
+  Identity simulations restrict blockwise to identity simulations, and their
+  traced homwise sum is the identity simulation on the traced Mealy morphism.
+
+  \item \textbf{Set up vertical composition.}
+  For vertical composition, let
+  \[
+    \Theta:\Phi\Rightarrow\Psi,
+    \qquad
+    \Lambda:\Psi\Rightarrow\Xi.
+  \]
+  By Lemma~\ref{lem:coproducts-composites-simulations-feedback}, block
+  restriction commutes with vertical composition, and iterated horizontal
+  composition of the \(CC\)-blocks is compatible with vertical composition by
+  Lemma~\ref{lem:finite-hidden-composites-simulations}.
+
+  \item \textbf{Compare on each hidden-length summand.}
+  On the \(n\)-hidden-step summand, the traced vertical composite is
+  \[
+    (\Lambda\circ\Theta)_{CB}
+    \ast_{\mathrm h}
+    (\Lambda\circ\Theta)_{CC}^{[n]}
+    \ast_{\mathrm h}
+    (\Lambda\circ\Theta)_{AC}.
+  \]
+  By interchange for Mealy simulations, this is the vertical composite of
+  \[
+    \Theta_{CB}
+    \ast_{\mathrm h}
+    \Theta_{CC}^{[n]}
+    \ast_{\mathrm h}
+    \Theta_{AC}
+  \]
+  with
+  \[
+    \Lambda_{CB}
+    \ast_{\mathrm h}
+    \Lambda_{CC}^{[n]}
+    \ast_{\mathrm h}
+    \Lambda_{AC}.
+  \]
+
+  \item \textbf{Take the coproduct over hidden lengths.}
+  Taking the coproduct over all \(n\geq 0\) gives
+  \[
+    \operatorname{Tr}^{C}(\Lambda\circ\Theta)
+    =
+    \operatorname{Tr}^{C}(\Lambda)\circ\operatorname{Tr}^{C}(\Theta).
+  \]
+
+  \item \textbf{Verify trace coherence.}
+  The trace coherence equations are the hidden-path normal-form
+  identifications from Theorem~\ref{thm:span-traced-smc}, now with a
+  simulation cell decorating each edge of a hidden path. Both sides of each
+  coherence equation classify the same finite decorated hidden paths.
+
+  \item \textbf{Conclude invertibility.}
+  The comparison 2-cells are induced by associativity of horizontal
+  composition, associativity of pullbacks, and associativity of coproducts.
+  They are invertible because the underlying hidden-path comparisons are
+  canonical isomorphisms.
+\end{enumerate}
+\end{proof}
+
+\section{The Int construction}
+\label{sec:int-construction-feedback}
+
+A traced symmetric monoidal category has a canonical compact closed completion,
+the Int construction
+\cite{JoyalStreetVerity1996TracedMonoidalCategories}. For feedback spans this
+construction has a direct interface interpretation: objects become signed
+interfaces, and morphisms are spans whose inputs and outputs include both
+positive and negative boundary parts. This is the categorical form of the
+bidirectional execution interface familiar from Geometry of Interaction
+\cite{Girard1989GeometryInteractionI,AbramskyHaghverdiScott2002GeometryInteractionLCA}.
+
+\begin{definition}[The Int category of feedback spans]
+\label{def:int-feedback-spans}
+The \textbf{Int category of feedback spans}
+\[
+  \operatorname{Int}
+  \bigl(
+    \mathbf{Span}^{+}_{\omega,0}(\mathcal E)
+  \bigr)
+\]
+has objects pairs
+\[
+  (X^+,X^-)
+\]
+of objects of \(\mathcal E\). A morphism
+\[
+  (X^+,X^-)\longrightarrow(Y^+,Y^-)
+\]
+is a span in \(\mathcal E\) of type
+\[
+  X^+ + Y^-
+  \longrightarrow
+  Y^+ + X^-.
+\]
+Thus it is a span
+\[
+  X^+ + Y^-
+  \xleftarrow{\ell}
+  R
+  \xrightarrow{r}
+  Y^+ + X^-.
+\]
+\end{definition}
+
+This is the standard Int convention composed with the symmetry that places the
+positive target before the negative source. Thus the apparent reversal of
+\(Y^-\) and \(X^-\) is only the standard contravariant negative boundary
+convention, written in the chosen summand order.
+
+Let
+\[
+  R:(X^+,X^-)\to(Y^+,Y^-)
+\]
+and
+\[
+  S:(Y^+,Y^-)\to(Z^+,Z^-)
+\]
+be Int morphisms. Thus
+\[
+  R:X^+ + Y^-\to Y^+ + X^-,
+\]
+and
+\[
+  S:Y^+ + Z^-\to Z^+ + Y^-.
+\]
+Their composite is obtained by tracing out the middle signed interface
+\[
+  Y^+ + Y^-.
+\]
+Concretely, after applying the canonical associator and symmetry spans, the
+span \(R+S\) is identified with a span of type
+\[
+  (X^+ + Z^-)+(Y^+ + Y^-)
+  \longrightarrow
+  (Z^+ + X^-)+(Y^+ + Y^-).
+\]
+The visible source is
+\[
+  X^+ + Z^-,
+\]
+the visible target is
+\[
+  Z^+ + X^-,
+\]
+and the hidden interface is
+\[
+  Y^+ + Y^-.
+\]
+Then
+\[
+  S\circ_{\operatorname{Int}}R
+  :=
+  \operatorname{Tr}^{Y^++Y^-}(R+S),
+\]
+where this formula includes the preceding canonical associator and symmetry
+identifications.
+
+The two morphisms before feedback have the signed-interface shape
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+  X^+ + Y^-
+    \ar[r,"R"]
+  &
+  Y^+ + X^-
+  \\
+  Y^+ + Z^-
+    \ar[r,"S"']
+  &
+  Z^+ + Y^- .
+\end{tikzcd}
+\]
+Composition feeds the \(Y^+\)- and \(Y^-\)-summands back into the middle
+interface and hides them by trace:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  X^+ + Z^-
+    \ar[r]
+  &
+  (X^+ + Z^-)+(Y^+ + Y^-)
+    \ar[r,"R+S"]
+  &
+  (Z^+ + X^-)+(Y^+ + Y^-)
+    \ar[r]
+  &
+  Z^+ + X^- .
+\end{tikzcd}
+\]
+
+\begin{theorem}[Compact closure of feedback spans]
+\label{thm:int-feedback-spans}
+The category
+\[
+  \operatorname{Int}
+  \bigl(
+    \mathbf{Span}^{+}_{\omega,0}(\mathcal E)
+  \bigr)
+\]
+is compact closed.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use tracedness of feedback spans.}
+  By Theorem~\ref{thm:span-traced-smc},
+  \[
+    \bigl(\mathbf{Span}^{+}_{\omega,0}(\mathcal E),+,0\bigr)
+  \]
+  is traced symmetric monoidal.
+
+  \item \textbf{Apply the Int construction.}
+  The Int construction of a traced symmetric monoidal category is compact
+  closed.
+
+  \item \textbf{Specialize the description.}
+  The displayed description of objects and morphisms is the standard Int
+  description specialized to the coproduct tensor. Composition is the standard
+  Int composition, which is precisely trace over the middle signed interface.
+\end{enumerate}
+\end{proof}
+
+The same construction applies to Mealy morphisms.
+
+\begin{definition}[The Int category of feedback Mealy morphisms]
+\label{def:int-feedback-mealy}
+The \textbf{Int category of feedback Mealy morphisms}
+\[
+  \operatorname{Int}
+  \bigl(
+    \mathbf{Mly}^{+}_{\omega,0}(\mathcal E)
+  \bigr)
+\]
+has objects pairs of internal categories
+\[
+  (A^+,A^-).
+\]
+A morphism
+\[
+  (A^+,A^-)\longrightarrow(B^+,B^-)
+\]
+is a Mealy morphism
+\[
+  A^+ + B^-
+  \rightsquigarrow
+  B^+ + A^-.
+\]
+\end{definition}
+
+\begin{theorem}[The Int category of feedback Mealy morphisms]
+\label{thm:int-feedback-mealy}
+The Int construction applied to the traced Mealy category is compact closed.
+Its morphisms are signed-interface Mealy morphisms
+\[
+  A^+ + B^-
+  \rightsquigarrow
+  B^+ + A^-,
+\]
+and composition is given by Mealy feedback trace over the middle signed
+interface.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use tracedness of feedback Mealy morphisms.}
+  By Theorem~\ref{thm:mly-traced-smc}, the category
+  \[
+    \bigl(\mathbf{Mly}^{+}_{\omega,0}(\mathcal E),+,0\bigr)
+  \]
+  is traced symmetric monoidal.
+
+  \item \textbf{Apply Int.}
+  Applying the Int construction gives a compact closed category.
+
+  \item \textbf{Specialize the morphism formula.}
+  The formula for morphisms is the standard Int formula specialized to
+  coproduct:
+  \[
+    (A^+,A^-)\to(B^+,B^-)
+    \quad\text{is}\quad
+    A^+ + B^-\rightsquigarrow B^+ + A^-.
+  \]
+
+  \item \textbf{Identify composition.}
+  Composition is trace over
+  \[
+    B^+ + B^-.
+  \]
+  The Mealy transition-output data compose by the traced Mealy construction of
+  Definition~\ref{def:mealy-coproduct-trace}.
+\end{enumerate}
+\end{proof}
+
+At the level of hom-categories,
+Theorem~\ref{thm:hom-category-trace-mealy-bicategory} shows that simulations
+are transported by the same finite hidden-path construction. Thus the Int
+composition on Mealy morphisms is compatible with simulation 2-cells. A full
+bicategorical Int construction would require the corresponding coherence data
+for these hom-category traces.
+
+\section{Relative execution as categorical feedback}
+\label{sec:relative-execution-as-feedback}
+
+Let
+\[
+  \Phi:A\rightsquigarrow B
+\]
+be a Mealy morphism, and let \(Y\) be a right internal \(B\)-action. Let
+\[
+  S_{\Phi,Y}
+\]
+be the relative execution-state object, and let
+\[
+  m_{\Phi,Y}:S_{\Phi,Y}\to S_{\Phi,Y}
+\]
+be the primitive execution endospan of the relative program category
+\[
+  \mathsf{Prog}_{\Phi,Y}.
+\]
+Let
+\[
+  i:U\hookrightarrow m_{\Phi,Y}
+\]
+be a sub-endospan. Put
+\[
+  S:=S_{\Phi,Y}.
+\]
+Define a span
+\[
+  L_U:S+S\to S+S
+\]
+by the block matrix
+\[
+  L_U=
+  \begin{pmatrix}
+    0_{S,S} & 1_S\\
+    1_S & U
+  \end{pmatrix}.
+\]
+The first copy of \(S\) is visible, and the second copy is hidden.
+
+\begin{theorem}[Execution paths as feedback]
+\label{thm:execution-paths-as-feedback}
+There is a canonical isomorphism
+\[
+  \operatorname{Tr}^{S}(L_U)
+  \cong
+  \mathsf{Path}(U).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Apply the trace formula.}
+  By the trace formula,
+  \[
+    \operatorname{Tr}^{S}(L_U)
+    =
+    0_{S,S}
+    \boxplus
+    1_S\circ\mathsf{Path}(U)\circ1_S.
+  \]
+
+  \item \textbf{Remove the initial and identity factors.}
+  The initial summand contributes no apex, and identity spans are units for
+  span composition. Hence
+  \[
+    \operatorname{Tr}^{S}(L_U)
+    \cong
+    \mathsf{Path}(U).
+  \]
+\end{enumerate}
+\end{proof}
+
+Since \(m_{\Phi,Y}\) is the arrow object of an internal category over
+\(S_{\Phi,Y}\), it is a monoid object in
+\[
+  \mathrm{EndSpan}_{\mathcal E}(S_{\Phi,Y}).
+\]
+The inclusion
+\[
+  U\hookrightarrow m_{\Phi,Y}
+\]
+therefore induces, by Theorem~\ref{thm:free-endospan-monoid-feedback}, a
+unique monoid morphism
+\[
+  \operatorname{fold}_{\Phi,U,Y}:
+  \mathsf{Path}(U)\longrightarrow m_{\Phi,Y}.
+\]
+
+\begin{corollary}[Folded feedback]
+\label{cor:folded-feedback}
+The folded execution map factors canonically as
+\[
+  \operatorname{Tr}^{S}(L_U)
+  \cong
+  \mathsf{Path}(U)
+  \xrightarrow{\operatorname{fold}_{\Phi,U,Y}}
+  m_{\Phi,Y}.
+\]
+\end{corollary}
+
+\section{Predicate transformers for feedback spans}
+\label{sec:predicate-transformers-feedback}
+
+We now add the logical structure needed for modalities. The categorical
+implementation uses subobjects as predicates, regular images as existential
+quantification, and right adjoints to pullback as universal quantification
+\cite{Jacobs1999CategoricalLogic}. In regular and relational settings this is
+the standard categorical form of relation and program semantics
+\cite{FongSpivakRegularRelational,HarelKozenTiurynDynamicLogic}.
+
+\begin{definition}[Modal feedback base]
+\label{def:modal-feedback-base}
+A \textbf{modal feedback base} is a feedback span base \(\mathcal E\) whose
+countable coproducts are subobject-extensive and whose subobject fibration has
+the regular, first-order Heyting, and \(\omega\)-iterative structure used for
+dynamic span logic. Thus existential images of subobjects exist and are stable
+under pullback; pullback on subobject fibres has both adjoints
+\[
+  \exists_f\dashv f^\ast\dashv\forall_f;
+\]
+each relevant subobject fibre has the countable joins and countable meets used
+below; and the pullback functors \(f^\ast\) preserve those countable joins and
+meets.
+
+In particular, for every relevant countable coproduct
+\[
+  A\cong\coprod_{n\geq 0}A_n
+\]
+the canonical comparison
+\[
+  \operatorname{Sub}(A)
+  \longrightarrow
+  \prod_{n\geq 0}\operatorname{Sub}(A_n)
+\]
+is an isomorphism.
+\end{definition}
+
+Assume throughout the remainder of the logical sections that \(\mathcal E\) is
+a modal feedback base.
+
+Let
+\[
+  R:X\to Y
+\]
+be a span
+\[
+  X\xleftarrow{\ell}R\xrightarrow{r}Y.
+\]
+For
+\[
+  \varphi\in\operatorname{Sub}(Y),
+\]
+define
+\[
+  \langle R\rangle\varphi
+  :=
+  \exists_{\ell}(r^\ast\varphi),
+\]
+and
+\[
+  [R]\varphi
+  :=
+  \forall_{\ell}(r^\ast\varphi).
+\]
+
+The definition is encoded by the pullback square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  R\times_Y \varphi
+    \ar[r]
+    \ar[d]
+  &
+  \varphi
+    \ar[d,hook]
+  \\
+  R
+    \ar[r,"r"']
+  &
+  Y
+\end{tikzcd}
+\qquad
+\text{followed by}
+\qquad
+R\times_Y\varphi\to R\xrightarrow{\ell}X .
+\]
+
+\begin{lemma}[Modal calculus for spans]
+\label{lem:modal-calculus-feedback}
+Let \(R,S:X\to Y\) be parallel spans, and let
+\[
+  R:X\to Y,
+  \qquad
+  T:Y\to Z
+\]
+be composable spans. Then
+\[
+  \langle R\boxplus S\rangle\varphi
+  =
+  \langle R\rangle\varphi
+  \vee
+  \langle S\rangle\varphi,
+\]
+\[
+  [R\boxplus S]\varphi
+  =
+  [R]\varphi
+  \wedge
+  [S]\varphi,
+\]
+and
+\[
+  \langle T\circ R\rangle\varphi
+  =
+  \langle R\rangle\langle T\rangle\varphi,
+\]
+\[
+  [T\circ R]\varphi
+  =
+  [R][T]\varphi.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Compute modalities of homwise coproducts.}
+  For homwise coproducts, the left leg of \(R\boxplus S\) is the coproduct of
+  the left legs of \(R\) and \(S\). Existential quantification along a
+  coproduct of maps gives the join of the existential images, while universal
+  quantification along a coproduct of maps gives the meet of the universal
+  images. The subobject-extensive condition identifies the relevant predicates
+  on coproduct apexes with summandwise predicates.
+
+  \item \textbf{Compute modalities of composites.}
+  For composition, the apex of \(T\circ R\) is the pullback
+  \[
+    R\times_Y T.
+  \]
+  The Beck--Chevalley isomorphism for this pullback square,
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+    R\times_Y T
+      \ar[r]
+      \ar[d]
+    &
+    T
+      \ar[d]
+    \\
+    R
+      \ar[r]
+    &
+    Y ,
+  \end{tikzcd}
+  \]
+  together with
+  \[
+    \exists\dashv(-)^\ast\dashv\forall,
+  \]
+  gives the composite predicate-transformer identities.
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[Tests]
+\label{lem:test-modalities-feedback}
+Let
+\[
+  \theta:\Theta\hookrightarrow S
+\]
+be a subobject, and let
+\[
+  T_\theta:=
+  \left(
+    S\xleftarrow{\theta}\Theta\xrightarrow{\theta}S
+  \right)
+\]
+be its test span. Then
+\[
+  \langle T_\theta\rangle\varphi
+  =
+  \theta\wedge\varphi,
+\]
+and
+\[
+  [T_\theta]\varphi
+  =
+  \theta\Rightarrow\varphi.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Compute the diamond.}
+  For diamonds,
+  \[
+    \langle T_\theta\rangle\varphi
+    =
+    \exists_\theta(\theta^\ast\varphi).
+  \]
+  Since \(\theta\) is monic, this is the image of the pullback intersection
+  of \(\theta\) and \(\varphi\), hence
+  \[
+    \langle T_\theta\rangle\varphi
+    =
+    \theta\wedge\varphi.
+  \]
+
+  \item \textbf{Compute the box by adjunction.}
+  For boxes,
+  \[
+    [T_\theta]\varphi
+    =
+    \forall_\theta(\theta^\ast\varphi).
+  \]
+  For any predicate \(\psi\hookrightarrow S\),
+  \[
+    \psi\leq\forall_\theta(\theta^\ast\varphi)
+  \]
+  if and only if
+  \[
+    \theta^\ast\psi\leq\theta^\ast\varphi.
+  \]
+  Since \(\theta\) is monic, this is equivalent to
+  \[
+    \psi\wedge\theta\leq\varphi.
+  \]
+  By the Heyting adjunction, this is equivalent to
+  \[
+    \psi\leq\theta\Rightarrow\varphi.
+  \]
+  Therefore
+  \[
+    [T_\theta]\varphi
+    =
+    \theta\Rightarrow\varphi.
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[Modalities of countable homwise coproducts]
+\label{lem:countable-coproduct-modalities-feedback}
+Let
+\[
+  (R_n)_{n\geq 0}:X\to Y
+\]
+be a countable family of parallel spans. Then
+\[
+  \left\langle
+    \boxplus_{n\geq 0}R_n
+  \right\rangle\varphi
+  =
+  \bigvee_{n\geq 0}
+  \langle R_n\rangle\varphi,
+\]
+and
+\[
+  \left[
+    \boxplus_{n\geq 0}R_n
+  \right]\varphi
+  =
+  \bigwedge_{n\geq 0}
+  [R_n]\varphi.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use subobject-extensivity.}
+  By subobject-extensivity, a subobject of the coproduct apex
+  \[
+    \coprod_{n\geq 0}R_n
+  \]
+  is determined by its restrictions to the summands.
+
+  \item \textbf{Compute the diamond.}
+  Existential image along the coproduct source leg is the join of the
+  summandwise existential images. Hence
+  \[
+    \left\langle
+      \boxplus_{n\geq 0}R_n
+    \right\rangle\varphi
+    =
+    \bigvee_{n\geq 0}
+    \langle R_n\rangle\varphi.
+  \]
+
+  \item \textbf{Compute the box by testing against a predicate.}
+  Let
+  \[
+    L:\coprod_{n\geq 0}R_n\to X
+  \]
+  be the coproduct source leg, and let
+  \[
+    R:\coprod_{n\geq 0}R_n\to Y
+  \]
+  be the coproduct target leg. For any
+  \[
+    \psi\hookrightarrow X,
+  \]
+  one has
+  \[
+    \psi\leq
+    \left[
+      \boxplus_{n\geq 0}R_n
+    \right]\varphi
+  \]
+  if and only if
+  \[
+    L^\ast\psi\leq R^\ast\varphi.
+  \]
+
+  \item \textbf{Restrict to summands.}
+  By subobject-extensivity, this is equivalent to the family of inequalities
+  \[
+    \ell_n^\ast\psi\leq r_n^\ast\varphi
+    \qquad(n\geq 0),
+  \]
+  where \(\ell_n,r_n\) are the legs of \(R_n\).
+
+  \item \textbf{Use the adjunctions.}
+  By the adjunction
+  \[
+    \ell_n^\ast\dashv\forall_{\ell_n},
+  \]
+  these inequalities are equivalent to
+  \[
+    \psi\leq [R_n]\varphi
+    \qquad(n\geq 0).
+  \]
+  Hence
+  \[
+    \psi\leq
+    \bigwedge_{n\geq 0}[R_n]\varphi.
+  \]
+  Therefore
+  \[
+    \left[
+      \boxplus_{n\geq 0}R_n
+    \right]\varphi
+    =
+    \bigwedge_{n\geq 0}
+    [R_n]\varphi.
+  \]
+\end{enumerate}
+\end{proof}
+
+\section{Fixed-point semantics of finite paths}
+\label{sec:fixed-point-semantics-path}
+
+\begin{theorem}[Finite-path fixed-point semantics]
+\label{thm:finite-path-fixed-point-semantics}
+For every endospan \(U:S\to S\) and every
+\[
+  \varphi\in\operatorname{Sub}(S),
+\]
+one has
+\[
+  \langle\mathsf{Path}(U)\rangle\varphi
+  =
+  \mu X.\bigl(\varphi\vee\langle U\rangle X\bigr),
+\]
+and
+\[
+  [\mathsf{Path}(U)]\varphi
+  =
+  \nu X.\bigl(\varphi\wedge[U]X\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Expand the diamond of a path object.}
+  By Lemma~\ref{lem:countable-coproduct-modalities-feedback}, for diamonds,
+  \[
+    \langle\mathsf{Path}(U)\rangle\varphi
+    =
+    \left\langle\coprod_{n\geq 0}U^{[n]}\right\rangle\varphi
+    =
+    \bigvee_{n\geq 0}\langle U^{[n]}\rangle\varphi.
+  \]
+  Let
+  \[
+    P:=
+    \bigvee_{n\geq 0}\langle U^{[n]}\rangle\varphi.
+  \]
+
+  \item \textbf{Show that \(P\) is a fixed point.}
+  Since \(U^{[0]}=1_S\), we have \(\varphi\leq P\). Since
+  \[
+    U^{[n+1]}=U^{[n]}\circ U,
+  \]
+  we have
+  \[
+    \langle U^{[n+1]}\rangle\varphi
+    =
+    \langle U\rangle\langle U^{[n]}\rangle\varphi.
+  \]
+  The diamond transformer \(\langle U\rangle\) preserves the joins used here,
+  so
+  \[
+    \langle U\rangle P
+    =
+    \bigvee_{n\geq 0}\langle U^{[n+1]}\rangle\varphi
+    \leq P.
+  \]
+  Thus
+  \[
+    \varphi\vee\langle U\rangle P\leq P.
+  \]
+  Conversely,
+  \[
+    P
+    =
+    \varphi
+    \vee
+    \bigvee_{n\geq 0}\langle U^{[n+1]}\rangle\varphi
+    =
+    \varphi\vee\langle U\rangle P.
+  \]
+
+  \item \textbf{Show leastness.}
+  If \(Q\) is any pre-fixed point of
+  \[
+    F(X):=\varphi\vee\langle U\rangle X,
+  \]
+  then
+  \[
+    \varphi\vee\langle U\rangle Q\leq Q.
+  \]
+  Hence \(\varphi\leq Q\) and \(\langle U\rangle Q\leq Q\). By induction,
+  \[
+    \langle U^{[n]}\rangle\varphi\leq Q
+  \]
+  for every \(n\). Taking the join over \(n\) gives \(P\leq Q\). Therefore
+  \(P=\mu F\).
+
+  \item \textbf{Expand the box of a path object.}
+  By Lemma~\ref{lem:countable-coproduct-modalities-feedback}, for boxes,
+  \[
+    [\mathsf{Path}(U)]\varphi
+    =
+    \left[\coprod_{n\geq 0}U^{[n]}\right]\varphi
+    =
+    \bigwedge_{n\geq 0}[U^{[n]}]\varphi.
+  \]
+  Let
+  \[
+    Q:=
+    \bigwedge_{n\geq 0}[U^{[n]}]\varphi.
+  \]
+
+  \item \textbf{Show that \(Q\) is a fixed point.}
+  Since \(U^{[0]}=1_S\), we have \(Q\leq\varphi\). Since
+  \[
+    [U^{[n+1]}]\varphi
+    =
+    [U][U^{[n]}]\varphi,
+  \]
+  and \([U]\) preserves the meets used here,
+  \[
+    [U]Q
+    =
+    \bigwedge_{n\geq 0}[U^{[n+1]}]\varphi.
+  \]
+  Hence
+  \[
+    Q\leq[U]Q,
+  \]
+  and so
+  \[
+    Q\leq\varphi\wedge[U]Q.
+  \]
+  Conversely,
+  \[
+    \varphi\wedge[U]Q
+    =
+    [U^{[0]}]\varphi
+    \wedge
+    \bigwedge_{n\geq 0}[U^{[n+1]}]\varphi
+    =
+    Q.
+  \]
+
+  \item \textbf{Show greatestness.}
+  If \(P\) is any post-fixed point of
+  \[
+    G(X):=\varphi\wedge[U]X,
+  \]
+  then
+  \[
+    P\leq\varphi\wedge[U]P.
+  \]
+  Hence \(P\leq\varphi\) and \(P\leq[U]P\). By induction,
+  \[
+    P\leq[U^{[n]}]\varphi
+  \]
+  for every \(n\). Taking the meet over \(n\) gives \(P\leq Q\). Therefore
+  \(Q=\nu G\).
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Modal semantics of the dagger]
+\label{thm:modal-semantics-dagger-feedback}
+For every span
+\[
+  f:X\to Y+X
+\]
+and every
+\[
+  \varphi\in\operatorname{Sub}(Y),
+\]
+one has
+\[
+  \langle f^\dagger\rangle\varphi
+  =
+  \mu Z.
+  \bigl(
+    \langle f_Y\rangle\varphi
+    \vee
+    \langle f_X\rangle Z
+  \bigr),
+\]
+and
+\[
+  [f^\dagger]\varphi
+  =
+  \nu Z.
+  \bigl(
+    [f_Y]\varphi
+    \wedge
+    [f_X]Z
+  \bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Compute the diamond.}
+  Using
+  \[
+    f^\dagger=f_Y\circ\mathsf{Path}(f_X),
+  \]
+  the diamond calculation is
+  \[
+  \begin{aligned}
+    \langle f^\dagger\rangle\varphi
+    &=
+    \langle\mathsf{Path}(f_X)\rangle
+    \langle f_Y\rangle\varphi
+    \\
+    &=
+    \mu Z.
+    \bigl(
+      \langle f_Y\rangle\varphi
+      \vee
+      \langle f_X\rangle Z
+    \bigr),
+  \end{aligned}
+  \]
+  by Theorem~\ref{thm:finite-path-fixed-point-semantics}.
+
+  \item \textbf{Compute the box.}
+  The box calculation is dual:
+  \[
+  \begin{aligned}
+    [f^\dagger]\varphi
+    &=
+    [\mathsf{Path}(f_X)]
+    [f_Y]\varphi
+    \\
+    &=
+    \nu Z.
+    \bigl(
+      [f_Y]\varphi
+      \wedge
+      [f_X]Z
+    \bigr).
+  \end{aligned}
+  \]
+\end{enumerate}
+\end{proof}
+
+\section{Dynamic logic of feedback trace}
+\label{sec:dynamic-logic-categorical-feedback}
+
+Let
+\[
+  R:X+H\to Y+H
+\]
+have block decomposition
+\[
+  R=
+  \begin{pmatrix}
+    R_{XY} & R_{XH}\\
+    R_{HY} & R_{HH}
+  \end{pmatrix}.
+\]
+
+\begin{theorem}[Diamond law for feedback trace]
+\label{thm:diamond-law-feedback-trace}
+For every
+\[
+  \varphi\in\operatorname{Sub}(Y),
+\]
+one has
+\[
+  \left\langle
+    \operatorname{Tr}^{H}(R)
+  \right\rangle\varphi
+  =
+  \langle R_{XY}\rangle\varphi
+  \vee
+  \langle R_{XH}\rangle
+  \mu Z.
+  \bigl(
+    \langle R_{HY}\rangle\varphi
+    \vee
+    \langle R_{HH}\rangle Z
+  \bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Expand the trace formula.}
+  Using the trace formula and Lemma~\ref{lem:modal-calculus-feedback},
+  \[
+  \begin{aligned}
+    \left\langle
+      \operatorname{Tr}^{H}(R)
+    \right\rangle\varphi
+    &=
+    \left\langle
+      R_{XY}
+      \boxplus
+      R_{HY}\circ\mathsf{Path}(R_{HH})\circ R_{XH}
+    \right\rangle\varphi
+    \\
+    &=
+    \langle R_{XY}\rangle\varphi
+    \vee
+    \langle R_{XH}\rangle
+    \langle\mathsf{Path}(R_{HH})\rangle
+    \langle R_{HY}\rangle\varphi.
+  \end{aligned}
+  \]
+
+  \item \textbf{Apply finite-path fixed-point semantics.}
+  By Theorem~\ref{thm:finite-path-fixed-point-semantics},
+  \[
+    \langle\mathsf{Path}(R_{HH})\rangle
+    \langle R_{HY}\rangle\varphi
+    =
+    \mu Z.
+    \bigl(
+      \langle R_{HY}\rangle\varphi
+      \vee
+      \langle R_{HH}\rangle Z
+    \bigr).
+  \]
+
+  \item \textbf{Substitute the fixed point.}
+  Substitution gives the displayed formula.
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Box law for feedback trace]
+\label{thm:box-law-feedback-trace}
+For every
+\[
+  \varphi\in\operatorname{Sub}(Y),
+\]
+one has
+\[
+  \left[
+    \operatorname{Tr}^{H}(R)
+  \right]\varphi
+  =
+  [R_{XY}]\varphi
+  \wedge
+  [R_{XH}]
+  \nu Z.
+  \bigl(
+    [R_{HY}]\varphi
+    \wedge
+    [R_{HH}]Z
+  \bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Expand the trace formula.}
+  The box modality sends homwise coproducts of spans to meets and categorical
+  composition to composition of box predicate transformers. Therefore
+  \[
+  \begin{aligned}
+    \left[
+      \operatorname{Tr}^{H}(R)
+    \right]\varphi
+    &=
+    \left[
+      R_{XY}
+      \boxplus
+      R_{HY}\circ\mathsf{Path}(R_{HH})\circ R_{XH}
+    \right]\varphi
+    \\
+    &=
+    [R_{XY}]\varphi
+    \wedge
+    [R_{XH}]
+    [\mathsf{Path}(R_{HH})]
+    [R_{HY}]\varphi.
+  \end{aligned}
+  \]
+
+  \item \textbf{Apply finite-path fixed-point semantics.}
+  By Theorem~\ref{thm:finite-path-fixed-point-semantics},
+  \[
+    [\mathsf{Path}(R_{HH})]
+    [R_{HY}]\varphi
+    =
+    \nu Z.
+    \bigl(
+      [R_{HY}]\varphi
+      \wedge
+      [R_{HH}]Z
+    \bigr).
+  \]
+
+  \item \textbf{Substitute the fixed point.}
+  Substitution gives the displayed formula.
+\end{enumerate}
+\end{proof}
+
+\section{Typed dynamic program syntax}
+\label{sec:dynamic-program-syntax-feedback}
+
+Program terms are typed. A judgement
+\[
+  p:S\leadsto T
+\]
+means that \(p\) denotes a span from \(S\) to \(T\). The symbol
+\(\leadsto\) is used here for program typing, to distinguish program terms
+from Mealy morphisms. The syntax follows the standard dynamic-logic program
+operations of sequencing, choice, iteration, and tests
+\cite{HarelKozenTiurynDynamicLogic}.
+
+Primitive programs are supplied by a chosen family of primitive spans. If
+\[
+  r:S\leadsto T
+\]
+is primitive, then
+\[
+  \llbracket r\rrbracket:S\to T
+\]
+is its corresponding span.
+
+The compound term formers are:
+\[
+  \frac{p:S\leadsto T \qquad q:T\leadsto U}
+       {p;q:S\leadsto U},
+\]
+\[
+  \frac{p:S\leadsto T \qquad q:S\leadsto T}
+       {p\cup q:S\leadsto T},
+\]
+\[
+  \frac{p:S\leadsto S}
+       {p^{\star_{\mathrm{path}}}:S\leadsto S},
+\]
+and
+\[
+  \frac{\theta:\Theta\hookrightarrow S}
+       {\theta?:S\leadsto S}.
+\]
+
+The interpretation is defined by
+\[
+  \llbracket p;q\rrbracket
+  =
+  \llbracket q\rrbracket\circ\llbracket p\rrbracket,
+\]
+\[
+  \llbracket p\cup q\rrbracket
+  =
+  \llbracket p\rrbracket\boxplus\llbracket q\rrbracket,
+\]
+\[
+  \llbracket p^{\star_{\mathrm{path}}}\rrbracket
+  =
+  \mathsf{Path}(\llbracket p\rrbracket).
+\]
+For a predicate
+\[
+  \theta:\Theta\hookrightarrow S,
+\]
+define its test span
+\[
+  T_{\theta}:=
+  \left(
+    S\xleftarrow{\theta}\Theta\xrightarrow{\theta}S
+  \right),
+\]
+and set
+\[
+  \llbracket\theta?\rrbracket:=T_{\theta}.
+\]
+
+The modal semantics of program terms is
+\[
+  \langle p\rangle\varphi
+  :=
+  \langle\llbracket p\rrbracket\rangle\varphi,
+  \qquad
+  [p]\varphi
+  :=
+  [\llbracket p\rrbracket]\varphi.
+\]
+Sequential composition and iteration are therefore syntactic program-forming
+operations whose categorical interpretations are span composition and the
+finite-path construction.
+
+\section{Guarded trace and guarded while programs}
+\label{sec:guarded-trace-and-while-feedback}
+
+Let
+\[
+  \theta:\Theta\hookrightarrow H
+\]
+be a predicate on \(H\), and let
+\[
+  T_\theta:H\to H
+\]
+be its test span. Abstract guarded traces are studied in
+\cite{GoncharovSchroder2018GuardedTracedCategories}. The construction below
+is a predicate-guarded specialization inside the total traced span category
+constructed above.
+
+\begin{definition}[Source-guarded endospan]
+\label{def:predicate-guarded-endospan}
+An endospan
+\[
+  U:H\to H
+\]
+is \textbf{source \(\theta\)-guarded} if its left leg factors through
+\(\theta\). Equivalently, because \(\theta\) is monic, the canonical
+comparison
+\[
+  U\circ T_\theta\longrightarrow U
+\]
+is an isomorphism of endospans.
+\end{definition}
+
+The guard condition is the factorization of the source leg:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  U
+    \ar[rr,"\bar\ell"]
+    \ar[dr,"\ell"']
+  &&
+  \Theta
+    \ar[dl,hook,"\theta"]
+  \\
+  &
+  H .
+\end{tikzcd}
+\]
+
+\begin{definition}[Predicate-guarded feedback situation]
+\label{def:predicate-guarded-trace}
+Let
+\[
+  R:X+H\to Y+H
+\]
+be a span whose hidden block
+\[
+  R_{HH}:H\to H
+\]
+is source \(\theta\)-guarded. We call \(R\) a
+\textbf{\(\theta\)-guarded feedback situation}. Its feedback trace is the
+ordinary coproduct trace
+\[
+  \operatorname{Tr}^{H}_{X,Y}(R)
+  =
+  R_{XY}
+  \boxplus
+  R_{HY}\circ\mathsf{Path}(R_{HH})\circ R_{XH}.
+\]
+\end{definition}
+
+\begin{proposition}[Guarded hidden-path normal form]
+\label{prop:guarded-hidden-path-normal-form}
+If \(R\) is a \(\theta\)-guarded feedback situation, then each positive
+occurrence of \(R_{HH}\) in a hidden path may be canonically rewritten by
+inserting \(T_\theta\) on its source side:
+\[
+  R_{HH}\cong R_{HH}\circ T_\theta .
+\]
+Equivalently, in categorical notation each occurrence of \(R_{HH}\) may be
+replaced by \(R_{HH}\circ T_\theta\), so operationally the guard is tested
+immediately before that hidden step is taken. Hence the trace is the homwise
+coproduct of finite hidden paths whose positive hidden-loop steps are guarded
+at their source by \(\theta\).
+\end{proposition}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use source-guardedness.}
+  Since \(R_{HH}\) is source \(\theta\)-guarded, the canonical comparison
+  \[
+    R_{HH}\circ T_\theta\longrightarrow R_{HH}
+  \]
+  is an isomorphism.
+
+  \item \textbf{Rewrite each hidden loop step.}
+  Therefore each occurrence of \(R_{HH}\) in an iterated hidden path may be
+  written as an occurrence of \(R_{HH}\circ T_\theta\). The \(n\)-hidden-step
+  summand of the trace is
+  \[
+    R_{HY}\circ R_{HH}^{[n]}\circ R_{XH}.
+  \]
+
+  \item \textbf{Insert the source guards.}
+  For \(n>0\), this composite contains \(n\) occurrences of \(R_{HH}\), and
+  each such occurrence may be preceded operationally by \(T_\theta\), i.e.
+  replaced categorically by \(R_{HH}\circ T_\theta\).
+
+  \item \textbf{Take the coproduct over finite lengths.}
+  Taking the coproduct over \(n\geq 0\) gives the claimed guarded hidden-path
+  normal form.
+\end{enumerate}
+\end{proof}
+
+Let \(u:S\leadsto S\) be a program with interpretation
+\[
+  U:=\llbracket u\rrbracket:S\to S.
+\]
+Let
+\[
+  \theta:\Theta\hookrightarrow S,
+  \qquad
+  \epsilon:E\hookrightarrow S
+\]
+be loop and exit predicates. Define a block span
+\[
+  W_{\theta,\epsilon}(U):S+S\to S+S
+\]
+by
+\[
+  W_{\theta,\epsilon}(U)
+  =
+  \begin{pmatrix}
+    0_{S,S} & 1_S\\
+    T_\epsilon & U\circ T_\theta
+  \end{pmatrix}.
+\]
+The first copy of \(S\) is visible, and the second copy is hidden. The hidden
+loop block
+\[
+  U\circ T_\theta
+\]
+is source \(\theta\)-guarded.
+
+\begin{theorem}[Guarded while as guarded feedback]
+\label{thm:guarded-while-as-guarded-trace}
+There is a canonical isomorphism
+\[
+  \operatorname{Tr}^{S}
+  \bigl(
+    W_{\theta,\epsilon}(U)
+  \bigr)
+  \cong
+  T_\epsilon\circ\mathsf{Path}(U\circ T_\theta).
+\]
+Equivalently,
+\[
+  \operatorname{Tr}^{S}
+  \bigl(
+    W_{\theta,\epsilon}(U)
+  \bigr)
+  \cong
+  \llbracket
+    (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+  \rrbracket .
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Apply the feedback trace formula.}
+  By the feedback trace formula,
+  \[
+    \operatorname{Tr}^{S}
+    \bigl(
+      W_{\theta,\epsilon}(U)
+    \bigr)
+    =
+    0_{S,S}
+    \boxplus
+    T_\epsilon
+    \circ
+    \mathsf{Path}(U\circ T_\theta)
+    \circ
+    1_S.
+  \]
+
+  \item \textbf{Remove the initial and identity factors.}
+  Removing the initial summand and the identity span gives
+  \[
+    T_\epsilon\circ\mathsf{Path}(U\circ T_\theta).
+  \]
+
+  \item \textbf{Identify the program interpretation.}
+  For the syntactic expression,
+  \[
+    \llbracket\theta?;u\rrbracket
+    =
+    \llbracket u\rrbracket\circ\llbracket\theta?\rrbracket
+    =
+    U\circ T_\theta.
+  \]
+  Therefore
+  \[
+    \llbracket
+      (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+    \rrbracket
+    =
+    T_\epsilon\circ\mathsf{Path}(U\circ T_\theta).
+  \]
+  This is represented by
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+    S
+      \ar[r,"T_\theta"]
+    &
+    S
+      \ar[r,"U"]
+    &
+    S
+      \ar[r,"T_\theta"]
+    &
+    S
+      \ar[r,"U"]
+    &
+    S
+      \ar[r,"\cdots"]
+    &
+    S
+      \ar[r,"T_\epsilon"]
+    &
+    S .
+  \end{tikzcd}
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Diamond law for guarded while]
+\label{thm:guarded-while-diamond-feedback}
+For every
+\[
+  \varphi\in\operatorname{Sub}(S),
+\]
+one has
+\[
+  \left\langle
+    (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+  \right\rangle\varphi
+  =
+  \mu X.
+  \bigl(
+    \epsilon\wedge\varphi
+    \vee
+    \theta\wedge\langle u\rangle X
+  \bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use the guarded while interpretation.}
+  Let \(U=\llbracket u\rrbracket\). By
+  Theorem~\ref{thm:guarded-while-as-guarded-trace},
+  \[
+    \llbracket
+      (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+    \rrbracket
+    =
+    T_\epsilon\circ\mathsf{Path}(U\circ T_\theta).
+  \]
+  Therefore
+  \[
+    \left\langle
+      (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+    \right\rangle\varphi
+    =
+    \langle\mathsf{Path}(U\circ T_\theta)\rangle
+    \langle T_\epsilon\rangle\varphi.
+  \]
+
+  \item \textbf{Evaluate the tests.}
+  By Lemma~\ref{lem:test-modalities-feedback},
+  \[
+    \langle T_\epsilon\rangle\varphi
+    =
+    \epsilon\wedge\varphi,
+  \]
+  and
+  \[
+    \langle U\circ T_\theta\rangle X
+    =
+    \langle T_\theta\rangle\langle U\rangle X
+    =
+    \theta\wedge\langle u\rangle X.
+  \]
+
+  \item \textbf{Apply finite-path fixed-point semantics.}
+  Applying Theorem~\ref{thm:finite-path-fixed-point-semantics} to
+  \(U\circ T_\theta\) gives the displayed formula.
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Box law for guarded while]
+\label{thm:guarded-while-box-feedback}
+For every
+\[
+  \varphi\in\operatorname{Sub}(S),
+\]
+one has
+\[
+  \left[
+    (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+  \right]\varphi
+  =
+  \nu X.
+  \bigl(
+    (\epsilon\Rightarrow\varphi)
+    \wedge
+    (\theta\Rightarrow[u]X)
+  \bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use the guarded while interpretation.}
+  Let \(U=\llbracket u\rrbracket\). By
+  Theorem~\ref{thm:guarded-while-as-guarded-trace},
+  \[
+    \llbracket
+      (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+    \rrbracket
+    =
+    T_\epsilon\circ\mathsf{Path}(U\circ T_\theta).
+  \]
+  Therefore
+  \[
+    \left[
+      (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+    \right]\varphi
+    =
+    [\mathsf{Path}(U\circ T_\theta)]
+    [T_\epsilon]\varphi.
+  \]
+
+  \item \textbf{Evaluate the tests.}
+  By Lemma~\ref{lem:test-modalities-feedback},
+  \[
+    [T_\epsilon]\varphi
+    =
+    \epsilon\Rightarrow\varphi,
+  \]
+  and
+  \[
+    [U\circ T_\theta]X
+    =
+    [T_\theta][U]X
+    =
+    \theta\Rightarrow[u]X.
+  \]
+
+  \item \textbf{Apply finite-path fixed-point semantics.}
+  Applying Theorem~\ref{thm:finite-path-fixed-point-semantics} to
+  \(U\circ T_\theta\) gives the displayed formula.
+\end{enumerate}
+\end{proof}
+
+\section{Stability under downstream change and simulations}
+\label{sec:feedback-stability}
+
+The feedback construction is stable under the source-cartesian change of
+execution spans induced by downstream action morphisms and by Mealy
+simulations.
+
+\begin{definition}[Source-cartesian comparison of execution endospans]
+\label{def:source-cartesian-comparison-execution-endospans}
+Let
+\[
+  U=
+  \left(
+    S\xleftarrow{\ell_U}U\xrightarrow{r_U}S
+  \right),
+  \qquad
+  V=
+  \left(
+    S'\xleftarrow{\ell_V}V\xrightarrow{r_V}S'
+  \right)
+\]
+be endospans. A \textbf{source-cartesian comparison}
+\[
+  (k,h):U\longrightarrow V
+\]
+consists of maps
+\[
+  h:S\to S',
+  \qquad
+  k:U\to V
+\]
+such that
+\[
+  \ell_V k=h\ell_U,
+  \qquad
+  r_V k=hr_U,
+\]
+and the square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  U
+    \ar[r,"k"]
+    \ar[d,"\ell_U"']
+  &
+  V
+    \ar[d,"\ell_V"]
+  \\
+  S
+    \ar[r,"h"']
+  &
+  S'
+\end{tikzcd}
+\]
+is a pullback.
+\end{definition}
+
+Equivalently, \(U\) is obtained by pulling back the source leg of \(V\) along
+\(h\), while the target leg is transported by the equation \(r_Vk=hr_U\).
+This is the form of comparison used by execution functors induced by
+downstream changes and by Mealy simulations.
+
+For a Mealy simulation
+\[
+  \Theta:\Phi\Rightarrow\Psi,
+\]
+the comparison map is taken in the direction of the induced program functor
+\[
+  h_\Theta:S_{\Psi,Y}\to S_{\Phi,Y}.
+\]
+Thus the primitive span for \(\Psi\) is compared source-cartesianly with the
+primitive span for \(\Phi\) along \(h_\Theta\). This fixes the direction of
+the simulation-induced stability statement.
+
+\begin{lemma}[Primitive modal stability for source-cartesian comparisons]
+\label{lem:primitive-source-cartesian-modal-stability}
+Let
+\[
+  (k,h):U\to V
+\]
+be a source-cartesian comparison of endospans as in
+Definition~\ref{def:source-cartesian-comparison-execution-endospans}. For
+every
+\[
+  \psi\in\operatorname{Sub}(S'),
+\]
+one has
+\[
+  h^\ast\langle V\rangle\psi
+  =
+  \langle U\rangle h^\ast\psi,
+\]
+and
+\[
+  h^\ast[V]\psi
+  =
+  [U]h^\ast\psi.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Use the source pullback square.}
+  The defining pullback square
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+    U
+      \ar[r,"k"]
+      \ar[d,"\ell_U"']
+    &
+    V
+      \ar[d,"\ell_V"]
+    \\
+    S
+      \ar[r,"h"']
+    &
+    S'
+  \end{tikzcd}
+  \]
+  gives Beck--Chevalley isomorphisms for existential and universal
+  quantification along the source legs.
+
+  \item \textbf{Use compatibility of the target legs.}
+  The equality
+  \[
+    r_Vk=hr_U
+  \]
+  identifies
+  \[
+    k^\ast r_V^\ast\psi
+    =
+    r_U^\ast h^\ast\psi.
+  \]
+
+  \item \textbf{Compute the diamond.}
+  Therefore
+  \[
+  \begin{aligned}
+    h^\ast\langle V\rangle\psi
+    &=
+    h^\ast\exists_{\ell_V}(r_V^\ast\psi)
+    \\
+    &=
+    \exists_{\ell_U}k^\ast(r_V^\ast\psi)
+    \\
+    &=
+    \exists_{\ell_U}(r_U^\ast h^\ast\psi)
+    \\
+    &=
+    \langle U\rangle h^\ast\psi.
+  \end{aligned}
+  \]
+
+  \item \textbf{Compute the box.}
+  The box calculation is the dual Beck--Chevalley calculation:
+  \[
+  \begin{aligned}
+    h^\ast[V]\psi
+    &=
+    h^\ast\forall_{\ell_V}(r_V^\ast\psi)
+    \\
+    &=
+    \forall_{\ell_U}k^\ast(r_V^\ast\psi)
+    \\
+    &=
+    \forall_{\ell_U}(r_U^\ast h^\ast\psi)
+    \\
+    &=
+    [U]h^\ast\psi.
+  \end{aligned}
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[Iterated source-cartesian comparisons]
+\label{lem:iterated-source-cartesian-comparisons}
+Let
+\[
+  (k,h):U\to V
+\]
+be a source-cartesian comparison of endospans. For every \(n\geq 0\), there is
+an induced source-cartesian comparison
+\[
+  (k^{[n]},h):U^{[n]}\longrightarrow V^{[n]}.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Handle length zero.}
+  For \(n=0\), both endospans are identity spans. The comparison is the
+  identity comparison over \(h\), and the source square is the canonical
+  pullback square for identities.
+
+  \item \textbf{Handle length one.}
+  For \(n=1\), this is the given comparison
+  \[
+    (k,h):U\to V.
+  \]
+
+  \item \textbf{Use induction and the pullback cube for span composition.}
+  Suppose the comparison exists for \(n\). The apex of
+  \[
+    U^{[n+1]}=U^{[n]}\circ U
+  \]
+  is
+  \[
+    U\times_S U^{[n]}.
+  \]
+  The comparison apex map is
+  \[
+    k^{[n+1]}:=k\times_h k^{[n]}:
+    U\times_S U^{[n]}
+    \longrightarrow
+    V\times_{S'}V^{[n]}.
+  \]
+  The source leg of \(U^{[n+1]}\) is the source leg of the rightmost
+  operational \(U\)-factor. Since the square defining \((k,h):U\to V\) is a
+  pullback, and since the second factor is matched by the target-compatibility
+  equation
+  \[
+    r_Vk=hr_U,
+  \]
+  the standard pullback-pasting/cube argument identifies
+  \[
+    U\times_S U^{[n]}
+    \cong
+    S\times_{S'}(V\times_{S'}V^{[n]}).
+  \]
+  Thus the source square for
+  \[
+    (k^{[n+1]},h):U^{[n+1]}\to V^{[n+1]}
+  \]
+  is again a pullback.
+
+  \item \textbf{Preserve target compatibility.}
+  The target-leg equality for the composite follows from the target-leg
+  equalities for the two factors and associativity of span composition.
+
+  \item \textbf{Conclude source-cartesianness.}
+  Pullbacks are closed under pasting, so the source square for the composite
+  is a pullback. Hence the induced comparison
+  \[
+    (k^{[n+1]},h):U^{[n+1]}\to V^{[n+1]}
+  \]
+  is source-cartesian.
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Stability for finite paths]
+\label{thm:stability-finite-paths-feedback}
+Let
+\[
+  (k,h):U\to V
+\]
+be a source-cartesian comparison of endospans. For every
+\[
+  \psi\in\operatorname{Sub}(S'),
+\]
+one has
+\[
+  h^\ast
+  \left(
+    \langle\mathsf{Path}(V)\rangle\psi
+  \right)
+  =
+  \left\langle
+    \mathsf{Path}(U)
+  \right\rangle
+  h^\ast\psi,
+\]
+and
+\[
+  h^\ast
+  \left(
+    [\mathsf{Path}(V)]\psi
+  \right)
+  =
+  \left[
+    \mathsf{Path}(U)
+  \right]
+  h^\ast\psi.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Prove the diamond equation for primitive lengths.}
+  By Lemma~\ref{lem:iterated-source-cartesian-comparisons}, each finite
+  iterate has a source-cartesian comparison
+  \[
+    (k^{[n]},h):U^{[n]}\to V^{[n]}.
+  \]
+  Lemma~\ref{lem:primitive-source-cartesian-modal-stability} gives
+  \[
+    h^\ast\langle V^{[n]}\rangle\psi
+    =
+    \langle U^{[n]}\rangle h^\ast\psi
+  \]
+  for every \(n\geq 0\).
+
+  \item \textbf{Pass from finite lengths to paths for diamonds.}
+  Since \(h^\ast\) preserves the countable joins used in the
+  \(\omega\)-iterative semantics,
+  \[
+  \begin{aligned}
+    h^\ast\langle\mathsf{Path}(V)\rangle\psi
+    &=
+    h^\ast
+    \bigvee_{n\geq 0}
+    \langle V^{[n]}\rangle\psi
+    \\
+    &=
+    \bigvee_{n\geq 0}
+    h^\ast\langle V^{[n]}\rangle\psi
+    \\
+    &=
+    \bigvee_{n\geq 0}
+    \langle U^{[n]}\rangle h^\ast\psi
+    \\
+    &=
+    \langle\mathsf{Path}(U)\rangle h^\ast\psi.
+  \end{aligned}
+  \]
+
+  \item \textbf{Repeat for boxes.}
+  The box proof is dual. For every \(n\geq 0\),
+  Lemma~\ref{lem:primitive-source-cartesian-modal-stability} gives
+  \[
+    h^\ast[ V^{[n]}]\psi
+    =
+    [U^{[n]}]h^\ast\psi.
+  \]
+
+  \item \textbf{Pass from finite lengths to paths for boxes.}
+  Since \(h^\ast\) preserves the countable meets used in the
+  \(\omega\)-iterative semantics,
+  \[
+  \begin{aligned}
+    h^\ast[\mathsf{Path}(V)]\psi
+    &=
+    h^\ast
+    \bigwedge_{n\geq 0}
+    [V^{[n]}]\psi
+    \\
+    &=
+    \bigwedge_{n\geq 0}
+    h^\ast[V^{[n]}]\psi
+    \\
+    &=
+    \bigwedge_{n\geq 0}
+    [U^{[n]}]h^\ast\psi
+    \\
+    &=
+    [\mathsf{Path}(U)]h^\ast\psi.
+  \end{aligned}
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Stability for guarded while]
+\label{cor:stability-guarded-while-feedback}
+Let
+\[
+  (k,h):U\to V
+\]
+be a source-cartesian comparison of endospans
+\[
+  U:S\to S,
+  \qquad
+  V:S'\to S'.
+\]
+Let
+\[
+  \theta':\Theta'\hookrightarrow S',
+  \qquad
+  \epsilon':E'\hookrightarrow S'
+\]
+be guards, and let
+\[
+  \theta:=h^\ast\theta',
+  \qquad
+  \epsilon:=h^\ast\epsilon'
+\]
+be their pullbacks along \(h\). Then the induced comparison
+\[
+  U\circ T_\theta\longrightarrow V\circ T_{\theta'}
+\]
+is source-cartesian, and for every
+\[
+  \varphi\in\operatorname{Sub}(S')
+\]
+one has
+\[
+  h^\ast
+  \left\langle
+    (\theta'?;v)^{\star_{\mathrm{path}}};\epsilon'?
+  \right\rangle\varphi
+  =
+  \left\langle
+    (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+  \right\rangle
+  h^\ast\varphi,
+\]
+and
+\[
+  h^\ast
+  \left[
+    (\theta'?;v)^{\star_{\mathrm{path}}};\epsilon'?
+  \right]\varphi
+  =
+  \left[
+    (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+  \right]
+  h^\ast\varphi.
+\]
+Here \(u\) and \(v\) are program names whose interpretations are \(U\) and
+\(V\), respectively.
+\end{corollary}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Compare the guard tests.}
+  Since
+  \[
+    \theta=h^\ast\theta',
+    \qquad
+    \epsilon=h^\ast\epsilon',
+  \]
+  the test spans \(T_\theta\) and \(T_\epsilon\) are obtained by pulling back
+  the corresponding test spans \(T_{\theta'}\) and \(T_{\epsilon'}\) along
+  \(h\).
+
+  \item \textbf{Compare the guarded loop spans.}
+  The comparison
+  \[
+    (k,h):U\to V
+  \]
+  and the pullback square defining \(T_\theta\) induce a source-cartesian
+  comparison
+  \[
+    U\circ T_\theta
+    \longrightarrow
+    V\circ T_{\theta'}.
+  \]
+  This follows by composing source-cartesian comparisons and using pullback
+  pasting.
+
+  \item \textbf{Extend stability to finite paths.}
+  Theorem~\ref{thm:stability-finite-paths-feedback} applies to the
+  source-cartesian comparison of guarded loop spans and gives stability for
+  \[
+    \mathsf{Path}(U\circ T_\theta)
+    \longrightarrow
+    \mathsf{Path}(V\circ T_{\theta'}).
+  \]
+
+  \item \textbf{Compare the exit tests.}
+  The exit tests are also related by pullback, so
+  Lemma~\ref{lem:primitive-source-cartesian-modal-stability} gives the
+  stability equation for the final \(T_\epsilon\)- and
+  \(T_{\epsilon'}\)-steps.
+
+  \item \textbf{Use the guarded while interpretations.}
+  Using
+  \[
+    \llbracket
+      (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+    \rrbracket
+    =
+    T_\epsilon\circ\mathsf{Path}(U\circ T_\theta)
+  \]
+  and
+  \[
+    \llbracket
+      (\theta'?;v)^{\star_{\mathrm{path}}};\epsilon'?
+    \rrbracket
+    =
+    T_{\epsilon'}\circ\mathsf{Path}(V\circ T_{\theta'}),
+  \]
+  the diamond equation follows by combining finite-path stability with
+  Beck--Chevalley for the exit test.
+
+  \item \textbf{Repeat for boxes.}
+  The box equation is obtained by the same argument with universal
+  quantification.
+\end{enumerate}
+\end{proof}
+
+\section{Feedback after flattening response profiles}
+\label{sec:feedback-after-flattening-response-profiles}
+
+The polynomial response profile construction is one-step and coalgebraic.
+Feedback is applied after flattening to an execution span.
+
+Let
+\[
+  c:S\longrightarrow M_{A,B,Y}(S)
+\]
+be a relative response coalgebra, and write
+\[
+  \flat(c):S\to S
+\]
+for its flattened primitive execution endospan.
+
+\begin{definition}[Profile trace]
+\label{def:profile-trace-feedback}
+The \textbf{profile trace} of \(c\) is
+\[
+  \operatorname{TrProfile}(c)
+  :=
+  \operatorname{Tr}^{S}(L_{\flat(c)}),
+\]
+where
+\[
+  L_{\flat(c)}
+  =
+  \begin{pmatrix}
+    0_{S,S} & 1_S\\
+    1_S & \flat(c)
+  \end{pmatrix}.
+\]
+\end{definition}
+
+\begin{proposition}[Profile trace after flattening]
+\label{prop:profile-trace-after-flattening}
+There is a canonical isomorphism
+\[
+  \operatorname{TrProfile}(c)
+  \cong
+  \mathsf{Path}(\flat(c)).
+\]
+\end{proposition}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Apply execution paths as feedback.}
+  This is Theorem~\ref{thm:execution-paths-as-feedback} applied to the
+  endospan
+  \[
+    \flat(c):S\to S.
+  \]
+\end{enumerate}
+\end{proof}
+
+For guards
+\[
+  \theta:\Theta\hookrightarrow S,
+  \qquad
+  \epsilon:E\hookrightarrow S,
+\]
+define
+\[
+  \operatorname{GTrProfile}_{\theta,\epsilon}(c)
+  :=
+  \operatorname{Tr}^{S}
+  \left(
+    \begin{pmatrix}
+      0_{S,S} & 1_S\\
+      T_\epsilon & \flat(c)\circ T_\theta
+    \end{pmatrix}
+  \right).
+\]
+
+\begin{proposition}[Guarded profile trace after flattening]
+\label{prop:guarded-profile-trace-after-flattening}
+There is a canonical isomorphism
+\[
+  \operatorname{GTrProfile}_{\theta,\epsilon}(c)
+  \cong
+  T_\epsilon\circ
+  \mathsf{Path}(\flat(c)\circ T_\theta).
+\]
+Equivalently,
+\[
+  \operatorname{GTrProfile}_{\theta,\epsilon}(c)
+  \cong
+  \llbracket
+    (\theta?;\flat(c))^{\star_{\mathrm{path}}};\epsilon?
+  \rrbracket .
+\]
+\end{proposition}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{Apply guarded while as guarded feedback.}
+  This is Theorem~\ref{thm:guarded-while-as-guarded-trace} applied to the
+  endospan
+  \[
+    \flat(c):S\to S.
+  \]
+\end{enumerate}
+\end{proof}
+
+Consequently,
+\[
+  \left\langle
+    \operatorname{TrProfile}(c)
+  \right\rangle\varphi
+  =
+  \mu X.
+  \bigl(
+    \varphi\vee\langle\flat(c)\rangle X
+  \bigr),
+\]
+and
+\[
+  \left\langle
+    \operatorname{GTrProfile}_{\theta,\epsilon}(c)
+  \right\rangle\varphi
+  =
+  \mu X.
+  \bigl(
+    \epsilon\wedge\varphi
+    \vee
+    \theta\wedge\langle\flat(c)\rangle X
+  \bigr).
+\]
+The corresponding box laws are
+\[
+  \left[
+    \operatorname{TrProfile}(c)
+  \right]\varphi
+  =
+  \nu X.
+  \bigl(
+    \varphi\wedge[\flat(c)]X
+  \bigr),
+\]
+and
+\[
+  \left[
+    \operatorname{GTrProfile}_{\theta,\epsilon}(c)
+  \right]\varphi
+  =
+  \nu X.
+  \bigl(
+    (\epsilon\Rightarrow\varphi)
+    \wedge
+    (\theta\Rightarrow[\flat(c)]X)
+  \bigr).
+\]
+
+\section{Examples}
+\label{sec:feedback-trace-examples}
+
+\subsection{Relations}
+\label{subsec:feedback-relations}
+
+When \(\mathcal E=\mathbf{Set}\), a span
+\[
+  X\xleftarrow{\ell}R\xrightarrow{r}Y
+\]
+has a relational image
+\[
+  x\,\overline R\,y
+  \quad\Longleftrightarrow\quad
+  \exists \rho\in R,\ \ell(\rho)=x,\ r(\rho)=y.
+\]
+Passing from spans to relational images sends homwise coproducts of spans to
+unions of relations and span composition to relational composition.
+
+Thus, for a relation
+\[
+  R\subseteq (X+H)\times(Y+H),
+\]
+the relational image of the categorical trace is
+\[
+  \overline{\operatorname{Tr}^{H}(R)}
+  =
+  \overline{R}_{XY}
+  \cup
+  \overline{R}_{HY}\circ
+  \overline{R}_{HH}^{\ast}\circ
+  \overline{R}_{XH},
+\]
+where \((-)^\ast\) is the ordinary relational Kleene star, not pullback and not
+the syntactic operation \((-)^{\star_{\mathrm{path}}}\). The bar notation
+emphasizes that the span trace itself retains witnesses, while the relational
+image forgets them.
+
+\subsection{Classical Mealy machines}
+\label{subsec:feedback-classical-mealy}
+
+For an ordinary Mealy machine with state set \(S\), the primitive execution
+span
+\[
+  U:S\to S
+\]
+records one-step executions. The finite-path endospan
+\[
+  \mathsf{Path}(U)
+\]
+records finite executions of arbitrary length. By
+Theorem~\ref{thm:execution-paths-as-feedback},
+\[
+  \mathsf{Path}(U)
+  \cong
+  \operatorname{Tr}^{S}
+  \begin{pmatrix}
+    0_{S,S} & 1_S\\
+    1_S & U
+  \end{pmatrix}.
+\]
+Thus finite execution is a coproduct feedback trace.
+
+\subsection{Boolean guarded while}
+\label{subsec:boolean-guarded-while}
+
+In a Boolean subobject fibre, take the exit predicate to be
+\[
+  \epsilon=\neg\theta.
+\]
+Then the dynamic program
+\[
+  (\theta?;u)^{\star_{\mathrm{path}}};(\neg\theta)?
+\]
+has diamond semantics
+\[
+  \left\langle
+    (\theta?;u)^{\star_{\mathrm{path}}};(\neg\theta)?
+  \right\rangle\varphi
+  =
+  \mu X.
+  \bigl(
+    \neg\theta\wedge\varphi
+    \vee
+    \theta\wedge\langle u\rangle X
+  \bigr).
+\]
+The box semantics is
+\[
+  \left[
+    (\theta?;u)^{\star_{\mathrm{path}}};(\neg\theta)?
+  \right]\varphi
+  =
+  \nu X.
+  \bigl(
+    (\neg\theta\Rightarrow\varphi)
+    \wedge
+    (\theta\Rightarrow[u]X)
+  \bigr).
+\]
+
+\subsection{Signed interfaces and Geometry of Interaction}
+\label{subsec:signed-interfaces-feedback}
+
+An Int morphism
+\[
+  (X^+,X^-)\longrightarrow(Y^+,Y^-)
+\]
+is a span
+\[
+  X^+ + Y^-
+  \longrightarrow
+  Y^+ + X^-.
+\]
+Thus the positive input of the source and the negative input of the target are
+read together, while the positive output of the target and the negative output
+of the source are produced together. Composition feeds the middle signed
+interface
+\[
+  Y^+ + Y^-
+\]
+back into itself and hides it by trace. This is the compact-closed form of
+feedback span semantics.
+
+This interface discipline is the same structural pattern that appears in
+Geometry of Interaction: computation is represented by interaction through an
+internal boundary, and composition hides the boundary by an execution
+operation
+\cite{Girard1989GeometryInteractionI,AbramskyHaghverdiScott2002GeometryInteractionLCA}.
+In the present chapter the execution operation is the finite hidden-path trace
+in a coproduct-monoidal span category.
+
+\subsection{Terminal downstream response profiles}
+\label{subsec:terminal-response-profiles-feedback}
+
+In the terminal downstream case, flattening a terminal response coalgebra gives
+the terminal primitive execution span. The trace construction gives the
+finite-path endospan of that span:
+\[
+  \operatorname{TrProfile}(c)
+  \cong
+  \mathsf{Path}(\flat(c)).
+\]
+Thus the terminal downstream profile trace is the one-step profile
+presentation of the same finite feedback semantics after flattening.
+
+\section{Chapter summary}
+\label{sec:feedback-trace-summary}
+
+This chapter constructed feedback as the trace for the coproduct monoidal
+structure on spans.
+
+The foundational structure is the coproduct symmetric monoidal bicategory
+\[
+  \bigl(
+    \mathbf{Span}^{+}_{\omega}(\mathcal E),+,0
+  \bigr).
+\]
+Passing to isomorphism classes gives the symmetric monoidal category
+\[
+  \bigl(
+    \mathbf{Span}^{+}_{\omega,0}(\mathcal E),+,0
+  \bigr).
+\]
+
+For an endospan
+\[
+  U:S\to S,
+\]
+the finite-path endospan is
+\[
+  \mathsf{Path}(U)
+  =
+  \coprod_{n\geq 0}U^{[n]}.
+\]
+It is the free endospan monoid on \(U\), and the assignment
+\[
+  U\mapsto\mathsf{Path}(U)
+\]
+is the path monad on endospans. The monoid unit is the inclusion of the
+\(0\)-summand
+\[
+  1_S\to\mathsf{Path}(U),
+\]
+while the monad unit is the inclusion of the \(1\)-summand
+\[
+  U\to\mathsf{Path}(U).
+\]
+
+For a span
+\[
+  R:X+H\to Y+H
+\]
+with block decomposition
+\[
+  R=
+  \begin{pmatrix}
+    R_{XY} & R_{XH}\\
+    R_{HY} & R_{HH}
+  \end{pmatrix},
+\]
+the coproduct feedback trace is
+\[
+  \operatorname{Tr}^{H}(R)
+  =
+  R_{XY}
+  \boxplus
+  R_{HY}\circ
+  \mathsf{Path}(R_{HH})
+  \circ
+  R_{XH}.
+\]
+This makes
+\[
+  \bigl(
+    \mathbf{Span}^{+}_{\omega,0}(\mathcal E),+,0
+  \bigr)
+\]
+a traced symmetric monoidal category, and gives hom-category trace functors at
+the bicategorical level.
+
+The trace induces a Conway dagger. For
+\[
+  f:X\to Y+X
+\]
+with blocks
+\[
+  f_Y:X\to Y,
+  \qquad
+  f_X:X\to X,
+\]
+one has
+\[
+  f^\dagger
+  =
+  f_Y\circ\mathsf{Path}(f_X).
+\]
+This dagger satisfies the Conway fixpoint law
+\[
+  f^\dagger
+  \cong
+  f_Y\boxplus(f^\dagger\circ f_X),
+\]
+as well as output naturality, uniformity, sliding, and the double-dagger
+identity.
+
+The same coproduct tensor lifts to internal categories, Mealy morphisms, and
+Mealy simulations, giving a coproduct symmetric monoidal bicategory
+\[
+  \mathbf{Mly}^{+}_{\omega}(\mathcal E).
+\]
+The trace construction lifts to Mealy morphisms:
+\[
+  \operatorname{Tr}^{C}(\Phi)
+  =
+  \Phi_{AB}
+  \boxplus
+  \Phi_{CB}\circ
+  \mathsf{Path}(\Phi_{CC})
+  \circ
+  \Phi_{AC}.
+\]
+It also acts on simulations by taking finite hidden-path composites of the
+corresponding block simulations:
+\[
+  \operatorname{Tr}^{C}(\Theta)
+  =
+  \Theta_{AB}
+  \boxplus
+  \coprod_{n\geq 0}
+  \left(
+    \Theta_{CB}
+    \ast_{\mathrm h}
+    \Theta_{CC}^{[n]}
+    \ast_{\mathrm h}
+    \Theta_{AC}
+  \right),
+\]
+where the order follows the standing categorical convention: first
+\(\Theta_{AC}\), then \(\Theta_{CC}^{[n]}\), then \(\Theta_{CB}\).
+
+The Int construction packages feedback into compact closed signed-interface
+categories. For spans, an Int morphism
+\[
+  (X^+,X^-)\to(Y^+,Y^-)
+\]
+is a span
+\[
+  X^+ + Y^-\to Y^+ + X^-.
+\]
+For Mealy morphisms, an Int morphism
+\[
+  (A^+,A^-)\to(B^+,B^-)
+\]
+is a Mealy morphism
+\[
+  A^+ + B^-
+  \rightsquigarrow
+  B^+ + A^-.
+\]
+Composition traces over the middle signed interface.
+
+Relative execution paths are feedback traces. For a sub-endospan
+\[
+  U\hookrightarrow m_{\Phi,Y},
+\]
+one has
+\[
+  \operatorname{Tr}^{S}
+  \begin{pmatrix}
+    0_{S,S} & 1_S\\
+    1_S & U
+  \end{pmatrix}
+  \cong
+  \mathsf{Path}(U).
+\]
+The folded execution map is the unique monoid morphism
+\[
+  \mathsf{Path}(U)\to m_{\Phi,Y}
+\]
+induced by the inclusion \(U\hookrightarrow m_{\Phi,Y}\).
+
+In the logical setting, finite-path modalities satisfy
+\[
+  \langle\mathsf{Path}(U)\rangle\varphi
+  =
+  \mu X.
+  \bigl(
+    \varphi\vee\langle U\rangle X
+  \bigr),
+\]
+and
+\[
+  [\mathsf{Path}(U)]\varphi
+  =
+  \nu X.
+  \bigl(
+    \varphi\wedge[U]X
+  \bigr).
+\]
+Consequently, feedback trace has diamond semantics
+\[
+  \left\langle
+    \operatorname{Tr}^{H}(R)
+  \right\rangle\varphi
+  =
+  \langle R_{XY}\rangle\varphi
+  \vee
+  \langle R_{XH}\rangle
+  \mu Z.
+  \bigl(
+    \langle R_{HY}\rangle\varphi
+    \vee
+    \langle R_{HH}\rangle Z
+  \bigr),
+\]
+with the dual greatest-fixed-point box law.
+
+Dynamic iteration is interpreted by
+\[
+  \llbracket p^{\star_{\mathrm{path}}}\rrbracket
+  =
+  \mathsf{Path}(\llbracket p\rrbracket),
+\]
+and tests are interpreted by
+\[
+  \llbracket\theta?\rrbracket=T_\theta.
+\]
+For guarded while programs,
+\[
+  \llbracket
+    (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+  \rrbracket
+  =
+  T_\epsilon\circ
+  \mathsf{Path}(\llbracket u\rrbracket\circ T_\theta).
+\]
+Hence
+\[
+  \left\langle
+    (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+  \right\rangle\varphi
+  =
+  \mu X.
+  \bigl(
+    \epsilon\wedge\varphi
+    \vee
+    \theta\wedge\langle u\rangle X
+  \bigr),
+\]
+and
+\[
+  \left[
+    (\theta?;u)^{\star_{\mathrm{path}}};\epsilon?
+  \right]\varphi
+  =
+  \nu X.
+  \bigl(
+    (\epsilon\Rightarrow\varphi)
+    \wedge
+    (\theta\Rightarrow[u]X)
+  \bigr).
+\]
+
+The stability theorem uses source-cartesian comparisons of execution
+endospans. If
+\[
+  (k,h):U\to V
+\]
+is source-cartesian, then finite-path modalities commute with pullback along
+\(h\):
+\[
+  h^\ast
+  \left(
+    \langle\mathsf{Path}(V)\rangle\psi
+  \right)
+  =
+  \left\langle
+    \mathsf{Path}(U)
+  \right\rangle
+  h^\ast\psi,
+\]
+and
+\[
+  h^\ast
+  \left(
+    [\mathsf{Path}(V)]\psi
+  \right)
+  =
+  \left[
+    \mathsf{Path}(U)
+  \right]
+  h^\ast\psi.
+\]
+This gives stability for guarded while programs under downstream change and
+Mealy simulation when the primitive execution spans and guards are transported
+by the corresponding source-cartesian comparison.
+
+Finally, polynomial response profiles enter feedback only after flattening:
+\[
+  \operatorname{TrProfile}(c)
+  \cong
+  \mathsf{Path}(\flat(c)),
+\]
+and
+\[
+  \operatorname{GTrProfile}_{\theta,\epsilon}(c)
+  \cong
+  T_\epsilon\circ
+  \mathsf{Path}(\flat(c)\circ T_\theta).
+\]
+Thus coproduct feedback trace, finite execution paths, Conway iteration,
+guarded while programs, signed-interface Int semantics, Geometry of
+Interaction, and fixed-point dynamic semantics are all presentations of the
+same finite hidden-path construction.

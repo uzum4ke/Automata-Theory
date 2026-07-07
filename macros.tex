@@ -1,3 +1,39 @@
+\newcommand{\xnrightarrow}[2][]{%
+  \mathrel{\mathop{%
+    \smash{\scalebox{1.6}[1]{$\nrightarrow$}}%
+  }\limits^{#2}_{#1}}%
+}
+
+\tikzset{
+  proarrow/.style={
+    decoration={
+      markings,
+      mark=at position 0.5 with {
+        \draw[-, line width=0.4pt] (-0.15em,-0.2em) -- (0.15em,0.2em);
+      }
+    },
+    postaction={decorate},
+  }
+}
+
+
+
+
+\providecommand{\E}{\mathcal E}
+\providecommand{\CatE}{\mathbf{Cat}(\mathcal E)}
+\providecommand{\Span}{\mathbf{Span}}
+\providecommand{\Mly}{\mathbf{Mly}}
+\providecommand{\NdMly}{\mathbf{NdMly}}
+\providecommand{\DMly}{\mathbf{DMly}}
+\providecommand{\Prog}{\operatorname{Prog}}
+\providecommand{\Tr}{\operatorname{Tr}}
+\providecommand{\Eq}{\operatorname{Eq}}
+\providecommand{\id}{\operatorname{id}}
+\providecommand{\Sub}{\operatorname{Sub}}
+\providecommand{\Beh}{\operatorname{Beh}}
+\providecommand{\Opp}{\mathrm{op}}
+
+
 \makeatletter
 \newcommand{\Mlongrightarrow}{%
   \mathrel{\mathpalette\Mlongrightarrow@{}}%
@@ -5,7 +41,7 @@
 
 \newcommand{\Mlongrightarrow@}[2]{%
   \ooalign{%
-    \hfil\scalebox{0.75}{$\m@th#1 \mathsf{M}$}\hfil\cr
+    \hfil\scalebox{0.75}{$\m@th#1 \circ$}\hfil\cr
     $#1\relbar\joinrel\relbar\joinrel\rightarrow$\cr
   }%
 }

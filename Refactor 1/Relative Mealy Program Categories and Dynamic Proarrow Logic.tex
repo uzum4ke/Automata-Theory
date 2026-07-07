@@ -1,0 +1,3950 @@
+\chapter{Relative Mealy Program Categories and Dynamic Span Logic}
+\label{ch:relative-mealy-program-categories}
+
+\section{Overview}
+\label{sec:relative-mealy-overview}
+
+This chapter develops a span-based, non-iterative dynamic logic for Mealy
+morphisms and Mealy simulations. We use the span conventions, composition
+order, internal-category conventions, Mealy morphisms, output-comparison
+monad, input-processing monad, and Mealy simulations fixed in
+Chapter~\ref{ch:spans-internal-categories-mealy}.
+
+Unless otherwise stated, \(\mathcal E\) is finitely complete.
+
+The stateful morphism layer is close in spirit to Paré's Mealy morphisms of
+enriched categories, which generalize classical Mealy machines
+\cite{PareMealyMorphisms}. The logical layer follows the dynamic-logic
+tradition of interpreting programs by diamond, box, test, and choice
+modalities, but this chapter isolates the non-iterative fragment
+\cite{HarelKozenTiurynDynamicLogic}. Categorically, the predicate-transformer
+semantics uses the standard subobject-fibration reading of regular, coherent,
+and first-order Heyting logic
+\cite{Jacobs1999CategoricalLogic}; its regular fragment is closely related to
+the relational calculus of regular categories
+\cite{FongSpivakRegularRelational}.
+
+As in Chapter~\ref{ch:spans-internal-categories-mealy}, all displayed
+generalized-element equations denote the corresponding morphism equations out
+of the appropriate pullback object.
+
+Throughout this chapter we use the composition convention
+\[
+m_A(a,b)=b\circ a
+\]
+for internally composable arrows
+\[
+a:u\to v,
+\qquad
+b:v\to w.
+\]
+Similarly,
+\[
+m_B(\beta,\gamma)=\gamma\circ\beta.
+\]
+Thus right actions execute target-to-source: if \(p(x)=w\), then \(b\) acts
+first and \(a\) acts second.
+
+Let
+\[
+\Phi=(P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism with carrier span
+\[
+\begin{tikzcd}
+& P \arrow[dl,"p_P"'] \arrow[dr,"q_P"] & \\
+A_0 && B_0
+\end{tikzcd}
+.
+\]
+Let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a downstream right \(\mathbb B\)-action. The coupled state object is the
+pullback
+\[
+\begin{tikzcd}
+S_{\Phi,Y}
+\arrow[r,"\pi_Y"]
+\arrow[d,"\pi_P"']
+&
+Y
+\arrow[d,"r"]
+\\
+P
+\arrow[r,"q_P"']
+&
+B_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+Thus
+\[
+S_{\Phi,Y}:=P\times_{q_P,B_0,r}Y.
+\]
+The action of an input arrow \(a:u\to v\) on a coupled state
+\((x,y)\), with \(p_P(x)=v\), is given by
+\[
+a\cdot(x,y)
+=
+\bigl(\delta_P(a,x),\sigma(\omega_P(a,x),y)\bigr).
+\]
+The result lies over \(u\), and therefore defines a right
+\(\mathbb A\)-action
+\[
+\Phi^\ast Y.
+\]
+The relative program category is the corresponding action category
+\[
+\mathsf{Prog}_{\Phi,Y}
+:=
+\int_{\mathbb A}\Phi^\ast Y.
+\]
+
+A Mealy simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+from
+\[
+\Phi=(P,\delta_P,\omega_P)
+\qquad\text{to}\qquad
+\Psi=(Q,\delta_Q,\omega_Q)
+\]
+is represented by an output-comparison Kleisli cell
+\[
+Q\longrightarrow B\circ P.
+\]
+Here \(B\) denotes the underlying endospan of the internal category
+\(\mathbb B\). In components this is a pair
+\[
+\theta:Q\to P,
+\qquad
+\alpha:Q\to B_1,
+\]
+displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&& B_1
+  \arrow[dd,bend left=18,"s_B"]
+  \arrow[dd,bend right=18,"t_B"']
+&
+\\
+Q
+  \arrow[rru,"\alpha"]
+  \arrow[r,"\theta"']
+  \arrow[drr,"q_Q"']
+  \arrow[ddrr,bend right=16,"p_Q"']
+&
+P
+  \arrow[dr,"q_P"]
+  \arrow[rdd,bend left=16,"p_P"]
+&&
+\\
+&& B_0 &
+\\
+&& A_0 &
+\end{tikzcd}
+\]
+with equations
+\[
+p_P\theta=p_Q,
+\qquad
+s_B\alpha=q_P\theta,
+\qquad
+t_B\alpha=q_Q.
+\]
+Thus each state \(y\in Q\) is compared with the state
+\(\theta y\in P\) over the same input interface, and the output interfaces
+are compared by an arrow
+\[
+q_P(\theta y)\xrightarrow{\alpha_y}q_Q(y)
+\]
+of \(\mathbb B\).
+
+A downstream action \(Y\) evaluates this comparison arrow as an actual
+transition in the action category \(\int_{\mathbb B}Y\). Hence
+\(\Theta\) induces a map
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y}
+\]
+by
+\[
+h_{\Theta,Y}(y,z)
+=
+\bigl(\theta y,\sigma(\alpha_y,z)\bigr).
+\]
+The simulation law is precisely the assertion that this map is
+\(\mathbb A\)-equivariant. Consequently it induces an internal functor
+\[
+H_{\Theta,Y}:
+\mathsf{Prog}_{\Psi,Y}
+\longrightarrow
+\mathsf{Prog}_{\Phi,Y}.
+\]
+The relative program construction is therefore contravariant in Mealy
+simulations.
+
+The guiding construction is:
+\[
+\boxed{
+\text{a downstream action evaluates output-comparison Kleisli cells as
+state maps.}
+}
+\]
+
+After the program category has been formed, dynamic span logic is obtained by
+applying span predicate transformers to endospans on the coupled state object
+\(S_{\Phi,Y}\). In a regular category these transformers give diamond
+modalities. In a first-order Heyting category they also give box modalities.
+This chapter treats the one-step and finite-choice fragment of relative
+dynamic span logic: primitive execution spans, tests, restricted primitive
+subprograms, diamonds, boxes, and stability under downstream change and Mealy
+simulation.
+
+\section{Right actions and action categories}
+\label{sec:relative-right-actions-action-categories}
+
+Throughout this section let
+\[
+\mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A)
+\]
+be an internal category in \(\mathcal E\).
+
+The use of actions as Eilenberg--Moore algebras over a slice, and the
+corresponding subobject-fibration logic used later in the chapter, follows the
+standard categorical-logic perspective on indexed predicates and their
+quantifiers \cite{Jacobs1999CategoricalLogic}.
+
+\subsection{Right internal actions}
+\label{subsec:relative-right-actions}
+
+\begin{definition}[Right internal action]
+\label{def:relative-right-action}
+A \textbf{right action} of \(\mathbb A\) consists of a morphism
+\[
+p:X\to A_0
+\]
+together with a map
+\[
+\rho:
+A_1\times_{t_A,A_0,p}X\to X
+\]
+such that
+\[
+p\rho=s_A\pi_1.
+\]
+The typing square for the action domain is
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}X
+\arrow[r,"\pi_X"]
+\arrow[d,"\pi_1"']
+&
+X
+\arrow[d,"p"]
+\\
+A_1
+\arrow[r,"t_A"']
+&
+A_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+The action map fits into
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}X
+\arrow[rr,"\rho"]
+\arrow[dr,"s_A\pi_1"']
+&&
+X
+\arrow[dl,"p"]
+\\
+& A_0 &
+\end{tikzcd}
+\]
+and satisfies the unit and multiplication laws
+\[
+\rho(e_A(px),x)=x
+\]
+and
+\[
+\rho(b\circ a,x)=\rho(a,\rho(b,x))
+\]
+for internally composable arrows
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w.
+\]
+Equivalently, using the multiplication map,
+\[
+\rho(m_A(a,b),x)=\rho(a,\rho(b,x)).
+\]
+\end{definition}
+
+\begin{definition}[Equivariant map]
+\label{def:relative-equivariant-map}
+Let
+\[
+(X\xrightarrow{p}A_0,\rho_X)
+\qquad\text{and}\qquad
+(Z\xrightarrow{q}A_0,\rho_Z)
+\]
+be right \(\mathbb A\)-actions. An \(\mathbb A\)-equivariant map
+\[
+f:X\to Z
+\]
+is a morphism in \(\mathcal E\) satisfying
+\[
+qf=p
+\]
+and
+\[
+f(\rho_X(a,x))=\rho_Z(a,f(x)).
+\]
+Equivalently, the diagrams
+\[
+\begin{tikzcd}
+X \arrow[rr,"f"] \arrow[dr,"p"'] && Z \arrow[dl,"q"] \\
+& A_0 &
+\end{tikzcd}
+\]
+and
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}X
+\arrow[r,"1\times f"]
+\arrow[d,"\rho_X"']
+&
+A_1\times_{t_A,A_0,q}Z
+\arrow[d,"\rho_Z"]
+\\
+X
+\arrow[r,"f"']
+&
+Z
+\end{tikzcd}
+\]
+commute.
+\end{definition}
+
+\begin{definition}[Category of right actions]
+\label{def:relative-action-category-external}
+The \textbf{category of right \(\mathbb A\)-actions}, denoted
+\[
+\mathbf{Act}(\mathbb A),
+\]
+has right internal \(\mathbb A\)-actions as objects and equivariant maps as
+morphisms.
+\end{definition}
+
+\subsection{Actions as Eilenberg--Moore algebras}
+\label{subsec:relative-actions-em}
+
+\begin{proposition}[Actions as Eilenberg--Moore algebras]
+\label{prop:relative-actions-em}
+The internal category \(\mathbb A\), regarded as a monad in
+\(\mathbf{Span}(\mathcal E)\), induces a monad
+\[
+T_{\mathbb A}:\mathcal E/A_0\to\mathcal E/A_0
+\]
+defined by
+\[
+T_{\mathbb A}(X\xrightarrow{p}A_0)
+=
+\left(
+A_1\times_{t_A,A_0,p}X
+\xrightarrow{s_A\pi_1}
+A_0
+\right).
+\]
+The category \(\mathbf{Act}(\mathbb A)\) is the Eilenberg--Moore category of
+\(T_{\mathbb A}\).
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify the endofunctor.}
+For an object \(p:X\to A_0\) of \(\mathcal E/A_0\), composing the span
+\[
+A_0\xleftarrow{s_A}A_1\xrightarrow{t_A}A_0
+\]
+with \(p\) gives the pullback
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}X
+\arrow[r,"\pi_X"]
+\arrow[d,"\pi_1"']
+&
+X
+\arrow[d,"p"]
+\\
+A_1
+\arrow[r,"t_A"']
+&
+A_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+,
+\]
+equipped with the structure map \(s_A\pi_1\) to \(A_0\).
+
+\item \textbf{Unpack an algebra.}
+A \(T_{\mathbb A}\)-algebra structure on \(p:X\to A_0\) is a map
+\[
+A_1\times_{t_A,A_0,p}X\to X
+\]
+over \(A_0\). This is precisely a map \(\rho\) satisfying
+\[
+p\rho=s_A\pi_1.
+\]
+
+\item \textbf{Compare the laws.}
+The unit of the monad is induced by \(e_A:A_0\to A_1\), and the multiplication
+is induced by \(m_A:A_1\times_{A_0}A_1\to A_1\). The Eilenberg--Moore unit
+and multiplication equations are exactly
+\[
+\rho(e_A(px),x)=x
+\]
+and
+\[
+\rho(b\circ a,x)=\rho(a,\rho(b,x)).
+\]
+
+\item \textbf{Compare the morphisms.}
+A morphism of Eilenberg--Moore algebras is a map over \(A_0\) commuting with
+the algebra structures. This is exactly an equivariant map.
+\end{enumerate}
+\end{proof}
+
+\subsection{Action categories}
+\label{subsec:relative-action-categories}
+
+Let
+\[
+X=(X\xrightarrow{p}A_0,\rho)
+\]
+be a right \(\mathbb A\)-action.
+
+\begin{definition}[Action category]
+\label{def:relative-action-category}
+The \textbf{action category} of \(X\), denoted
+\[
+\int_{\mathbb A}X,
+\]
+is the internal category with
+\[
+\left(\int_{\mathbb A}X\right)_0=X,
+\qquad
+\left(\int_{\mathbb A}X\right)_1
+=
+A_1\times_{t_A,A_0,p}X.
+\]
+The source and target maps are
+\[
+s(a,x)=x,
+\qquad
+t(a,x)=\rho(a,x).
+\]
+They form the span
+\[
+\begin{tikzcd}
+& A_1\times_{t_A,A_0,p}X
+\arrow[dl,"\pi_X"']
+\arrow[dr,"\rho"]
+&
+\\
+X && X
+\end{tikzcd}
+.
+\]
+The identity map is
+\[
+e(x)=(e_A(px),x).
+\]
+Composition is given by
+\[
+\bigl((b,x),(a,\rho(b,x))\bigr)
+\longmapsto
+(m_A(a,b),x).
+\]
+Equivalently, the composite of
+\[
+x\xrightarrow{\,b\,}\rho(b,x)
+\xrightarrow{\,a\,}\rho(a,\rho(b,x))
+\]
+is labelled by
+\[
+b\circ a=m_A(a,b).
+\]
+\end{definition}
+
+\begin{theorem}[Action categories]
+\label{thm:relative-action-category-internal}
+For every right \(\mathbb A\)-action \(X\), the data of
+Definition~\ref{def:relative-action-category} define an internal category
+\[
+\int_{\mathbb A}X.
+\]
+Equivalently, the span
+\[
+X
+\xleftarrow{\pi_X}
+A_1\times_{t_A,A_0,p}X
+\xrightarrow{\rho}
+X
+\]
+is a monoid object in
+\[
+\operatorname{EndSpan}_{\mathcal E}(X).
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check the target map.}
+The equation \(p\rho=s_A\pi_1\) says that the target of an action arrow is
+typed over the source of its input arrow. If
+\[
+a:u\to v,
+\qquad
+p(x)=v,
+\]
+then \(\rho(a,x)\) lies over \(u\).
+
+\item \textbf{Check identities.}
+The identity arrow at \(x\) is
+\[
+(e_A(px),x).
+\]
+It lies in the pullback because \(t_Ae_Ap=p\). The action unit law gives
+\[
+\rho(e_A(px),x)=x.
+\]
+
+\item \textbf{Describe composable pairs.}
+A composable pair in \(\int_{\mathbb A}X\) has the form
+\[
+\bigl((b,x),(a,\rho(b,x))\bigr)
+\]
+with
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w.
+\]
+The corresponding pullback diagram is
+\[
+\begin{tikzcd}
+\left(A_1\times_{A_0}X\right)
+\times_X
+\left(A_1\times_{A_0}X\right)
+\arrow[r]
+\arrow[d]
+&
+A_1\times_{A_0}X
+\arrow[d,"\pi_X"]
+\\
+A_1\times_{A_0}X
+\arrow[r,"\rho"']
+&
+X
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+
+\item \textbf{Check composition.}
+The composite
+\[
+(m_A(a,b),x)
+\]
+is defined because
+\[
+t_A(m_A(a,b))=t_A(b)=p(x).
+\]
+Its target is
+\[
+\rho(m_A(a,b),x)=\rho(a,\rho(b,x))
+\]
+by the action multiplication law.
+
+\item \textbf{Verify the laws.}
+The identity and associativity laws follow from the unit and associativity
+laws of \(\mathbb A\) together with the action laws.
+\end{enumerate}
+\end{proof}
+
+\subsection{Input-discrete functors}
+\label{subsec:relative-input-discrete-functors}
+
+The action category has a canonical internal functor
+\[
+\pi_X:\int_{\mathbb A}X\to\mathbb A^{\mathrm{op}}
+\]
+whose object part is
+\[
+p:X\to A_0
+\]
+and whose arrow part is the projection
+\[
+\pi_1:A_1\times_{t_A,A_0,p}X\to A_1.
+\]
+The source square of this functor is the defining pullback
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}X
+\arrow[r,"\pi_1"]
+\arrow[d,"\pi_X"']
+&
+A_1
+\arrow[d,"t_A"]
+\\
+X
+\arrow[r,"p"']
+&
+A_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+The use of \(t_A\) rather than \(s_A\) is because the codomain is
+\(\mathbb A^{\mathrm{op}}\).
+
+\begin{definition}[Input-discrete functor]
+\label{def:relative-input-discrete}
+Let
+\[
+J:\mathbb X\to\mathbb A^{\mathrm{op}}
+\]
+be an internal functor with object map
+\[
+J_0:X_0\to A_0.
+\]
+We say that \(J\) is \textbf{input-discrete} if the square
+\[
+\begin{tikzcd}
+X_1 \arrow[r,"J_1"] \arrow[d,"s_X"']
+&
+A_1 \arrow[d,"t_A"]
+\\
+X_0 \arrow[r,"J_0"']
+&
+A_0
+\end{tikzcd}
+\]
+is a pullback.
+\end{definition}
+
+\begin{theorem}[Actions as input-discrete functors]
+\label{thm:relative-actions-input-discrete}
+To give a right \(\mathbb A\)-action
+\[
+(X\xrightarrow{p}A_0,\rho)
+\]
+is equivalently to give an internal category \(\mathbb X\) with object of
+objects \(X\), together with an input-discrete internal functor
+\[
+J:\mathbb X\to\mathbb A^{\mathrm{op}}
+\]
+whose object map is \(p\).
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Construct the functor from an action.}
+Given a right action \(X\), take
+\[
+\mathbb X=\int_{\mathbb A}X.
+\]
+Its arrow object is
+\[
+A_1\times_{t_A,A_0,p}X,
+\]
+and the functor to \(\mathbb A^{\mathrm{op}}\) is given by the projections
+\[
+p:X\to A_0,
+\qquad
+\pi_1:A_1\times_{t_A,A_0,p}X\to A_1.
+\]
+The input-discrete square is the pullback defining the arrow object.
+
+\item \textbf{Recover an action from an input-discrete functor.}
+Conversely, suppose
+\[
+J:\mathbb X\to\mathbb A^{\mathrm{op}}
+\]
+is input-discrete with object map \(p:X\to A_0\). The pullback condition gives
+a canonical isomorphism
+\[
+X_1\cong A_1\times_{t_A,A_0,p}X.
+\]
+Transporting the target map of \(\mathbb X\) across this isomorphism gives
+\[
+\rho:A_1\times_{t_A,A_0,p}X\to X.
+\]
+
+\item \textbf{Check the typing.}
+The target compatibility of \(J\) gives
+\[
+p\rho=s_A\pi_1.
+\]
+This is the required action typing equation.
+
+\item \textbf{Check the laws.}
+Under the pullback identification, the identity map of \(\mathbb X\) is
+\[
+x\longmapsto(e_A(px),x)
+\]
+because \(J\) preserves identities. Hence the unit law for \(\rho\) follows
+from the identity law in \(\mathbb X\). Composition preservation by \(J\)
+forces the transported composition map to be
+\[
+\bigl((b,x),(a,\rho(b,x))\bigr)
+\longmapsto
+(m_A(a,b),x).
+\]
+Associativity in \(\mathbb X\) gives
+\[
+\rho(m_A(a,b),x)=\rho(a,\rho(b,x)).
+\]
+
+\item \textbf{Compare the two constructions.}
+The two assignments are inverse up to the canonical pullback isomorphism.
+\end{enumerate}
+\end{proof}
+
+\section{Downstream evaluation of output-comparison cells}
+\label{sec:relative-kleisli-evaluation}
+
+The construction in this section treats an output-comparison Kleisli cell as a
+context-dependent comparison which becomes an actual map only after a
+downstream action has been chosen.
+
+Fix internal categories
+\[
+\mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A),
+\qquad
+\mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B).
+\]
+Let
+\[
+\mathcal C_{A,B}:=\mathbf{Span}(\mathcal E)(A_0,B_0)
+\]
+be the local span category. The output-comparison monad is
+\[
+T_B:=B\circ -:\mathcal C_{A,B}\to\mathcal C_{A,B}.
+\]
+For a span
+\[
+P=\left(A_0\xleftarrow{p_P}P\xrightarrow{q_P}B_0\right),
+\]
+the object \(T_B(P)=B\circ P\) has apex
+\[
+P\times_{q_P,B_0,s_B}B_1
+\]
+and fits into
+\[
+\begin{tikzcd}
+P\times_{q_P,B_0,s_B}B_1
+\arrow[r,"\pi_{B_1}"]
+\arrow[d,"\pi_P"']
+&
+B_1
+\arrow[d,"s_B"]
+\\
+P
+\arrow[r,"q_P"']
+&
+B_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+
+Let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a right \(\mathbb B\)-action.
+
+\subsection{Evaluation on carriers}
+\label{subsec:relative-evaluation-carriers}
+
+\begin{definition}[Downstream evaluation on carriers]
+\label{def:relative-downstream-evaluation-carriers}
+For a span
+\[
+P=
+\left(
+A_0\xleftarrow{p_P}P\xrightarrow{q_P}B_0
+\right)
+\]
+define
+\[
+\operatorname{Ev}_Y(P)
+:=
+P\times_{q_P,B_0,r}Y
+\xrightarrow{p_P\pi_P}
+A_0.
+\]
+The underlying pullback is
+\[
+\begin{tikzcd}
+\operatorname{Ev}_Y(P)
+\arrow[r,"\pi_Y"]
+\arrow[d,"\pi_P"']
+&
+Y
+\arrow[d,"r"]
+\\
+P
+\arrow[r,"q_P"']
+&
+B_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\subsection{Evaluation of Kleisli comparisons}
+\label{subsec:relative-evaluation-kleisli-comparisons}
+
+\begin{definition}[Evaluation of a Kleisli comparison]
+\label{def:relative-kleisli-comparison-evaluation}
+Let
+\[
+\Gamma:Q\to T_B(P)=B\circ P
+\]
+be a Kleisli arrow in \(\mathrm{Kl}(T_B)\). In components, write
+\[
+\Gamma(u)=(\gamma u,\lambda_u),
+\]
+where
+\[
+\gamma:Q\to P,
+\qquad
+\lambda:Q\to B_1,
+\]
+and
+\[
+p_P\gamma=p_Q,
+\qquad
+s_B\lambda=q_P\gamma,
+\qquad
+t_B\lambda=q_Q.
+\]
+The component data are displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&& B_1
+  \arrow[dd,bend left=18,"s_B"]
+  \arrow[dd,bend right=18,"t_B"']
+&
+\\
+Q
+  \arrow[rru,"\lambda"]
+  \arrow[r,"\gamma"']
+  \arrow[drr,"q_Q"']
+  \arrow[ddrr,bend right=16,"p_Q"']
+&
+P
+  \arrow[dr,"q_P"]
+  \arrow[rdd,bend left=16,"p_P"]
+&&
+\\
+&& B_0 &
+\\
+&& A_0 &
+\end{tikzcd}
+.
+\]
+Define
+\[
+\operatorname{Ev}_Y(\Gamma):
+Q\times_{q_Q,B_0,r}Y
+\longrightarrow
+P\times_{q_P,B_0,r}Y
+\]
+by
+\[
+\operatorname{Ev}_Y(\Gamma)(u,z)
+=
+\bigl(\gamma u,\sigma(\lambda_u,z)\bigr).
+\]
+\end{definition}
+
+\begin{proposition}[Evaluation is functorial on output-comparison cells]
+\label{prop:relative-evaluation-functorial}
+For every right \(\mathbb B\)-action \(Y\), the construction
+\[
+P\longmapsto \operatorname{Ev}_Y(P),
+\qquad
+\Gamma\longmapsto \operatorname{Ev}_Y(\Gamma)
+\]
+defines a functor
+\[
+\operatorname{Ev}_Y:\mathrm{Kl}(T_B)\to \mathcal E/A_0.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check well-definedness.}
+If
+\[
+r(z)=q_Q(u)=t_B(\lambda_u),
+\]
+then \(\sigma(\lambda_u,z)\) is defined. Moreover
+\[
+r\sigma(\lambda_u,z)=s_B(\lambda_u)=q_P(\gamma u),
+\]
+so
+\[
+(\gamma u,\sigma(\lambda_u,z))
+\]
+lies in \(P\times_{B_0}Y\). It lies over \(A_0\) because
+\[
+p_P\gamma=p_Q.
+\]
+
+\item \textbf{Check identities.}
+The Kleisli identity on \(P\) is
+\[
+x\longmapsto (x,e_B(q_Px)).
+\]
+Evaluating gives
+\[
+(x,z)\longmapsto
+(x,\sigma(e_B(q_Px),z))
+=
+(x,z)
+\]
+by the unit law of the action \(Y\).
+
+\item \textbf{Compute Kleisli composition.}
+Let
+\[
+R\xrightarrow{\Delta}T_B(Q),
+\qquad
+Q\xrightarrow{\Gamma}T_B(P)
+\]
+be Kleisli arrows, with
+\[
+\Delta(w)=(\eta w,\mu_w),
+\qquad
+\Gamma(q)=(\gamma q,\lambda_q).
+\]
+The Kleisli composite has component
+\[
+w\longmapsto
+\bigl(\gamma\eta w,\;m_B(\lambda_{\eta w},\mu_w)\bigr).
+\]
+In arrow notation this is the composite
+\[
+q_P(\gamma\eta w)
+\xrightarrow{\lambda_{\eta w}}
+q_Q(\eta w)
+\xrightarrow{\mu_w}
+q_R(w).
+\]
+
+\item \textbf{Evaluate the composite.}
+Evaluation at \((w,z)\) gives
+\[
+\bigl(\gamma\eta w,
+\sigma(m_B(\lambda_{\eta w},\mu_w),z)\bigr).
+\]
+By the right-action multiplication law, this equals
+\[
+\bigl(\gamma\eta w,
+\sigma(\lambda_{\eta w},\sigma(\mu_w,z))\bigr),
+\]
+which is
+\[
+\operatorname{Ev}_Y(\Gamma)
+\bigl(
+\operatorname{Ev}_Y(\Delta)(w,z)
+\bigr).
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Restriction of downstream actions along Mealy morphisms}
+\label{sec:relative-evaluation-mealy-morphisms}
+
+Let
+\[
+\Phi=(P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism. Thus \(P\) is a span
+\[
+\begin{tikzcd}
+& P \arrow[dl,"p_P"'] \arrow[dr,"q_P"] & \\
+A_0 && B_0
+\end{tikzcd}
+,
+\]
+and
+\[
+\delta_P:A_1\times_{t_A,A_0,p_P}P\to P,
+\qquad
+\omega_P:A_1\times_{t_A,A_0,p_P}P\to B_1
+\]
+satisfy
+\[
+p_P\delta_P=s_A\pi_1,
+\qquad
+s_B\omega_P=q_P\delta_P,
+\qquad
+t_B\omega_P=q_P\pi_P,
+\]
+together with the Mealy unit and multiplication laws.
+
+Let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a right \(\mathbb B\)-action.
+
+\subsection{The restricted action}
+\label{subsec:relative-restricted-action}
+
+\begin{definition}[Restricted downstream action]
+\label{def:relative-restricted-action}
+The \textbf{restriction of \(Y\) along \(\Phi\)} is the right
+\(\mathbb A\)-action
+\[
+\Phi^\ast Y
+\]
+whose underlying object over \(A_0\) is
+\[
+S_{\Phi,Y}:=
+P\times_{q_P,B_0,r}Y
+\xrightarrow{p_P\pi_P}
+A_0,
+\]
+and whose action map is
+\[
+A_1\times_{t_A,A_0,p_P\pi_P}S_{\Phi,Y}
+\to S_{\Phi,Y}
+\]
+given by
+\[
+a\cdot(x,y)
+=
+\bigl(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\bigr).
+\]
+The action square has the form
+\[
+\begin{tikzcd}
+A_1\times_{A_0}S_{\Phi,Y}
+\arrow[rr,"{(a,x,y)\mapsto(\delta_P(a,x),\sigma(\omega_P(a,x),y))}"]
+\arrow[dr,"s_A\pi_1"']
+&&
+S_{\Phi,Y}
+\arrow[dl,"p_P\pi_P"]
+\\
+& A_0 &
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\begin{theorem}[Mealy restriction of downstream actions]
+\label{thm:relative-mealy-restriction-actions}
+For every Mealy morphism
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+and every right \(\mathbb B\)-action \(Y\), the object
+\(\Phi^\ast Y\) of Definition~\ref{def:relative-restricted-action} is a right
+\(\mathbb A\)-action.
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check that the formula lands in the pullback.}
+If
+\[
+t_B\omega_P(a,x)=q_P(x)=r(y),
+\]
+then \(\sigma(\omega_P(a,x),y)\) is defined. Moreover
+\[
+r\sigma(\omega_P(a,x),y)
+=
+s_B\omega_P(a,x)
+=
+q_P\delta_P(a,x),
+\]
+so the displayed pair lies in
+\[
+P\times_{B_0}Y.
+\]
+
+\item \textbf{Check the projection to \(A_0\).}
+The projection of the result to \(A_0\) is
+\[
+p_P\delta_P(a,x)=s_A(a).
+\]
+Thus the action has the required target-to-source typing.
+
+\item \textbf{Check the unit law.}
+Using the Mealy unit laws and the unit law of \(Y\),
+\[
+e_A(p_Px)\cdot(x,y)
+=
+\bigl(
+\delta_P(e_A(p_Px),x),
+\sigma(\omega_P(e_A(p_Px),x),y)
+\bigr)
+=
+(x,y).
+\]
+
+\item \textbf{Check the multiplication law.}
+Let
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p_P(x)=w.
+\]
+Then
+\[
+(b\circ a)\cdot(x,y)
+=
+\bigl(
+\delta_P(b\circ a,x),
+\sigma(\omega_P(b\circ a,x),y)
+\bigr).
+\]
+The Mealy multiplication laws give
+\[
+\delta_P(b\circ a,x)
+=
+\delta_P(a,\delta_P(b,x))
+\]
+and
+\[
+\omega_P(b\circ a,x)
+=
+\omega_P(b,x)\circ\omega_P(a,\delta_P(b,x)).
+\]
+Equivalently,
+\[
+\omega_P(b\circ a,x)
+=
+m_B\bigl(
+\omega_P(a,\delta_P(b,x)),
+\omega_P(b,x)
+\bigr).
+\]
+The right-action multiplication law for \(Y\) gives
+\[
+(b\circ a)\cdot(x,y)
+=
+a\cdot\bigl(b\cdot(x,y)\bigr).
+\]
+\end{enumerate}
+\end{proof}
+
+\subsection{Functoriality in the downstream action}
+\label{subsec:relative-functoriality-downstream-action}
+
+\begin{proposition}[Functoriality in the downstream action]
+\label{prop:relative-functoriality-downstream-action}
+For fixed \(\Phi:\mathbb A\rightsquigarrow\mathbb B\), the assignment
+\[
+Y\longmapsto \Phi^\ast Y
+\]
+extends to a functor
+\[
+\Phi^\ast:\mathbf{Act}(\mathbb B)\to\mathbf{Act}(\mathbb A).
+\]
+If
+\[
+f:Y\to Z
+\]
+is a \(\mathbb B\)-equivariant map, then
+\[
+\Phi^\ast f:S_{\Phi,Y}\to S_{\Phi,Z}
+\]
+is given by
+\[
+(x,y)\longmapsto(x,f(y)).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check well-definedness.}
+The square
+\[
+\begin{tikzcd}
+S_{\Phi,Y}
+\arrow[r,"1_P\times f"]
+\arrow[d]
+&
+S_{\Phi,Z}
+\arrow[d]
+\\
+P
+\arrow[r,"1_P"']
+&
+P
+\end{tikzcd}
+\]
+is induced by the pullback defining \(S_{\Phi,Y}\), because \(f\) lies over
+\(B_0\).
+
+\item \textbf{Check the map over \(A_0\).}
+The \(P\)-component is unchanged, so the map lies over \(A_0\).
+
+\item \textbf{Check equivariance.}
+For an admissible input arrow \(a\),
+\[
+f(\sigma_Y(\omega_P(a,x),y))
+=
+\sigma_Z(\omega_P(a,x),f(y))
+\]
+by equivariance of \(f\) as a map of right \(\mathbb B\)-actions.
+
+\item \textbf{Check identity and composition.}
+Both follow from the corresponding equations for maps in \(\mathcal E\).
+\end{enumerate}
+\end{proof}
+
+\section{Evaluation of Mealy simulations}
+\label{sec:relative-evaluation-mealy-simulations}
+
+Let
+\[
+\Phi=(P,\delta_P,\omega_P),
+\qquad
+\Psi=(Q,\delta_Q,\omega_Q)
+:
+\mathbb A\rightsquigarrow\mathbb B
+\]
+be Mealy morphisms.
+
+\subsection{Component form}
+\label{subsec:relative-simulation-component-form}
+
+\begin{definition}[Mealy simulation, component form]
+\label{def:relative-mealy-simulation-component}
+A \textbf{Mealy simulation}
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+is a Kleisli output-comparison cell
+\[
+Q\to B\circ P.
+\]
+In components, write
+\[
+\Theta(y)=(\theta y,\alpha_y),
+\]
+where
+\[
+\theta:Q\to P,
+\qquad
+\alpha:Q\to B_1,
+\]
+and
+\[
+p_P\theta=p_Q,
+\qquad
+s_B\alpha=q_P\theta,
+\qquad
+t_B\alpha=q_Q.
+\]
+The typing data are summarized by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&& B_1
+  \arrow[dd,bend left=18,"s_B"]
+  \arrow[dd,bend right=18,"t_B"']
+&
+\\
+Q
+  \arrow[rru,"\alpha"]
+  \arrow[r,"\theta"']
+  \arrow[drr,"q_Q"']
+  \arrow[ddrr,bend right=16,"p_Q"']
+&
+P
+  \arrow[dr,"q_P"]
+  \arrow[rdd,bend left=16,"p_P"]
+&&
+\\
+&& B_0 &
+\\
+&& A_0 &
+\end{tikzcd}
+.
+\]
+The simulation equations are
+\[
+\theta(\delta_Q(a,y))
+=
+\delta_P(a,\theta y),
+\]
+and
+\[
+\alpha_y\circ \omega_P(a,\theta y)
+=
+\omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}.
+\]
+Equivalently,
+\[
+m_B\bigl(\omega_P(a,\theta y),\alpha_y\bigr)
+=
+m_B\bigl(\alpha_{\delta_Q(a,y)},\omega_Q(a,y)\bigr).
+\]
+\end{definition}
+
+\subsection{Evaluated simulations}
+\label{subsec:relative-evaluated-simulations}
+
+\begin{definition}[Evaluated simulation map]
+\label{def:relative-evaluated-simulation-map}
+Let \(Y\) be a right \(\mathbb B\)-action. The \textbf{evaluation} of
+\(\Theta\) at \(Y\) is the map
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y}
+\]
+given by
+\[
+h_{\Theta,Y}(y,z)
+=
+\bigl(\theta y,\sigma(\alpha_y,z)\bigr).
+\]
+It is induced by the diagram
+\[
+\begin{tikzcd}
+S_{\Psi,Y}
+\arrow[r,"h_{\Theta,Y}"]
+\arrow[d]
+&
+S_{\Phi,Y}
+\arrow[d]
+\\
+Q
+\arrow[r,"\theta"']
+&
+P
+\end{tikzcd}
+\]
+together with the action of \(\alpha_y\) on the \(Y\)-coordinate.
+\end{definition}
+
+\begin{theorem}[Simulations evaluate to equivariant maps]
+\label{thm:relative-simulations-evaluate-equivariantly}
+For every Mealy simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+and every right \(\mathbb B\)-action \(Y\), the map
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y}
+\]
+is an \(\mathbb A\)-equivariant map
+\[
+\Psi^\ast Y\to \Phi^\ast Y.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check well-definedness.}
+Since
+\[
+r\sigma(\alpha_y,z)=s_B\alpha_y=q_P(\theta y),
+\]
+the pair
+\[
+(\theta y,\sigma(\alpha_y,z))
+\]
+lies in \(S_{\Phi,Y}\).
+
+\item \textbf{Check the map over \(A_0\).}
+The equation
+\[
+p_P\theta=p_Q
+\]
+gives
+\[
+p_P(\theta y)=p_Q(y).
+\]
+
+\item \textbf{Compute the left-hand equivariance composite.}
+Let
+\[
+a:u\to v,
+\qquad
+p_Q(y)=v,
+\qquad
+r(z)=q_Q(y).
+\]
+Then
+\[
+h_{\Theta,Y}\bigl(a\cdot_\Psi(y,z)\bigr)
+=
+h_{\Theta,Y}
+\bigl(
+\delta_Q(a,y),
+\sigma(\omega_Q(a,y),z)
+\bigr),
+\]
+which is
+\[
+\bigl(
+\theta\delta_Q(a,y),
+\sigma(\alpha_{\delta_Q(a,y)},\sigma(\omega_Q(a,y),z))
+\bigr).
+\]
+Using the action multiplication law for \(Y\), the second component is
+\[
+\sigma\bigl(
+\omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)},
+z
+\bigr).
+\]
+
+\item \textbf{Use the simulation law.}
+The simulation law gives
+\[
+\omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}
+=
+\alpha_y\circ \omega_P(a,\theta y).
+\]
+Thus the second component becomes
+\[
+\sigma\bigl(
+\alpha_y\circ \omega_P(a,\theta y),
+z
+\bigr).
+\]
+Using the action multiplication law again, this is
+\[
+\sigma(\omega_P(a,\theta y),\sigma(\alpha_y,z)).
+\]
+
+\item \textbf{Compare with the right-hand equivariance composite.}
+The state equation
+\[
+\theta\delta_Q(a,y)=\delta_P(a,\theta y)
+\]
+gives
+\[
+h_{\Theta,Y}\bigl(a\cdot_\Psi(y,z)\bigr)
+=
+a\cdot_\Phi h_{\Theta,Y}(y,z).
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Contravariance in simulations]
+\label{cor:relative-contravariance-actions}
+For fixed \(Y\in\mathbf{Act}(\mathbb B)\), the assignment
+\[
+\Phi\longmapsto\Phi^\ast Y
+\]
+is contravariant in Mealy simulations:
+\[
+\Theta:\Phi\Rightarrow\Psi
+\quad\longmapsto\quad
+h_{\Theta,Y}:\Psi^\ast Y\to\Phi^\ast Y.
+\]
+Thus it defines a functor
+\[
+\mathbf{Mly}(\mathcal E)(\mathbb A,\mathbb B)^{\mathrm{op}}
+\longrightarrow
+\mathbf{Act}(\mathbb A).
+\]
+Here \(\mathbf{Mly}(\mathcal E)(\mathbb A,\mathbb B)\) is the hom-category
+with the displayed simulation direction of
+Chapter~\ref{ch:spans-internal-categories-mealy}.
+\end{corollary}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check identities.}
+The identity simulation uses the identity output arrows of \(\mathbb B\).
+Evaluation sends these identity output arrows to identity transitions in \(Y\).
+
+\item \textbf{Check composition.}
+Composition of simulations is Kleisli composition. By
+Proposition~\ref{prop:relative-evaluation-functorial}, downstream evaluation
+preserves Kleisli composition.
+
+\item \textbf{Check the direction.}
+A simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+is represented by a Kleisli cell from the carrier of \(\Psi\) to the
+output-comparison object of the carrier of \(\Phi\). Hence evaluation produces
+a map
+\[
+\Psi^\ast Y\to\Phi^\ast Y.
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Relative Mealy program categories}
+\label{sec:relative-program-categories}
+
+Fix a Mealy morphism
+\[
+\Phi=(P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+\]
+and a right \(\mathbb B\)-action
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma).
+\]
+
+\subsection{State and primitive execution objects}
+\label{subsec:relative-state-primitive-objects}
+
+\begin{definition}[Relative state and primitive execution objects]
+\label{def:relative-state-and-primitive}
+The \textbf{relative state object} is
+\[
+S_{\Phi,Y}:=P\times_{q_P,B_0,r}Y.
+\]
+A generalized element is written
+\[
+(x,y),
+\qquad
+q_P(x)=r(y).
+\]
+The \textbf{relative primitive execution object} is
+\[
+M_{\Phi,Y}
+:=
+A_1\times_{t_A,A_0,p_P\pi_P}S_{\Phi,Y}.
+\]
+It is defined by the pullback
+\[
+\begin{tikzcd}
+M_{\Phi,Y}
+\arrow[r,"\pi_S"]
+\arrow[d,"\pi_A"']
+&
+S_{\Phi,Y}
+\arrow[d,"p_P\pi_P"]
+\\
+A_1
+\arrow[r,"t_A"']
+&
+A_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+A generalized element is written
+\[
+(a,x,y),
+\qquad
+t_A(a)=p_P(x),
+\qquad
+q_P(x)=r(y).
+\]
+\end{definition}
+
+\subsection{The program category}
+\label{subsec:relative-program-category-definition}
+
+\begin{definition}[Relative Mealy program category]
+\label{def:relative-mealy-program-category}
+The \textbf{relative Mealy program category} of \(\Phi\) at \(Y\) is
+\[
+\mathsf{Prog}_{\Phi,Y}
+:=
+\int_{\mathbb A}\Phi^\ast Y.
+\]
+Explicitly,
+\[
+(\mathsf{Prog}_{\Phi,Y})_0=S_{\Phi,Y},
+\qquad
+(\mathsf{Prog}_{\Phi,Y})_1=M_{\Phi,Y}.
+\]
+The source and target maps are
+\[
+s_{\Phi,Y}(a,x,y)=(x,y),
+\]
+and
+\[
+t_{\Phi,Y}(a,x,y)
+=
+\bigl(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\bigr).
+\]
+They form the primitive execution span
+\[
+\mathbf m_{\Phi,Y}
+=
+\left(
+S_{\Phi,Y}
+\xleftarrow{s_{\Phi,Y}}
+M_{\Phi,Y}
+\xrightarrow{t_{\Phi,Y}}
+S_{\Phi,Y}
+\right).
+\]
+The identity is
+\[
+e_{\Phi,Y}(x,y)=(e_A(p_Px),x,y).
+\]
+Composition is
+\[
+\bigl(
+(b,x,y),
+(a,\delta_P(b,x),\sigma(\omega_P(b,x),y))
+\bigr)
+\longmapsto
+(m_A(a,b),x,y).
+\]
+\end{definition}
+
+\begin{theorem}[Relative program categories]
+\label{thm:relative-program-categories}
+For every Mealy morphism
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+and every right \(\mathbb B\)-action \(Y\), the data of
+Definition~\ref{def:relative-mealy-program-category} define an internal
+category
+\[
+\mathsf{Prog}_{\Phi,Y}.
+\]
+Equivalently, the span
+\[
+\mathbf m_{\Phi,Y}
+=
+\left(
+S_{\Phi,Y}
+\xleftarrow{s_{\Phi,Y}}
+M_{\Phi,Y}
+\xrightarrow{t_{\Phi,Y}}
+S_{\Phi,Y}
+\right)
+\]
+is a monoid object in
+\[
+\operatorname{EndSpan}_{\mathcal E}(S_{\Phi,Y}).
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Use the restricted action.}
+By Theorem~\ref{thm:relative-mealy-restriction-actions},
+\(\Phi^\ast Y\) is a right \(\mathbb A\)-action.
+
+\item \textbf{Apply the action-category construction.}
+Theorem~\ref{thm:relative-action-category-internal} applied to this action
+gives the internal category
+\[
+\int_{\mathbb A}\Phi^\ast Y.
+\]
+
+\item \textbf{Identify the displayed formulas.}
+The source, target, identity, and composition maps in
+Definition~\ref{def:relative-mealy-program-category} are precisely the
+specialized action-category maps.
+\end{enumerate}
+\end{proof}
+
+\subsection{Program functors induced by simulations}
+\label{subsec:relative-program-functors-simulations}
+
+\begin{definition}[Program functor induced by a simulation]
+\label{def:relative-program-functor-simulation}
+Let
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation with components
+\[
+\theta:Q\to P,
+\qquad
+\alpha:Q\to B_1.
+\]
+For every right \(\mathbb B\)-action \(Y\), define
+\[
+H_{\Theta,Y}:
+\mathsf{Prog}_{\Psi,Y}
+\to
+\mathsf{Prog}_{\Phi,Y}
+\]
+on objects by
+\[
+H_{\Theta,Y}(y,z)
+=
+\bigl(\theta y,\sigma(\alpha_y,z)\bigr),
+\]
+and on arrows by
+\[
+H_{\Theta,Y}(a,y,z)
+=
+\bigl(a,\theta y,\sigma(\alpha_y,z)\bigr).
+\]
+The arrow part is induced by the pullback square
+\[
+\begin{tikzcd}
+M_{\Psi,Y}
+\arrow[r,"k_{\Theta,Y}"]
+\arrow[d,"\pi_S"']
+&
+M_{\Phi,Y}
+\arrow[d,"\pi_S"]
+\\
+S_{\Psi,Y}
+\arrow[r,"h_{\Theta,Y}"']
+&
+S_{\Phi,Y}
+\end{tikzcd}
+\]
+because both primitive execution objects are pulled back from \(A_1\).
+\end{definition}
+
+\begin{theorem}[Simulations induce contravariant program functors]
+\label{thm:relative-simulations-program-functors}
+The maps in Definition~\ref{def:relative-program-functor-simulation} define an
+internal functor
+\[
+H_{\Theta,Y}:
+\mathsf{Prog}_{\Psi,Y}
+\to
+\mathsf{Prog}_{\Phi,Y}.
+\]
+Consequently, for fixed \(Y\), the assignment
+\[
+\Phi\longmapsto\mathsf{Prog}_{\Phi,Y}
+\]
+extends to a functor
+\[
+\mathbf{Mly}(\mathcal E)(\mathbb A,\mathbb B)^{\mathrm{op}}
+\longrightarrow
+\mathbf{Cat}_{\mathrm{int}}(\mathcal E)/\mathbb A^{\mathrm{op}}.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify the object map.}
+The object map is
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y}.
+\]
+
+\item \textbf{Identify the arrow map.}
+The arrow map is the induced map on the pullbacks defining primitive execution
+objects:
+\[
+(a,y,z)\longmapsto
+(a,\theta y,\sigma(\alpha_y,z)).
+\]
+
+\item \textbf{Check source and target preservation.}
+Source preservation is immediate. Target preservation is exactly the
+equivariance of \(h_{\Theta,Y}\), proved in
+Theorem~\ref{thm:relative-simulations-evaluate-equivariantly}.
+
+\item \textbf{Check identities and composition.}
+These follow from functoriality of action categories with respect to
+equivariant maps.
+
+\item \textbf{Check the slice condition.}
+The functor lands over \(\mathbb A^{\mathrm{op}}\) because the arrow map leaves
+the \(A_1\)-component unchanged and the object map lies over \(A_0\).
+\end{enumerate}
+\end{proof}
+
+\section{Input and downstream comparison functors}
+\label{sec:relative-input-downstream-comparison}
+
+Let
+\[
+\Phi=(P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism, and let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a right \(\mathbb B\)-action.
+
+\subsection{Input projection}
+\label{subsec:relative-input-projection}
+
+\begin{definition}[Input projection]
+\label{def:relative-input-projection}
+The \textbf{input projection}
+\[
+I_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\mathbb A^{\mathrm{op}}
+\]
+is defined on objects by
+\[
+I_{\Phi,Y}(x,y)=p_P(x),
+\]
+and on arrows by
+\[
+I_{\Phi,Y}(a,x,y)=a.
+\]
+It is displayed by
+\[
+\begin{tikzcd}
+M_{\Phi,Y}
+\arrow[r,"\pi_A"]
+\arrow[d,"s_{\Phi,Y}"']
+&
+A_1
+\arrow[d,"t_A"]
+\\
+S_{\Phi,Y}
+\arrow[r,"p_P\pi_P"']
+&
+A_0
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\subsection{Downstream comparison}
+\label{subsec:relative-downstream-comparison}
+
+\begin{definition}[Downstream comparison functor]
+\label{def:relative-downstream-comparison}
+The \textbf{downstream comparison functor}
+\[
+\Lambda_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\int_{\mathbb B}Y
+\]
+is defined on objects by
+\[
+\Lambda_{\Phi,Y}(x,y)=y,
+\]
+and on arrows by
+\[
+\Lambda_{\Phi,Y}(a,x,y)
+=
+(\omega_P(a,x),y).
+\]
+The arrow map is typed by the pullback
+\[
+\begin{tikzcd}
+M_{\Phi,Y}
+\arrow[rr,"{(a,x,y)\mapsto(\omega_P(a,x),y)}"]
+\arrow[dr,"\pi_Y\pi_S"']
+&&
+B_1\times_{t_B,B_0,r}Y
+\arrow[dl,"\pi_Y"]
+\\
+& Y &
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\begin{theorem}[Input and downstream functors]
+\label{thm:relative-input-downstream-functors}
+The input projection
+\[
+I_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\mathbb A^{\mathrm{op}}
+\]
+is input-discrete. The downstream comparison
+\[
+\Lambda_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\int_{\mathbb B}Y
+\]
+is an internal functor.
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check input-discreteness.}
+The input projection is the canonical projection associated to the right
+\(\mathbb A\)-action \(\Phi^\ast Y\). Hence it is input-discrete by
+Theorem~\ref{thm:relative-actions-input-discrete}.
+
+\item \textbf{Check that the input projection is a functor.}
+The source square is the defining pullback. The target square commutes because
+\[
+p_P\delta_P(a,x)=s_A(a),
+\]
+which is the target equation for a functor into \(\mathbb A^{\mathrm{op}}\).
+Identity and composition preservation follow from the identity and
+multiplication laws of \(\mathbb A\).
+
+\item \textbf{Check the downstream arrow map.}
+The arrow map of \(\Lambda_{\Phi,Y}\) is well-defined because
+\[
+t_B\omega_P(a,x)=q_P(x)=r(y).
+\]
+
+\item \textbf{Check source and target preservation.}
+In \(\int_{\mathbb B}Y\),
+\[
+s(\omega_P(a,x),y)=y,
+\]
+and
+\[
+t(\omega_P(a,x),y)=\sigma(\omega_P(a,x),y).
+\]
+These are the source and the \(Y\)-component of the target in
+\(\mathsf{Prog}_{\Phi,Y}\).
+
+\item \textbf{Check identities and composition.}
+Identity preservation follows from the Mealy unit law for \(\omega_P\). For
+composition, let
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p_P(x)=w.
+\]
+The composite of the two downstream arrows has \(B\)-label
+\[
+m_B\bigl(\omega_P(a,\delta_P(b,x)),\omega_P(b,x)\bigr)
+=
+\omega_P(b,x)\circ \omega_P(a,\delta_P(b,x)).
+\]
+By the Mealy multiplication law, this equals
+\[
+\omega_P(b\circ a,x).
+\]
+Thus \(\Lambda_{\Phi,Y}\) preserves composition.
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Combined labelling]
+\label{cor:relative-combined-labelling}
+Since \(\mathcal E\) has finite limits, the product internal category
+\[
+\mathbb A^{\mathrm{op}}\times\int_{\mathbb B}Y
+\]
+exists. Hence \(I_{\Phi,Y}\) and \(\Lambda_{\Phi,Y}\) assemble into an internal
+functor
+\[
+L_{\Phi,Y}:
+\mathsf{Prog}_{\Phi,Y}
+\to
+\mathbb A^{\mathrm{op}}\times\int_{\mathbb B}Y.
+\]
+On objects,
+\[
+L_{\Phi,Y}(x,y)=(p_Px,y),
+\]
+and on arrows,
+\[
+L_{\Phi,Y}(a,x,y)=\bigl(a,(\omega_P(a,x),y)\bigr).
+\]
+\end{corollary}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Use the product universal property.}
+The functors \(I_{\Phi,Y}\) and \(\Lambda_{\Phi,Y}\) have common domain
+\(\mathsf{Prog}_{\Phi,Y}\). The product internal category therefore supplies
+a unique induced functor.
+
+\item \textbf{Identify the components.}
+The displayed object and arrow maps are the two projections of this induced
+functor.
+\end{enumerate}
+\end{proof}
+
+\section{Output-comparison transformations after evaluation}
+\label{sec:relative-output-comparison-transformations}
+
+Let
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation with components
+\[
+\theta:Q\to P,
+\qquad
+\alpha:Q\to B_1.
+\]
+Let \(Y\) be a right \(\mathbb B\)-action.
+
+The induced functor
+\[
+H_{\Theta,Y}:
+\mathsf{Prog}_{\Psi,Y}\to\mathsf{Prog}_{\Phi,Y}
+\]
+strictly preserves input labels:
+\[
+I_{\Phi,Y}H_{\Theta,Y}=I_{\Psi,Y}.
+\]
+The output-comparison component \(\alpha\) becomes a natural transformation in
+the downstream action category.
+
+\subsection{The evaluated downstream transformation}
+\label{subsec:relative-downstream-transformation}
+
+\begin{definition}[Evaluated downstream comparison transformation]
+\label{def:relative-downstream-comparison-transformation}
+Define
+\[
+\lambda_{\Theta,Y}:
+\Lambda_{\Psi,Y}
+\Rightarrow
+\Lambda_{\Phi,Y}H_{\Theta,Y}
+\]
+by assigning to a state
+\[
+(y,z)\in S_{\Psi,Y}
+\]
+the arrow
+\[
+(\alpha_y,z)
+:
+z\to \sigma(\alpha_y,z)
+\]
+of the action category \(\int_{\mathbb B}Y\).
+The component lies in
+\[
+B_1\times_{t_B,B_0,r}Y
+\]
+because
+\[
+t_B\alpha_y=q_Q(y)=r(z).
+\]
+Its source and target are
+\[
+\pi_Y(\alpha_y,z)=z,
+\qquad
+\sigma(\alpha_y,z).
+\]
+The relevant typing equations for the action-arrow object are
+\[
+r\pi_Y=t_B\pi_{B_1},
+\qquad
+r\sigma=s_B\pi_{B_1}.
+\]
+Equivalently, the component is represented by the diagram
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+B_1\times_{t_B,B_0,r}Y
+\arrow[dl,"\pi_Y"']
+\arrow[dr,"\sigma"]
+\arrow[d,"\pi_{B_1}" description]
+&
+\\
+Y
+\arrow[dr,"r"']
+&
+B_1
+\arrow[d,"{(t_B,s_B)}" description]
+&
+Y
+\arrow[dl,"r"]
+\\
+&
+B_0\times B_0
+&
+\end{tikzcd}
+.
+\]
+Thus \((\alpha_y,z)\) is viewed as a right-action arrow from the object over
+\(q_Q(y)\) to the object over \(q_P(\theta y)\).
+\end{definition}
+
+\begin{theorem}[Naturality of the evaluated output comparison]
+\label{thm:relative-output-comparison-natural}
+The family
+\[
+\lambda_{\Theta,Y}
+\]
+of Definition~\ref{def:relative-downstream-comparison-transformation} is an
+internal natural transformation
+\[
+\Lambda_{\Psi,Y}
+\Rightarrow
+\Lambda_{\Phi,Y}H_{\Theta,Y}.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check the components.}
+The component at \((y,z)\) is well-defined because
+\[
+t_B\alpha_y=q_Q(y)=r(z).
+\]
+Its source is \(z\), and its target is
+\[
+\sigma(\alpha_y,z),
+\]
+which is the object part of
+\[
+\Lambda_{\Phi,Y}H_{\Theta,Y}(y,z).
+\]
+
+\item \textbf{Write the naturality square.}
+Let
+\[
+(a,y,z):(y,z)\to
+\bigl(\delta_Q(a,y),\sigma(\omega_Q(a,y),z)\bigr)
+\]
+be a primitive arrow of \(\mathsf{Prog}_{\Psi,Y}\). Naturality in
+\(\int_{\mathbb B}Y\) asks for the commutativity of
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+z
+  \arrow[r,"{(\omega_Q(a,y),z)}"]
+  \arrow[d,"{(\alpha_y,z)}"']
+&
+\sigma(\omega_Q(a,y),z)
+  \arrow[d,"{(\alpha_{\delta_Q(a,y)},\,\sigma(\omega_Q(a,y),z))}"]
+\\
+\sigma(\alpha_y,z)
+  \arrow[r,"{(\omega_P(a,\theta y),\,\sigma(\alpha_y,z))}"']
+&
+\sigma(c_{\Theta,a,y},z)
+\end{tikzcd}
+\]
+where
+\[
+c_{\Theta,a,y}
+:=
+\omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}
+=
+\alpha_y\circ \omega_P(a,\theta y).
+\]
+
+\item \textbf{Make the composition order explicit.}
+With the convention
+\[
+m_B(\beta,\gamma)=\gamma\circ\beta,
+\]
+the top-right composite corresponds to
+\[
+m_B\bigl(\alpha_{\delta_Q(a,y)},\omega_Q(a,y)\bigr)
+=
+\omega_Q(a,y)\circ\alpha_{\delta_Q(a,y)}.
+\]
+The left-bottom composite corresponds to
+\[
+m_B\bigl(\omega_P(a,\theta y),\alpha_y\bigr)
+=
+\alpha_y\circ\omega_P(a,\theta y).
+\]
+
+\item \textbf{Use the simulation law.}
+The equality of these two composites is exactly the output equation in the
+Mealy simulation law:
+\[
+\alpha_y\circ \omega_P(a,\theta y)
+=
+\omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}.
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Relative labelled functor induced by a simulation]
+\label{cor:relative-labelled-functor-simulation}
+Every Mealy simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+and every right \(\mathbb B\)-action \(Y\) induce an input-strict,
+downstream-lax labelled functor
+\[
+H_{\Theta,Y}:
+(\mathsf{Prog}_{\Psi,Y},I_{\Psi,Y},\Lambda_{\Psi,Y})
+\longrightarrow
+(\mathsf{Prog}_{\Phi,Y},I_{\Phi,Y},\Lambda_{\Phi,Y})
+\]
+consisting of
+\[
+I_{\Phi,Y}H_{\Theta,Y}=I_{\Psi,Y}
+\]
+and a canonical natural transformation
+\[
+\lambda_{\Theta,Y}:
+\Lambda_{\Psi,Y}
+\Rightarrow
+\Lambda_{\Phi,Y}H_{\Theta,Y}.
+\]
+\end{corollary}
+
+\section{Predicate transformers for spans}
+\label{sec:relative-predicate-transformers}
+
+We now pass from the operational layer to the logical layer. The notation is
+chosen to match the non-iterative dynamic-logic reading of programs as
+predicate transformers: diamonds express existence of a successful execution,
+boxes express universal correctness over all executions, tests restrict
+execution to states satisfying a predicate, and finite choice denotes
+nondeterministic branching \cite{HarelKozenTiurynDynamicLogic}. The
+categorical implementation uses subobjects as predicates, regular images as
+existential quantification, and right adjoints to pullback as universal
+quantification \cite{Jacobs1999CategoricalLogic}. In the regular fragment,
+this agrees with the usual relational reading of programs, where relations can
+be represented categorically by suitable spans
+\cite{FongSpivakRegularRelational}.
+
+\subsection{Regular images and existential quantification}
+\label{subsec:relative-regular-images}
+
+\begin{definition}[Regular category]
+\label{def:relative-regular-category}
+A category \(\mathcal E\) is \textbf{regular} if it has finite limits, every
+morphism factors as a regular epimorphism followed by a monomorphism, and
+regular epimorphisms are stable under pullback.
+\end{definition}
+
+For the rest of this section, assume \(\mathcal E\) is regular. For an object
+\(X\), write
+\[
+\mathrm{Sub}(X)
+\]
+for the poset of subobjects of \(X\). For a morphism \(f:X\to Y\), write
+\[
+f^\ast:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+for pullback.
+
+\begin{definition}[Existential image]
+\label{def:relative-existential-image}
+For a morphism
+\[
+f:X\to Y,
+\]
+define
+\[
+\exists_f:\mathrm{Sub}(X)\to\mathrm{Sub}(Y)
+\]
+by sending a subobject \(U\hookrightarrow X\) to the regular image of
+\[
+U\to X\xrightarrow{f}Y.
+\]
+\end{definition}
+
+\begin{proposition}[Existential adjunction]
+\label{prop:relative-existential-adjunction}
+For every morphism \(f:X\to Y\) in a regular category,
+\[
+\exists_f\dashv f^\ast.
+\]
+Thus, for \(U\in\mathrm{Sub}(X)\) and \(V\in\mathrm{Sub}(Y)\),
+\[
+\exists_f(U)\le V
+\quad\Longleftrightarrow\quad
+U\le f^\ast V.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Translate the left-hand inequality.}
+The statement
+\[
+\exists_f(U)\le V
+\]
+says that the image of the composite
+\[
+U\to X\xrightarrow{f}Y
+\]
+factors through \(V\hookrightarrow Y\).
+
+\item \textbf{Remove the image.}
+This is equivalent to the composite \(U\to Y\) itself factoring through
+\(V\hookrightarrow Y\).
+
+\item \textbf{Use the pullback.}
+Factoring through \(V\) is equivalent to \(U\to X\) factoring through
+\(f^\ast V\hookrightarrow X\).
+\end{enumerate}
+\end{proof}
+
+\begin{proposition}[Beck--Chevalley for regular images]
+\label{prop:relative-regular-beck-chevalley}
+For every pullback square
+\[
+\begin{tikzcd}
+X' \arrow[r,"g'"] \arrow[d,"f'"']
+&
+X \arrow[d,"f"]
+\\
+Y' \arrow[r,"g"']
+&
+Y
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+\]
+in a regular category,
+\[
+g^\ast\exists_f=\exists_{f'}(g')^\ast.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Factor the relevant composite.}
+The regular image of a subobject after applying \(f\) is represented by a
+regular epimorphism followed by a monomorphism.
+
+\item \textbf{Pull the factorization back.}
+Regular epimorphisms are stable under pullback, so pulling this image
+factorization back along \(g\) gives the image factorization of the pulled
+back subobject along \(f'\).
+
+\item \textbf{Compare the two subobjects.}
+The two constructions therefore determine the same subobject of \(Y'\).
+\end{enumerate}
+\end{proof}
+
+When
+\[
+R:X\nrightarrow Y
+\qquad\text{and}\qquad
+S:Y\nrightarrow Z
+\]
+are spans, we write
+\[
+R;S:X\nrightarrow Z
+\]
+for the composite span obtained by performing \(R\) first and \(S\) second.
+Equivalently, in the notation of
+Chapter~\ref{ch:spans-internal-categories-mealy},
+\[
+R;S=S\circ R.
+\]
+This convention is the dynamic-logic convention for sequential composition of
+programs.
+
+\subsection{Diamond modalities}
+\label{subsec:relative-diamond-modalities}
+
+\begin{definition}[Diamond modality of a span]
+\label{def:relative-span-diamond}
+Let
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right)
+\]
+be a span in a regular category. Define
+\[
+\langle R\rangle:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+by
+\[
+\langle R\rangle\varphi
+:=
+\exists_\ell(r^\ast\varphi).
+\]
+The construction is represented by
+\[
+\begin{tikzcd}
+r^\ast\varphi
+\arrow[r]
+\arrow[d]
+&
+\varphi
+\arrow[d,hook]
+\\
+R
+\arrow[r,"r"']
+\arrow[d,"\ell"]
+&
+Y
+\\
+X
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\begin{proposition}[Functoriality of diamonds]
+\label{prop:relative-diamond-functoriality}
+For spans
+\[
+R:X\nrightarrow Y
+\qquad\text{and}\qquad
+S:Y\nrightarrow Z
+\]
+in a regular category,
+\[
+\langle 1_X\rangle=\mathrm{id}_{\mathrm{Sub}(X)}
+\]
+and
+\[
+\langle R;S\rangle
+=
+\langle R\rangle\circ\langle S\rangle.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check the identity span.}
+For the identity span
+\[
+X\xleftarrow{1_X}X\xrightarrow{1_X}X,
+\]
+the formula gives
+\[
+\exists_{1_X}1_X^\ast=\mathrm{id}_{\mathrm{Sub}(X)}.
+\]
+
+\item \textbf{Display the composite span.}
+Write
+\[
+R=(X\xleftarrow{\ell}R\xrightarrow{r}Y),
+\qquad
+S=(Y\xleftarrow{m}S\xrightarrow{n}Z).
+\]
+Their composite has apex \(R\times_Y S\):
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+R\times_Y S
+  \arrow[r,"\pi_S"]
+  \arrow[d,"\pi_R"']
+&
+S
+  \arrow[d,"m"]
+  \arrow[dr,"n",bend left=12]
+&
+\\
+R
+  \arrow[r,"r"']
+  \arrow[d,"\ell"']
+&
+Y
+&
+Z
+\\
+X
+&&
+\end{tikzcd}
+.
+\]
+
+\item \textbf{Compute the diamond of the composite.}
+For \(\varphi\in\mathrm{Sub}(Z)\),
+\[
+\langle R;S\rangle\varphi
+=
+\exists_{\ell\pi_R}\bigl((n\pi_S)^\ast\varphi\bigr).
+\]
+
+\item \textbf{Use Beck--Chevalley.}
+By functoriality of existential images and Beck--Chevalley for the pullback
+defining \(R\times_Y S\), this is
+\[
+\exists_\ell r^\ast\exists_m n^\ast\varphi
+=
+\langle R\rangle(\langle S\rangle\varphi).
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Relative primitive modalities}
+\label{sec:relative-primitive-modalities}
+
+Fix
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+and a right \(\mathbb B\)-action \(Y\). Write
+\[
+S:=S_{\Phi,Y},
+\qquad
+M:=M_{\Phi,Y},
+\]
+and
+\[
+\mathbf m_{\Phi,Y}
+=
+(S\xleftarrow{s}M\xrightarrow{t}S)
+\]
+for the primitive execution span.
+
+\subsection{Primitive diamonds}
+\label{subsec:relative-primitive-diamonds}
+
+\begin{definition}[Primitive diamond]
+\label{def:relative-primitive-diamond}
+For a predicate
+\[
+\varphi\hookrightarrow S,
+\]
+the \textbf{primitive diamond} is
+\[
+\langle \mathbf m_{\Phi,Y}\rangle\varphi
+=
+\exists_s(t^\ast\varphi).
+\]
+\end{definition}
+
+\begin{proposition}[External reading of primitive diamonds]
+\label{prop:relative-primitive-diamond-set-reading}
+In \(\mathbf{Set}\),
+\[
+(x,y)\models \langle \mathbf m_{\Phi,Y}\rangle\varphi
+\]
+if and only if there exists an admissible input arrow
+\[
+a:u\to p_P(x)
+\]
+such that
+\[
+\bigl(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\bigr)
+\models \varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Expand the existential image.}
+A witness for
+\[
+(x,y)\in\exists_s(t^\ast\varphi)
+\]
+is an element of \(M_{\Phi,Y}\) with source \((x,y)\).
+
+\item \textbf{Identify such witnesses.}
+Such an element is exactly a primitive execution
+\[
+(a,x,y)
+\]
+where \(a:u\to p_P(x)\).
+
+\item \textbf{Read the target condition.}
+The condition that this witness lies in \(t^\ast\varphi\) says that
+\[
+\bigl(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\bigr)
+\models\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+\subsection{Tests}
+\label{subsec:relative-tests}
+
+\begin{definition}[Tests]
+\label{def:relative-tests}
+For a state predicate
+\[
+\theta:\Theta\hookrightarrow S,
+\]
+define the corresponding test span
+\[
+\theta?
+=
+(S\xleftarrow{\theta}\Theta\xrightarrow{\theta}S).
+\]
+It is displayed as
+\[
+\begin{tikzcd}
+& \Theta \arrow[dl,"\theta"'] \arrow[dr,"\theta"] & \\
+S && S
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\begin{proposition}[Diamond law for tests]
+\label{prop:relative-test-diamond}
+For every predicate \(\varphi\hookrightarrow S\),
+\[
+\langle\theta?\rangle\varphi
+=
+\theta\wedge\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Expand the diamond.}
+By definition,
+\[
+\langle\theta?\rangle\varphi
+=
+\exists_\theta(\theta^\ast\varphi).
+\]
+
+\item \textbf{Use monicity of the test.}
+Since \(\theta\) is monic, existential image along \(\theta\) identifies
+subobjects of \(\Theta\) with subobjects of \(S\) lying below \(\theta\).
+
+\item \textbf{Identify the image.}
+The image of \(\theta^\ast\varphi\) is therefore the meet
+\[
+\theta\wedge\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Restricted primitive subprograms}
+\label{sec:relative-restricted-subprograms}
+
+Let
+\[
+\iota_A:M_{\Phi,Y}\to A_1
+\]
+be the input projection
+\[
+(a,x,y)\mapsto a.
+\]
+Let
+\[
+\iota_B:M_{\Phi,Y}\to B_1
+\]
+be the emitted-output projection
+\[
+(a,x,y)\mapsto \omega_P(a,x).
+\]
+Let
+\[
+\Lambda_{\Phi,Y,1}:M_{\Phi,Y}\to
+\left(\int_{\mathbb B}Y\right)_1
+\]
+be the arrow map of the downstream comparison functor:
+\[
+(a,x,y)\mapsto(\omega_P(a,x),y).
+\]
+These maps are related by
+\[
+\begin{tikzcd}[column sep=large]
+M_{\Phi,Y}
+\arrow[r,"\Lambda_{\Phi,Y,1}"]
+\arrow[dr,"\iota_B"']
+&
+\left(\int_{\mathbb B}Y\right)_1
+=
+B_1\times_{t_B,B_0,r}Y
+\arrow[d,"\pi_{B_1}"]
+\\
+&
+B_1
+\end{tikzcd}
+.
+\]
+
+\begin{definition}[Restricted primitive subprogram]
+\label{def:relative-restricted-primitive-subprogram}
+Let
+\[
+R\hookrightarrow A_1
+\]
+be an input predicate, let
+\[
+O\hookrightarrow B_1
+\]
+be an emitted-output predicate, and let
+\[
+T\hookrightarrow \left(\int_{\mathbb B}Y\right)_1
+\]
+be a downstream-transition predicate. Define
+\[
+R^\sharp:=\iota_A^\ast R,
+\qquad
+O^\sharp:=\iota_B^\ast O,
+\qquad
+T^\sharp:=\Lambda_{\Phi,Y,1}^\ast T.
+\]
+Their simultaneous restriction is
+\[
+(R/O/T)^\sharp
+:=
+R^\sharp\wedge O^\sharp\wedge T^\sharp
+\hookrightarrow M_{\Phi,Y}.
+\]
+The associated restricted primitive span is
+\[
+S_{\Phi,Y}
+\xleftarrow{s i}
+(R/O/T)^\sharp
+\xrightarrow{t i}
+S_{\Phi,Y},
+\]
+where
+\[
+i:(R/O/T)^\sharp\hookrightarrow M_{\Phi,Y}
+\]
+is the inclusion. Its diamond is denoted
+\[
+\langle R/O/T\rangle\varphi.
+\]
+\end{definition}
+
+\begin{proposition}[External reading of restricted primitive diamonds]
+\label{prop:relative-restricted-primitive-reading}
+In \(\mathbf{Set}\),
+\[
+(x,y)\models \langle R/O/T\rangle\varphi
+\]
+if and only if there exists an admissible input arrow
+\[
+a:u\to p_P(x)
+\]
+such that
+\[
+R(a),
+\qquad
+O(\omega_P(a,x)),
+\qquad
+T(\omega_P(a,x),y),
+\]
+and
+\[
+\bigl(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\bigr)
+\models\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Expand the restricted apex.}
+The object \((R/O/T)^\sharp\) is the subobject of primitive executions
+satisfying the three pulled-back predicates
+\[
+R^\sharp,\qquad O^\sharp,\qquad T^\sharp.
+\]
+
+\item \textbf{Expand the diamond.}
+The diamond asserts existence of a restricted primitive execution whose source
+is \((x,y)\) and whose target satisfies \(\varphi\).
+
+\item \textbf{Read this in elements.}
+Such a restricted primitive execution is exactly an admissible input arrow
+\(a:u\to p_P(x)\) satisfying the displayed input, output, transition, and
+target conditions.
+\end{enumerate}
+\end{proof}
+
+\section{Finite choice of subprograms}
+\label{sec:relative-finite-choice}
+
+Finite choice is the categorical counterpart of nondeterministic choice in
+the non-iterative dynamic fragment \cite{HarelKozenTiurynDynamicLogic}. In the
+regular/coherent setting it is interpreted by finite joins of subobjects.
+
+\begin{definition}[Coherent category]
+\label{def:relative-coherent-category}
+A \textbf{coherent category} is a regular category \(\mathcal E\) such that:
+\begin{enumerate}
+\item each \(\mathrm{Sub}(X)\) has finite joins;
+\item each pullback functor \(f^\ast\) preserves finite joins.
+\end{enumerate}
+\end{definition}
+
+Assume \(\mathcal E\) is coherent. Let
+\[
+U,V\hookrightarrow M_{\Phi,Y}
+\]
+be subprograms of the relative primitive execution span. Their finite choice
+is the join
+\[
+U\vee V\hookrightarrow M_{\Phi,Y}.
+\]
+For a subobject \(i_U:U\hookrightarrow M_{\Phi,Y}\), write
+\[
+\langle U\rangle\varphi
+:=
+\exists_{s i_U}\bigl((t i_U)^\ast\varphi\bigr).
+\]
+Equivalently, regarding \(U\) as a predicate on \(M_{\Phi,Y}\),
+\[
+\langle U\rangle\varphi
+=
+\exists_s\bigl(U\wedge t^\ast\varphi\bigr).
+\]
+
+\begin{proposition}[Finite choice law]
+\label{prop:relative-finite-choice-law}
+For subprograms
+\[
+U,V\hookrightarrow M_{\Phi,Y},
+\]
+one has
+\[
+\langle U\vee V\rangle\varphi
+=
+\langle U\rangle\varphi
+\vee
+\langle V\rangle\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Regard subprograms as predicates.}
+Treat \(U\) and \(V\) as predicates on \(M_{\Phi,Y}\). Then
+\[
+\langle U\vee V\rangle\varphi
+=
+\exists_s\bigl((U\vee V)\wedge t^\ast\varphi\bigr).
+\]
+
+\item \textbf{Distribute meet over finite join.}
+In a coherent category,
+\[
+(U\vee V)\wedge t^\ast\varphi
+=
+(U\wedge t^\ast\varphi)
+\vee
+(V\wedge t^\ast\varphi).
+\]
+
+\item \textbf{Use preservation of joins by \(\exists_s\).}
+Since \(\exists_s\) is a left adjoint, it preserves finite joins. Hence
+\[
+\langle U\vee V\rangle\varphi
+=
+\langle U\rangle\varphi
+\vee
+\langle V\rangle\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Boxes and intuitionistic tests}
+\label{sec:relative-boxes}
+
+The box modality is the universal predicate transformer dual to the diamond.
+In the categorical setting below, its existence is supplied by the right
+adjoints to pullback in first-order Heyting categories
+\cite{Jacobs1999CategoricalLogic}. The resulting test law
+\[
+[\theta?]\varphi=\theta\Rightarrow\varphi
+\]
+is the intuitionistic form of the usual dynamic-logic test law
+\cite{HarelKozenTiurynDynamicLogic}.
+
+\subsection{First-order Heyting structure}
+\label{subsec:relative-first-order-heyting}
+
+\begin{definition}[First-order Heyting category]
+\label{def:relative-first-order-heyting}
+A \textbf{first-order Heyting category} is a coherent category
+\(\mathcal E\) such that, for every morphism
+\[
+f:X\to Y,
+\]
+the pullback functor
+\[
+f^\ast:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+has a right adjoint
+\[
+\forall_f:\mathrm{Sub}(X)\to\mathrm{Sub}(Y),
+\]
+and these right adjoints satisfy Beck--Chevalley for pullback squares.
+\end{definition}
+
+Assume \(\mathcal E\) is a first-order Heyting category.
+
+\subsection{Box modalities}
+\label{subsec:relative-box-modalities}
+
+\begin{definition}[Box modality of a span]
+\label{def:relative-span-box}
+For a span
+\[
+R=
+(X\xleftarrow{\ell}R\xrightarrow{r}Y),
+\]
+define
+\[
+[R]:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+by
+\[
+[R]\varphi:=\forall_\ell(r^\ast\varphi).
+\]
+\end{definition}
+
+\begin{proposition}[Functoriality of boxes]
+\label{prop:relative-box-functoriality}
+For spans
+\[
+R:X\nrightarrow Y
+\qquad\text{and}\qquad
+S:Y\nrightarrow Z,
+\]
+one has
+\[
+[1_X]=\mathrm{id}_{\mathrm{Sub}(X)}
+\]
+and
+\[
+[R;S]=[R]\circ[S].
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check the identity span.}
+For the identity span, the formula gives
+\[
+\forall_{1_X}1_X^\ast=\mathrm{id}_{\mathrm{Sub}(X)}.
+\]
+
+\item \textbf{Use the composite pullback.}
+For
+\[
+R=(X\xleftarrow{\ell}R\xrightarrow{r}Y),
+\qquad
+S=(Y\xleftarrow{m}S\xrightarrow{n}Z),
+\]
+the composite has apex \(R\times_Y S\).
+
+\item \textbf{Apply Beck--Chevalley for \(\forall\).}
+The Beck--Chevalley law for the pullback square defining \(R\times_Y S\),
+together with functoriality of right adjoints, gives
+\[
+[R;S]\varphi
+=
+\forall_\ell r^\ast\forall_m n^\ast\varphi
+=
+[R]([S]\varphi).
+\]
+\end{enumerate}
+\end{proof}
+
+\subsection{Boxes for tests}
+\label{subsec:relative-boxes-tests}
+
+\begin{proposition}[Box law for tests]
+\label{prop:relative-test-box}
+For a test
+\[
+\theta?=(S\xleftarrow{\theta}\Theta\xrightarrow{\theta}S),
+\]
+one has
+\[
+[\theta?]\varphi
+=
+\theta\Rightarrow\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Expand the box.}
+By definition,
+\[
+[\theta?]\varphi
+=
+\forall_\theta(\theta^\ast\varphi).
+\]
+
+\item \textbf{Test against an arbitrary predicate.}
+For any predicate \(\psi\hookrightarrow S\),
+\[
+\psi\le \forall_\theta(\theta^\ast\varphi)
+\]
+if and only if
+\[
+\theta^\ast\psi\le \theta^\ast\varphi.
+\]
+
+\item \textbf{Use monicity of \(\theta\).}
+Since \(\theta\) is monic, this is equivalent to
+\[
+\psi\wedge\theta\le\varphi.
+\]
+
+\item \textbf{Use the Heyting implication.}
+The last inequality is equivalent to
+\[
+\psi\le\theta\Rightarrow\varphi.
+\]
+Hence
+\[
+[\theta?]\varphi=\theta\Rightarrow\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Stability under downstream change and Mealy simulation}
+\label{sec:relative-modal-stability}
+
+\subsection{Change of downstream action}
+\label{subsec:relative-modal-stability-downstream}
+
+Let
+\[
+f:Y\to Z
+\]
+be a morphism of right \(\mathbb B\)-actions. It induces
+\[
+h_f:S_{\Phi,Y}\to S_{\Phi,Z},
+\qquad
+h_f(x,y)=(x,f(y)),
+\]
+and
+\[
+k_f:M_{\Phi,Y}\to M_{\Phi,Z},
+\qquad
+k_f(a,x,y)=(a,x,f(y)).
+\]
+The source square is a pullback:
+\[
+\begin{tikzcd}
+M_{\Phi,Y} \arrow[r,"k_f"] \arrow[d,"s_Y"']
+&
+M_{\Phi,Z} \arrow[d,"s_Z"]
+\\
+S_{\Phi,Y} \arrow[r,"h_f"']
+&
+S_{\Phi,Z}
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+Indeed, both \(M_{\Phi,Y}\) and \(M_{\Phi,Z}\) are obtained by pulling back
+\(t_A:A_1\to A_0\) along the respective structure maps to \(A_0\), and
+\(h_f\) preserves those structure maps.
+
+\begin{proposition}[Diamond stability under downstream change]
+\label{prop:relative-diamond-stability-downstream}
+Let \(\mathcal E\) be regular. For every subprogram
+\[
+V\hookrightarrow M_{\Phi,Z}
+\]
+and every predicate
+\[
+\psi\hookrightarrow S_{\Phi,Z},
+\]
+one has
+\[
+h_f^\ast\langle V\rangle\psi
+=
+\langle k_f^\ast V\rangle h_f^\ast\psi.
+\]
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+i:V\hookrightarrow M_{\Phi,Z}
+\]
+be the subprogram inclusion, and form the pullback
+\[
+\begin{tikzcd}
+k_f^\ast V \arrow[r,"\bar k_f"] \arrow[d,"\bar i"']
+&
+V \arrow[d,"i"]
+\\
+M_{\Phi,Y} \arrow[r,"k_f"']
+&
+M_{\Phi,Z}
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+Because the source square
+\[
+\begin{tikzcd}
+M_{\Phi,Y} \arrow[r,"k_f"] \arrow[d,"s_Y"']
+&
+M_{\Phi,Z} \arrow[d,"s_Z"]
+\\
+S_{\Phi,Y} \arrow[r,"h_f"']
+&
+S_{\Phi,Z}
+\end{tikzcd}
+\]
+is a pullback, the induced square
+\[
+\begin{tikzcd}
+k_f^\ast V \arrow[r,"\bar k_f"] \arrow[d,"s_Y\bar i"']
+&
+V \arrow[d,"s_Z i"]
+\\
+S_{\Phi,Y} \arrow[r,"h_f"']
+&
+S_{\Phi,Z}
+\end{tikzcd}
+\]
+is also a pullback. Moreover target compatibility gives
+\[
+t_Z i\bar k_f=h_f t_Y\bar i.
+\]
+Therefore Beck--Chevalley for regular images gives
+\[
+h_f^\ast\exists_{s_Z i}\bigl((t_Z i)^\ast\psi\bigr)
+=
+\exists_{s_Y\bar i}\bar k_f^\ast\bigl((t_Z i)^\ast\psi\bigr).
+\]
+Using target compatibility, the right-hand side becomes
+\[
+\exists_{s_Y\bar i}\bigl((t_Y\bar i)^\ast h_f^\ast\psi\bigr)
+=
+\langle k_f^\ast V\rangle h_f^\ast\psi.
+\]
+\end{proof}
+
+\begin{proposition}[Box stability under downstream change]
+\label{prop:relative-box-stability-downstream}
+Let \(\mathcal E\) be first-order Heyting. For every subprogram
+\[
+V\hookrightarrow M_{\Phi,Z}
+\]
+and every predicate
+\[
+\psi\hookrightarrow S_{\Phi,Z},
+\]
+one has
+\[
+h_f^\ast[V]\psi
+=
+[k_f^\ast V]h_f^\ast\psi.
+\]
+\end{proposition}
+
+\begin{proof}
+With notation as in the proof of
+Proposition~\ref{prop:relative-diamond-stability-downstream}, the square
+\[
+\begin{tikzcd}
+k_f^\ast V \arrow[r,"\bar k_f"] \arrow[d,"s_Y\bar i"']
+&
+V \arrow[d,"s_Z i"]
+\\
+S_{\Phi,Y} \arrow[r,"h_f"']
+&
+S_{\Phi,Z}
+\end{tikzcd}
+\]
+is a pullback, and target compatibility gives
+\[
+t_Z i\bar k_f=h_f t_Y\bar i.
+\]
+Hence Beck--Chevalley for the right adjoints \(\forall\) gives
+\[
+h_f^\ast\forall_{s_Z i}\bigl((t_Z i)^\ast\psi\bigr)
+=
+\forall_{s_Y\bar i}\bar k_f^\ast\bigl((t_Z i)^\ast\psi\bigr).
+\]
+Using target compatibility, this is
+\[
+\forall_{s_Y\bar i}\bigl((t_Y\bar i)^\ast h_f^\ast\psi\bigr)
+=
+[k_f^\ast V]h_f^\ast\psi.
+\]
+\end{proof}
+
+\subsection{Change along a Mealy simulation}
+\label{subsec:relative-modal-stability-simulation}
+
+Let
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation, and let \(Y\) be a right \(\mathbb B\)-action. The
+induced functor
+\[
+H_{\Theta,Y}:\mathsf{Prog}_{\Psi,Y}\to\mathsf{Prog}_{\Phi,Y}
+\]
+has object map
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y}
+\]
+and arrow map
+\[
+k_{\Theta,Y}:M_{\Psi,Y}\to M_{\Phi,Y},
+\qquad
+k_{\Theta,Y}(a,y,z)=
+(a,\theta y,\sigma(\alpha_y,z)).
+\]
+The source square is a pullback:
+\[
+\begin{tikzcd}
+M_{\Psi,Y} \arrow[r,"k_{\Theta,Y}"] \arrow[d,"s_\Psi"']
+&
+M_{\Phi,Y} \arrow[d,"s_\Phi"]
+\\
+S_{\Psi,Y} \arrow[r,"h_{\Theta,Y}"']
+&
+S_{\Phi,Y}
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+Indeed, both \(M_{\Psi,Y}\) and \(M_{\Phi,Y}\) are obtained by pulling back
+\(t_A:A_1\to A_0\) along the respective structure maps to \(A_0\), and
+\(h_{\Theta,Y}\) preserves those structure maps.
+
+\begin{proposition}[Diamond stability under Mealy simulation]
+\label{prop:relative-diamond-stability-simulation}
+Let \(\mathcal E\) be regular. For every subprogram
+\[
+V\hookrightarrow M_{\Phi,Y}
+\]
+and every predicate
+\[
+\psi\hookrightarrow S_{\Phi,Y},
+\]
+one has
+\[
+h_{\Theta,Y}^\ast\langle V\rangle\psi
+=
+\langle k_{\Theta,Y}^\ast V\rangle h_{\Theta,Y}^\ast\psi.
+\]
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+i:V\hookrightarrow M_{\Phi,Y}
+\]
+be the subprogram inclusion, and form the pullback
+\[
+\begin{tikzcd}
+k_{\Theta,Y}^\ast V \arrow[r,"\bar k_{\Theta,Y}"] \arrow[d,"\bar i"']
+&
+V \arrow[d,"i"]
+\\
+M_{\Psi,Y} \arrow[r,"k_{\Theta,Y}"']
+&
+M_{\Phi,Y}
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+Because the source square
+\[
+\begin{tikzcd}
+M_{\Psi,Y} \arrow[r,"k_{\Theta,Y}"] \arrow[d,"s_\Psi"']
+&
+M_{\Phi,Y} \arrow[d,"s_\Phi"]
+\\
+S_{\Psi,Y} \arrow[r,"h_{\Theta,Y}"']
+&
+S_{\Phi,Y}
+\end{tikzcd}
+\]
+is a pullback, the induced square
+\[
+\begin{tikzcd}
+k_{\Theta,Y}^\ast V
+\arrow[r,"\bar k_{\Theta,Y}"]
+\arrow[d,"s_\Psi\bar i"']
+&
+V
+\arrow[d,"s_\Phi i"]
+\\
+S_{\Psi,Y}
+\arrow[r,"h_{\Theta,Y}"']
+&
+S_{\Phi,Y}
+\end{tikzcd}
+\]
+is also a pullback. Since \(H_{\Theta,Y}\) is an internal functor, target
+compatibility gives
+\[
+t_\Phi i\bar k_{\Theta,Y}=h_{\Theta,Y}t_\Psi\bar i.
+\]
+Therefore Beck--Chevalley for regular images gives
+\[
+h_{\Theta,Y}^\ast
+\exists_{s_\Phi i}\bigl((t_\Phi i)^\ast\psi\bigr)
+=
+\exists_{s_\Psi\bar i}
+\bar k_{\Theta,Y}^\ast\bigl((t_\Phi i)^\ast\psi\bigr).
+\]
+Using target compatibility, the right-hand side is
+\[
+\exists_{s_\Psi\bar i}
+\bigl((t_\Psi\bar i)^\ast h_{\Theta,Y}^\ast\psi\bigr)
+=
+\langle k_{\Theta,Y}^\ast V\rangle h_{\Theta,Y}^\ast\psi.
+\]
+\end{proof}
+
+\begin{proposition}[Box stability under Mealy simulation]
+\label{prop:relative-box-stability-simulation}
+Let \(\mathcal E\) be first-order Heyting. For every subprogram
+\[
+V\hookrightarrow M_{\Phi,Y}
+\]
+and every predicate
+\[
+\psi\hookrightarrow S_{\Phi,Y},
+\]
+one has
+\[
+h_{\Theta,Y}^\ast[V]\psi
+=
+[k_{\Theta,Y}^\ast V]h_{\Theta,Y}^\ast\psi.
+\]
+\end{proposition}
+
+\begin{proof}
+With notation as in the proof of
+Proposition~\ref{prop:relative-diamond-stability-simulation}, the square
+\[
+\begin{tikzcd}
+k_{\Theta,Y}^\ast V
+\arrow[r,"\bar k_{\Theta,Y}"]
+\arrow[d,"s_\Psi\bar i"']
+&
+V
+\arrow[d,"s_\Phi i"]
+\\
+S_{\Psi,Y}
+\arrow[r,"h_{\Theta,Y}"']
+&
+S_{\Phi,Y}
+\end{tikzcd}
+\]
+is a pullback, and target compatibility gives
+\[
+t_\Phi i\bar k_{\Theta,Y}=h_{\Theta,Y}t_\Psi\bar i.
+\]
+Hence Beck--Chevalley for the right adjoints \(\forall\) gives
+\[
+h_{\Theta,Y}^\ast
+\forall_{s_\Phi i}\bigl((t_\Phi i)^\ast\psi\bigr)
+=
+\forall_{s_\Psi\bar i}
+\bar k_{\Theta,Y}^\ast\bigl((t_\Phi i)^\ast\psi\bigr).
+\]
+Using target compatibility, this becomes
+\[
+\forall_{s_\Psi\bar i}
+\bigl((t_\Psi\bar i)^\ast h_{\Theta,Y}^\ast\psi\bigr)
+=
+[k_{\Theta,Y}^\ast V]h_{\Theta,Y}^\ast\psi.
+\]
+\end{proof}
+
+\section{The one-object specialization}
+\label{sec:relative-one-object-specialization}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as
+one-object internal categories with the order convention
+\[
+b\circ a=ba.
+\]
+A Mealy morphism
+\[
+\Phi:M\rightsquigarrow N
+\]
+consists of an object \(P\), a right \(M\)-action
+\[
+x\cdot m:=\delta_P(m,x),
+\]
+and an \(N\)-valued output cocycle
+\[
+\omega_P:M\times P\to N
+\]
+satisfying
+\[
+\omega_P(1,x)=1,
+\qquad
+\omega_P(mn,x)=\omega_P(m,x)\omega_P(n,x\cdot m).
+\]
+
+In this subsection we switch from the internal-action notation
+\(\sigma(n,y)\) to the usual right-action notation
+\[
+y\cdot n:=\sigma(n,y).
+\]
+
+\begin{proposition}[Classical cascade form]
+\label{prop:relative-one-object-cascade}
+Let \(Y\) be a right \(N\)-object. Then
+\[
+\Phi^\ast Y=P\times Y
+\]
+with right \(M\)-action
+\[
+(x,y)\cdot m
+=
+\bigl(x\cdot m,\;y\cdot \omega_P(m,x)\bigr).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Specialize the coupled state object.}
+Since the object objects of \(M\) and \(N\) are terminal, the pullback
+\[
+P\times_{B_0}Y
+\]
+is simply \(P\times Y\).
+
+\item \textbf{Specialize the restricted action.}
+Definition~\ref{def:relative-restricted-action} gives, in internal-action
+notation,
+\[
+m\cdot_{\mathrm{int}}(x,y)
+=
+\bigl(\delta_P(m,x),\sigma(\omega_P(m,x),y)\bigr).
+\]
+
+\item \textbf{Rewrite in right-action notation.}
+With
+\[
+x\cdot m:=\delta_P(m,x),
+\qquad
+y\cdot n:=\sigma(n,y),
+\]
+and
+\[
+(x,y)\cdot m:=m\cdot_{\mathrm{int}}(x,y),
+\]
+this becomes
+\[
+(x,y)\cdot m
+=
+\bigl(x\cdot m,\;y\cdot \omega_P(m,x)\bigr).
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{proposition}[One-object simulations evaluate by coboundary action]
+\label{prop:relative-one-object-simulation-evaluation}
+Let
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+be a one-object Mealy simulation with components
+\[
+\theta:Q\to P,
+\qquad
+\alpha:Q\to N.
+\]
+Then for every right \(N\)-object \(Y\), the evaluated map
+\[
+Q\times Y\to P\times Y
+\]
+is
+\[
+(y,z)\longmapsto(\theta y,z\cdot\alpha_y).
+\]
+The simulation equation is exactly the equivariance of this map with respect
+to the induced right \(M\)-actions. Explicitly, equivariance is the conjunction
+of
+\[
+\theta(y\cdot m)=\theta y\cdot m
+\]
+and
+\[
+\alpha_y\,\omega_P(m,\theta y)
+=
+\omega_Q(m,y)\,\alpha_{y\cdot m}.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Specialize the evaluated map.}
+The general formula from
+Definition~\ref{def:relative-evaluated-simulation-map} gives
+\[
+(y,z)\longmapsto(\theta y,\sigma(\alpha_y,z)).
+\]
+
+\item \textbf{Rewrite in right-action notation.}
+Since \(z\cdot n:=\sigma(n,z)\), this becomes
+\[
+(y,z)\longmapsto(\theta y,z\cdot\alpha_y).
+\]
+
+\item \textbf{Specialize equivariance.}
+Theorem~\ref{thm:relative-simulations-evaluate-equivariantly} says that this
+map is equivariant. Written in one-object notation, that equivariance is
+exactly the displayed one-object simulation equation.
+\end{enumerate}
+\end{proof}
+
+\section{The stateless specialization}
+\label{sec:relative-stateless-specialization}
+
+Let
+\[
+F:\mathbb A\to\mathbb B
+\]
+be an internal functor. Regard \(F\) as the map-representable Mealy morphism
+with carrier
+\[
+A_0\xleftarrow{1_{A_0}}A_0\xrightarrow{F_0}B_0.
+\]
+
+\begin{proposition}[Restriction of actions along an internal functor]
+\label{prop:relative-stateless-restriction}
+Let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a right \(\mathbb B\)-action. Then
+\[
+F^\ast Y
+=
+A_0\times_{F_0,B_0,r}Y
+\]
+with right \(\mathbb A\)-action
+\[
+a\cdot(v,y)
+=
+\bigl(s_A(a),\sigma(F_1(a),y)\bigr),
+\]
+where
+\[
+t_A(a)=v,
+\qquad
+r(y)=F_0(v).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Specialize the carrier.}
+For the map-representable carrier, the state component is \(A_0\), with left
+leg \(1_{A_0}\) and right leg \(F_0\).
+
+\item \textbf{Specialize the coupled state object.}
+The coupled state object becomes
+\[
+A_0\times_{F_0,B_0,r}Y.
+\]
+
+\item \textbf{Specialize the action.}
+The state component moves from \(t_A(a)\) to \(s_A(a)\), and the emitted
+output arrow is \(F_1(a)\). Hence
+\[
+a\cdot(v,y)
+=
+\bigl(s_A(a),\sigma(F_1(a),y)\bigr).
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Terminal stateless case]
+\label{cor:relative-terminal-stateless}
+For \(Y=\mathbf 1_{\mathbb B}\),
+\[
+\mathsf{Prog}_{F,\mathbf 1_{\mathbb B}}
+\cong
+\mathbb A^{\mathrm{op}}.
+\]
+Under this identification, the input projection is the identity on
+\(\mathbb A^{\mathrm{op}}\), and the output labelling is
+\[
+F^{\mathrm{op}}:\mathbb A^{\mathrm{op}}\to\mathbb B^{\mathrm{op}}.
+\]
+\end{corollary}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify the state object.}
+The state object is
+\[
+A_0\times_{F_0,B_0,1_{B_0}}B_0\cong A_0.
+\]
+
+\item \textbf{Identify the restricted action.}
+The restricted action is the terminal right \(\mathbb A\)-action.
+
+\item \textbf{Identify the action category.}
+The action category of the terminal right \(\mathbb A\)-action is
+\[
+\mathbb A^{\mathrm{op}}.
+\]
+
+\item \textbf{Identify the output labelling.}
+The output labelling sends an arrow \(a\) to \(F_1(a)\), viewed oppositely.
+Thus it is
+\[
+F^{\mathrm{op}}.
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{proposition}[Natural transformations as evaluated simulations]
+\label{prop:relative-stateless-natural-transformations}
+Let
+\[
+\alpha:F\Rightarrow G
+\]
+be an internal natural transformation, regarded as a Mealy simulation
+\[
+F\Rightarrow G.
+\]
+For every right \(\mathbb B\)-action \(Y\), the evaluated map
+\[
+G^\ast Y\to F^\ast Y
+\]
+is
+\[
+(v,y)\longmapsto
+(v,\sigma(\alpha_v,y)).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify the state comparison.}
+In the stateless case, the state-comparison map is the identity on \(A_0\).
+
+\item \textbf{Identify the output comparison.}
+The output-comparison component is the natural transformation
+\[
+\alpha_v:F_0v\to G_0v.
+\]
+
+\item \textbf{Evaluate in the downstream action.}
+Evaluating this component in \(Y\) gives
+\[
+(v,y)\longmapsto
+(v,\sigma(\alpha_v,y)).
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Examples}
+\label{sec:relative-examples}
+
+The examples below indicate how the abstract construction specializes to
+classical Mealy cascades and relational dynamic logic. The Mealy terminology
+follows the categorical lineage represented by Paré's Mealy morphisms
+\cite{PareMealyMorphisms}, while the relational dynamic-logic reading follows
+the standard program-modality interpretation
+\cite{HarelKozenTiurynDynamicLogic}.
+
+\begin{example}[Classical Mealy cascade]
+\label{ex:relative-classical-mealy-cascade}
+Let \(\mathcal E=\mathbf{Set}\), and suppose \(\mathbb A\) and \(\mathbb B\)
+are one-object internal categories corresponding to monoids \(M\) and \(N\).
+A Mealy morphism consists of a set \(P\), a right \(M\)-action, and an
+\(N\)-valued output cocycle
+\[
+\omega:M\times P\to N.
+\]
+A downstream right \(N\)-action \(Y\) produces the coupled state set
+\[
+P\times Y
+\]
+with right \(M\)-action
+\[
+(x,y)\cdot m
+=
+\bigl(x\cdot m,\;y\cdot\omega(m,x)\bigr).
+\]
+This is the cascade of a Mealy transducer followed by an \(N\)-system.
+\end{example}
+
+\begin{example}[Simulation as state-dependent output correction]
+\label{ex:relative-simulation-output-correction}
+In the one-object group-valued case, let \(N=G\) be a group. A simulation
+between two \(G\)-valued output cocycles has a state map
+\[
+\theta:Q\to P
+\]
+and a correction term
+\[
+\alpha:Q\to G.
+\]
+The simulation equation says that the corrected \(P\)-output and the corrected
+\(Q\)-output agree:
+\[
+\alpha_y\,\omega_P(m,\theta y)
+=
+\omega_Q(m,y)\,\alpha_{y\cdot m}.
+\]
+For every right \(G\)-set \(Y\), this correction is evaluated by
+\[
+(y,z)\longmapsto(\theta y,z\cdot\alpha_y).
+\]
+Thus output-comparison data becomes an actual transition in each downstream
+context.
+\end{example}
+
+\begin{example}[Relational semantics of the non-iterative dynamic fragment]
+\label{ex:relative-relational-pdl}
+Let \(\mathcal E=\mathbf{Set}\). This is the ordinary relational semantics of
+the non-iterative fragment of dynamic logic
+\cite{HarelKozenTiurynDynamicLogic}. A span
+\[
+S\xleftarrow{\ell}R\xrightarrow{r}S
+\]
+determines the binary relation
+\[
+x\,\overline R\,y
+\]
+if and only if there exists \(\rho\in R\) such that
+\[
+\ell(\rho)=x,
+\qquad
+r(\rho)=y.
+\]
+The diamond becomes the relational dynamic-logic modality:
+\[
+x\models\langle R\rangle\varphi
+\]
+if and only if there exists \(y\) such that
+\[
+x\,\overline R\,y
+\]
+and
+\[
+y\models\varphi.
+\]
+In the relative Mealy setting, this relational semantics is applied to the
+coupled state space
+\[
+S_{\Phi,Y}=P\times_{B_0}Y.
+\]
+\end{example}
+
+\section{Chapter summary}
+\label{sec:relative-summary}
+
+\begin{theorem}[Relative Mealy dynamic span logic]
+\label{thm:relative-mealy-dynamic-span-logic}
+The constructions of this chapter form the following hierarchy.
+
+\begin{enumerate}
+\item Right internal \(\mathbb A\)-actions are Eilenberg--Moore algebras for
+the monad induced by \(\mathbb A\) on \(\mathcal E/A_0\).
+
+\item A right action \(X\) has an action category
+\[
+\int_{\mathbb A}X
+\]
+and a canonical input-discrete projection
+\[
+\int_{\mathbb A}X\to\mathbb A^{\mathrm{op}}.
+\]
+
+\item Every downstream right \(\mathbb B\)-action \(Y\) evaluates
+output-comparison Kleisli cells
+\[
+Q\to B\circ P
+\]
+as maps
+\[
+Q\times_{B_0}Y\to P\times_{B_0}Y.
+\]
+
+\item A Mealy morphism
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+restricts every downstream action \(Y\) to a right \(\mathbb A\)-action
+\[
+\Phi^\ast Y.
+\]
+
+\item A Mealy simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+evaluates contravariantly to an equivariant map
+\[
+\Psi^\ast Y\to\Phi^\ast Y.
+\]
+
+\item The relative program category is
+\[
+\mathsf{Prog}_{\Phi,Y}
+=
+\int_{\mathbb A}\Phi^\ast Y.
+\]
+
+\item The primitive execution span
+\[
+\mathbf m_{\Phi,Y}:S_{\Phi,Y}\nrightarrow S_{\Phi,Y}
+\]
+is a monoid object in
+\[
+\operatorname{EndSpan}_{\mathcal E}(S_{\Phi,Y}).
+\]
+
+\item The construction
+\[
+\Phi\longmapsto\mathsf{Prog}_{\Phi,Y}
+\]
+is contravariant in Mealy simulations.
+
+\item There are structural functors
+\[
+I_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\mathbb A^{\mathrm{op}}
+\]
+and
+\[
+\Lambda_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\int_{\mathbb B}Y.
+\]
+
+\item A simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+induces an input-strict functor
+\[
+H_{\Theta,Y}:
+\mathsf{Prog}_{\Psi,Y}\to\mathsf{Prog}_{\Phi,Y}
+\]
+and a downstream comparison natural transformation
+\[
+\Lambda_{\Psi,Y}
+\Rightarrow
+\Lambda_{\Phi,Y}H_{\Theta,Y}.
+\]
+
+\item If \(\mathcal E\) is regular, every relative execution span acts on
+subobject predicates by the diamond
+\[
+\langle R\rangle\varphi=\exists_\ell(r^\ast\varphi),
+\]
+using the regular-image interpretation of existential quantification
+\cite{Jacobs1999CategoricalLogic,FongSpivakRegularRelational}.
+
+\item If \(\mathcal E\) is coherent, finite joins of relative subprograms give
+finite nondeterministic choice.
+
+\item If \(\mathcal E\) is first-order Heyting, every relative execution span
+also acts by the box
+\[
+[R]\varphi=\forall_\ell(r^\ast\varphi),
+\]
+and tests satisfy
+\[
+[\theta?]\varphi=\theta\Rightarrow\varphi.
+\]
+This is the first-order Heyting-categorical form of the box and test semantics
+for the non-iterative dynamic fragment
+\cite{Jacobs1999CategoricalLogic,HarelKozenTiurynDynamicLogic}.
+
+\item Modalities are stable under downstream action maps and under Mealy
+simulations, after pulling subprograms back along the induced program
+functors.
+
+\item The one-object specialization gives the cascade action
+\[
+(x,y)\cdot m
+=
+\bigl(x\cdot m,\;y\cdot\omega_P(m,x)\bigr),
+\]
+and the stateless specialization recovers restriction of actions along
+internal functors.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Actions and action categories.}
+Items (1)--(2) are
+Proposition~\ref{prop:relative-actions-em},
+Theorem~\ref{thm:relative-action-category-internal}, and
+Theorem~\ref{thm:relative-actions-input-discrete}.
+
+\item \textbf{Downstream evaluation and restrictions.}
+Items (3)--(5) are
+Proposition~\ref{prop:relative-evaluation-functorial},
+Theorem~\ref{thm:relative-mealy-restriction-actions}, and
+Theorem~\ref{thm:relative-simulations-evaluate-equivariantly}.
+
+\item \textbf{Program categories and labelled functoriality.}
+Items (6)--(10) are
+Theorem~\ref{thm:relative-program-categories},
+Theorem~\ref{thm:relative-simulations-program-functors},
+Theorem~\ref{thm:relative-input-downstream-functors},
+Theorem~\ref{thm:relative-output-comparison-natural}, and
+Corollary~\ref{cor:relative-labelled-functor-simulation}.
+
+\item \textbf{Modal structure.}
+Items (11)--(14) are the span predicate-transformer constructions of
+Sections~\ref{sec:relative-predicate-transformers}--\ref{sec:relative-modal-stability}.
+
+\item \textbf{Specializations.}
+Item (15) is
+Proposition~\ref{prop:relative-one-object-cascade} together with
+Proposition~\ref{prop:relative-stateless-restriction}.
+\end{enumerate}
+\end{proof}
+
+\begin{remark}[Final conceptual summary]
+\label{rem:relative-final-summary}
+A Mealy morphism
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+is a stateful interpretation of \(\mathbb A\)-inputs as
+\(\mathbb B\)-outputs, in the same broad categorical lineage as Paré's Mealy
+morphisms of enriched categories \cite{PareMealyMorphisms}. A downstream right
+\(\mathbb B\)-action \(Y\) gives those outputs a place to act. The coupled
+state object
+\[
+P\times_{B_0}Y
+\]
+therefore carries a right \(\mathbb A\)-action, and its action category is the
+relative program category
+\[
+\mathsf{Prog}_{\Phi,Y}.
+\]
+A Mealy simulation carries output-comparison arrows. The downstream action
+evaluates those arrows, so simulations become equivariant maps after
+evaluation. Dynamic span logic is then the non-iterative modal logic of spans
+on the coupled state object, functorial under downstream change and
+contravariantly functorial under Mealy simulation.
+\end{remark}
