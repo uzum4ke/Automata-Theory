@@ -1,0 +1,6960 @@
+\chapter{Strategic Mealy Systems and Open Game Semantics}
+\label{chap:strategic-mealy-games}
+
+\section{Orientation}
+\label{sec:strategic-mealy-orientation}
+
+The preceding chapters developed a categorical systems theory in which internal categories are
+interfaces, Mealy morphisms are stateful open systems, Mealy simulations compare implementations,
+downstream actions are environments, residual semantics extracts behaviour, product tensor describes
+parallel execution, and coproduct trace closes hidden event-flow interfaces. The purpose of the
+present chapter is to construct strategic interaction inside that theory without discarding its
+\(2\)-dimensional structure.
+
+Throughout the chapter, the ambient category is a Grothendieck topos. This permits the strategic
+constructions to be carried out internally. Strategy spaces are objects rather than external sets,
+best-response relations are subobjects, truth values lie in the subobject classifier, finite
+counterfactual query words are internal lists, and the internally defined constructions are stable
+under arbitrary base change up to canonical coherent isomorphism. The exactness and local cartesian
+closure required by the residual semantics of Chapter~3 are automatic. The stable finite and
+countable coproducts required by the finite-path trace of Chapter~9 are also available.
+
+The chapter has three parts.
+
+The first part constructs strategic Mealy game theory. It begins by strengthening initialization so
+that selected states are closed under input processing. This strengthening is forced by horizontal
+composition of output-lax Mealy simulations: a downstream selected state must be transported along
+the output-comparison arrow of the upstream simulation. Operational bidirectional arenas are then
+constructed as Mealy optics. Residual reparametrizers carry coherent discard sections, and pure
+map-representable residual slides are identified by a homwise coidentifier. Frozen strategy
+parameters are represented by discrete internal categories. Strategic contexts are supplied by an
+internal context doctrine, and counterfactual response is represented by an initialized internal
+Mealy machine over an internal query category. These data form a symmetric monoidal bicategory of
+response-strict strategic Mealy games.
+
+The second part proves two bridge theorems. The first identifies internal deterministic open games
+with open-normal strategic Mealy games. The second identifies open-normal strategic Mealy games
+with structured canonical branch-faithful protocol machines. Thus ordinary play, coplay, and
+best-response semantics are recovered as a rigid normal form of the general strategic Mealy theory,
+while the canonical protocol compiler places the forward, backward, and response branches inside one
+initialized typed machine.
+
+The third part gives residual, execution, and feedback semantics. There are two related execution
+constructions.
+
+First, primitive relative execution of a genuine Mealy pipeline factors through a visible
+intermediate handshake object. The composite primitive span is recovered by tracing over that
+handshake object. Persistent implementation state remains in the visible relative execution
+configuration.
+
+Second, a stateless object map between discrete interfaces is elaborated into a genuine event of a
+free internal step category. Restricting Chapter~6 primitive execution to the length-one event
+generators recovers the graph span of the map. This step elaboration turns the forward and backward
+maps of an open-normal game into genuine primitive execution spans. Sequential arena composition is
+then recovered as the finite-path trace of a private linear subdivision.
+
+The bridge theorems and the feedback theorem may be displayed as
+\[
+  \boxed{
+  \mathbf{OpenGame}_2(\mathcal E)
+  \cong
+  \mathbf{OGMly}^{\mathrm{nf}}_2(\mathcal E)
+  \cong
+  \mathbf{CanProt}^{\mathrm{str}}_2(\mathcal E)
+  }
+\]
+and
+\[
+  \boxed{
+  \operatorname{Exec}_{\mathrm{step}}
+  \bigl(
+    \mathsf{Prot}_{\mathrm{ar}}
+    (\mathcal H\circ\mathcal G)
+  \bigr)
+  \cong
+  \operatorname{Tr}^{H}
+  \bigl(
+    \widetilde U_{\mathcal H,\mathcal G}
+  \bigr).
+  }
+\]
+
+The stateful pipeline factorization is
+\[
+  \boxed{
+  m_{Q\circ P,Y}
+  \cong
+  \operatorname{Tr}^{H_{Q,P;Y}}
+  \bigl(
+    \widetilde m_{Q,P;Y}
+  \bigr).
+  }
+\]
+
+\subsection{The strategic systems dictionary}
+\label{subsec:strategic-systems-dictionary}
+
+\begin{center}
+\begin{tabular}{p{0.29\textwidth}|p{0.61\textwidth}}
+\textbf{Open-game notion}
+&
+\textbf{Strategic Mealy interpretation}
+\\
+\hline
+\((X,S)\to(Y,R)\)
+&
+A signed boundary with positive source \(X\), negative source \(S\), positive target \(Y\), and
+negative target \(R\).
+\\[1mm]
+\(\Sigma\)
+&
+A frozen internal strategy parameter indexing controller implementations.
+\\[1mm]
+\(P:\Sigma\times X\to Y\)
+&
+The visible positive output of the forward phase.
+\\[1mm]
+\(C:\Sigma\times X\times R\to S\)
+&
+The visible negative output of the backward phase, using data retained from the forward phase.
+\\[1mm]
+\(k:Y\to R\)
+&
+A stationary continuation, represented internally by an element of the exponential \(R^Y\).
+\\[1mm]
+\((x,k)\)
+&
+An upstream point together with a stationary downstream continuation.
+\\[1mm]
+Counterfactual deviation
+&
+A typed query asking the response machine to evaluate an alternative strategy parameter.
+\\[1mm]
+Best response
+&
+A subobject of
+\(\Sigma\times\operatorname{Ctx}\times\Sigma\), equivalently a classifier into \(\Omega\).
+\\[1mm]
+Selection function
+&
+A response controller consuming a counterfactual outcome profile and classifying acceptable
+alternatives.
+\\[1mm]
+Equilibrium
+&
+A diagonal response: the incumbent is accepted as a response to itself.
+\\[1mm]
+Sequential composition
+&
+Residual optic interconnection together with coherent decomposition of the outer context into local
+contexts.
+\\[1mm]
+Parallel composition
+&
+Product tensor together with partial evaluation of the joint continuation against the other
+incumbent component.
+\\[1mm]
+Strategy reparametrization
+&
+A \(2\)-cell combining a contravariant map of strategy objects, an optic simulation, and a
+response-strict evaluator simulation.
+\\[1mm]
+Protocol implementation
+&
+One initialized Mealy morphism with stable forward, backward, and evaluator carrier branches and an
+explicit strategy port.
+\\[1mm]
+Relative execution
+&
+Primitive execution spans on visible implementation configurations.
+\\[1mm]
+Step elaboration
+&
+A free internal event category whose primitive generator spans recover graph spans of stateless
+maps.
+\\[1mm]
+Feedback
+&
+Finite-path closure of private execution routes after relative execution evaluation.
+\end{tabular}
+\end{center}
+
+Three distinctions are maintained throughout.
+
+First, an optic residual interface is not the implementation-state carrier of either Mealy leg. The
+residual is exposed by the forward leg and consumed by the backward leg. Each leg may additionally
+carry persistent implementation state.
+
+Second, product-monoidal residual composition and feedback perform different operations. Product
+tensor records simultaneously available data. Feedback hides event-flow routes only after a phase
+protocol has made causal order explicit.
+
+Third, the protocol input and output categories of a compiled game are implementation artefacts.
+They are not the external \(0\)-cells of the canonical protocol bicategory. Canonical protocol
+composition is compiler composition obtained from extracted strategic data, not ordinary Mealy
+pipeline composition of the underlying compiled machines.
+
+\section{Standing framework and notation}
+\label{sec:strategic-standing-framework}
+
+Throughout this chapter, let \(\mathcal E\) be a Grothendieck topos with chosen pullbacks. All
+objects, maps, relations, categories, functors, natural transformations, Mealy morphisms, and Mealy
+simulations are internal to \(\mathcal E\), unless explicitly stated otherwise.
+
+A Grothendieck topos is Barr-exact and locally cartesian closed. Hence it satisfies
+Assumption~3.1.1. It also has disjoint pullback-stable small coproducts. In particular, it is a
+feedback span base in the sense of Chapter~9 for every finite and countable coproduct used below.
+
+Generalized-element notation abbreviates morphism equations in \(\mathcal E\). Consequently a
+variable
+\[
+  \sigma:\Sigma
+\]
+denotes an internal variable, or equivalently a generalized element after arbitrary base change. No
+well-pointedness condition is used.
+
+Fix an external universe in which the internal categories and the relevant hom-categories are small.
+Fix also:
+
+\begin{enumerate}
+  \item chosen finite and countable coproducts;
+  \item a chosen free-internal-category functor on internal graphs;
+  \item chosen pushouts used to adjoin protocol generators;
+  \item chosen effective quotients of internal congruences;
+  \item chosen homwise coidentifiers and connected-component quotients in the external universe.
+\end{enumerate}
+
+These choices allow each construction in a fixed base to be represented by a specified object rather
+than merely by an isomorphism class.
+
+For every map
+\[
+  g:V\to U,
+\]
+the pullback functor
+\[
+  g^*:\mathcal E/U\longrightarrow\mathcal E/V
+\]
+has both adjoints
+\[
+  \Sigma_g\dashv g^*\dashv\Pi_g.
+\]
+It therefore preserves finite limits and small colimits. It also preserves regular epimorphisms,
+monomorphisms, regular images, kernel pairs, and effective quotients. Beck--Chevalley gives the
+canonical comparison isomorphisms required for slice exponentials and dependent products.
+
+Consequently there are canonical coherent isomorphisms
+\[
+  g^*(X^\ast)\cong(g^*X)^\ast,
+\]
+\[
+  g^*\mathsf{FreeCat}(G)
+  \cong
+  \mathsf{FreeCat}(g^*G),
+\]
+\[
+  g^*(\mathcal C^\simeq)
+  \cong
+  (g^*\mathcal C)^\simeq,
+\]
+\[
+  g^*\operatorname{Reach}(P,i)
+  \cong
+  \operatorname{Reach}(g^*P,g^*i),
+\]
+\[
+  g^*\operatorname{Der}_0(k)
+  \cong
+  \operatorname{Der}_0(g^*k),
+\]
+\[
+  g^*(D_k/{\equiv_k})
+  \cong
+  D_{g^*k}/{\equiv_{g^*k}},
+\]
+and
+\[
+  g^*\operatorname{Tr}^{H}(R)
+  \cong
+  \operatorname{Tr}^{g^*H}(g^*R).
+\]
+These comparison isomorphisms are pseudonatural in \(g\). The external connected-component and
+homwise coidentifier quotients are not included in this base-change assertion.
+
+Write
+\[
+  \mathcal B:=\operatorname{Mly}(\mathcal E).
+\]
+Its objects are internal categories, its \(1\)-cells are Mealy morphisms, and its \(2\)-cells are
+Mealy simulations. Finite product induces a symmetric monoidal bicategory
+\[
+  (\mathcal B,\times,\mathbbm1).
+\]
+
+For a Mealy morphism
+\[
+  P:A\rightsquigarrow B,
+\]
+write
+\[
+  p_P:P_0\to A_0,
+  \qquad
+  q_P:P_0\to B_0
+\]
+for its carrier anchors,
+\[
+  \delta_P:
+  A_1\times_{t_A,A_0,p_P}P_0\to P_0
+\]
+for its transition map, and
+\[
+  \omega_P:
+  A_1\times_{t_A,A_0,p_P}P_0\to B_1
+\]
+for its output map.
+
+The target-to-source convention gives
+\[
+  p_P\delta_P(a,x)=s_A(a),
+\]
+\[
+  t_B\omega_P(a,x)=q_P(x),
+  \qquad
+  s_B\omega_P(a,x)=q_P\delta_P(a,x).
+\]
+For composable
+\[
+  a:u\to v,
+  \qquad
+  b:v\to w,
+  \qquad
+  p_P(x)=w,
+\]
+the multiplication equations are
+\[
+  \delta_P(b\circ a,x)
+  =
+  \delta_P(a,\delta_P(b,x))
+\]
+and
+\[
+  \omega_P(b\circ a,x)
+  =
+  \omega_P(b,x)
+  \circ
+  \omega_P(a,\delta_P(b,x)).
+\]
+
+The displayed direction
+\[
+  \Theta:P\Longrightarrow Q
+\]
+of a Mealy simulation is opposite to the direction of its carrier comparison
+\[
+  \theta:Q_0\longrightarrow P_0.
+\]
+Write
+\[
+  \alpha_x:
+  q_P(\theta x)\longrightarrow q_Q(x)
+\]
+for its output-comparison component. Its state and output equations are
+\[
+  \theta\delta_Q(a,x)
+  =
+  \delta_P(a,\theta x)
+\]
+and
+\[
+  \alpha_x\circ\omega_P(a,\theta x)
+  =
+  \omega_Q(a,x)
+  \circ
+  \alpha_{\delta_Q(a,x)}.
+\]
+
+For an internal functor
+\[
+  F:A\to B,
+\]
+write
+\[
+  F_\#:A\rightsquigarrow B
+\]
+for its map-representable Mealy morphism.
+
+We write \(X+Y\) for coproducts of objects and for the coproduct monoidal tensor of spans. We reserve
+\[
+  R\boxplus S
+\]
+for the homwise coproduct of parallel spans with common source and target.
+
+We suppress specified associators, unitors, tensorators, and canonical pullback-comparison
+isomorphisms when their placement is uniquely forced by typing. No non-coherence \(2\)-cell is
+suppressed.
+
+\section{Transition-closed initialized Mealy morphisms}
+\label{sec:initialized-mealy-morphisms}
+
+An arbitrary family of selected states is not stable under horizontal composition of output-lax
+Mealy simulations. The selected state of the downstream machine must be transported along the
+output-comparison arrow of the upstream simulation. Initialization must therefore be closed under
+input processing.
+
+\begin{definition}[Transition-closed initialization]
+\label{def:transition-closed-initialization}
+Let
+\[
+  P:A\rightsquigarrow B
+\]
+be a Mealy morphism. A transition-closed initialization of \(P\) consists of:
+\begin{enumerate}
+  \item an object \(J_P\) and an anchor
+  \[
+    r_P:J_P\longrightarrow A_0;
+  \]
+  \item a right internal \(A\)-action
+  \[
+    \lambda_P:
+    A_1\times_{t_A,A_0,r_P}J_P
+    \longrightarrow
+    J_P;
+  \]
+  \item an equivariant map
+  \[
+    j_P:J_P\longrightarrow P_0
+  \]
+  satisfying
+  \[
+    p_Pj_P=r_P
+  \]
+  and
+  \[
+    j_P\lambda_P(a,i)
+    =
+    \delta_P(a,j_Pi).
+  \]
+\end{enumerate}
+The action laws are
+\[
+  \lambda_P(1_{r_P(i)},i)=i
+\]
+and
+\[
+  \lambda_P(a,\lambda_P(b,i))
+  =
+  \lambda_P(b\circ a,i)
+\]
+whenever \(a:u\to v\), \(b:v\to w\), and \(r_P(i)=w\).
+
+The resulting initialized Mealy morphism is written
+\[
+  \mathbf P=(P,J_P,\lambda_P,j_P).
+\]
+\end{definition}
+
+A ready family for \(\mathbf P\) is additional data
+\[
+  \rho_P:R_P\longrightarrow J_P.
+\]
+It need not be transition-closed. Transition-closed initialization supports composition; the ready
+family specifies the states whose observations are to be exposed, generated, or minimized.
+
+\begin{definition}[Total initialization]
+\label{def:total-initialization}
+The total initialization of \(P\) is
+\[
+  \operatorname{Tot}(P)
+  :=
+  (P,P_0,\delta_P,1_{P_0}),
+\]
+with initialization anchor \(p_P:P_0\to A_0\).
+\end{definition}
+
+\begin{definition}[Initialized Mealy simulation]
+\label{def:initialized-mealy-simulation}
+Let
+\[
+  \mathbf P=(P,J_P,\lambda_P,j_P),
+  \qquad
+  \mathbf Q=(Q,J_Q,\lambda_Q,j_Q)
+\]
+be transition-closed initialized Mealy morphisms \(A\rightsquigarrow B\).
+
+An initialized Mealy simulation
+\[
+  (u,\Theta):\mathbf P\Longrightarrow\mathbf Q
+\]
+consists of a Mealy simulation
+\[
+  \Theta:P\Longrightarrow Q
+\]
+with carrier comparison
+\[
+  \theta:Q_0\to P_0,
+\]
+together with a morphism of right \(A\)-actions
+\[
+  u:J_Q\longrightarrow J_P
+\]
+such that
+\[
+  j_Pu=\theta j_Q.
+\]
+Thus
+\[
+  r_Pu=r_Q
+\]
+and
+\[
+  u\lambda_Q(a,k)
+  =
+  \lambda_P(a,uk).
+\]
+\end{definition}
+
+\begin{definition}[Strict initialized simulation]
+\label{def:strict-initialized-simulation}
+An initialized Mealy simulation
+\[
+  (u,\Theta):\mathbf P\Longrightarrow\mathbf Q
+\]
+is strict when the output-comparison component of \(\Theta\) is everywhere an identity arrow.
+\end{definition}
+
+\subsection{Pipeline initialization}
+
+Let
+\[
+  \mathbf P:A\rightsquigarrow B,
+  \qquad
+  \mathbf Q:B\rightsquigarrow C.
+\]
+Define
+\[
+  J_{Q\circ P}
+  :=
+  J_P\times_{q_Pj_P,B_0,r_Q}J_Q.
+\]
+Its carrier map is
+\[
+  j_{Q\circ P}(i,k)
+  :=
+  (j_Pi,j_Qk),
+\]
+and its input action is
+\[
+  \lambda_{Q\circ P}(a,(i,k))
+  :=
+  \Bigl(
+    \lambda_P(a,i),
+    \lambda_Q(\omega_P(a,j_Pi),k)
+  \Bigr).
+\]
+
+\begin{lemma}[Pipeline initialization]
+\label{lem:pipeline-initialization}
+The preceding formulas define a transition-closed initialization of \(Q\circ P\).
+\end{lemma}
+
+\begin{proof}
+Since \((i,k)\) lies in the pullback,
+\[
+  q_Pj_Pi=r_Qk.
+\]
+The arrow
+\[
+  \omega_P(a,j_Pi)
+\]
+has target \(q_Pj_Pi\), so it acts on \(k\). Its source is
+\[
+\begin{aligned}
+  s_B\omega_P(a,j_Pi)
+  &=
+  q_P\delta_P(a,j_Pi)
+  \\
+  &=
+  q_Pj_P\lambda_P(a,i).
+\end{aligned}
+\]
+Hence the displayed pair again lies in the pullback.
+
+Equivariance is
+\[
+\begin{aligned}
+  j_{Q\circ P}
+  \lambda_{Q\circ P}(a,(i,k))
+  &=
+  \Bigl(
+    \delta_P(a,j_Pi),
+    \delta_Q(\omega_P(a,j_Pi),j_Qk)
+  \Bigr)
+  \\
+  &=
+  \delta_{Q\circ P}
+  (a,(j_Pi,j_Qk)).
+\end{aligned}
+\]
+
+The identity law follows from the identity laws of \(P\), \(Q\), and the two actions. For composable
+\(a:u\to v\) and \(b:v\to w\), the first component is the action multiplication law for
+\(\lambda_P\). For the second component, the Mealy multiplication law gives
+\[
+  \omega_P(b,j_Pi)
+  \circ
+  \omega_P(a,\delta_P(b,j_Pi))
+  =
+  \omega_P(b\circ a,j_Pi).
+\]
+The action multiplication law for \(\lambda_Q\) then gives the result.
+\end{proof}
+
+\subsection{Horizontal composition of initialized simulations}
+
+Let
+\[
+  (u,\Theta):\mathbf P\Longrightarrow\mathbf P',
+  \qquad
+  (v,\Xi):\mathbf Q\Longrightarrow\mathbf Q'
+\]
+with
+\[
+  P,P':A\rightsquigarrow B,
+  \qquad
+  Q,Q':B\rightsquigarrow C.
+\]
+Write
+\[
+  \theta:P'_0\to P_0,
+  \qquad
+  \kappa:Q'_0\to Q_0
+\]
+for the carrier comparisons, and write
+\[
+  \alpha_x:
+  q_P(\theta x)\longrightarrow q_{P'}(x)
+\]
+for the output comparison of \(\Theta\).
+
+Define
+\[
+\begin{aligned}
+  h_{\Xi,\Theta}:
+  J_{Q'\circ P'}
+  &\longrightarrow
+  J_{Q\circ P},
+  \\
+  (i',k')
+  &\longmapsto
+  \Bigl(
+    ui',
+    \lambda_Q(\alpha_{j_{P'}i'},vk')
+  \Bigr).
+\end{aligned}
+\]
+
+\begin{lemma}[Horizontal initialization comparison]
+\label{lem:horizontal-initialization-comparison}
+The map \(h_{\Xi,\Theta}\) is a morphism of right \(A\)-actions and factors the carrier comparison of
+the horizontal Mealy simulation
+\[
+  \Xi\ast\Theta:
+  Q\circ P
+  \Longrightarrow
+  Q'\circ P'.
+\]
+\end{lemma}
+
+\begin{proof}
+Since
+\[
+  t_B\alpha_{j_{P'}i'}
+  =
+  q_{P'}j_{P'}i'
+  =
+  r_{Q'}k'
+  =
+  r_Q(vk'),
+\]
+the second component is defined. Its resulting anchor is
+\[
+\begin{aligned}
+  r_Q\lambda_Q(\alpha_{j_{P'}i'},vk')
+  &=
+  s_B\alpha_{j_{P'}i'}
+  \\
+  &=
+  q_P\theta j_{P'}i'
+  \\
+  &=
+  q_Pj_Pui'.
+\end{aligned}
+\]
+Thus the pair lies in \(J_{Q\circ P}\).
+
+Using
+\[
+  j_Pu=\theta j_{P'},
+  \qquad
+  j_Qv=\kappa j_{Q'},
+\]
+one obtains
+\[
+  j_{Q\circ P}h_{\Xi,\Theta}(i',k')
+  =
+  \Bigl(
+    \theta j_{P'}i',
+    \delta_Q
+    \bigl(
+      \alpha_{j_{P'}i'},
+      \kappa j_{Q'}k'
+    \bigr)
+  \Bigr),
+\]
+which is the carrier comparison of \(\Xi\ast\Theta\).
+
+For equivariance, let \(a\) be an input arrow for \(P'\). Processing first by
+\(h_{\Xi,\Theta}\) and then by \(a\) gives the second component
+\[
+  \lambda_Q
+  \bigl(
+    \alpha_{j_{P'}i'}
+    \circ
+    \omega_P(a,\theta j_{P'}i'),
+    vk'
+  \bigr).
+\]
+Processing first by \(a\) and then by \(h_{\Xi,\Theta}\) gives
+\[
+  \lambda_Q
+  \bigl(
+    \omega_{P'}(a,j_{P'}i')
+    \circ
+    \alpha_{\delta_{P'}(a,j_{P'}i')},
+    vk'
+  \bigr).
+\]
+These are equal by the output-coherence equation for \(\Theta\). The first components agree by
+equivariance of \(u\).
+\end{proof}
+
+The identity initialized Mealy morphism on \(A\) is the identity Mealy morphism with total
+initialization. Tensor is defined coordinatewise:
+\[
+  \mathbf P\times\mathbf Q
+  :=
+  (P\times Q,J_P\times J_Q,\lambda_P\times\lambda_Q,j_P\times j_Q).
+\]
+
+\begin{theorem}[Initialized Mealy bicategory]
+\label{thm:initialized-mealy-bicategory}
+Transition-closed initialized Mealy morphisms and initialized Mealy simulations form a bicategory
+\[
+  \operatorname{IMly}^{\mathrm{cl}}(\mathcal E).
+\]
+Finite product induces a symmetric monoidal bicategory structure. Forgetting initialization defines
+a symmetric monoidal pseudofunctor
+\[
+  U:
+  \operatorname{IMly}^{\mathrm{cl}}(\mathcal E)
+  \longrightarrow
+  \operatorname{Mly}(\mathcal E).
+\]
+Total initialization defines a symmetric monoidal pseudofunctor
+\[
+  \operatorname{Tot}:
+  \operatorname{Mly}(\mathcal E)
+  \longrightarrow
+  \operatorname{IMly}^{\mathrm{cl}}(\mathcal E)
+\]
+with
+\[
+  U\operatorname{Tot}=1.
+\]
+\end{theorem}
+
+\begin{proof}
+Vertical composition composes the action maps. If
+\[
+  (u,\Theta):\mathbf P\Longrightarrow\mathbf Q,
+  \qquad
+  (v,\Xi):\mathbf Q\Longrightarrow\mathbf R,
+\]
+then
+\[
+  j_Puv
+  =
+  \theta j_Qv
+  =
+  \theta\kappa j_R,
+\]
+so \(uv\) factors the composite carrier comparison.
+
+Horizontal composition is supplied by
+Lemma~\ref{lem:horizontal-initialization-comparison}. Expanding either parenthesization of a triple
+horizontal composite produces the same ordered sequence of output-comparison arrows acting on the
+final initialization state. Equality follows from the action multiplication law and the
+associativity equation for horizontal Mealy simulation.
+
+The associators and unitors are the canonical equivariant isomorphisms between the corresponding
+iterated pullbacks. Their pentagon and triangle equations follow from the equations in
+\(\operatorname{Mly}(\mathcal E)\) and uniqueness of the canonical pullback comparisons.
+
+Product acts coordinatewise. Its coherence is inherited from finite-product coherence in
+\(\mathcal E\).
+
+For a Mealy simulation
+\[
+  \Theta:P\Longrightarrow Q
+\]
+with carrier comparison \(\theta:Q_0\to P_0\), total initialization uses \(\theta\) as its
+initialization map. The transition equation for \(\Theta\) is exactly the required equivariance
+equation. The canonical pullback comparison identifies total initialization of a pipeline with the
+pipeline of the total initializations. The identity and tensor comparisons are immediate.
+\end{proof}
+
+\section{Discardable residual reparametrizers}
+\label{sec:discardable-residual-reparametrizers}
+
+An arbitrary stateful residual reparametrizer cannot be discarded functorially. For
+\[
+  R:N\rightsquigarrow M,
+\]
+the composite
+\[
+  (!_M)_\#\circ R:N\rightsquigarrow\mathbbm1
+\]
+has carrier \(R_0\), whereas
+\[
+  (!_N)_\#:N\rightsquigarrow\mathbbm1
+\]
+has carrier \(N_0\). A simulation in the displayed direction requires a coherent \(R\)-state over
+every object of \(N\).
+
+\begin{definition}[Discardable residual reparametrizer]
+\label{def:discardable-residual-reparametrizer}
+A discardable residual reparametrizer
+\[
+  (R,e_R):N\rightsquigarrow M
+\]
+consists of a Mealy morphism \(R:N\rightsquigarrow M\) and a map
+\[
+  e_R:N_0\longrightarrow R_0
+\]
+such that
+\[
+  p_Re_R=1_{N_0}
+\]
+and
+\[
+  \delta_R(a,e_R(v))
+  =
+  e_R(u)
+\]
+for every arrow \(a:u\to v\) of \(N\).
+
+Equivalently, \(e_R\) is the carrier map of a strict initialized Mealy simulation
+\[
+  \epsilon_R:
+  \operatorname{Tot}((!_M)_\#\circ R)
+  \Longrightarrow
+  \operatorname{Tot}((!_N)_\#).
+\]
+\end{definition}
+
+\begin{definition}[Discard-preserving simulation]
+\label{def:discard-preserving-simulation}
+A Mealy simulation
+\[
+  \rho:(R,e_R)\Longrightarrow(R',e_{R'})
+\]
+is discard-preserving when its carrier comparison
+\[
+  \rho_0:R'_0\to R_0
+\]
+satisfies
+\[
+  \rho_0e_{R'}=e_R.
+\]
+\end{definition}
+
+\begin{proposition}[Closure of discardable reparametrizers]
+\label{prop:discardable-closure}
+Discardable residual reparametrizers are closed under identities, pipeline composition, and product
+tensor. Discard-preserving simulations are closed under vertical composition, horizontal
+composition, and tensor.
+\end{proposition}
+
+\begin{proof}
+The identity reparametrizer has
+\[
+  e_{1_N}=1_{N_0}.
+\]
+
+For
+\[
+  S:L\rightsquigarrow N,
+  \qquad
+  R:N\rightsquigarrow M,
+\]
+define
+\[
+  e_{R\circ S}(\ell)
+  :=
+  \bigl(
+    e_S(\ell),
+    e_R(q_Se_S(\ell))
+  \bigr)
+\]
+in the pullback carrier
+\[
+  S_0\times_{N_0}R_0.
+\]
+Let \(a:u\to v\) be an arrow of \(L\), and put
+\[
+  \beta:=\omega_S(a,e_S(v)).
+\]
+Discardability of \(S\) gives
+\[
+  \delta_S(a,e_S(v))=e_S(u).
+\]
+The arrow \(\beta\) has target \(q_Se_S(v)\) and source \(q_Se_S(u)\). Hence
+\[
+  \delta_R
+  \bigl(
+    \beta,
+    e_R(q_Se_S(v))
+  \bigr)
+  =
+  e_R(q_Se_S(u)).
+\]
+Therefore
+\[
+  \delta_{R\circ S}
+  (a,e_{R\circ S}(v))
+  =
+  e_{R\circ S}(u).
+\]
+
+For tensor, define
+\[
+  e_{R\times S}(n,\ell)
+  :=
+  (e_R(n),e_S(\ell)).
+\]
+
+Vertical composition of discard-preserving simulations is immediate. For horizontal composition,
+let
+\[
+  \rho:S\Longrightarrow S',
+  \qquad
+  \sigma:R\Longrightarrow R'
+\]
+be discard-preserving, and write
+\[
+  \alpha_x:
+  q_S(\rho_0x)\longrightarrow q_{S'}(x)
+\]
+for the output comparison of \(\rho\). The horizontal carrier comparison sends
+\[
+  e_{R'\circ S'}(\ell)
+  =
+  \bigl(
+    e_{S'}(\ell),
+    e_{R'}(q_{S'}e_{S'}(\ell))
+  \bigr)
+\]
+to
+\[
+  \left(
+    e_S(\ell),
+    \delta_R
+    \bigl(
+      \alpha_{e_{S'}(\ell)},
+      e_R(q_{S'}e_{S'}(\ell))
+    \bigr)
+  \right).
+\]
+The displayed transition is defined because
+\[
+  t_N\alpha_{e_{S'}(\ell)}
+  =
+  q_{S'}e_{S'}(\ell).
+\]
+Its source is
+\[
+  s_N\alpha_{e_{S'}(\ell)}
+  =
+  q_Se_S(\ell).
+\]
+Discardability of \(R\) therefore gives
+\[
+  \delta_R
+  \bigl(
+    \alpha_{e_{S'}(\ell)},
+    e_R(q_{S'}e_{S'}(\ell))
+  \bigr)
+  =
+  e_R(q_Se_S(\ell)).
+\]
+Thus the resulting state is
+\[
+  \bigl(
+    e_S(\ell),
+    e_R(q_Se_S(\ell))
+  \bigr)
+  =
+  e_{R\circ S}(\ell).
+\]
+Tensor preservation is coordinatewise.
+\end{proof}
+
+Every map-representable residual change
+\[
+  h_\#:N\rightsquigarrow M
+\]
+is discardable. Its carrier is \(N_0\), and one takes
+\[
+  e_{h_\#}=1_{N_0}.
+\]
+
+\section{Operational Mealy optics}
+\label{sec:operational-mealy-optics}
+
+\begin{definition}[Signed interface]
+\label{def:signed-interface}
+A signed interface is a pair
+\[
+  A=(A^+,A^-)
+\]
+of internal categories.
+\end{definition}
+
+\begin{definition}[Mealy optic presentation]
+\label{def:mealy-optic-presentation}
+For signed interfaces
+\[
+  A=(A^+,A^-),
+  \qquad
+  B=(B^+,B^-),
+\]
+a Mealy optic presentation
+\[
+  \mathcal A:A\rightsquigarrow_{\mathrm{opt}}B
+\]
+consists of an internal category \(M\), called its residual interface, and transition-closed
+initialized Mealy morphisms
+\[
+  \mathbf F:A^+\rightsquigarrow M\times B^+,
+\]
+\[
+  \mathbf G:M\times B^-\rightsquigarrow A^-.
+\]
+We write
+\[
+  \mathcal A=(M,\mathbf F,\mathbf G).
+\]
+\end{definition}
+
+\subsection{Operational optic simulations}
+
+Let
+\[
+  \mathcal A=(M,\mathbf F,\mathbf G),
+  \qquad
+  \mathcal A'=(N,\mathbf F',\mathbf G')
+\]
+have the same signed source and target.
+
+\begin{definition}[Raw operational optic simulation]
+\label{def:raw-operational-optic-simulation}
+A raw operational optic simulation
+\[
+  (R,e_R,\alpha,\beta):
+  \mathcal A\Longrightarrow\mathcal A'
+\]
+consists of:
+\begin{enumerate}
+  \item a discardable residual reparametrizer
+  \[
+    (R,e_R):N\rightsquigarrow M;
+  \]
+  \item an initialized Mealy simulation
+  \[
+    \alpha:
+    \mathbf F
+    \Longrightarrow
+    (\operatorname{Tot}(R)\times1_{B^+})\circ\mathbf F';
+  \]
+  \item an initialized Mealy simulation
+  \[
+    \beta:
+    \mathbf G\circ(\operatorname{Tot}(R)\times1_{B^-})
+    \Longrightarrow
+    \mathbf G'.
+  \]
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Optic modification]
+\label{def:optic-modification}
+Let
+\[
+  (R,e_R,\alpha,\beta),
+  \qquad
+  (R',e_{R'},\alpha',\beta')
+\]
+be raw operational optic simulations
+\(\mathcal A\Longrightarrow\mathcal A'\).
+
+A modification
+\[
+  \rho:
+  (R,e_R,\alpha,\beta)
+  \Rrightarrow
+  (R',e_{R'},\alpha',\beta')
+\]
+is a discard-preserving Mealy simulation
+\[
+  \rho:R\Longrightarrow R'
+\]
+such that
+\[
+  \alpha'
+  =
+  \bigl(
+    (\operatorname{Tot}(\rho)\times1_{B^+})\ast\mathbf F'
+  \bigr)
+  \circ\alpha
+\]
+and
+\[
+  \beta
+  =
+  \beta'
+  \circ
+  \bigl(
+    \mathbf G\ast(\operatorname{Tot}(\rho)\times1_{B^-})
+  \bigr).
+\]
+\end{definition}
+
+For fixed \(\mathcal A,\mathcal A'\), raw simulations and modifications form a category. An
+operational optic simulation
+\[
+  \mathcal A\Longrightarrow\mathcal A'
+\]
+is a connected component of this category.
+
+Thus residual reparametrizers and their represented leg data are retained only modulo the
+modification equations and the resulting zigzags. Stateful residual reparametrization is not
+discarded merely because pure presentation changes will later be coidentified.
+
+\subsection{Composition}
+
+If
+\[
+  (R,e_R,\alpha,\beta):\mathcal A\Longrightarrow\mathcal A',
+\]
+\[
+  (S,e_S,\gamma,\delta):\mathcal A'\Longrightarrow\mathcal A'',
+\]
+their vertical composite uses the residual pipeline \(R\circ S\). Its forward cell is the pasting
+\[
+  \mathbf F
+  \overset{\alpha}{\Longrightarrow}
+  (R\times1)\mathbf F'
+  \overset{R\ast\gamma}{\Longrightarrow}
+  (R\times1)(S\times1)\mathbf F''
+  \Longrightarrow
+  ((R\circ S)\times1)\mathbf F'',
+\]
+and its backward cell is the dual pasting.
+
+For presentations
+\[
+  \mathcal A=(M,\mathbf F,\mathbf G):A\rightsquigarrow_{\mathrm{opt}}B,
+\]
+\[
+  \mathcal B=(N,\mathbf H,\mathbf K):B\rightsquigarrow_{\mathrm{opt}}C,
+\]
+define
+\[
+  \mathcal B\circ_{\mathrm{opt}}\mathcal A
+  :=
+  \left(
+    M\times N,
+    (1_M\times\mathbf H)\circ\mathbf F,
+    \mathbf G\circ(1_M\times\mathbf K)
+  \right).
+\]
+The identity optic has residual \(\mathbbm1\) and the product unitors.
+
+Horizontal composition of optic simulations uses the residual reparametrizer \(R\times S\), together
+with the monoidal-pseudofunctor interchangers of product tensor on initialized Mealy morphisms.
+
+\begin{theorem}[Operational Mealy optic bicategory]
+\label{thm:operational-mealy-optic-bicategory}
+Signed internal interfaces, Mealy optic presentations, and operational optic simulations form a
+bicategory
+\[
+  \operatorname{MOpt}_{\mathrm{op}}(\mathcal E).
+\]
+Product tensor induces a symmetric monoidal bicategory structure
+\[
+  \bigl(
+    \operatorname{MOpt}_{\mathrm{op}}(\mathcal E),
+    \otimes,
+    (\mathbbm1,\mathbbm1)
+  \bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+Raw vertical composition is associative up to the associator of
+\(\operatorname{IMly}^{\mathrm{cl}}(\mathcal E)\). The residual associator is a
+discard-preserving map-representable simulation, and the two leg pastings satisfy the modification
+equations. Vertical composition is therefore associative after passage to connected components.
+
+Horizontal composition is well defined because product is a pseudofunctor on initialized Mealy
+morphisms and discardable residual reparametrizers are closed under product. The tensor of two
+modifications, followed by the forced interchanger pastings, is a modification of the corresponding
+horizontal composites.
+
+Interchange follows from interchange in
+\(\operatorname{IMly}^{\mathrm{cl}}(\mathcal E)\). The associator, unitors, and symmetry optics use
+map-representable residual changes induced by finite-product coherence maps. Their coherence
+equations reduce to those in the symmetric monoidal bicategory
+\(\operatorname{IMly}^{\mathrm{cl}}(\mathcal E)\).
+\end{proof}
+
+\subsection{Visible output and continuation closure}
+
+Let
+\[
+  \mathcal A=(M,\mathbf F,\mathbf G):A\rightsquigarrow_{\mathrm{opt}}B.
+\]
+Define its visible positive process by
+\[
+  \operatorname{out}(\mathcal A)
+  :=
+  \bigl(
+    (!_M)_\#\times1_{B^+}
+  \bigr)
+  \circ\mathbf F.
+\]
+For an initialized continuation
+\[
+  \mathbf K:B^+\rightsquigarrow B^-,
+\]
+define
+\[
+  \operatorname{cl}_{\mathbf K}(\mathcal A)
+  :=
+  \mathbf G\circ(1_M\times\mathbf K)\circ\mathbf F.
+\]
+
+\begin{lemma}[Functoriality in the continuation]
+\label{lem:continuation-functoriality}
+For every operational optic \(\mathcal A=(M,\mathbf F,\mathbf G)\), continuation closure defines a
+functor
+\[
+  \operatorname{Cl}_{\mathcal A}:
+  \operatorname{IMly}^{\mathrm{cl}}(\mathcal E)(B^+,B^-)
+  \longrightarrow
+  \operatorname{IMly}^{\mathrm{cl}}(\mathcal E)(A^+,A^-).
+\]
+On a continuation simulation
+\[
+  \zeta:\mathbf K\Longrightarrow\mathbf K',
+\]
+its value is
+\[
+  \mathbf G\ast(1_M\times\zeta)\ast\mathbf F.
+\]
+Likewise, postcomposition with \(\operatorname{out}(\mathcal A)\) defines a functor
+\[
+  \operatorname{IMly}^{\mathrm{cl}}(\mathcal E)(\mathbbm1,A^+)
+  \longrightarrow
+  \operatorname{IMly}^{\mathrm{cl}}(\mathcal E)(\mathbbm1,B^+).
+\]
+\end{lemma}
+
+\begin{proof}
+Both assignments are whiskering operations in the bicategory
+\(\operatorname{IMly}^{\mathrm{cl}}(\mathcal E)\). Their identity and composition laws are the
+bicategorical unitor and associator equations.
+\end{proof}
+
+\begin{proposition}[Output and closure comparisons]
+\label{prop:output-closure-comparisons}
+A raw operational optic simulation
+\[
+  (R,e_R,\alpha,\beta):
+  \mathcal A\Longrightarrow\mathcal A'
+\]
+induces initialized Mealy simulations
+\[
+  \operatorname{out}(\mathcal A)
+  \Longrightarrow
+  \operatorname{out}(\mathcal A')
+\]
+and
+\[
+  \operatorname{cl}_{\mathbf K}(\mathcal A)
+  \Longrightarrow
+  \operatorname{cl}_{\mathbf K}(\mathcal A').
+\]
+They depend only on the connected component of the raw optic simulation and preserve identities and
+composition up to canonical coherence.
+\end{proposition}
+
+\begin{proof}
+The output comparison is the pasting
+\[
+\begin{aligned}
+  ((!_M)_\#\times1)\mathbf F
+  &\Longrightarrow
+  ((!_M)_\#\times1)(R\times1)\mathbf F'
+  \\
+  &\cong
+  \bigl(
+    ((!_M)_\#R)\times1
+  \bigr)\mathbf F'
+  \\
+  &\overset{\epsilon_R\times1}{\Longrightarrow}
+  ((!_N)_\#\times1)\mathbf F'.
+\end{aligned}
+\]
+The closure comparison is
+\[
+\begin{aligned}
+  \mathbf G(1_M\times\mathbf K)\mathbf F
+  &\Longrightarrow
+  \mathbf G(1_M\times\mathbf K)(R\times1)\mathbf F'
+  \\
+  &\cong
+  \mathbf G(R\times1)(1_N\times\mathbf K)\mathbf F'
+  \\
+  &\Longrightarrow
+  \mathbf G'(1_N\times\mathbf K)\mathbf F'.
+\end{aligned}
+\]
+
+If \(\rho:R\Longrightarrow R'\) is a modification, discard preservation gives
+\[
+  \epsilon_R
+  =
+  \epsilon_{R'}
+  \circ
+  ((!_M)_\#\ast\rho),
+\]
+so the output pastings agree. The closure pastings agree by the defining modification equations.
+\end{proof}
+
+\section{Residual coidentification}
+\label{sec:residual-coidentification}
+
+Ordinary optic normal forms identify presentations along pure residual slides. A noninvertible
+residual slide cannot be used as an invertible bicategorical compositor. It must instead be made an
+identity by a homwise categorical coidentifier.
+
+\begin{definition}[Pure residual slide]
+\label{def:pure-residual-slide}
+Let
+\[
+  \mathcal A=(M,\mathbf F,\mathbf G),
+  \qquad
+  \mathcal A'=(N,\mathbf F',\mathbf G')
+\]
+be initialized optic presentations.
+
+A pure residual slide from \(\mathcal A\) to \(\mathcal A'\) consists of a map
+\[
+  h:N\to M
+\]
+and strict invertible initialized simulations
+\[
+  \phi:
+  \mathbf F
+  \overset{\cong}{\Longrightarrow}
+  \bigl(
+    \operatorname{Tot}(h_\#)\times1_{B^+}
+  \bigr)
+  \circ\mathbf F',
+\]
+\[
+  \psi:
+  \mathbf G\circ
+  \bigl(
+    \operatorname{Tot}(h_\#)\times1_{B^-}
+  \bigr)
+  \overset{\cong}{\Longrightarrow}
+  \mathbf G'.
+\]
+The residual reparametrizer is \(h_\#\), equipped with its canonical discard section.
+
+When the initialized leg data have been chosen so that the two displayed comparisons are literal
+equalities, \(\phi\) and \(\psi\) are identity simulations.
+\end{definition}
+
+Composite pure slides are defined using the canonical map-representable comparison
+\[
+  h_\#\circ k_\#
+  \cong
+  (h\circ k)_\#.
+\]
+Tensor products use
+\[
+  h_\#\times k_\#
+  \cong
+  (h\times k)_\#.
+\]
+Since the leg cells are strict and invertible, pure residual slides are closed under composition,
+whiskering, and tensor.
+
+For signed interfaces \(A,B\), put
+\[
+  \mathcal H_{A,B}
+  :=
+  \operatorname{MOpt}_{\mathrm{op}}(\mathcal E)(A,B).
+\]
+Let \(\mathcal P_{A,B}\) be the discrete category whose objects are pure residual slides in
+\(\mathcal H_{A,B}\). Their sources and targets define functors
+\[
+  s,t:
+  \mathcal P_{A,B}
+  \rightrightarrows
+  \mathcal H_{A,B},
+\]
+and the slides themselves define a natural transformation
+\[
+  \eta:s\Longrightarrow t.
+\]
+
+\begin{definition}[Residual coidentifier]
+\label{def:residual-coidentifier}
+The residual-codescent hom-category is the coidentifier
+\[
+  q_{A,B}:
+  \mathcal H_{A,B}
+  \longrightarrow
+  \overline{\mathcal H}_{A,B}
+\]
+of \(\eta\) in \(\mathbf{Cat}\). Thus
+\[
+  q_{A,B}s=q_{A,B}t
+\]
+and
+\[
+  q_{A,B}\eta=1.
+\]
+Equivalently, \(\overline{\mathcal H}_{A,B}\) is the quotient by the least category congruence that
+identifies the source and target of every pure residual slide and sends the slide itself to the
+identity of the resulting object class.
+\end{definition}
+
+\begin{theorem}[Residual-codescent optic bicategory]
+\label{thm:residual-codescent-optics}
+The hom-categories
+\[
+  \overline{\mathcal H}_{A,B}
+\]
+form a symmetric monoidal bicategory
+\[
+  \overline{\operatorname{MOpt}}_{\mathrm{op}}(\mathcal E).
+\]
+The quotient pseudofunctor
+\[
+  Q_{\mathrm{res}}:
+  \operatorname{MOpt}_{\mathrm{op}}(\mathcal E)
+  \longrightarrow
+  \overline{\operatorname{MOpt}}_{\mathrm{op}}(\mathcal E)
+\]
+is symmetric monoidal.
+\end{theorem}
+
+\begin{proof}
+Whiskering a pure residual slide by an optic replaces its residual map by a product with an identity
+and pastes the canonical strict leg comparisons. It is therefore again a pure residual slide.
+Horizontal composition and tensor of pure residual slides are represented by products of their
+residual maps and are again pure.
+
+Consequently horizontal composition and tensor coidentify the generating transformations. By the
+universal property of the homwise coidentifiers, they descend uniquely to the quotient
+hom-categories. The associators, unitors, and symmetry descend from
+\(\operatorname{MOpt}_{\mathrm{op}}(\mathcal E)\), and their coherence equations remain valid.
+\end{proof}
+
+\begin{definition}[Raw tight optic simulation]
+\label{def:raw-tight-optic-simulation}
+A raw operational optic simulation is tight when its residual reparametrizer is map-representable
+and its two leg simulations are strict initialized simulations.
+\end{definition}
+
+For each \(A,B\), define
+\[
+  \overline{\mathcal H}^{\mathrm{tight}}_{A,B}
+  \subseteq
+  \overline{\mathcal H}_{A,B}
+\]
+to be the wide subcategory generated by the images under \(q_{A,B}\) of raw tight optic
+simulations.
+
+\begin{proposition}[Tight locally wide fragment]
+\label{prop:tight-fragment}
+The hom-categories
+\[
+  \overline{\mathcal H}^{\mathrm{tight}}_{A,B}
+\]
+form a symmetric monoidal locally wide sub-bicategory
+\[
+  \overline{\operatorname{MOpt}}_{\mathrm{tight}}(\mathcal E)
+  \subseteq
+  \overline{\operatorname{MOpt}}_{\mathrm{op}}(\mathcal E)
+\]
+with the same objects and \(1\)-cells.
+\end{proposition}
+
+\begin{proof}
+Composite and tensor products of map-representable residual changes are map-representable.
+Horizontal and vertical composites of strict initialized simulations are strict. Pure slides are
+themselves generated by map-representable strict cells and become identities after codescent.
+
+Horizontal composition and tensor therefore preserve the generating tight arrows and hence the wide
+subcategories they generate. The coherence optics use finite-product coherence functors and thus
+belong to the same generated fragment.
+\end{proof}
+
+The full operational optic bicategory retains stateful residual reparametrizers. Residual
+coidentification kills only the pure map-representable slides used to change residual presentation.
+
+\section{Frozen parameters and parametrized arenas}
+\label{sec:parametrized-arenas}
+
+Let
+\[
+  \operatorname{Disc}:\mathcal E\longrightarrow\operatorname{Cat}(\mathcal E)
+\]
+be the discrete internal-category functor. For \(\Sigma\in\mathcal E\), define the signed parameter
+interface
+\[
+  \widehat\Sigma
+  :=
+  (\operatorname{Disc}(\Sigma),\mathbbm1).
+\]
+Then
+\[
+  \widehat\Sigma\otimes(A^+,A^-)
+  \cong
+  (\operatorname{Disc}(\Sigma)\times A^+,A^-).
+\]
+
+For a map
+\[
+  u:T\longrightarrow\Sigma,
+\]
+write
+\[
+  \widehat u:
+  \widehat T\longrightarrow\widehat\Sigma
+\]
+for the signed map-representable optic induced by
+\(\operatorname{Disc}(u)\) on the positive component and the identity of \(\mathbbm1\) on the
+negative component.
+
+\begin{definition}[Parametrized Mealy arena]
+\label{def:parametrized-mealy-arena}
+A parametrized Mealy arena
+\[
+  (\Sigma,\mathcal A):A\rightsquigarrow B
+\]
+consists of an object \(\Sigma\in\mathcal E\) and an operational Mealy optic
+\[
+  \mathcal A:
+  \widehat\Sigma\otimes A
+  \rightsquigarrow_{\mathrm{opt}}
+  B.
+\]
+A representative consists of a residual category \(M\) and initialized Mealy morphisms
+\[
+  \mathbf F:
+  \operatorname{Disc}(\Sigma)\times A^+
+  \rightsquigarrow
+  M\times B^+,
+\]
+\[
+  \mathbf G:
+  M\times B^-
+  \rightsquigarrow
+  A^-.
+\]
+\end{definition}
+
+The parameter is frozen because its interface is discrete. Persistent adaptation is carried by the
+Mealy state of the legs, not by arrows of \(\operatorname{Disc}(\Sigma)\).
+
+\begin{definition}[Parametrized arena simulation]
+\label{def:parametrized-arena-simulation}
+Let
+\[
+  (\Sigma,\mathcal A),
+  \qquad
+  (T,\mathcal B)
+\]
+have the same signed source and target. A parametrized arena simulation
+\[
+  (u,\Theta):
+  (\Sigma,\mathcal A)
+  \Longrightarrow
+  (T,\mathcal B)
+\]
+consists of a map
+\[
+  u:T\longrightarrow\Sigma
+\]
+and an operational optic simulation
+\[
+  \Theta:
+  \mathcal A\circ_{\mathrm{opt}}(\widehat u\otimes1_A)
+  \Longrightarrow
+  \mathcal B.
+\]
+\end{definition}
+
+The parameter direction is contravariant. An implementation indexed by \(T\) is represented in the
+parameterization \(\Sigma\) by \(u:T\to\Sigma\).
+
+For
+\[
+  (\Sigma,\mathcal A):A\rightsquigarrow B,
+  \qquad
+  (T,\mathcal B):B\rightsquigarrow C,
+\]
+the composite has parameter object \(\Sigma\times T\) and arena
+\[
+\begin{aligned}
+  \widehat{\Sigma\times T}\otimes A
+  &\cong
+  \widehat T\otimes(\widehat\Sigma\otimes A)
+  \\
+  &\xrightsquigarrow{1_{\widehat T}\otimes\mathcal A}
+  \widehat T\otimes B
+  \xrightsquigarrow{\mathcal B}
+  C.
+\end{aligned}
+\]
+
+\begin{theorem}[Parametrized operational arenas]
+\label{thm:parametrized-operational-arenas}
+Parametrized operational Mealy arenas and parametrized arena simulations form a symmetric monoidal
+bicategory
+\[
+  \operatorname{ParaMOpt}_{\mathrm{op}}(\mathcal E).
+\]
+Residual coidentification gives a symmetric monoidal bicategory
+\[
+  \overline{\operatorname{ParaMOpt}}_{\mathrm{op}}(\mathcal E),
+\]
+and the tight locally wide fragment is closed under parameterization, composition, and tensor.
+\end{theorem}
+
+\begin{proof}
+This is the parameter construction for the cartesian action of \(\mathcal E\) on
+\(\operatorname{MOpt}_{\mathrm{op}}(\mathcal E)\) through
+\(\Sigma\mapsto\widehat\Sigma\).
+
+Vertical composition is
+\[
+  (v,\Xi)\circ(u,\Theta)
+  =
+  \bigl(
+    u\circ v,
+    \Xi\circ(\Theta\ast(\widehat v\otimes1))
+  \bigr).
+\]
+Horizontal composition multiplies parameter maps and pastes optic simulations. Tensor uses
+cartesian product of parameter objects.
+
+Pure residual slides are stable under the parameter action, so the construction descends through
+the homwise coidentifiers. Tightness is preserved by the same operations.
+\end{proof}
+
+\subsection{Generalized incumbents}
+
+A generalized incumbent is a map
+\[
+  \sigma:U\longrightarrow\Sigma.
+\]
+All internally defined strategic constructions may be pulled back along \(\sigma\) to the slice
+topos \(\mathcal E/U\). Equivalently, one may precompose the arena by
+\[
+  \widehat\sigma\otimes1_A.
+\]
+Thus no global-point condition is imposed. Statements made using an internal variable
+\(\sigma:\Sigma\) are stable under arbitrary generalized incumbents.
+
+\section{Internal strategic context doctrines}
+\label{sec:strategic-context-doctrines}
+
+A strategic context doctrine specifies which environmental data are presented to the response
+machine and how an outer context decomposes under sequential and parallel composition. The doctrine
+is internal to \(\mathcal E\).
+
+Let \(\mathcal K\) be a symmetric monoidal bicategory of parametrized arenas.
+
+\begin{definition}[Internal strategic context doctrine]
+\label{def:strategic-context-doctrine}
+An internal strategic context doctrine
+\[
+  \mathfrak C
+\]
+on \(\mathcal K\) consists of the following data.
+
+For every arena
+\[
+  \mathcal A:A\rightsquigarrow_\Sigma B,
+\]
+there is an internal category
+\[
+  \mathfrak C(\mathcal A).
+\]
+
+For every parametrized arena simulation
+\[
+  \gamma=(u,\Theta):
+  \mathcal A\Longrightarrow\mathcal A',
+\]
+there is an internal functor
+\[
+  \gamma^*:
+  \mathfrak C(\mathcal A')
+  \longrightarrow
+  \mathfrak C(\mathcal A),
+\]
+and these functors form, homwise, a contravariant pseudofunctor
+\[
+  \mathfrak C_{A,B}:
+  \mathcal K(A,B)^{\mathrm{op}}
+  \longrightarrow
+  \operatorname{Cat}(\mathcal E).
+\]
+
+For composable arenas
+\[
+  \mathcal A:A\rightsquigarrow_\Sigma B,
+  \qquad
+  \mathcal B:B\rightsquigarrow_T C,
+\]
+there is an internal sequential decomposition functor
+\[
+\begin{aligned}
+  \Lambda^{\mathfrak C}_{\mathcal B,\mathcal A}:
+  \operatorname{Disc}(\Sigma\times T)
+  \times
+  \mathfrak C(\mathcal B\circ\mathcal A)
+  \longrightarrow
+  \mathfrak C(\mathcal A)
+  \times
+  \mathfrak C(\mathcal B).
+\end{aligned}
+\]
+
+For arenas
+\[
+  \mathcal A:A\rightsquigarrow_\Sigma B,
+  \qquad
+  \mathcal H:C\rightsquigarrow_T D,
+\]
+there is an internal parallel decomposition functor
+\[
+\begin{aligned}
+  \Pi^{\mathfrak C}_{\mathcal A,\mathcal H}:
+  \operatorname{Disc}(\Sigma\times T)
+  \times
+  \mathfrak C(\mathcal A\otimes\mathcal H)
+  \longrightarrow
+  \mathfrak C(\mathcal A)
+  \times
+  \mathfrak C(\mathcal H).
+\end{aligned}
+\]
+
+For arena simulations
+\[
+  \gamma=(u,\Theta):
+  \mathcal A\Longrightarrow\mathcal A',
+  \qquad
+  \delta=(v,\Xi):
+  \mathcal B\Longrightarrow\mathcal B',
+\]
+there is an invertible internal natural transformation
+\[
+\begin{aligned}
+  n^{\Lambda}_{\delta,\gamma}:&
+  (\gamma^*\times\delta^*)
+  \circ
+  \Lambda^{\mathfrak C}_{\mathcal B',\mathcal A'}
+  \\
+  &\Longrightarrow
+  \Lambda^{\mathfrak C}_{\mathcal B,\mathcal A}
+  \circ
+  \bigl(
+    \operatorname{Disc}(u\times v)
+    \times
+    (\delta\circ\gamma)^*
+  \bigr).
+\end{aligned}
+\]
+There is an analogous invertible natural transformation
+\[
+  n^{\Pi}_{\gamma,\eta}
+\]
+for parallel decomposition.
+
+For three composable arenas
+\[
+  \mathcal A:A\rightsquigarrow_\Sigma B,
+  \qquad
+  \mathcal B:B\rightsquigarrow_T C,
+  \qquad
+  \mathcal L:C\rightsquigarrow_U D,
+\]
+let
+\[
+  \Lambda^{L}_{\mathcal L,\mathcal B,\mathcal A},
+  \qquad
+  \Lambda^{R}_{\mathcal L,\mathcal B,\mathcal A}
+\]
+be the two functors
+\[
+\begin{aligned}
+  \operatorname{Disc}(\Sigma\times T\times U)
+  \times
+  \mathfrak C(\mathcal L\circ\mathcal B\circ\mathcal A)
+  \longrightarrow
+  \mathfrak C(\mathcal A)
+  \times
+  \mathfrak C(\mathcal B)
+  \times
+  \mathfrak C(\mathcal L)
+\end{aligned}
+\]
+obtained respectively by first decomposing
+\[
+  \mathcal L\circ(\mathcal B\circ\mathcal A)
+\]
+and by first decomposing
+\[
+  (\mathcal L\circ\mathcal B)\circ\mathcal A,
+\]
+using the projections from \(\Sigma\times T\times U\) to supply the local strategy coordinates.
+
+There is an invertible internal natural transformation
+\[
+  a^{\Lambda}_{\mathcal L,\mathcal B,\mathcal A}:
+  \Lambda^{L}_{\mathcal L,\mathcal B,\mathcal A}
+  \Longrightarrow
+  \Lambda^{R}_{\mathcal L,\mathcal B,\mathcal A}.
+\]
+
+There are similarly typed invertible internal natural transformations for:
+
+\begin{enumerate}
+  \item left and right sequential units;
+  \item parallel associativity;
+  \item parallel left and right units;
+  \item parallel symmetry;
+  \item sequential--parallel middle-four interchange.
+\end{enumerate}
+
+The middle-four comparison has source and target the two functors
+\[
+\begin{aligned}
+&
+\operatorname{Disc}
+\bigl(
+  \Sigma_1\times\Sigma_2\times T_1\times T_2
+\bigr)
+\times
+\mathfrak C
+\bigl(
+  (\mathcal B_1\otimes\mathcal B_2)
+  \circ
+  (\mathcal A_1\otimes\mathcal A_2)
+\bigr)
+\\
+&\hspace{20mm}\longrightarrow
+\mathfrak C(\mathcal A_1)
+\times
+\mathfrak C(\mathcal A_2)
+\times
+\mathfrak C(\mathcal B_1)
+\times
+\mathfrak C(\mathcal B_2)
+\end{aligned}
+\]
+obtained in the two orders:
+
+\begin{enumerate}
+  \item sequential decomposition followed by parallel decomposition of each local context;
+  \item parallel decomposition followed by sequential decomposition of each tensor factor.
+\end{enumerate}
+
+These transformations satisfy the triangle, pentagon, hexagon, middle-four interchange, and
+pseudonaturality equations.
+\end{definition}
+
+The explicit pseudonaturality and coherence transformations are part of the doctrine. They are the
+comparison cells needed when evaluator machines are reindexed during composition of strategic
+simulations.
+
+\section{Internal counterfactual query machines}
+\label{sec:counterfactual-query-machines}
+
+\subsection{Internal cores}
+
+Let \(\mathcal C\) be an internal category. Define
+\[
+  \operatorname{Inv}(\mathcal C)
+\]
+to be the object of pairs \((f,g)\) of arrows satisfying
+\[
+  g\circ f=1,
+  \qquad
+  f\circ g=1.
+\]
+Projection to \(f\) is monic because inverses are unique.
+
+\begin{definition}[Internal core]
+\label{def:internal-core}
+The internal core
+\[
+  \mathcal C^\simeq
+\]
+has object object \(\mathcal C_0\) and arrow object the image of
+\[
+  \operatorname{Inv}(\mathcal C)\longrightarrow\mathcal C_1.
+\]
+It is an internal groupoid.
+\end{definition}
+
+\begin{lemma}[Functoriality of the core]
+\label{lem:core-functoriality}
+Every internal functor
+\[
+  F:\mathcal C\to\mathcal D
+\]
+restricts to an internal functor
+\[
+  F^\simeq:\mathcal C^\simeq\to\mathcal D^\simeq.
+\]
+Every invertible internal natural transformation restricts to an invertible natural transformation
+between the induced core functors.
+\end{lemma}
+
+\begin{proof}
+A functor sends inverse pairs to inverse pairs. Naturality and invertibility are inherited from the
+ambient internal categories.
+\end{proof}
+
+\subsection{Internal deviation categories}
+
+Let
+\[
+  \Sigma^\ast
+  :=
+  \coprod_{n\in\mathbb N}\Sigma^n
+\]
+be the internal free monoid on \(\Sigma\), with unit the empty word and multiplication given by list
+concatenation.
+
+\begin{definition}[Internal deviation category]
+\label{def:internal-deviation-category}
+The internal deviation category
+\[
+  \mathsf{Dev}(\Sigma)
+\]
+has
+\[
+  \mathsf{Dev}(\Sigma)_0=\Sigma,
+\]
+\[
+  \mathsf{Dev}(\Sigma)_1=\Sigma\times\Sigma^\ast,
+\]
+with both source and target equal to the first projection. Identity is the empty word and
+composition is concatenation.
+
+The one-letter deviation associated to an alternative \(\sigma'\) is written
+\[
+  [\sigma']:\sigma\longrightarrow\sigma.
+\]
+\end{definition}
+
+A map
+\[
+  u:T\to\Sigma
+\]
+induces an internal functor
+\[
+  \mathsf{Dev}(u):
+  \mathsf{Dev}(T)
+  \longrightarrow
+  \mathsf{Dev}(\Sigma)
+\]
+by applying \(u\) to the incumbent and to every letter of the deviation word.
+
+\begin{definition}[Internal query category]
+\label{def:internal-query-category}
+For an internal category \(\mathcal C\), define
+\[
+  \mathsf{Qry}(\Sigma,\mathcal C)
+  :=
+  \mathsf{Dev}(\Sigma)\times\mathcal C^\simeq.
+\]
+Its objects are pairs
+\[
+  (\sigma,c).
+\]
+A one-query deviation is
+\[
+  ([\sigma'],1_c):
+  (\sigma,c)\longrightarrow(\sigma,c),
+\]
+and a context isomorphism
+\[
+  f:c\overset{\cong}{\longrightarrow}d
+\]
+gives
+\[
+  (1_\sigma,f):
+  (\sigma,c)\longrightarrow(\sigma,d).
+\]
+\end{definition}
+
+A map \(u:T\to\Sigma\) and an internal functor \(F:\mathcal D\to\mathcal C\) induce
+\[
+  \mathsf{Qry}(u,F):
+  \mathsf{Qry}(T,\mathcal D)
+  \longrightarrow
+  \mathsf{Qry}(\Sigma,\mathcal C).
+\]
+An invertible natural transformation
+\[
+  \eta:F\Longrightarrow G
+\]
+induces an invertible natural transformation
+\[
+  \mathsf{Qry}(u,\eta):
+  \mathsf{Qry}(u,F)
+  \Longrightarrow
+  \mathsf{Qry}(u,G).
+\]
+
+\subsection{Truth output}
+
+Let \(\Omega\) be the subobject classifier of \(\mathcal E\).
+
+\begin{definition}[Internal truth category]
+\label{def:internal-truth-category}
+The internal truth category
+\[
+  \mathsf{Truth}_\wedge
+\]
+has one object,
+\[
+  (\mathsf{Truth}_\wedge)_0=\mathbbm1,
+\]
+arrow object
+\[
+  (\mathsf{Truth}_\wedge)_1=\Omega,
+\]
+identity
+\[
+  \top:\mathbbm1\to\Omega,
+\]
+and composition
+\[
+  \wedge:\Omega\times\Omega\to\Omega.
+\]
+\end{definition}
+
+Meet defines a strict symmetric monoidal internal functor
+\[
+  \wedge:
+  \mathsf{Truth}_\wedge\times\mathsf{Truth}_\wedge
+  \longrightarrow
+  \mathsf{Truth}_\wedge.
+\]
+
+\subsection{Initialized response evaluators}
+
+\begin{definition}[Counterfactual response evaluator]
+\label{def:counterfactual-response-evaluator}
+A counterfactual response evaluator for \((\Sigma,\mathcal C)\) consists of:
+\begin{enumerate}
+  \item a transition-closed initialized Mealy morphism
+  \[
+    \mathbf E:
+    \mathsf{Qry}(\Sigma,\mathcal C)
+    \rightsquigarrow
+    \mathsf{Truth}_\wedge;
+  \]
+  \item a ready-state map
+  \[
+    \rho_E:
+    \Sigma\times\mathcal C_0
+    \longrightarrow
+    J_E
+  \]
+  over the query-object map;
+  \item context transparency: for every context isomorphism
+  \[
+    f:c\overset{\cong}{\longrightarrow}d
+  \]
+  and every admissible state \(i\) over \((\sigma,d)\),
+  \[
+    \omega_E
+    \bigl(
+      (1_\sigma,f),
+      j_Ei
+    \bigr)
+    =
+    \top,
+  \]
+  and
+  \[
+    \lambda_E
+    \bigl(
+      (1_\sigma,f),
+      \rho_E(\sigma,d)
+    \bigr)
+    =
+    \rho_E(\sigma,c).
+  \]
+\end{enumerate}
+\end{definition}
+
+Context transparency is imposed on every admissible initialized state, not only on ready states.
+Since \(f^{-1}\) is also a context isomorphism, the action laws make context transport invertible.
+
+\begin{definition}[One-query classifier]
+\label{def:one-query-classifier}
+The one-query classifier of \(E\) is the morphism
+\[
+  \chi_E:
+  \Sigma\times\mathcal C_0\times\Sigma
+  \longrightarrow
+  \Omega
+\]
+obtained by reading the output produced when the ready state
+\(\rho_E(\sigma,c)\) processes the one-letter deviation
+\[
+  ([\sigma'],1_c).
+\]
+
+It classifies the best-response subobject
+\[
+  \mathsf{BR}_E
+  \hookrightarrow
+  \Sigma\times\mathcal C_0\times\Sigma.
+\]
+The equilibrium subobject is the pullback of \(\mathsf{BR}_E\) along
+\[
+  \Sigma\times\mathcal C_0
+  \longrightarrow
+  \Sigma\times\mathcal C_0\times\Sigma,
+  \qquad
+  (\sigma,c)\longmapsto(\sigma,c,\sigma).
+\]
+\end{definition}
+
+\begin{proposition}[Context invariance]
+\label{prop:context-invariance}
+For every context isomorphism
+\[
+  f:c\overset{\cong}{\longrightarrow}d,
+\]
+one has internally
+\[
+  \chi_E(\sigma,c,\sigma')
+  =
+  \chi_E(\sigma,d,\sigma').
+\]
+\end{proposition}
+
+\begin{proof}
+In the product category
+\(\mathsf{Dev}(\Sigma)\times\mathcal C^\simeq\), deviation and context transport commute:
+\[
+  (1_\sigma,f)\circ([\sigma'],1_c)
+  =
+  ([\sigma'],1_d)\circ(1_\sigma,f).
+\]
+Evaluate the two factorizations from the ready state over \(d\). The context arrow emits
+\(\top\) before or after the deviation. The Mealy multiplication law therefore identifies the two
+deviation outputs. Ready-state transport identifies the state over \(c\) with
+\(\rho_E(\sigma,c)\).
+\end{proof}
+
+\subsection{Extensional evaluators}
+
+Let
+\[
+  \operatorname{fold}_\wedge:
+  \Omega^\ast\longrightarrow\Omega
+\]
+be finite meet, with empty meet \(\top\).
+
+\begin{definition}[Extensional response evaluator]
+\label{def:extensional-response-evaluator}
+Let
+\[
+  \chi:
+  \Sigma\times\mathcal C_0\times\Sigma
+  \longrightarrow
+  \Omega
+\]
+be invariant under arrows of \(\mathcal C^\simeq\).
+
+Define an internal functor
+\[
+  \mathsf{Qry}(\chi):
+  \mathsf{Qry}(\Sigma,\mathcal C)
+  \longrightarrow
+  \mathsf{Truth}_\wedge
+\]
+by sending a query arrow consisting of a context isomorphism and a deviation word
+\[
+  \sigma'_1\cdots\sigma'_n
+\]
+to
+\[
+  \bigwedge_{i=1}^{n}
+  \chi(\sigma,c,\sigma'_i).
+\]
+Context invariance makes this independent of whether \(c\) is read at the source or target of the
+context isomorphism.
+
+The associated totally initialized map-representable Mealy morphism is the extensional evaluator
+classified by \(\chi\).
+\end{definition}
+
+\begin{proposition}[Canonical extensional realization]
+\label{prop:canonical-extensional-realization}
+Every context-isomorphism-invariant subobject
+\[
+  \mathsf{BR}
+  \hookrightarrow
+  \Sigma\times\mathcal C_0\times\Sigma
+\]
+has a canonical extensional response evaluator.
+\end{proposition}
+
+\begin{proof}
+Take the classifying morphism
+\[
+  \chi_{\mathsf{BR}}:
+  \Sigma\times\mathcal C_0\times\Sigma
+  \to\Omega
+\]
+and apply Definition~\ref{def:extensional-response-evaluator}.
+\end{proof}
+
+\subsection{Transport along context isomorphisms}
+
+\begin{lemma}[Evaluator transport]
+\label{lem:evaluator-transport}
+Let \(E\) be a context-transparent evaluator for \((\Sigma,\mathcal C)\). Let
+\[
+  u:T\to\Sigma,
+\]
+let
+\[
+  F,G:\mathcal D\to\mathcal C
+\]
+be internal functors, and let
+\[
+  \eta:F\Longrightarrow G
+\]
+be an invertible internal natural transformation. Then \(\eta\) induces an invertible
+response-strict initialized Mealy simulation
+\[
+  \operatorname{tr}_E(u,\eta):
+  E\circ\mathsf{Qry}(u,F)_\#
+  \Longrightarrow
+  E\circ\mathsf{Qry}(u,G)_\#.
+\]
+\end{lemma}
+
+\begin{proof}
+A state of the target composite over \((\tau,d)\) is an admissible \(E\)-state over
+\[
+  (u\tau,Gd).
+\]
+Process the context-isomorphism arrow
+\[
+  (1_{u\tau},\eta_d):
+  (u\tau,Fd)\longrightarrow(u\tau,Gd)
+\]
+at that state. Target-to-source processing produces a state over \((u\tau,Fd)\), defining the
+carrier comparison.
+
+Naturality of \(\eta\) gives compatibility with every query arrow. Context transparency says that
+the processed comparison arrow emits \(\top\), so the output comparison is the identity truth
+arrow. The ready-state equation follows from ready-state transport. Processing
+\(\eta^{-1}\) supplies the inverse.
+\end{proof}
+
+\subsection{Response-strict evaluator simulations}
+
+\begin{definition}[Evaluator simulation over reindexing]
+\label{def:evaluator-simulation-over-reindexing}
+Let \(E\) be an evaluator for \((\Sigma,\mathcal C)\), and let \(E'\) be an evaluator for
+\((T,\mathcal D)\).
+
+An evaluator simulation over
+\[
+  (u,F),
+  \qquad
+  u:T\to\Sigma,
+  \quad
+  F:\mathcal D\to\mathcal C,
+\]
+is an initialized Mealy simulation
+\[
+  E\circ\mathsf{Qry}(u,F)_\#
+  \Longrightarrow
+  E'
+\]
+whose carrier comparison preserves ready states.
+
+It is response-strict when its output-comparison component is everywhere \(\top\).
+\end{definition}
+
+\begin{proposition}[Classifier preservation and response-strict closure]
+\label{prop:classifier-preservation}
+A response-strict evaluator simulation over \((u,F)\) satisfies
+\[
+  \chi_{E'}(\tau,d,\tau')
+  =
+  \chi_E(u\tau,Fd,u\tau').
+\]
+
+Response-strict evaluator simulations are closed under vertical composition, left and right
+whiskering by fixed initialized Mealy \(1\)-cells, product tensor, evaluator transport, and
+postcomposition by the meet functor.
+\end{proposition}
+
+\begin{proof}
+Apply the Mealy output equation to a one-query generator at a preserved ready state. Since the output
+comparison is \(\top\), the two emitted truth arrows are equal.
+
+Vertical composition and tensor use
+\[
+  \top\wedge\top=\top.
+\]
+For horizontal composition, the downstream state is transported along the upstream
+output-comparison arrow. When the upstream comparison is strict, this arrow is an identity. The
+Mealy unit law says that processing it emits an identity output. Composing with the strict
+downstream output comparison again gives an identity. Hence strict simulations are closed under
+horizontal composition and therefore under ordinary bicategorical whiskering.
+
+Evaluator transport is strict by context transparency, and the meet functor sends the pair of
+identity truth arrows to \(\top\).
+\end{proof}
+
+\section{The bicategory of strategic Mealy games}
+\label{sec:strategic-mealy-games}
+
+Let \(\mathcal K\) be a symmetric monoidal bicategory of parametrized arenas and let
+\(\mathfrak C\) be an internal strategic context doctrine on \(\mathcal K\).
+
+\begin{definition}[Strategic Mealy game]
+\label{def:strategic-mealy-game}
+A strategic Mealy game
+\[
+  \mathcal G:A\longrightarrow B
+\]
+relative to \(\mathfrak C\) consists of:
+\begin{enumerate}
+  \item a strategy object
+  \[
+    \Sigma_{\mathcal G}\in\mathcal E;
+  \]
+  \item a parametrized arena
+  \[
+    \mathcal A_{\mathcal G}:
+    A\rightsquigarrow_{\Sigma_{\mathcal G}}B
+  \]
+  in \(\mathcal K\);
+  \item a context-transparent counterfactual evaluator
+  \[
+    E_{\mathcal G}:
+    \mathsf{Qry}
+    \bigl(
+      \Sigma_{\mathcal G},
+      \mathfrak C(\mathcal A_{\mathcal G})
+    \bigr)
+    \rightsquigarrow
+    \mathsf{Truth}_\wedge.
+  \]
+\end{enumerate}
+\end{definition}
+
+The extensional strategic shadow is the arena together with the classifier
+\[
+  \chi_{\mathcal G}:
+  \Sigma_{\mathcal G}
+  \times
+  \mathfrak C(\mathcal A_{\mathcal G})_0
+  \times
+  \Sigma_{\mathcal G}
+  \longrightarrow
+  \Omega.
+\]
+A stateful evaluator may contain histories, cached simulations, beliefs, or adaptive query state
+that are invisible in this one-query shadow.
+
+\subsection{Sequential composition}
+
+Let
+\[
+  \mathcal G:A\to B,
+  \qquad
+  \mathcal H:B\to C
+\]
+have strategy objects \(\Sigma,T\). The sequential context decomposition functor induces an internal
+query-decomposition functor
+\[
+\begin{aligned}
+  D_{\mathcal H,\mathcal G}:&
+  \mathsf{Qry}
+  \bigl(
+    \Sigma\times T,
+    \mathfrak C(
+      \mathcal A_{\mathcal H}\circ\mathcal A_{\mathcal G}
+    )
+  \bigr)
+  \\
+  &\longrightarrow
+  \mathsf{Qry}
+  \bigl(
+    \Sigma,
+    \mathfrak C(\mathcal A_{\mathcal G})
+  \bigr)
+  \times
+  \mathsf{Qry}
+  \bigl(
+    T,
+    \mathfrak C(\mathcal A_{\mathcal H})
+  \bigr).
+\end{aligned}
+\]
+On objects it is
+\[
+  ((\sigma,\tau),c)
+  \longmapsto
+  \bigl(
+    (\sigma,c_{\mathcal G}),
+    (\tau,c_{\mathcal H})
+  \bigr),
+\]
+where
+\[
+  (c_{\mathcal G},c_{\mathcal H})
+  =
+  \Lambda^{\mathfrak C}_{\mathcal H,\mathcal G}
+  ((\sigma,\tau),c).
+\]
+On a deviation word in \(\Sigma\times T\), it applies the two coordinate projections to every
+letter. On context isomorphisms, it uses the functorial action of
+\(\Lambda^{\mathfrak C}_{\mathcal H,\mathcal G}\).
+
+\begin{definition}[Sequential composite]
+\label{def:strategic-sequential-composite}
+The composite
+\[
+  \mathcal H\circ\mathcal G
+\]
+has strategy object
+\[
+  \Sigma\times T,
+\]
+arena
+\[
+  \mathcal A_{\mathcal H}\circ\mathcal A_{\mathcal G},
+\]
+and evaluator
+\[
+  E_{\mathcal H\circ\mathcal G}
+  :=
+  \wedge_\#
+  \circ
+  (E_{\mathcal G}\times E_{\mathcal H})
+  \circ
+  (D_{\mathcal H,\mathcal G})_\#.
+\]
+Its ready-state map is
+\[
+\begin{aligned}
+  \rho_{\mathcal H\circ\mathcal G}
+  ((\sigma,\tau),c)
+  :=
+  \bigl(
+    \rho_{\mathcal G}(\sigma,c_{\mathcal G}),
+    \rho_{\mathcal H}(\tau,c_{\mathcal H})
+  \bigr),
+\end{aligned}
+\]
+under the canonical carrier and initialization identifications for product and pipeline
+composition.
+\end{definition}
+
+Its one-query classifier is
+\[
+\begin{aligned}
+&\chi_{\mathcal H\circ\mathcal G}
+\bigl(
+  (\sigma,\tau),
+  c,
+  (\sigma',\tau')
+\bigr)
+\\
+&\qquad=
+\chi_{\mathcal G}
+(\sigma,c_{\mathcal G},\sigma')
+\wedge
+\chi_{\mathcal H}
+(\tau,c_{\mathcal H},\tau').
+\end{aligned}
+\]
+
+The identity game has strategy object \(\mathbbm1\), identity arena, and constantly true evaluator.
+Tensor uses parallel context decomposition and the same meet functor.
+
+\subsection{Strategic simulations}
+
+\begin{definition}[Response-strict strategic simulation]
+\label{def:strategic-game-simulation}
+Let
+\[
+  \mathcal G,\mathcal H:A\to B
+\]
+have strategy objects \(\Sigma,T\).
+
+A response-strict strategic simulation
+\[
+  (u,\Theta,\Xi):
+  \mathcal G\Longrightarrow\mathcal H
+\]
+consists of:
+\begin{enumerate}
+  \item a map
+  \[
+    u:T\to\Sigma;
+  \]
+  \item a parametrized arena simulation
+  \[
+    (u,\Theta):
+    (\Sigma,\mathcal A_{\mathcal G})
+    \Longrightarrow
+    (T,\mathcal A_{\mathcal H});
+  \]
+  \item a response-strict evaluator simulation
+  \[
+    \Xi:
+    E_{\mathcal G}
+    \circ
+    \mathsf{Qry}
+    \bigl(
+      u,
+      (u,\Theta)^*
+    \bigr)_\#
+    \Longrightarrow
+    E_{\mathcal H}.
+  \]
+\end{enumerate}
+\end{definition}
+
+Its classifier equation is
+\[
+  \chi_{\mathcal H}(\tau,c,\tau')
+  =
+  \chi_{\mathcal G}
+  \bigl(
+    u\tau,
+    (u,\Theta)^*c,
+    u\tau'
+  \bigr).
+\]
+Diagonal response and equilibrium are therefore preserved exactly.
+
+\begin{theorem}[Strategic Mealy bicategory]
+\label{thm:strategic-mealy-bicategory}
+Strategic Mealy games and response-strict strategic simulations form a bicategory
+\[
+  \operatorname{StrMlyGame}^{=}_{\mathfrak C}(\mathcal K).
+\]
+If \(\mathfrak C\) carries coherent parallel decomposition, this bicategory is symmetric monoidal.
+\end{theorem}
+
+\begin{proof}
+The composite evaluator is initialized because \(D_{\mathcal H,\mathcal G}\) is an internal functor,
+product tensors initialized evaluators, and meet is an internal functor. Its ready-state map is the
+map displayed in Definition~\ref{def:strategic-sequential-composite}. Context transparency is
+preserved because the local evaluators emit \(\top\) on context transports and
+\[
+  \top\wedge\top=\top.
+\]
+
+For three games, the doctrine associator
+\[
+  a^\Lambda
+\]
+is an invertible internal natural transformation between the two functors assigning the triple of
+local contexts. Applying the internal core and \(\mathsf{Qry}\) gives an invertible natural
+transformation between the corresponding query decomposition functors.
+Lemma~\ref{lem:evaluator-transport} converts it into an invertible response-strict evaluator
+simulation. Product coherence and associativity of meet then construct the strategic associator.
+
+The strategic pentagon is the image of the doctrine pentagon under the core construction, the query
+construction, evaluator transport, product of evaluators, and postcomposition by meet.
+
+The unitors are obtained from doctrine unit coherence and the unit law for meet.
+
+Vertical composition composes parameter maps, arena simulations, context reindexing functors, and
+response-strict evaluator simulations. The pseudofunctorial comparison for context reindexing is
+converted by Lemma~\ref{lem:evaluator-transport} into the required evaluator transport.
+
+Horizontal composition uses the explicit doctrine pseudonaturality transformation
+\[
+  n^\Lambda_{\delta,\gamma},
+\]
+followed by product and pasting of the local evaluator simulations. Response strictness follows from
+Proposition~\ref{prop:classifier-preservation}.
+
+Interchange follows from interchange in the arena and initialized-Mealy bicategories. Parallel
+decomposition, doctrine symmetry, and commutativity of meet supply the symmetric monoidal structure.
+The triangle, pentagon, hexagon, and middle-four equations reduce to the corresponding doctrine
+equations, functoriality of evaluator transport, and coherence of product and meet.
+\end{proof}
+
+\section{Tight stateless optics and internal deterministic lenses}
+\label{sec:tight-stateless-optics}
+
+For objects \(X,S,Y,R\in\mathcal E\), an internal deterministic lens
+\[
+  (X,S)\longrightarrow(Y,R)
+\]
+is a pair
+\[
+  p:X\to Y,
+  \qquad
+  c:X\times R\to S.
+\]
+
+A tight discrete stateless optic presentation consists of an object \(M\) and maps
+\[
+  f:X\longrightarrow M\times Y,
+  \qquad
+  b:M\times R\longrightarrow S,
+\]
+regarded as totally initialized map-representable Mealy morphisms between discrete internal
+categories.
+
+A pure residual slide along
+\[
+  h:N\to M
+\]
+is represented by the strict equations
+\[
+  f=(h\times1_Y)f',
+  \qquad
+  b(h\times1_R)=b'.
+\]
+
+\begin{definition}[Canonical lens presentation]
+\label{def:canonical-lens-presentation}
+The canonical residual presentation of a lens \((p,c)\) has residual \(X\), forward map
+\[
+  \bar p(x)=(x,p(x)),
+\]
+and backward map
+\[
+  c:X\times R\to S.
+\]
+\end{definition}
+
+Conversely, a presentation \((M,f,b)\) determines
+\[
+  p_f:=\pi_Yf
+\]
+and
+\[
+  c_{f,b}
+  :=
+  b\circ(\pi_Mf\times1_R).
+\]
+
+\begin{theorem}[Internal lens--optic correspondence]
+\label{thm:internal-lens-optic-correspondence}
+The locally discrete tight discrete stateless fragment of the residual-codescent optic bicategory is
+isomorphic to the locally discrete bicategory associated to internal deterministic lenses.
+
+Homwise, in the fixed universe,
+\[
+  \operatorname{Lens}_{\mathcal E}((X,S),(Y,R))
+  \cong
+  \int^{M\in\mathcal E}
+  \mathcal E(X,M\times Y)
+  \times
+  \mathcal E(M\times R,S).
+\]
+The correspondence preserves identities, sequential composition, and product tensor.
+\end{theorem}
+
+\begin{proof}
+A pure residual slide does not change the extracted lens. If
+\[
+  f=(h\times1)f',
+  \qquad
+  b(h\times1)=b',
+\]
+then
+\[
+  \pi_Yf=\pi_Yf'
+\]
+and
+\[
+\begin{aligned}
+  b(\pi_Mf(x),r)
+  &=
+  b(h(\pi_Nf'(x)),r)
+  \\
+  &=
+  b'(\pi_Nf'(x),r).
+\end{aligned}
+\]
+
+Conversely, given \((M,f,b)\), put
+\[
+  h:=\pi_Mf:X\to M.
+\]
+The canonical presentation of its extracted lens has forward map
+\[
+  x\longmapsto(x,\pi_Yf(x))
+\]
+and backward map
+\[
+  (x,r)\longmapsto b(h(x),r).
+\]
+The map \(h\) gives a pure residual slide from the original presentation to the canonical
+presentation. Hence every residual-codescent class has a unique canonical representative.
+
+Every raw tight \(2\)-cell between discrete stateless presentations is represented by a map
+\[
+  h:N\to M
+\]
+satisfying the two strict equations above. It is therefore a pure residual slide and becomes an
+identity in residual codescent. Since the tight quotient hom-category is generated by such cells,
+the resulting hom-categories are discrete.
+
+For composable lenses \((p,c)\) and \((q,d)\), raw optic composition has residual \(X\times Y\).
+The map
+\[
+  X\longrightarrow X\times Y,
+  \qquad
+  x\longmapsto(x,p(x))
+\]
+gives a pure slide to the canonical residual \(X\). The extracted lens is
+\[
+  q\circ p,
+  \qquad
+  (x,u)\longmapsto c(x,d(p(x),u)).
+\]
+Tensor is coordinatewise.
+\end{proof}
+
+\subsection{Parametrized deterministic lenses}
+
+Let
+\[
+  \overline{\mathcal K}_{\mathrm{td}}
+\]
+be the symmetric monoidal sub-bicategory of
+\[
+  \overline{\operatorname{ParaMOpt}}_{\mathrm{op}}(\mathcal E)
+\]
+whose:
+\begin{enumerate}
+  \item objects are signed discrete interfaces
+  \[
+    (\operatorname{Disc}(X),\operatorname{Disc}(S));
+  \]
+  \item \(1\)-cells have discrete residuals and totally initialized map-representable forward and
+  backward legs;
+  \item \(2\)-cells belong to the generated tight fragment.
+\end{enumerate}
+
+\begin{proposition}[Parametrized lens correspondence]
+\label{prop:parametrized-lens-correspondence}
+The bicategory \(\overline{\mathcal K}_{\mathrm{td}}\) is symmetrically monoidally isomorphic to the
+bicategory of parametrized internal deterministic lenses and strategy reparametrizations.
+\end{proposition}
+
+\begin{proof}
+Apply Theorem~\ref{thm:internal-lens-optic-correspondence} in each parameter fibre. A parametrized
+lens is equivalently a pair
+\[
+  P:\Sigma\times X\to Y,
+  \qquad
+  C:\Sigma\times X\times R\to S.
+\]
+A parameter map
+\[
+  u:T\to\Sigma
+\]
+acts by precomposition. For canonical residuals, the strict forward equation forces the residual
+map to be
+\[
+  u\times1_X:T\times X\to\Sigma\times X.
+\]
+The strict backward equation is exactly preservation of the coplay map. Composition and tensor are
+preserved by canonical residualization.
+\end{proof}
+
+\section{The stationary context doctrine}
+\label{sec:stationary-context-doctrine}
+
+For a signed discrete boundary
+\[
+  (X,S)\longrightarrow(Y,R),
+\]
+define the internal stationary context category
+\[
+  \operatorname{Ctx}_{\mathrm{st}}(X;Y,R)
+  :=
+  \operatorname{Disc}(X\times R^Y).
+\]
+An internal element is written
+\[
+  (x,k),
+  \qquad
+  k:Y\to R.
+\]
+
+Let
+\[
+  \mathcal G:(X,S)\to(Y,R),
+  \qquad
+  \mathcal H:(Y,R)\to(Z,Q)
+\]
+be parametrized deterministic lens processes with strategy objects \(\Sigma,T\), play maps
+\(P_{\mathcal G},P_{\mathcal H}\), and coplay maps
+\(C_{\mathcal G},C_{\mathcal H}\).
+
+Define
+\[
+  \kappa_{\mathcal H}:
+  T\times Q^Z\times Y
+  \longrightarrow
+  R
+\]
+by
+\[
+  \kappa_{\mathcal H}(\tau,k,y)
+  :=
+  C_{\mathcal H}
+  \bigl(
+    \tau,
+    y,
+    \operatorname{ev}
+    (k,P_{\mathcal H}(\tau,y))
+  \bigr).
+\]
+Let
+\[
+  \bar\kappa_{\mathcal H}:
+  T\times Q^Z\longrightarrow R^Y
+\]
+be its exponential transpose.
+
+The sequential context decomposition is the map
+\[
+\begin{aligned}
+  \Lambda_{\mathcal H,\mathcal G}^{\mathrm{st}}:
+  \Sigma\times T\times X\times Q^Z
+  &\longrightarrow
+  (X\times R^Y)\times(Y\times Q^Z),
+  \\
+  (\sigma,\tau,x,k)
+  &\longmapsto
+  \Bigl(
+    (x,\bar\kappa_{\mathcal H}(\tau,k)),
+    (P_{\mathcal G}(\sigma,x),k)
+  \Bigr).
+\end{aligned}
+\]
+
+For parallel processes
+\[
+  \mathcal G:(X,S)\to(Y,R),
+  \qquad
+  \mathcal H:(X',S')\to(Y',R'),
+\]
+let
+\[
+  k:(Y\times Y')\to(R\times R').
+\]
+Define the partially evaluated continuations by exponential transpose of
+\[
+\begin{aligned}
+  &\Sigma\times T\times X'\times(R\times R')^{Y\times Y'}\times Y
+  \longrightarrow R,
+  \\
+  &(\sigma,\tau,x',k,y)
+  \longmapsto
+  \pi_R
+  \operatorname{ev}
+  \bigl(
+    k,
+    (y,P_{\mathcal H}(\tau,x'))
+  \bigr),
+\end{aligned}
+\]
+and
+\[
+\begin{aligned}
+  &\Sigma\times T\times X\times(R\times R')^{Y\times Y'}\times Y'
+  \longrightarrow R',
+  \\
+  &(\sigma,\tau,x,k,y')
+  \longmapsto
+  \pi_{R'}
+  \operatorname{ev}
+  \bigl(
+    k,
+    (P_{\mathcal G}(\sigma,x),y')
+  \bigr).
+\end{aligned}
+\]
+
+\begin{proposition}[Stationary context doctrine]
+\label{prop:stationary-context-doctrine}
+The stationary context categories and the preceding sequential and parallel decomposition maps form
+an internal strategic context doctrine
+\[
+  \mathfrak C_{\mathrm{st}}
+\]
+on \(\overline{\mathcal K}_{\mathrm{td}}\).
+\end{proposition}
+
+\begin{proof}
+The context category depends only on the signed boundary. Its reindexing functor along a
+boundary-preserving tight arena simulation is therefore the identity.
+
+Pure residual slides do not change the extracted play or coplay maps. Hence both decomposition maps
+are invariant under residual coidentification.
+
+For three sequential processes
+\[
+  \mathcal G,\mathcal H,\mathcal L
+\]
+with strategy variables \(\sigma,\tau,\upsilon\) and outer continuation \(k\), define
+\[
+  k_{\mathcal L}(z)
+  :=
+  C_{\mathcal L}
+  \bigl(
+    \upsilon,
+    z,
+    k(P_{\mathcal L}(\upsilon,z))
+  \bigr)
+\]
+and
+\[
+  k_{\mathcal H,\mathcal L}(y)
+  :=
+  C_{\mathcal H}
+  \bigl(
+    \tau,
+    y,
+    k_{\mathcal L}(P_{\mathcal H}(\tau,y))
+  \bigr).
+\]
+
+Both sequential parenthesizations assign to \(\mathcal L\) the context
+\[
+  \bigl(
+    P_{\mathcal H}
+    (\tau,P_{\mathcal G}(\sigma,x)),
+    k
+  \bigr),
+\]
+to \(\mathcal H\) the context
+\[
+  \bigl(
+    P_{\mathcal G}(\sigma,x),
+    k_{\mathcal L}
+  \bigr),
+\]
+and to \(\mathcal G\) the context
+\[
+  (x,k_{\mathcal H,\mathcal L}).
+\]
+Hence the sequential associativity comparison is equality after canonical cartesian
+reassociation.
+
+For a finite tensor and joint continuation \(k\), the local continuation of component \(i\) is
+\[
+  y_i
+  \longmapsto
+  \pi_i
+  k
+  \bigl(
+    y_1^\ast,\ldots,y_{i-1}^\ast,
+    y_i,
+    y_{i+1}^\ast,\ldots,y_n^\ast
+  \bigr),
+\]
+where
+\[
+  y_j^\ast=P_j(\sigma_j,x_j).
+\]
+This expression is independent of cartesian parenthesization. Parallel associativity, symmetry, and
+middle-four interchange therefore hold by equality after canonical reassociation.
+
+Since all context categories are discrete, every coherence transformation is uniquely determined by
+these equalities. The required triangle, pentagon, hexagon, pseudonaturality, and middle-four
+equations follow.
+\end{proof}
+
+\section{Internal deterministic open games}
+\label{sec:internal-open-games}
+
+\begin{definition}[Internal deterministic open game]
+\label{def:internal-deterministic-open-game}
+An internal deterministic open game
+\[
+  \mathcal G:(X,S)\longrightarrow(Y,R)
+\]
+consists of:
+\begin{enumerate}
+  \item a strategy object
+  \[
+    \Sigma_{\mathcal G}\in\mathcal E;
+  \]
+  \item a play map
+  \[
+    P_{\mathcal G}:
+    \Sigma_{\mathcal G}\times X\to Y;
+  \]
+  \item a coplay map
+  \[
+    C_{\mathcal G}:
+    \Sigma_{\mathcal G}\times X\times R\to S;
+  \]
+  \item a best-response subobject
+  \[
+    \mathsf{BR}_{\mathcal G}
+    \hookrightarrow
+    \Sigma_{\mathcal G}
+    \times X
+    \times R^Y
+    \times
+    \Sigma_{\mathcal G}.
+  \]
+\end{enumerate}
+\end{definition}
+
+Write
+\[
+  \chi_{\mathcal G}:
+  \Sigma_{\mathcal G}
+  \times X
+  \times R^Y
+  \times
+  \Sigma_{\mathcal G}
+  \longrightarrow
+  \Omega
+\]
+for the classifier of \(\mathsf{BR}_{\mathcal G}\).
+
+The equilibrium subobject is classified by
+\[
+  (\sigma,x,k)
+  \longmapsto
+  \chi_{\mathcal G}(\sigma,x,k,\sigma).
+\]
+
+\begin{definition}[Strategy reparametrization]
+\label{def:internal-strategy-reparametrization}
+For open games \(\mathcal G,\mathcal H\) with the same boundary, a strategy reparametrization
+\[
+  u:\mathcal G\Longrightarrow\mathcal H
+\]
+is a map
+\[
+  u:\Sigma_{\mathcal H}\longrightarrow\Sigma_{\mathcal G}
+\]
+such that
+\[
+  P_{\mathcal H}
+  =
+  P_{\mathcal G}\circ(u\times1_X),
+\]
+\[
+  C_{\mathcal H}
+  =
+  C_{\mathcal G}
+  \circ
+  (u\times1_X\times1_R),
+\]
+and
+\[
+  \chi_{\mathcal H}(\tau,x,k,\tau')
+  =
+  \chi_{\mathcal G}(u\tau,x,k,u\tau').
+\]
+\end{definition}
+
+\subsection{Sequential composition}
+
+Let
+\[
+  \mathcal G:(X,S)\to(Y,R),
+  \qquad
+  \mathcal H:(Y,R)\to(Z,Q)
+\]
+have strategy objects \(\Sigma,T\). Their composite has strategy object
+\[
+  \Sigma\times T
+\]
+and play map
+\[
+  P_{\mathcal H\circ\mathcal G}
+  ((\sigma,\tau),x)
+  =
+  P_{\mathcal H}
+  \bigl(
+    \tau,
+    P_{\mathcal G}(\sigma,x)
+  \bigr).
+\]
+Its coplay map is
+\[
+\begin{aligned}
+  C_{\mathcal H\circ\mathcal G}
+  ((\sigma,\tau),x,q)
+  =
+  C_{\mathcal G}
+  \Bigl(
+    \sigma,
+    x,
+    C_{\mathcal H}
+    \bigl(
+      \tau,
+      P_{\mathcal G}(\sigma,x),
+      q
+    \bigr)
+  \Bigr).
+\end{aligned}
+\]
+
+Let
+\[
+  \bar\kappa_{\mathcal H}:
+  T\times Q^Z\to R^Y
+\]
+be the continuation transpose defined in the stationary context doctrine. The composite classifier
+is
+\[
+\begin{aligned}
+&\chi_{\mathcal H\circ\mathcal G}
+\bigl(
+  (\sigma,\tau),
+  x,
+  k,
+  (\sigma',\tau')
+\bigr)
+\\
+&\qquad=
+\chi_{\mathcal G}
+\bigl(
+  \sigma,
+  x,
+  \bar\kappa_{\mathcal H}(\tau,k),
+  \sigma'
+\bigr)
+\\
+&\qquad\qquad\wedge
+\chi_{\mathcal H}
+\bigl(
+  \tau,
+  P_{\mathcal G}(\sigma,x),
+  k,
+  \tau'
+\bigr).
+\end{aligned}
+\]
+
+Tensor has product strategy object, coordinatewise play and coplay, and classifier obtained by meet
+after the parallel stationary-context decomposition.
+
+\begin{theorem}[Internal open-game bicategory]
+\label{thm:internal-open-game-bicategory}
+Signed pairs of objects of \(\mathcal E\), internal deterministic open games, and strategy
+reparametrizations form a symmetric monoidal bicategory
+\[
+  \mathbf{OpenGame}_2(\mathcal E).
+\]
+Its associators, unitors, and symmetry are the canonical invertible strategy reparametrizations
+induced by cartesian product.
+\end{theorem}
+
+\begin{proof}
+Vertical composition is composition of strategy maps. Horizontal composition sends
+\[
+  u:\mathcal G\Longrightarrow\mathcal G',
+  \qquad
+  v:\mathcal H\Longrightarrow\mathcal H'
+\]
+to
+\[
+  u\times v.
+\]
+The play and coplay equations follow by substitution. The response equation follows from
+pseudonaturality of the stationary context decomposition, which here is equality of the explicitly
+constructed morphisms.
+
+For three games, both parenthesizations have the same uncurried play map, coplay map, and local
+continuation maps after cartesian reassociation. Their classifiers are the meet of the same three
+local classifiers. Associativity of meet gives the response equation for the associator.
+
+The identity game has strategy object \(\mathbbm1\), identity play and coplay, and constantly true
+classifier. Tensor is analogous, with symmetry induced by swapping strategy coordinates.
+\end{proof}
+
+\section{Open-normal strategic Mealy games}
+\label{sec:open-normal-games}
+
+\begin{definition}[Open-normal strategic Mealy game]
+\label{def:open-normal-strategic-mealy-game}
+An open-normal strategic Mealy game of type
+\[
+  (X,S)\longrightarrow(Y,R)
+\]
+consists of:
+\begin{enumerate}
+  \item a strategy object \(\Sigma\);
+  \item the discrete residual category
+  \[
+    \operatorname{Disc}(\Sigma\times X);
+  \]
+  \item the totally initialized map-representable forward leg induced by
+  \[
+    \bar P:
+    \Sigma\times X
+    \longrightarrow
+    (\Sigma\times X)\times Y,
+    \qquad
+    \bar P(\sigma,x)
+    =
+    ((\sigma,x),P(\sigma,x));
+  \]
+  \item the totally initialized map-representable backward leg induced by
+  \[
+    C:
+    (\Sigma\times X)\times R
+    \longrightarrow
+    S;
+  \]
+  \item the extensional evaluator classified by
+  \[
+    \chi:
+    \Sigma\times X\times R^Y\times\Sigma
+    \longrightarrow
+    \Omega.
+  \]
+\end{enumerate}
+\end{definition}
+
+A tight open-normal \(2\)-cell induced by
+\[
+  u:T\to\Sigma
+\]
+has residual map
+\[
+  u\times1_X:
+  T\times X\to\Sigma\times X
+\]
+and satisfies
+\[
+  P_{\mathcal H}
+  =
+  P_{\mathcal G}\circ(u\times1_X),
+\]
+\[
+  C_{\mathcal H}
+  =
+  C_{\mathcal G}
+  \circ(u\times1_X\times1_R),
+\]
+\[
+  \chi_{\mathcal H}(\tau,x,k,\tau')
+  =
+  \chi_{\mathcal G}(u\tau,x,k,u\tau').
+\]
+
+Define
+\[
+  \mathbf{OGMly}^{\mathrm{nf}}_2(\mathcal E)
+\]
+to have open-normal games as \(1\)-cells, tight open-normal \(2\)-cells as \(2\)-cells, and
+composition given directly by the open-game play, coplay, and classifier formulas.
+
+This is a normal-form bicategory rather than a literal composition-closed sub-bicategory of raw
+optic presentations.
+
+\subsection{Residual canonicalization}
+
+For composable open-normal games \(\mathcal G,\mathcal H\), raw optic composition has residual
+\[
+  (\Sigma\times X)\times(T\times Y).
+\]
+The canonical composite has residual
+\[
+  (\Sigma\times T)\times X.
+\]
+Define
+\[
+\begin{aligned}
+  h_{\mathcal H,\mathcal G}:
+  (\Sigma\times T)\times X
+  &\longrightarrow
+  (\Sigma\times X)\times(T\times Y),
+  \\
+  h_{\mathcal H,\mathcal G}(\sigma,\tau,x)
+  &:=
+  \bigl(
+    (\sigma,x),
+    (\tau,P_{\mathcal G}(\sigma,x))
+  \bigr).
+\end{aligned}
+\]
+
+\begin{lemma}[Composite residual canonicalization]
+\label{lem:composite-residual-canonicalization}
+The map \(h_{\mathcal H,\mathcal G}\), together with the canonical strict initialized leg
+comparisons, induces a pure residual slide from the raw optic composite to the canonical open-normal
+composite. Its forward and backward maps are the ordinary composite play and coplay maps.
+\end{lemma}
+
+\begin{proof}
+The raw forward residual records
+\[
+  (\sigma,x)
+  \quad\text{and}\quad
+  (\tau,P_{\mathcal G}(\sigma,x)).
+\]
+Precomposition by \(h_{\mathcal H,\mathcal G}\) therefore gives the canonical residual together with
+the visible output
+\[
+  P_{\mathcal H}
+  \bigl(
+    \tau,
+    P_{\mathcal G}(\sigma,x)
+  \bigr).
+\]
+
+For the backward map, substitution gives
+\[
+  C_{\mathcal G}
+  \Bigl(
+    \sigma,
+    x,
+    C_{\mathcal H}
+    \bigl(
+      \tau,
+      P_{\mathcal G}(\sigma,x),
+      q
+    \bigr)
+  \Bigr).
+\]
+The total initializations are carried through the map-representable residual comparison, and the
+resulting initialized leg cells are strict and invertible. Hence the resulting optic simulation is a
+pure residual slide.
+\end{proof}
+
+\section{First bridge theorem: open games and open-normal Mealy games}
+\label{sec:first-bridge-theorem}
+
+Let
+\[
+  \mathcal G=(\Sigma,P,C,\chi)
+\]
+be an internal deterministic open game. Its canonical open-normal realization has residual
+\(\Sigma\times X\), forward map
+\[
+  (\sigma,x)
+  \longmapsto
+  ((\sigma,x),P(\sigma,x)),
+\]
+backward map \(C\), and extensional evaluator classified by \(\chi\). Denote it by
+\[
+  J(\mathcal G).
+\]
+
+Conversely, extraction sends an open-normal strategic Mealy game to its strategy object, play map,
+coplay map, and one-query classifier. Denote extraction by
+\[
+  U.
+\]
+
+\begin{theorem}[First bridge theorem]
+\label{thm:first-bridge}
+The constructions \(J\) and \(U\) define inverse symmetric monoidal isomorphisms of bicategories
+\[
+  \boxed{
+  \mathbf{OpenGame}_2(\mathcal E)
+  \cong
+  \mathbf{OGMly}^{\mathrm{nf}}_2(\mathcal E).
+  }
+\]
+
+Canonical residual realization also defines a locally faithful symmetric monoidal pseudofunctor
+\[
+  \mathcal R:
+  \mathbf{OGMly}^{\mathrm{nf}}_2(\mathcal E)
+  \longrightarrow
+  \operatorname{StrMlyGame}^{=}_{\mathfrak C_{\mathrm{st}}}
+  \bigl(
+    \overline{\mathcal K}_{\mathrm{td}}
+  \bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+Extraction from the canonical realization recovers \(\Sigma,P,C,\chi\) directly.
+
+Conversely, the defining open-normal equality
+\[
+  \bar P(\sigma,x)
+  =
+  ((\sigma,x),P(\sigma,x))
+\]
+shows that realization after extraction returns the same normal-form data. Thus \(J\) and \(U\) are
+inverse on \(1\)-cells.
+
+A strategy reparametrization
+\[
+  u:T\to\Sigma
+\]
+forces the residual map
+\[
+  u\times1_X:T\times X\to\Sigma\times X.
+\]
+The strict forward and backward simulation equations are precisely the play and coplay equations.
+The response-strict evaluator equation is precisely the classifier equation. Hence \(J\) and \(U\)
+are inverse on \(2\)-cells.
+
+Sequential raw optic composition is identified with canonical composition by the pure residual slide
+of Lemma~\ref{lem:composite-residual-canonicalization}. Since this slide is an identity after
+residual coidentification, it supplies the realization compositor. The stationary decomposition and
+meet evaluator give exactly the open-game response formula.
+
+Tensor is treated by the canonical reassociation
+\[
+  (\Sigma\times X)\times(T\times X')
+  \cong
+  (\Sigma\times T)\times(X\times X').
+\]
+The unit, associativity, and symmetry coherence equations reduce to cartesian coherence and the
+coidentifier equations.
+
+Local faithfulness follows because residual coidentification removes pure residual-presentation
+changes but does not identify distinct parameter maps or distinct strict classifier equations.
+\end{proof}
+
+\section{Branch-faithful strategic protocol implementations}
+\label{sec:branch-faithful-protocols}
+
+The optic presentation separates the forward, backward, and evaluator machines. Residual semantics
+and implementation comparison are strongest when these branches are stable restrictions of one
+initialized typed protocol.
+
+\begin{definition}[Strategic protocol signature]
+\label{def:strategic-protocol-signature}
+A strategic protocol signature for an arena presentation \((M,\mathbf F,\mathbf G)\) and evaluator
+\(\mathbf E\) consists of internal categories \(\mathsf I,\mathsf O\), fully faithful branch
+functors
+\[
+\begin{array}{lll}
+  i_F:\operatorname{dom}(F)\to\mathsf I,
+  &\qquad&
+  o_F:\operatorname{cod}(F)\to\mathsf O,
+  \\
+  i_G:\operatorname{dom}(G)\to\mathsf I,
+  &&
+  o_G:\operatorname{cod}(G)\to\mathsf O,
+  \\
+  i_E:\operatorname{dom}(E)\to\mathsf I,
+  &&
+  o_E:\mathsf{Truth}_\wedge\to\mathsf O,
+\end{array}
+\]
+together with any additional protocol arrows used for phase change, observation, synchronization,
+routing, and strategy-port coherence.
+\end{definition}
+
+\begin{definition}[Stable branch restriction]
+\label{def:stable-branch-restriction}
+Let
+\[
+  S:\mathsf I\rightsquigarrow\mathsf O
+\]
+have carrier \(P_S\). A stable branch restriction consists of a carrier subobject
+\[
+  m_B:P_B\hookrightarrow P_S
+\]
+and branch input and output subcategories such that:
+\begin{enumerate}
+  \item the input and output anchors of \(P_B\) factor through the branch subcategories;
+  \item \(P_B\) is closed under every branch input arrow;
+  \item every output produced by a branch transition lies in the branch output subcategory.
+\end{enumerate}
+Pullback along the branch embeddings then defines a Mealy morphism
+\[
+  S|_B:\mathsf I_B\rightsquigarrow\mathsf O_B.
+\]
+\end{definition}
+
+\begin{definition}[Strategic protocol implementation]
+\label{def:strategic-protocol-implementation}
+A strategic protocol implementation of a strategic game \(\mathcal G\) consists of:
+\begin{enumerate}
+  \item a protocol signature
+  \[
+    (\mathsf I_{\mathcal G},\mathsf O_{\mathcal G});
+  \]
+  \item a transition-closed initialized Mealy morphism
+  \[
+    \mathsf{SProt}(\mathcal G):
+    \mathsf I_{\mathcal G}
+    \rightsquigarrow
+    \mathsf O_{\mathcal G};
+  \]
+  \item stable carrier subobjects
+  \[
+    P_F\hookrightarrow P_{\mathsf{SProt}},
+    \qquad
+    P_G\hookrightarrow P_{\mathsf{SProt}},
+    \qquad
+    P_E\hookrightarrow P_{\mathsf{SProt}};
+  \]
+  \item invertible initialized Mealy simulations identifying the branch restrictions with the
+  forward leg, backward leg, and response evaluator;
+  \item a distinguished ready-state family
+  \[
+    \rho_{\mathcal G}:R_{\mathcal G}\to J_{\mathsf{SProt}}.
+  \]
+\end{enumerate}
+\end{definition}
+
+The stable carrier subobjects are essential. Shared phase objects do not by themselves determine to
+which branch a machine state belongs.
+
+\section{Structured canonical protocols for open-normal games}
+\label{sec:canonical-protocols}
+
+Let
+\[
+  \mathcal G=(\Sigma,P,C,\chi):(X,S)\to(Y,R)
+\]
+be an open-normal strategic Mealy game. Put
+\[
+  \mathsf C_{\mathcal G}:=X\times R^Y.
+\]
+
+\subsection{Existence of the protocol categories}
+
+A Grothendieck topos has free internal categories on internal graphs. Explicitly, if
+\[
+  G_1
+  \mathrel{\substack{\xrightarrow{\ s\ }\\[-1mm]\xrightarrow[\ t\ ]{}}}
+  G_0
+\]
+is an internal graph, the object of length-\(n\) composable paths is an iterated pullback
+\(G_1^{[n]}\), and
+\[
+  \coprod_{n\in\mathbb N}G_1^{[n]}
+\]
+carries the free internal category structure by concatenation. Presentations with specified internal
+subcategory inclusions are obtained by the chosen pushouts and effective quotients in
+\(\operatorname{Cat}(\mathcal E)\).
+
+\subsection{Protocol input category and strategy ports}
+
+Begin with the coproduct of internal categories
+\[
+\begin{aligned}
+  &
+  \operatorname{Disc}(\Sigma)
+  +
+  \operatorname{Disc}(\Sigma\times X)
+  +
+  \operatorname{Disc}(\Sigma\times X\times R)
+  \\
+  &\hspace{35mm}
+  +
+  \mathsf{Qry}
+  \bigl(
+    \Sigma,
+    \operatorname{Disc}(\mathsf C_{\mathcal G})
+  \bigr).
+\end{aligned}
+\]
+Write the tagged object families as
+\[
+  \mathsf p_\sigma,
+  \qquad
+  \mathsf f_{\sigma,x},
+  \qquad
+  \mathsf g_{\sigma,x,r},
+  \qquad
+  \mathsf e_{\sigma,c}.
+\]
+
+Freely adjoin a return arrow
+\[
+  \rho_{\sigma,x,r}:
+  \mathsf g_{\sigma,x,r}
+  \longrightarrow
+  \mathsf f_{\sigma,x}
+\]
+for every \((\sigma,x,r)\).
+
+Freely adjoin strategy-tether arrows
+\[
+  \tau^F_{\sigma,x}:
+  \mathsf f_{\sigma,x}
+  \longrightarrow
+  \mathsf p_\sigma,
+\]
+\[
+  \tau^G_{\sigma,x,r}:
+  \mathsf g_{\sigma,x,r}
+  \longrightarrow
+  \mathsf p_\sigma,
+\]
+and
+\[
+  \tau^E_{\sigma,c}:
+  \mathsf e_{\sigma,c}
+  \longrightarrow
+  \mathsf p_\sigma.
+\]
+
+The resulting internal category is
+\[
+  \mathsf I_{\mathcal G}.
+\]
+
+There is a strategy projection functor
+\[
+  \pi_{\mathcal G}:
+  \mathsf I_{\mathcal G}
+  \longrightarrow
+  \operatorname{Disc}(\Sigma)
+\]
+sending every tagged object with strategy coordinate \(\sigma\) to \(\sigma\), and sending every
+return, tether, and query arrow to the identity at its incumbent strategy.
+
+Let
+\[
+  \mathsf{OneQry}_{\mathcal G}
+  :=
+  \Sigma\times\mathsf C_{\mathcal G}\times\Sigma
+\]
+be the subobject of one-letter evaluator query arrows. It carries the named projections
+\[
+  \operatorname{inc}_{\mathcal G},
+  \operatorname{alt}_{\mathcal G}:
+  \mathsf{OneQry}_{\mathcal G}
+  \rightrightarrows
+  \Sigma
+\]
+to the incumbent and alternative strategy coordinates.
+
+Under target-to-source processing, a state anchored at
+\(\mathsf f_{\sigma,x}\) processes \(\rho_{\sigma,x,r}\) and moves to a backward state anchored at
+\(\mathsf g_{\sigma,x,r}\).
+
+The tether arrows have target \(\mathsf p_\sigma\). No protocol carrier state is anchored at a
+strategy-port object, so tether arrows and all paths with target in the strategy-port branch have
+empty transition fibres. Their purpose is to constrain protocol reparametrizations without adding
+execution behaviour.
+
+\subsection{Protocol output category}
+
+Begin with
+\[
+  \operatorname{Disc}((\Sigma\times X)\times Y)
+  +
+  \operatorname{Disc}(S)
+  +
+  \mathsf{Truth}_\wedge.
+\]
+Write its tagged object families as
+\[
+  \mathsf F_{((\sigma,x),y)},
+  \qquad
+  \mathsf G_s,
+  \qquad
+  \mathsf E_*.
+\]
+Freely adjoin arrows
+\[
+  \bar\rho_{\sigma,x,r}:
+  \mathsf G_{C(\sigma,x,r)}
+  \longrightarrow
+  \mathsf F_{((\sigma,x),P(\sigma,x))}.
+\]
+The resulting internal category is
+\[
+  \mathsf O_{\mathcal G}.
+\]
+
+\begin{proposition}[Existence of structured canonical protocol signatures]
+\label{prop:canonical-protocol-signature-exists}
+The input and output presentations determine internal categories
+\[
+  \mathsf I_{\mathcal G},
+  \qquad
+  \mathsf O_{\mathcal G}.
+\]
+Their stated branch inclusions are fully faithful. The strategy projection and one-query projections
+are internal morphisms with the stated types.
+\end{proposition}
+
+\begin{proof}
+Apply the chosen free-internal-category functor to the displayed internal graphs and impose the
+existing composition equations of the evaluator branch using the chosen effective quotient.
+
+Disjointness of coproducts makes each branch inclusion monic on objects and arrows. The new return
+and tether generators create no additional arrows between two objects of the same original branch.
+Indeed, no generator leaves a strategy-port object, and the only nonidentity generator between the
+forward and backward families is the return arrow directed from the backward tag to the forward tag.
+Hence no new path has both endpoints in one original branch unless it already belongs to that
+branch. The branch inclusions are therefore fully faithful.
+
+The strategy projection and the one-query coordinate maps are defined on generators and preserve
+all imposed equations, so they descend to the chosen quotient.
+\end{proof}
+
+\subsection{Protocol carrier and dynamics}
+
+Define the carrier
+\[
+  Z_{\mathcal G}
+  :=
+  (\Sigma\times X)
+  +
+  (\Sigma\times X\times R)
+  +
+  (\Sigma\times\mathsf C_{\mathcal G}).
+\]
+The three coproduct summands are the forward, backward, and evaluator branches.
+
+The input anchors are
+\[
+  (\sigma,x)\longmapsto\mathsf f_{\sigma,x},
+\]
+\[
+  (\sigma,x,r)\longmapsto\mathsf g_{\sigma,x,r},
+\]
+\[
+  (\sigma,c)\longmapsto\mathsf e_{\sigma,c}.
+\]
+There is no carrier state over any \(\mathsf p_\sigma\).
+
+The output anchors are
+\[
+  (\sigma,x)
+  \longmapsto
+  \mathsf F_{((\sigma,x),P(\sigma,x))},
+\]
+\[
+  (\sigma,x,r)
+  \longmapsto
+  \mathsf G_{C(\sigma,x,r)},
+\]
+\[
+  (\sigma,c)
+  \longmapsto
+  \mathsf E_*.
+\]
+
+On a return generator, define
+\[
+  (\sigma,x)
+  \xrightarrow{
+    \rho_{\sigma,x,r}/\bar\rho_{\sigma,x,r}
+  }
+  (\sigma,x,r).
+\]
+On an evaluator query word
+\[
+  \sigma'_1\cdots\sigma'_n
+\]
+at context \(c\), the evaluator state remains \((\sigma,c)\) and emits
+\[
+  \bigwedge_{i=1}^{n}
+  \chi(\sigma,c,\sigma'_i).
+\]
+Identity input arrows act identically.
+
+Every remaining nonidentity path with nonempty transition fibre is a path in the evaluator branch
+or a return arrow composed with identities. The preceding assignments therefore extend uniquely to
+all admissible paths.
+
+\begin{definition}[Structured canonical branch-faithful protocol]
+\label{def:canonical-branch-faithful-protocol}
+The resulting totally initialized Mealy morphism, together with its named strategy-port and
+one-query structure, is
+\[
+  \mathsf{Prot}(\mathcal G):
+  \mathsf I_{\mathcal G}
+  \rightsquigarrow
+  \mathsf O_{\mathcal G}.
+\]
+Its distinguished ready family is the coproduct inclusion
+\[
+  R_{\mathcal G}
+  :=
+  (\Sigma\times X)
+  +
+  (\Sigma\times\mathsf C_{\mathcal G})
+  \longrightarrow
+  Z_{\mathcal G}.
+\]
+Backward states are not independently ready; they are reached as derivatives of forward ready states
+along return arrows.
+\end{definition}
+
+\begin{proposition}[Canonical branch identification]
+\label{prop:canonical-branch-identification}
+The three carrier coproduct summands are stable branch restrictions. Their restrictions are:
+\begin{enumerate}
+  \item the canonical forward map
+  \[
+    (\sigma,x)
+    \longmapsto
+    ((\sigma,x),P(\sigma,x));
+  \]
+  \item the canonical backward map
+  \[
+    (\sigma,x,r)
+    \longmapsto
+    C(\sigma,x,r);
+  \]
+  \item the extensional response evaluator classified by \(\chi\).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The return arrows are not arrows of any branch subcategory. Tether arrows have no carrier state over
+their targets. Hence each carrier summand is closed under the arrows of its designated branch
+category.
+
+The restrictions of the anchors, transitions, and outputs are exactly the three displayed
+constructions.
+\end{proof}
+
+\subsection{Structured canonical protocol simulations}
+
+Let
+\[
+  \mathcal G=(\Sigma,P_{\mathcal G},C_{\mathcal G},\chi_{\mathcal G}),
+\]
+\[
+  \mathcal H=(T,P_{\mathcal H},C_{\mathcal H},\chi_{\mathcal H})
+\]
+have the same signed boundary.
+
+\begin{definition}[Structured protocol functor]
+\label{def:structured-protocol-functor}
+A structured protocol functor from the signature of \(\mathcal H\) to the signature of
+\(\mathcal G\) consists of internal functors
+\[
+  I:\mathsf I_{\mathcal H}\to\mathsf I_{\mathcal G},
+  \qquad
+  O:\mathsf O_{\mathcal H}\to\mathsf O_{\mathcal G}
+\]
+such that:
+\begin{enumerate}
+  \item \(I\) preserves the parameter-port, forward, backward, and evaluator object families;
+  \item \(I\) preserves every non-strategy coordinate;
+  \item the restriction of \(I\) to the parameter-port branch is
+  \[
+    \operatorname{Disc}(u):
+    \operatorname{Disc}(T)\to\operatorname{Disc}(\Sigma)
+  \]
+  for a map \(u:T\to\Sigma\);
+  \item \(I\) preserves return and tether generator families;
+  \item on one-letter query generators, \(I\) preserves both incumbent and alternative projections:
+  \[
+    \operatorname{inc}_{\mathcal G}I
+    =
+    u\,\operatorname{inc}_{\mathcal H},
+    \qquad
+    \operatorname{alt}_{\mathcal G}I
+    =
+    u\,\operatorname{alt}_{\mathcal H};
+  \]
+  \item \(O\) preserves the forward, backward, and truth output branches;
+  \item \(O\) preserves all non-strategy output coordinates and every return generator.
+\end{enumerate}
+\end{definition}
+
+For every map
+\[
+  u:T\to\Sigma,
+\]
+define
+\[
+  I_u:
+  \mathsf I_{\mathcal H}
+  \longrightarrow
+  \mathsf I_{\mathcal G}
+\]
+by
+\[
+  \mathsf p_\tau\longmapsto\mathsf p_{u\tau},
+\]
+\[
+  \mathsf f_{\tau,x}\longmapsto\mathsf f_{u\tau,x},
+\]
+\[
+  \mathsf g_{\tau,x,r}\longmapsto\mathsf g_{u\tau,x,r},
+\]
+\[
+  \mathsf e_{\tau,c}\longmapsto\mathsf e_{u\tau,c},
+\]
+and by applying \(u\) to every strategy letter of a query word, every return generator, and every
+tether generator.
+
+The input functor \(I_u\) exists for every \(u\) by the freeness of the input presentation.
+
+Define a proposed output object map by
+\[
+  \mathsf F_{((\tau,x),y)}
+  \longmapsto
+  \mathsf F_{((u\tau,x),y)},
+\]
+\[
+  \mathsf G_s\longmapsto\mathsf G_s,
+  \qquad
+  \mathsf E_*\longmapsto\mathsf E_*.
+\]
+
+\begin{lemma}[Existence of the output reindexing functor]
+\label{lem:output-reindexing-exists}
+The preceding object assignment extends uniquely to a branch- and return-preserving internal functor
+\[
+  O_u:
+  \mathsf O_{\mathcal H}
+  \longrightarrow
+  \mathsf O_{\mathcal G}
+\]
+if and only if
+\[
+  P_{\mathcal H}(\tau,x)
+  =
+  P_{\mathcal G}(u\tau,x)
+\]
+and
+\[
+  C_{\mathcal H}(\tau,x,r)
+  =
+  C_{\mathcal G}(u\tau,x,r).
+\]
+When these equations hold,
+\[
+  O_u
+  \bigl(
+    \bar\rho^{\mathcal H}_{\tau,x,r}
+  \bigr)
+  :=
+  \bar\rho^{\mathcal G}_{u\tau,x,r}.
+\]
+\end{lemma}
+
+\begin{proof}
+The source return generator is
+\[
+  \bar\rho^{\mathcal H}_{\tau,x,r}:
+  \mathsf G_{C_{\mathcal H}(\tau,x,r)}
+  \longrightarrow
+  \mathsf F_{((\tau,x),P_{\mathcal H}(\tau,x))}.
+\]
+A return-preserving output functor must send it to
+\[
+  \bar\rho^{\mathcal G}_{u\tau,x,r}:
+  \mathsf G_{C_{\mathcal G}(u\tau,x,r)}
+  \longrightarrow
+  \mathsf F_{((u\tau,x),P_{\mathcal G}(u\tau,x))}.
+\]
+The source and target of this arrow agree with the prescribed images of the source and target of the
+original generator precisely when the two displayed equations hold.
+
+When they hold, the assignment is defined on every generator and preserves all relations, so it
+extends uniquely to the freely presented output category.
+\end{proof}
+
+Assume from now on that the play and coplay equations hold, so \(O_u\) exists.
+
+Input reindexing and output postcomposition give Mealy morphisms with common source and target
+interfaces:
+\[
+  I_u^*\mathsf{Prot}(\mathcal G),
+  \qquad
+  (O_u)_\#\circ\mathsf{Prot}(\mathcal H).
+\]
+
+Put
+\[
+\begin{aligned}
+  \bar u:
+  Z_{\mathcal H}
+  &\longrightarrow
+  Z_{\mathcal G},
+  \\
+  \bar u
+  &:=
+  (u\times1_X)
+  +
+  (u\times1_X\times1_R)
+  +
+  (u\times1_{\mathsf C_{\mathcal G}}).
+\end{aligned}
+\]
+
+The carrier of \(I_u^*\mathsf{Prot}(\mathcal G)\) is
+\[
+  (\mathsf I_{\mathcal H})_0
+  \times_{I_{u,0},(\mathsf I_{\mathcal G})_0,p_{\mathcal G}}
+  Z_{\mathcal G}.
+\]
+
+Define
+\[
+\begin{aligned}
+  \kappa_u:
+  Z_{\mathcal H}
+  &\longrightarrow
+  (\mathsf I_{\mathcal H})_0
+  \times_{(\mathsf I_{\mathcal G})_0}
+  Z_{\mathcal G},
+  \\
+  z
+  &\longmapsto
+  \bigl(
+    p_{\mathcal H}(z),
+    \bar u(z)
+  \bigr).
+\end{aligned}
+\]
+
+\begin{definition}[Structured canonical protocol simulation]
+\label{def:canonical-protocol-simulation}
+A structured canonical protocol simulation induced by \(u\) is the strict initialized Mealy
+simulation
+\[
+  I_u^*\mathsf{Prot}(\mathcal G)
+  \Longrightarrow
+  (O_u)_\#\circ\mathsf{Prot}(\mathcal H)
+\]
+whose carrier comparison is \(\kappa_u\).
+\end{definition}
+
+\begin{proposition}[Canonical protocol simulation equations]
+\label{prop:canonical-protocol-simulation-equations}
+Let \(u:T\to\Sigma\).
+
+The output functor \(O_u\) exists if and only if
+\[
+  P_{\mathcal H}(\tau,x)
+  =
+  P_{\mathcal G}(u\tau,x)
+\]
+and
+\[
+  C_{\mathcal H}(\tau,x,r)
+  =
+  C_{\mathcal G}(u\tau,x,r).
+\]
+
+After \(O_u\) has been constructed, the map \(\kappa_u\) defines a strict initialized protocol
+simulation if and only if
+\[
+  \chi_{\mathcal H}(\tau,c,\tau')
+  =
+  \chi_{\mathcal G}(u\tau,c,u\tau').
+\]
+
+Conversely, every structured protocol functor together with a branch-preserving strict initialized
+simulation between structured canonical protocols is induced by a unique map \(u:T\to\Sigma\).
+\end{proposition}
+
+\begin{proof}
+The existence statement for \(O_u\) is
+Lemma~\ref{lem:output-reindexing-exists}.
+
+The pullback equation
+\[
+  I_{u,0}p_{\mathcal H}(z)
+  =
+  p_{\mathcal G}\bar u(z)
+\]
+holds on each carrier summand, so \(\kappa_u\) is defined.
+
+On a return generator,
+\[
+  \bar u
+  \delta_{\mathcal H}
+  \bigl(
+    \rho^{\mathcal H}_{\tau,x,r},
+    (\tau,x)
+  \bigr)
+  =
+  \bar u(\tau,x,r)
+  =
+  (u\tau,x,r),
+\]
+while
+\[
+  \delta_{\mathcal G}
+  \bigl(
+    I_u(\rho^{\mathcal H}_{\tau,x,r}),
+    \bar u(\tau,x)
+  \bigr)
+  =
+  \delta_{\mathcal G}
+  \bigl(
+    \rho^{\mathcal G}_{u\tau,x,r},
+    (u\tau,x)
+  \bigr)
+  =
+  (u\tau,x,r).
+\]
+Thus the transition equation holds on return generators. It is immediate on identities and
+evaluator query arrows. Tether arrows have empty transition fibres.
+
+The output on a return generator is preserved because
+\[
+  O_u
+  \bigl(
+    \bar\rho^{\mathcal H}_{\tau,x,r}
+  \bigr)
+  =
+  \bar\rho^{\mathcal G}_{u\tau,x,r}.
+\]
+
+On a one-letter evaluator query, strict output preservation is exactly
+\[
+  \chi_{\mathcal H}(\tau,c,\tau')
+  =
+  \chi_{\mathcal G}(u\tau,c,u\tau').
+\]
+For a finite query word, equality follows by taking finite meets of the one-letter equations.
+Ready-state preservation is immediate.
+
+Conversely, restriction of the structured input functor to the strategy-port branch determines a
+unique map
+\[
+  u:T\to\Sigma.
+\]
+Preservation of the tether
+\[
+  \mathsf f_{\tau,x}\to\mathsf p_\tau
+\]
+forces
+\[
+  \mathsf f_{\tau,x}\longmapsto\mathsf f_{u\tau,x},
+\]
+because the non-strategy coordinate \(x\) is preserved and the only forward tether with target
+\(\mathsf p_{u\tau}\) is the displayed one. The backward and evaluator tethers similarly force
+\[
+  \mathsf g_{\tau,x,r}\longmapsto\mathsf g_{u\tau,x,r},
+\]
+\[
+  \mathsf e_{\tau,c}\longmapsto\mathsf e_{u\tau,c}.
+\]
+Preservation of the incumbent and alternative one-query projections forces
+\[
+  ([\tau'],1_c)
+  \longmapsto
+  ([u\tau'],1_c).
+\]
+Preservation of return generators then forces
+\[
+  \rho_{\tau,x,r}
+  \longmapsto
+  \rho_{u\tau,x,r}.
+\]
+By freeness, the input functor is \(I_u\).
+
+Each canonical branch has exactly one carrier state over each carrier tag. Hence the carrier
+comparison is necessarily \(\kappa_u\). Preservation of output return generators gives the play and
+coplay equations, and strictness on one-letter evaluator queries gives the classifier equation.
+\end{proof}
+
+\subsection{Direct composition of structured canonical protocols}
+
+Let
+\[
+  \mathsf P:
+  (X,S)\to(Y,R),
+  \qquad
+  \mathsf Q:
+  (Y,R)\to(Z,Q)
+\]
+be structured canonical protocols. Extract their unique data
+\[
+  (\Sigma,P_{\mathsf P},C_{\mathsf P},\chi_{\mathsf P})
+\]
+and
+\[
+  (T,P_{\mathsf Q},C_{\mathsf Q},\chi_{\mathsf Q}).
+\]
+
+Define
+\[
+  \mathsf Q\odot\mathsf P
+\]
+to be the structured canonical protocol compiled from the strategy object \(\Sigma\times T\) and
+the maps
+\[
+  P_{\mathsf Q\odot\mathsf P}
+  ((\sigma,\tau),x)
+  =
+  P_{\mathsf Q}
+  \bigl(
+    \tau,
+    P_{\mathsf P}(\sigma,x)
+  \bigr),
+\]
+\[
+\begin{aligned}
+  C_{\mathsf Q\odot\mathsf P}
+  ((\sigma,\tau),x,q)
+  =
+  C_{\mathsf P}
+  \Bigl(
+    \sigma,
+    x,
+    C_{\mathsf Q}
+    \bigl(
+      \tau,
+      P_{\mathsf P}(\sigma,x),
+      q
+    \bigr)
+  \Bigr),
+\end{aligned}
+\]
+and
+\[
+\begin{aligned}
+&\chi_{\mathsf Q\odot\mathsf P}
+\bigl(
+  (\sigma,\tau),
+  x,
+  k,
+  (\sigma',\tau')
+\bigr)
+\\
+&\qquad=
+\chi_{\mathsf P}
+\bigl(
+  \sigma,
+  x,
+  \bar\kappa_{\mathsf Q}(\tau,k),
+  \sigma'
+\bigr)
+\\
+&\qquad\qquad\wedge
+\chi_{\mathsf Q}
+\bigl(
+  \tau,
+  P_{\mathsf P}(\sigma,x),
+  k,
+  \tau'
+\bigr).
+\end{aligned}
+\]
+
+Identity protocols and tensor protocols are defined by compiling the corresponding direct formulas.
+
+The external source and target of a structured canonical protocol are its signed boundaries. Its
+internal protocol categories are not the objects used for bicategorical composition. The operation
+\(\odot\) is compiler composition and is not ordinary Mealy pipeline composition of the compiled
+machines.
+
+\begin{theorem}[Structured canonical protocol bicategory]
+\label{thm:canonical-protocol-bicategory}
+Signed pairs of objects, structured canonical protocols, and structured canonical protocol
+simulations form a symmetric monoidal bicategory
+\[
+  \mathbf{CanProt}^{\mathrm{str}}_2(\mathcal E)
+\]
+under the directly defined composition \(\odot\).
+\end{theorem}
+
+\begin{proof}
+The extracted play maps of the two parenthesizations of a triple composite are equal after cartesian
+reassociation. The same is true of the coplay maps by associativity of substitution.
+
+The three local stationary contexts in either parenthesization are equal by
+Proposition~\ref{prop:stationary-context-doctrine}. Hence both classifiers are the meet of the same
+three local classifier values. Associativity of meet identifies them.
+
+The canonical strategy reassociation map therefore defines a structured strict protocol simulation
+between the two compiled parenthesizations. Its output functor exists because the play and coplay
+maps agree after reassociation. Its classifier equation follows from associativity of meet. Its
+inverse is induced by the opposite reassociation. The pentagon follows from cartesian coherence.
+
+Identity and tensor are analogous. Symmetry is induced by the cartesian swap of strategy objects and
+the corresponding swaps of protocol tags and ports. Horizontal composition of protocol simulations
+is product of their strategy maps. Interchange follows from functoriality of product.
+\end{proof}
+
+\section{Second bridge theorem: open-normal games and structured canonical protocols}
+\label{sec:second-bridge-theorem}
+
+Let
+\[
+  \mathsf{Prot}:
+  \mathbf{OGMly}^{\mathrm{nf}}_2(\mathcal E)
+  \longrightarrow
+  \mathbf{CanProt}^{\mathrm{str}}_2(\mathcal E)
+\]
+be the chosen structured canonical protocol compiler.
+
+Let
+\[
+  \mathsf{Ext}:
+  \mathbf{CanProt}^{\mathrm{str}}_2(\mathcal E)
+  \longrightarrow
+  \mathbf{OGMly}^{\mathrm{nf}}_2(\mathcal E)
+\]
+extract the strategy object and the unique forward, backward, and evaluator branch maps.
+
+\begin{theorem}[Second bridge theorem]
+\label{thm:second-bridge}
+Structured canonical protocol construction and branch extraction are inverse symmetric monoidal
+isomorphisms of bicategories:
+\[
+  \boxed{
+  \mathbf{OGMly}^{\mathrm{nf}}_2(\mathcal E)
+  \cong
+  \mathbf{CanProt}^{\mathrm{str}}_2(\mathcal E).
+  }
+\]
+Consequently,
+\[
+  \boxed{
+  \mathbf{OpenGame}_2(\mathcal E)
+  \cong
+  \mathbf{CanProt}^{\mathrm{str}}_2(\mathcal E).
+  }
+\]
+\end{theorem}
+
+\begin{proof}
+By Proposition~\ref{prop:canonical-branch-identification}, extraction from
+\(\mathsf{Prot}(\mathcal G)\) recovers the original strategy object, play map, coplay map, and
+classifier.
+
+Conversely, a structured canonical protocol includes the chosen compiler presentation and is
+determined by its extracted tuple together with the named branch, port, generator, and ready-family
+structure. Recompiling from the extracted maps therefore returns the same structured protocol
+literally.
+
+Proposition~\ref{prop:canonical-protocol-simulation-equations} gives the corresponding inverse
+statement on \(2\)-cells. In particular, the output functor of a structured protocol simulation is
+constructed only after the play and coplay equations have been established.
+
+The directly defined protocol composition uses exactly the open-normal play, coplay, and response
+formulas. Hence
+\[
+  \mathsf{Prot}(\mathcal H\circ\mathcal G)
+  =
+  \mathsf{Prot}(\mathcal H)
+  \odot
+  \mathsf{Prot}(\mathcal G)
+\]
+up to the canonical cartesian reassociations built into the bicategories. Identity, tensor, and
+symmetry are preserved for the same reason.
+\end{proof}
+
+\subsection{The replete structured protocol class}
+
+For many purposes the literal chosen presentation of a canonical protocol is inessential, but the
+branch, port, generator, and ready-family markings cannot all be discarded: they are required to
+define extraction and compiler composition.
+
+\begin{definition}[Replete structured canonical protocol]
+\label{def:replete-structured-canonical-protocol}
+A replete structured canonical protocol is a strategic protocol implementation carrying:
+\begin{enumerate}
+  \item named forward, backward, and evaluator branch embeddings;
+  \item stable branch carrier subobjects;
+  \item a strategy-port projection;
+  \item named return and tether generator families;
+  \item named one-query projections;
+  \item a distinguished ready family;
+\end{enumerate}
+and which is structurally isomorphic to a chosen canonical protocol.
+
+A morphism of replete structured protocols is a structure-preserving initialized protocol
+simulation.
+\end{definition}
+
+Let
+\[
+  \mathbf{CanProt}^{\mathrm{rep}}_2(\mathcal E)
+\]
+be the bicategory whose composition is defined by extraction, open-normal composition, and
+recompilation.
+
+\begin{proposition}[Replete presentation biequivalence]
+\label{prop:replete-presentation-biequivalence}
+The inclusion
+\[
+  \mathbf{CanProt}^{\mathrm{str}}_2(\mathcal E)
+  \longrightarrow
+  \mathbf{CanProt}^{\mathrm{rep}}_2(\mathcal E)
+\]
+is a symmetric monoidal biequivalence.
+\end{proposition}
+
+\begin{proof}
+Every replete structured protocol is, by definition, structurally isomorphic to a chosen canonical
+protocol. Thus the inclusion is essentially surjective on each hom-category.
+
+A structure-preserving simulation between chosen canonical protocols is uniquely determined by its
+strategy map by Proposition~\ref{prop:canonical-protocol-simulation-equations}. The same statement
+holds after transport along structural isomorphisms. Hence the inclusion is locally fully faithful
+up to equivalence.
+
+Composition and tensor in the replete bicategory are defined through extraction and recompilation,
+so the inclusion preserves them up to the canonical structural isomorphisms.
+\end{proof}
+
+The proposition does not discard the structural markings. If all branch, port, generator, and
+ready-family data are forgotten, branch extraction and compiler composition are no longer defined
+from the underlying Mealy machines alone.
+
+\section{Strategic residual semantics and minimization}
+\label{sec:strategic-residual-semantics}
+
+Let
+\[
+  \mathsf S=
+  \mathsf{SProt}(\mathcal G):
+  \mathsf I\rightsquigarrow\mathsf O
+\]
+be a strategic protocol implementation with carrier \(P\) and distinguished ready map
+\[
+  \rho:R\longrightarrow J_{\mathsf S}.
+\]
+Put
+\[
+  i_{\mathcal G}
+  :=
+  j_{\mathsf S}\rho:
+  R\longrightarrow P.
+\]
+Chapter~3 gives the behaviour assignment
+\[
+  \beta_P:
+  P
+  \longrightarrow
+  \operatorname{Beh}_0(\mathsf I,\mathsf O).
+\]
+
+\begin{definition}[Strategic behaviour specification]
+\label{def:strategic-behaviour-specification}
+The strategic behaviour specification is
+\[
+  k_{\mathcal G}
+  :=
+  \beta_Pi_{\mathcal G}:
+  R
+  \longrightarrow
+  \operatorname{Beh}_0(\mathsf I,\mathsf O).
+\]
+\end{definition}
+
+Define the ready anchors
+\[
+  p_R:=p_Pi_{\mathcal G}:R\to\mathsf I_0,
+  \qquad
+  q_R:=q_Pi_{\mathcal G}:R\to\mathsf O_0.
+\]
+Its formal derivative object is
+\[
+  D_R
+  :=
+  \mathsf I_1
+  \times_{t_{\mathsf I},\mathsf I_0,p_R}
+  R.
+\]
+Residual evaluation is
+\[
+  d_R(a,x)
+  :=
+  \partial_a k_{\mathcal G}(x).
+\]
+
+\begin{definition}[Strategic Nerode relation]
+\label{def:strategic-nerode-relation}
+The strategic Nerode relation
+\[
+  {\equiv_{\mathcal G}}
+  \rightrightarrows
+  D_R
+\]
+is the kernel pair of \(d_R\) in the slice over
+\[
+  \mathsf I_0\times\mathsf O_0.
+\]
+\end{definition}
+
+Because the three branches belong to one typed protocol, the relation simultaneously observes
+forward execution, continuation-return behaviour, and counterfactual response.
+
+\begin{theorem}[Minimal strategic realization]
+\label{thm:minimal-strategic-realization}
+The following hold:
+\begin{enumerate}
+  \item the effective quotient
+  \[
+    D_R/{\equiv_{\mathcal G}}
+  \]
+  exists;
+  \item it is canonically isomorphic to the derivative image
+  \[
+    \operatorname{Der}_0(k_{\mathcal G});
+  \]
+  \item the restriction of the canonical behaviour machine to this image is the minimal residual
+  realization
+  \[
+    \operatorname{Min}(k_{\mathcal G});
+  \]
+  \item the reachable part of \(\mathsf S\) maps by a regular-epimorphic strict semantic
+  homomorphism onto \(\operatorname{Min}(k_{\mathcal G})\);
+  \item every reachable behaviourally separated realization of \(k_{\mathcal G}\) is isomorphic to
+  \(\operatorname{Min}(k_{\mathcal G})\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+A Grothendieck topos is Barr-exact and locally cartesian closed, so Assumption~3.1.1 holds. Apply the
+categorical Myhill--Nerode theorem of Chapter~3 to
+\[
+  k_{\mathcal G}
+  =
+  \beta_Pi_{\mathcal G}.
+\]
+That theorem identifies the effective Nerode quotient with the derivative image, equips it with the
+restricted canonical Mealy structure, supplies the regular-epimorphic semantic quotient from the
+reachable part, and proves uniqueness among reachable behaviourally separated realizations.
+\end{proof}
+
+\subsection{One-query and full evaluator observations}
+
+Let
+\[
+  E:
+  \mathsf{Qry}(\Sigma,\mathcal C)
+  \rightsquigarrow
+  \mathsf{Truth}_\wedge
+\]
+be the evaluator branch of a strategic protocol.
+
+For an evaluator state \(z\) over \((\sigma,c)\), define its one-query profile by
+\[
+  \operatorname{obs}_1(z)(\sigma')
+  :=
+  \omega_E
+  \bigl(
+    ([\sigma'],1_c),
+    z
+  \bigr).
+\]
+Internally this gives a morphism
+\[
+  \operatorname{obs}_1:
+  P_E
+  \longrightarrow
+  \operatorname{Prof}_{\Sigma,\mathcal C},
+\]
+where the fibre of
+\(\operatorname{Prof}_{\Sigma,\mathcal C}\) over \((\sigma,c)\) is \(\Omega^\Sigma\).
+
+Evaluation of complete evaluator behaviour on one-letter deviations defines
+\[
+  \operatorname{ev}_1:
+  \operatorname{Beh}_0
+  \bigl(
+    \mathsf{Qry}(\Sigma,\mathcal C),
+    \mathsf{Truth}_\wedge
+  \bigr)
+  \longrightarrow
+  \operatorname{Prof}_{\Sigma,\mathcal C}
+\]
+such that
+\[
+  \operatorname{obs}_1
+  =
+  \operatorname{ev}_1\beta_E.
+\]
+
+Let
+\[
+  D_E
+\]
+be the formal derivative object generated from the evaluator ready family. Define
+\[
+  \equiv^E_{\mathrm{full}}
+  :=
+  \ker(d_E),
+\]
+and
+\[
+  \equiv^E_1
+  :=
+  \ker(\operatorname{ev}_1d_E).
+\]
+
+\begin{proposition}[One-query comparison]
+\label{prop:one-query-comparison}
+There is an inclusion of internal equivalence relations
+\[
+  \equiv^E_{\mathrm{full}}
+  \subseteq
+  \equiv^E_1.
+\]
+If \(E\) is the canonical extensional evaluator, then
+\[
+  \equiv^E_{\mathrm{full}}
+  =
+  \equiv^E_1.
+\]
+\end{proposition}
+
+\begin{proof}
+The inclusion follows from the factorization
+\[
+  \operatorname{ev}_1d_E.
+\]
+
+For the extensional evaluator, let
+\[
+  \operatorname{Prof}^{\mathrm{inv}}_{\Sigma,\mathcal C}
+  \hookrightarrow
+  \operatorname{Prof}_{\Sigma,\mathcal C}
+\]
+be the subobject of context-isomorphism-invariant profiles. Define
+\[
+  \operatorname{Ext}:
+  \operatorname{Prof}^{\mathrm{inv}}_{\Sigma,\mathcal C}
+  \longrightarrow
+  \operatorname{Beh}_0
+  \bigl(
+    \mathsf{Qry}(\Sigma,\mathcal C),
+    \mathsf{Truth}_\wedge
+  \bigr)
+\]
+by
+\[
+  \operatorname{Ext}(\varphi)(\sigma'_1\cdots\sigma'_n,f)
+  :=
+  \bigwedge_{i=1}^{n}\varphi(\sigma'_i).
+\]
+Context invariance makes this independent of transport along \(f\).
+
+Then
+\[
+  \operatorname{ev}_1\operatorname{Ext}
+  =
+  1.
+\]
+On the extensional behaviour image,
+\[
+  \operatorname{Ext}\operatorname{ev}_1
+  =
+  1.
+\]
+Hence \(\operatorname{ev}_1\) is monic on extensional evaluator behaviours, and the two kernel pairs
+coincide.
+\end{proof}
+
+For the complete branch-faithful protocol, full strategic behaviour also includes forward and
+backward branch observations. Proposition~\ref{prop:one-query-comparison} therefore concerns the
+evaluator derivative subobject. Complete protocol minimization restricts on evaluator derivatives to
+a refinement of one-query response minimization, and the two coincide for canonical extensional
+evaluator derivatives.
+
+\subsection{Reachable closure from a ready family}
+
+The following construction will also be used for history-indexed residual games.
+
+\begin{lemma}[Reachable closure generated by selected states]
+\label{lem:reachable-closure-selected-states}
+Let
+\[
+  P:A\rightsquigarrow B
+\]
+be a Mealy morphism and let
+\[
+  i:K\to P_0
+\]
+be a family of selected states.
+
+Define the orbit object
+\[
+  \mathcal O_{P,i}
+  :=
+  A_1\times_{t_A,A_0,p_Pi}K
+\]
+and orbit map
+\[
+  \operatorname{orb}_{P,i}(a,k)
+  :=
+  \delta_P(a,i(k)).
+\]
+Factor it as
+\[
+  \mathcal O_{P,i}
+  \twoheadrightarrow
+  \operatorname{Reach}_0(P,i)
+  \xhookrightarrow{m_i}
+  P_0.
+\]
+
+Then \(\operatorname{Reach}_0(P,i)\) carries a unique Mealy submorphism
+\[
+  \operatorname{Reach}(P,i):A\rightsquigarrow B
+\]
+for which \(m_i\) is a strict Mealy homomorphism. The selected map \(i\) factors through
+\(\operatorname{Reach}_0(P,i)\).
+\end{lemma}
+
+\begin{proof}
+A representative reachable state has the form
+\[
+  \delta_P(a,i(k)).
+\]
+If \(b\) is an input arrow composable at this state, then
+\[
+  \delta_P
+  \bigl(
+    b,\delta_P(a,i(k))
+  \bigr)
+  =
+  \delta_P(a\circ b,i(k)),
+\]
+which again lies in the image of the orbit map.
+
+Categorically, pull back the regular epimorphism
+\[
+  \mathcal O_{P,i}
+  \twoheadrightarrow
+  \operatorname{Reach}_0(P,i)
+\]
+along the domain of the proposed restricted transition. On that regular-epimorphic cover, the
+transition factors through \(m_i\) by the multiplication equation above. Regular-epimorphic descent
+and monicity of \(m_i\) give a unique map
+\[
+  \delta_{\operatorname{Reach}}:
+  A_1\times_{t_A,A_0,p_{\operatorname{Reach}}}
+  \operatorname{Reach}_0(P,i)
+  \to
+  \operatorname{Reach}_0(P,i)
+\]
+such that
+\[
+  m_i\delta_{\operatorname{Reach}}
+  =
+  \delta_P(1\times m_i).
+\]
+
+Define
+\[
+  \omega_{\operatorname{Reach}}
+  :=
+  \omega_P(1\times m_i).
+\]
+The Mealy unit and multiplication laws follow after composition with the monomorphism \(m_i\).
+
+Finally,
+\[
+  i(k)
+  =
+  \delta_P(1_{p_Pi(k)},i(k)),
+\]
+so \(i\) belongs to the image of the orbit map and factors through \(m_i\).
+\end{proof}
+
+\section{History-indexed residual games and subgame perfection}
+\label{sec:history-indexed-residual-games}
+
+A branch-faithful protocol has distinct carrier branches. A single state need not simultaneously
+encode the forward, backward, and evaluator residual states. Game-theoretic residuals therefore
+require explicit synchronization over both a strategy profile and a legal history.
+
+\begin{definition}[History-indexed strategic implementation]
+\label{def:history-indexed-strategic-implementation}
+A history-indexed strategic implementation with strategy object \(\Sigma\) consists of:
+\begin{enumerate}
+  \item an internal object \(H\) of legal histories and a root
+  \[
+    h_0:\mathbbm1\to H;
+  \]
+  \item an internal object \(L\) of legal one-step extensions with origin and destination maps
+  \[
+    o_L,d_L:L\rightrightarrows H;
+  \]
+  \item ready-state maps
+  \[
+    \rho_F:\Sigma\times H\to J_F,
+    \qquad
+    \rho_G:\Sigma\times H\to J_G,
+    \qquad
+    \rho_E:\Sigma\times H\to J_E;
+  \]
+  \item for each branch \(B\in\{F,G,E\}\), an input-arrow map
+  \[
+    \ell_B:
+    \Sigma\times L
+    \longrightarrow
+    \operatorname{dom}(B)_1
+  \]
+  satisfying
+  \[
+    t\,\ell_B
+    =
+    r_B\rho_B(1_\Sigma\times o_L),
+  \]
+  \[
+    s\,\ell_B
+    =
+    r_B\rho_B(1_\Sigma\times d_L),
+  \]
+  and
+  \[
+    \lambda_B
+    \bigl(
+      \ell_B(\sigma,l),
+      \rho_B(\sigma,o_Ll)
+    \bigr)
+    =
+    \rho_B(\sigma,d_Ll).
+  \]
+\end{enumerate}
+\end{definition}
+
+The categorical arrow \(\ell_B(\sigma,l)\) runs from the anchor at the destination history to the
+anchor at the origin history. Target-to-source processing therefore transports the state in the
+operational direction from \(o_L(l)\) to \(d_L(l)\).
+
+\begin{lemma}[Transport along legal history paths]
+\label{lem:history-path-transport}
+Let
+\[
+  l_1:h_0\to h_1,
+  \ldots,
+  l_n:h_{n-1}\to h_n
+\]
+be a composable legal history path. Then
+\[
+  \lambda_B
+  \Bigl(
+    \ell_B(l_1)\circ\cdots\circ\ell_B(l_n),
+    \rho_B(\sigma,h_0)
+  \Bigr)
+  =
+  \rho_B(\sigma,h_n).
+\]
+\end{lemma}
+
+\begin{proof}
+The result is immediate for the empty path. For the induction step, use the one-step synchronization
+equation and the right-action multiplication law. The target-to-source ordering is exactly the
+displayed categorical composite.
+\end{proof}
+
+For a generalized incumbent
+\[
+  \sigma:U\to\Sigma
+\]
+and history
+\[
+  h:U\to H,
+\]
+pullback gives synchronized selected states over \(U\).
+
+\begin{definition}[Pointed and generated residual strategic games]
+\label{def:residual-strategic-game}
+The pointed residual strategic game at
+\[
+  (\sigma,h):U\to\Sigma\times H
+\]
+is the pullback of the strategic implementation to \(\mathcal E/U\), together with the three
+selected ready states
+\[
+  \rho_F(\sigma,h),
+  \qquad
+  \rho_G(\sigma,h),
+  \qquad
+  \rho_E(\sigma,h).
+\]
+
+Let
+\[
+  i_{\sigma,h}:
+  \mathbbm1_U+\mathbbm1_U+\mathbbm1_U
+  \longrightarrow
+  P_{\mathsf{SProt}}|_U
+\]
+be the induced map into the complete protocol carrier, using the branch carrier inclusions.
+
+The generated residual strategic protocol is
+\[
+  \operatorname{Res}_{\sigma,h}
+  \bigl(
+    \mathsf{SProt}(\mathcal G)
+  \bigr)
+  :=
+  \operatorname{Reach}
+  \bigl(
+    \mathsf{SProt}(\mathcal G)|_U,
+    i_{\sigma,h}
+  \bigr),
+\]
+equipped with total initialization.
+\end{definition}
+
+The branch carriers of the generated residual protocol are the pullbacks
+\[
+  P_B^{\mathrm{res}}
+  :=
+  P_B|_U
+  \times_{P_{\mathsf{SProt}}|_U}
+  \operatorname{Reach}_0.
+\]
+Since the original branch carriers are stable under their branch arrows, these intersections remain
+stable branch restrictions.
+
+The pointed residual implementation records the selected synchronized states. The generated residual
+protocol is their transition-closed reachable realization. In particular, forward states may
+generate backward states through return arrows inside the same complete protocol.
+
+\subsection{Finite internal extensive games}
+
+Fix an external natural number \(N\). A finite deterministic perfect-information game presentation
+consists of:
+
+\begin{enumerate}
+  \item a finite constant object \(I\) of players;
+  \item node objects \(H_0,\ldots,H_N\), with a root
+  \[
+    h_0:\mathbbm1\to H_0;
+  \]
+  \item for each \(n<N\), an object of legal move occurrences
+  \[
+    \pi_n:A_n\to H_n
+  \]
+  and a successor map
+  \[
+    \nu_n:A_n\to H_{n+1};
+  \]
+  \item an active-player map
+  \[
+    \iota_n:H_n\to I;
+  \]
+  \item a terminal outcome map
+  \[
+    u:H_N\to Z;
+  \]
+  \item for every player \(i\), an internal preference relation
+  \[
+    \succeq_i\hookrightarrow Z\times Z.
+  \]
+\end{enumerate}
+
+The node objects may identify positions reached by different move sequences. The history compiler
+therefore uses the canonical unfolding of the rooted game graph.
+
+\subsection{The unfolded legal-history object}
+
+Define
+\[
+  \widehat H_0:=\mathbbm1
+\]
+and
+\[
+  e_0:=h_0:\widehat H_0\to H_0.
+\]
+
+Recursively, define
+\[
+  \widehat H_{n+1}
+  :=
+  \widehat H_n
+  \times_{e_n,H_n,\pi_n}
+  A_n
+\]
+and
+\[
+  e_{n+1}
+  :=
+  \nu_n\pi_2:
+  \widehat H_{n+1}\to H_{n+1}.
+\]
+
+The predecessor map is
+\[
+  \partial_n:=\pi_1:
+  \widehat H_{n+1}\to\widehat H_n.
+\]
+
+Put
+\[
+  \widehat H
+  :=
+  \coprod_{n=0}^{N}\widehat H_n
+\]
+and
+\[
+  \widehat L
+  :=
+  \coprod_{n<N}\widehat H_{n+1}.
+\]
+On the \(n\)-th summand, the origin map is the inclusion of
+\[
+  \partial_n:\widehat H_{n+1}\to\widehat H_n
+\]
+and the destination map is the inclusion of \(\widehat H_{n+1}\) itself.
+
+For \(n\leq m\), write
+\[
+  \partial_{n,m}:
+  \widehat H_m\to\widehat H_n
+\]
+for the iterated predecessor map.
+
+\begin{proposition}[Unique unfolded history words]
+\label{prop:unique-unfolded-history-words}
+For each \(n\), the object of length-\(n\) legal extension paths beginning at the root is canonically
+isomorphic to \(\widehat H_n\). Consequently every element of \(\widehat H\) has a unique finite
+legal extension word from the root.
+\end{proposition}
+
+\begin{proof}
+For \(n=0\), both objects are terminal.
+
+Suppose the statement holds at depth \(n\). A path of length \(n+1\) is a path of length \(n\)
+together with a legal move occurrence at its endpoint. By the induction isomorphism, its object is
+\[
+  \widehat H_n
+  \times_{H_n}
+  A_n
+  =
+  \widehat H_{n+1}.
+\]
+The recursive construction records the predecessor at each stage, so the resulting extension word
+is unique.
+\end{proof}
+
+The active-player and terminal maps pull back to
+\[
+  \widehat\iota_n:=\iota_ne_n,
+  \qquad
+  \widehat u:=ue_N.
+\]
+
+The legal move family over an unfolded node is
+\[
+  \widehat A_n
+  :=
+  \widehat H_n\times_{H_n}A_n
+  =
+  \widehat H_{n+1}
+  \longrightarrow
+  \widehat H_n.
+\]
+
+\subsection{Continuation strategy bundles}
+
+For every player \(i\), let
+\[
+  \widehat H_{n,i}\hookrightarrow\widehat H_n
+\]
+be the subobject on which
+\[
+  \widehat\iota_n=i.
+\]
+
+For a fixed depth \(n\), define the object of future \(i\)-decision nodes over
+\(\widehat H_n\) by
+\[
+  D_{i,n}
+  :=
+  \coprod_{m=n}^{N-1}\widehat H_{m,i},
+\]
+where the structure map to \(\widehat H_n\) on the \(m\)-th summand is
+\[
+  \partial_{n,m}.
+\]
+
+Let
+\[
+  B_{i,n}\to D_{i,n}
+\]
+be the family obtained by restricting
+\[
+  \widehat A_m\to\widehat H_m
+\]
+to \(\widehat H_{m,i}\) on each summand.
+
+Define the continuation strategy object of player \(i\), as an object of
+\(\mathcal E/\widehat H_n\), by
+\[
+  \Sigma_{i,n}
+  :=
+  \Pi_{D_{i,n}\to\widehat H_n}
+  (B_{i,n}).
+\]
+
+Its fibre at an unfolded history \(\widehat h\) is the object of choices at every future
+\(i\)-controlled decision node descending from \(\widehat h\).
+
+Define the continuation-profile object
+\[
+  \Sigma_n
+  :=
+  \prod_{i\in I}^{\mathcal E/\widehat H_n}
+  \Sigma_{i,n}.
+\]
+
+At the root,
+\[
+  \Sigma_i:=\Sigma_{i,0},
+  \qquad
+  \Sigma:=\prod_{i\in I}\Sigma_i.
+\]
+
+Restriction of a global strategy section to the descendant decision nodes gives, by
+Beck--Chevalley and the universal property of dependent products, a morphism
+\[
+  \operatorname{res}_{i,n}:
+  \widehat H_n\times\Sigma_i
+  \longrightarrow
+  \Sigma_{i,n}.
+\]
+Taking the product over players gives
+\[
+  \operatorname{res}_n:
+  \widehat H_n\times\Sigma
+  \longrightarrow
+  \Sigma_n.
+\]
+
+\subsection{Continuation outcomes}
+
+At depth \(N\), define
+\[
+  o_N:\Sigma_N\to Z
+\]
+over \(\widehat H_N\) by
+\[
+  o_N(\widehat h,*)=\widehat u(\widehat h).
+\]
+
+For \(n<N\), evaluation of the active player's continuation strategy at the current node gives a
+legal move occurrence and hence a successor map
+\[
+  s_n:\Sigma_n\to\widehat H_{n+1}
+\]
+over \(\widehat H_n\).
+
+Restriction of all continuation strategies to descendants of that successor gives a map
+\[
+  r_n:\Sigma_n\to\Sigma_{n+1}
+\]
+lying over \(s_n\).
+
+Define recursively
+\[
+  o_n:=o_{n+1}r_n.
+\]
+
+Thus the fibre of
+\[
+  o_n:\Sigma_n\to Z
+\]
+at \(\widehat h\) is the continuation-outcome map
+\[
+  o_{\widehat h}:\Sigma_{\widehat h}\to Z
+\]
+for the continuation game rooted at \(\widehat h\).
+
+For a continuation profile
+\[
+  \bar\sigma\in\Sigma_{\widehat h}
+\]
+and a candidate response profile
+\[
+  \bar\tau\in\Sigma_{\widehat h},
+\]
+define
+\[
+\begin{aligned}
+  \chi_{\widehat h}(\bar\sigma,\bar\tau)
+  :=
+  \bigwedge_{i\in I}
+  \forall_{\theta_i\in\Sigma_{i,\widehat h}}
+  \Bigl[
+    o_{\widehat h}(\bar\sigma_{-i},\bar\tau_i)
+    \succeq_i
+    o_{\widehat h}(\bar\sigma_{-i},\theta_i)
+  \Bigr].
+\end{aligned}
+\]
+
+The finite meet and the displayed universal quantifiers are internal operations in the topos.
+
+Define the global history-indexed classifier
+\[
+\begin{aligned}
+  \chi_{\mathrm{hist}}:
+  \Sigma\times\widehat H\times\Sigma
+  &\longrightarrow
+  \Omega,
+  \\
+  \chi_{\mathrm{hist}}(\sigma,\widehat h,\tau)
+  &:=
+  \chi_{\widehat h}
+  \bigl(
+    \operatorname{res}_{\widehat h}\sigma,
+    \operatorname{res}_{\widehat h}\tau
+  \bigr).
+\end{aligned}
+\]
+
+Its canonical extensional evaluator is the history-indexed response evaluator.
+
+\begin{definition}[Deviation-complete unfolded-history compiler]
+\label{def:deviation-complete-history-implementation}
+The deviation-complete unfolded-history compiler of a finite deterministic perfect-information game
+is the history-indexed implementation whose:
+\begin{enumerate}
+  \item history object is the full unfolded legal-history object \(\widehat H\);
+  \item legal extension object is \(\widehat L\);
+  \item synchronized ready states are those obtained by executing the compiled continuation arena
+  and evaluator at each pair \((\sigma,\widehat h)\);
+  \item branch extension maps are the compiled input arrows representing the corresponding legal
+  unfolded extension;
+  \item evaluator classifier is \(\chi_{\mathrm{hist}}\).
+\end{enumerate}
+\end{definition}
+
+Every legal move occurrence is represented independently of the incumbent profile, and every
+unfolded legal history is reachable from the root by its unique finite extension word.
+
+\begin{definition}[Residual stability]
+\label{def:residual-stability}
+A strategy profile \(\sigma\) is residually stable when
+\[
+  \chi_{\widehat h}
+  \bigl(
+    \operatorname{res}_{\widehat h}\sigma,
+    \operatorname{res}_{\widehat h}\sigma
+  \bigr)
+  =
+  \top
+\]
+for every unfolded legal history \(\widehat h\).
+\end{definition}
+
+\begin{lemma}[Continuation equilibrium adequacy]
+\label{lem:continuation-equilibrium-adequacy}
+For every unfolded legal history \(\widehat h\), one has
+\[
+  \chi_{\widehat h}
+  \bigl(
+    \operatorname{res}_{\widehat h}\sigma,
+    \operatorname{res}_{\widehat h}\sigma
+  \bigr)
+  =
+  \top
+\]
+if and only if the restriction of \(\sigma\) to the continuation game rooted at \(\widehat h\) is a
+Nash equilibrium of that continuation game.
+\end{lemma}
+
+\begin{proof}
+Expanding the classifier on the diagonal gives
+\[
+\begin{aligned}
+  \bigwedge_{i\in I}
+  \forall_{\theta_i\in\Sigma_{i,\widehat h}}
+  \Bigl[
+    o_{\widehat h}(\operatorname{res}_{\widehat h}\sigma)
+    \succeq_i
+    o_{\widehat h}
+    \bigl(
+      (\operatorname{res}_{\widehat h}\sigma)_{-i},
+      \theta_i
+    \bigr)
+  \Bigr].
+\end{aligned}
+\]
+This states exactly that no player has a profitable unilateral continuation-strategy deviation in
+the continuation game rooted at \(\widehat h\). That is the internal Nash equilibrium condition for
+that continuation game.
+\end{proof}
+
+\begin{theorem}[Subgame perfection as residual stability]
+\label{thm:subgame-perfection}
+For a finite deterministic perfect-information game compiled by the deviation-complete
+unfolded-history compiler, a strategy profile is subgame-perfect if and only if it is residually
+stable.
+\end{theorem}
+
+\begin{proof}
+Every legal move sequence, including every off-path sequence, is represented by a unique element of
+\(\widehat H\). By Lemma~\ref{lem:continuation-equilibrium-adequacy}, residual stability at
+\(\widehat h\) is equivalent to Nash equilibrium of the profile restriction in the continuation
+game rooted at \(\widehat h\). Requiring this at every unfolded legal history is precisely
+subgame-perfect equilibrium.
+\end{proof}
+
+\section{Phase-decorated execution spans}
+\label{sec:phase-indexed-execution-spans}
+
+Feedback is applied after relative execution evaluation. The exposed optic residual and the hidden
+feedback object are different structures. Persistent machine state remains part of the visible
+execution configuration. Only private event-routing objects are hidden.
+
+Fix an object \(\Phi_0\) of phase labels.
+
+\begin{definition}[Phase-decorated execution object]
+\label{def:phase-indexed-execution-object}
+A phase-decorated execution object is a pair
+\[
+  (X,\varphi_X)
+\]
+with
+\[
+  \varphi_X:X\to\Phi_0.
+\]
+\end{definition}
+
+\begin{definition}[Phase-decorated execution span]
+\label{def:phase-decorated-execution-span}
+A phase-decorated execution span
+\[
+  (X,\varphi_X)\longrightarrow(Y,\varphi_Y)
+\]
+is an ordinary span
+\[
+  X\xleftarrow{\ell}U\xrightarrow{r}Y.
+\]
+An execution witness carries source phase \(\varphi_X\ell\) and target phase \(\varphi_Yr\).
+Composition is ordinary pullback composition.
+\end{definition}
+
+The phase labels in this definition are endpoint decorations. They do not impose a separate
+phase-transition legality relation.
+
+Passing to isomorphism classes gives a coproduct-monoidal category
+\[
+  \operatorname{Span}^{\Phi,+}_{\omega,0}(\mathcal E).
+\]
+Because \(\mathcal E\) is a Grothendieck topos, it satisfies the feedback span-base conditions of
+Chapter~9.
+
+Let
+\[
+  U:X+H\longrightarrow Y+H
+\]
+be a phase-decorated span. By extensivity, it has blocks
+\[
+  U_{XY}:X\to Y,
+  \qquad
+  U_{XH}:X\to H,
+\]
+\[
+  U_{HY}:H\to Y,
+  \qquad
+  U_{HH}:H\to H.
+\]
+
+\begin{definition}[Phase-decorated execution trace]
+\label{def:phase-indexed-execution-trace}
+The trace over \(H\) is
+\[
+  \operatorname{Tr}^{H}(U)
+  :=
+  U_{XY}
+  \boxplus
+  U_{HY}
+  \circ
+  \operatorname{Path}(U_{HH})
+  \circ
+  U_{XH}.
+\]
+\end{definition}
+
+Phase labels remain on the visible boundary objects after the intermediate route object is hidden.
+
+\section{Private linear subdivision}
+\label{sec:private-linear-subdivision}
+
+Let
+\[
+  M=\boxplus_{e\in E}M_e:X\longrightarrow Y
+\]
+be a finite homwise coproduct of macro-event execution spans.
+
+For every \(e\), choose an integer \(n_e\geq0\). If \(n_e=0\), choose only a span
+\[
+  U_{e,0}:X\to Y
+\]
+with a specified isomorphism
+\[
+  U_{e,0}\cong M_e.
+\]
+
+If \(n_e\geq1\), choose private hidden objects
+\[
+  H_{e,1},\ldots,H_{e,n_e}
+\]
+and a chain
+\[
+  X
+  \xrightarrow{U_{e,0}}
+  H_{e,1}
+  \xrightarrow{U_{e,1}}
+  \cdots
+  \xrightarrow{U_{e,n_e-1}}
+  H_{e,n_e}
+  \xrightarrow{U_{e,n_e}}
+  Y
+\]
+with a specified span isomorphism
+\[
+  U_{e,n_e}\circ\cdots\circ U_{e,0}
+  \cong
+  M_e.
+\]
+
+Assume that hidden objects belonging to different macro events are disjoint and that no subdivision
+arrow belongs to two chains.
+
+\begin{definition}[Private linear subdivision]
+\label{def:private-linear-subdivision}
+Put
+\[
+  H
+  :=
+  \coprod_{e:n_e\geq1}
+  \coprod_{i=1}^{n_e}
+  H_{e,i}.
+\]
+
+The private linear subdivision of \(M\) is the span
+\[
+  \widetilde M:
+  X+H
+  \longrightarrow
+  Y+H
+\]
+whose blocks are:
+\[
+  (\widetilde M)_{XY}
+  :=
+  \boxplus_{e:n_e=0}U_{e,0},
+\]
+\[
+  (\widetilde M)_{XH}
+  :=
+  \boxplus_{e:n_e\geq1}U_{e,0},
+\]
+\[
+  (\widetilde M)_{HH}
+  :=
+  \boxplus_{e:n_e\geq1}
+  \boxplus_{i=1}^{n_e-1}
+  U_{e,i},
+\]
+and
+\[
+  (\widetilde M)_{HY}
+  :=
+  \boxplus_{e:n_e\geq1}U_{e,n_e},
+\]
+with each span inserted into the block determined by its tagged source and target summands.
+\end{definition}
+
+A map of private linear subdivisions preserves the macro-event index, the ordered stage of every
+hidden object, and every subdivision link.
+
+\begin{theorem}[Finite subdivision collapse]
+\label{thm:finite-subdivision-collapse}
+For a private linear subdivision,
+\[
+  \operatorname{Tr}^{H}(\widetilde M)
+  \cong
+  M.
+\]
+The isomorphism is natural in maps of private linear subdivisions.
+\end{theorem}
+
+\begin{proof}
+Write
+\[
+  R_{XY}:=(\widetilde M)_{XY},
+  \qquad
+  R_{XH}:=(\widetilde M)_{XH},
+\]
+\[
+  R_{HH}:=(\widetilde M)_{HH},
+  \qquad
+  R_{HY}:=(\widetilde M)_{HY}.
+\]
+
+Because the hidden objects are tagged disjointly, a pullback between a span ending at \(H_{e,i}\)
+and one beginning at \(H_{e',j}\) is initial unless
+\[
+  e=e',
+  \qquad
+  j=i+1.
+\]
+Consequently
+\[
+  R_{HY}\circ R_{HH}^{[m]}\circ R_{XH}
+\]
+is initial unless
+\[
+  m=n_e-1
+\]
+for one of the chains with \(n_e\geq1\). In that case the surviving summand is
+\[
+  U_{e,n_e}\circ\cdots\circ U_{e,0}.
+\]
+
+Therefore
+\[
+\begin{aligned}
+  \operatorname{Tr}^{H}(\widetilde M)
+  &=
+  R_{XY}
+  \boxplus
+  \boxplus_{m\geq0}
+  R_{HY}\circ R_{HH}^{[m]}\circ R_{XH}
+  \\
+  &\cong
+  \boxplus_{e:n_e=0}U_{e,0}
+  \boxplus
+  \boxplus_{e:n_e\geq1}
+  U_{e,n_e}\circ\cdots\circ U_{e,0}
+  \\
+  &\cong
+  \boxplus_eM_e
+  \\
+  &=M.
+\end{aligned}
+\]
+
+A map of subdivisions sends the unique surviving path of each source chain to the unique surviving
+path of the corresponding target chain. Naturality follows from functoriality of span pullback and
+path composition.
+\end{proof}
+
+Acyclicity alone is insufficient: an acyclic hidden graph may branch or merge and consequently
+produce several hidden paths. Private linearity is the exact property used in the proof.
+
+\section{Relative execution factorization of Mealy pipelines}
+\label{sec:relative-execution-factorization}
+
+Let
+\[
+  P:A\rightsquigarrow B,
+  \qquad
+  Q:B\rightsquigarrow C,
+\]
+and let
+\[
+  (Y\xrightarrow{r}C_0,\sigma_Y)
+\]
+be a right internal \(C\)-action.
+
+The relative state object of the pipeline is
+\[
+\begin{aligned}
+  S_{Q\circ P,Y}
+  &:=
+  \bigl(
+    P_0\times_{q_P,B_0,p_Q}Q_0
+  \bigr)
+  \times_{q_Q,C_0,r}
+  Y.
+\end{aligned}
+\]
+Write an element as
+\[
+  (x,z,y)
+\]
+with
+\[
+  q_P(x)=p_Q(z),
+  \qquad
+  q_Q(z)=r(y).
+\]
+
+The primitive execution object is
+\[
+  M_{Q\circ P,Y}
+  :=
+  A_1
+  \times_{t_A,A_0,p_P\pi_P}
+  S_{Q\circ P,Y}.
+\]
+Write an element as
+\[
+  (a,x,z,y)
+\]
+with
+\[
+  t_A(a)=p_P(x).
+\]
+
+Define the intermediate handshake object
+\[
+\begin{aligned}
+  H_{Q,P;Y}
+  &:=
+  P_0
+  \times_{q_P,B_0,s_B}
+  B_1
+  \times_{t_B,B_0,p_Q}
+  Q_0
+  \times_{q_Q,C_0,r}
+  Y.
+\end{aligned}
+\]
+Its elements are written
+\[
+  (x',b,z,y)
+\]
+with
+\[
+  q_P(x')=s_B(b),
+  \qquad
+  t_B(b)=p_Q(z),
+  \qquad
+  q_Q(z)=r(y).
+\]
+
+Define
+\[
+\begin{aligned}
+  h_0:
+  M_{Q\circ P,Y}
+  &\longrightarrow
+  H_{Q,P;Y},
+  \\
+  h_0(a,x,z,y)
+  &:=
+  \bigl(
+    \delta_P(a,x),
+    \omega_P(a,x),
+    z,
+    y
+  \bigr),
+\end{aligned}
+\]
+and
+\[
+\begin{aligned}
+  h_1:
+  H_{Q,P;Y}
+  &\longrightarrow
+  S_{Q\circ P,Y},
+  \\
+  h_1(x',b,z,y)
+  &:=
+  \Bigl(
+    x',
+    \delta_Q(b,z),
+    \sigma_Y(\omega_Q(b,z),y)
+  \Bigr).
+\end{aligned}
+\]
+
+The first map is well typed because
+\[
+  q_P\delta_P(a,x)
+  =
+  s_B\omega_P(a,x)
+\]
+and
+\[
+  t_B\omega_P(a,x)
+  =
+  q_P(x)
+  =
+  p_Q(z).
+\]
+The second is well typed because
+\[
+  p_Q\delta_Q(b,z)
+  =
+  s_B(b)
+  =
+  q_P(x')
+\]
+and
+\[
+  q_Q\delta_Q(b,z)
+  =
+  s_C\omega_Q(b,z)
+  =
+  r\,\sigma_Y(\omega_Q(b,z),y).
+\]
+
+Define spans
+\[
+  U_0
+  :=
+  \left(
+    S_{Q\circ P,Y}
+    \xleftarrow{s_{Q\circ P,Y}}
+    M_{Q\circ P,Y}
+    \xrightarrow{h_0}
+    H_{Q,P;Y}
+  \right)
+\]
+and
+\[
+  U_1
+  :=
+  \left(
+    H_{Q,P;Y}
+    \xleftarrow{1}
+    H_{Q,P;Y}
+    \xrightarrow{h_1}
+    S_{Q\circ P,Y}
+  \right).
+\]
+
+\begin{theorem}[Pipeline execution factorization]
+\label{thm:pipeline-execution-factorization}
+There is a canonical isomorphism
+\[
+  U_1\circ U_0
+  \cong
+  m_{Q\circ P,Y},
+\]
+where \(m_{Q\circ P,Y}\) is the Chapter~6 primitive execution span of the pipeline.
+
+Let
+\[
+  \widetilde m_{Q,P;Y}:
+  S_{Q\circ P,Y}+H_{Q,P;Y}
+  \longrightarrow
+  S_{Q\circ P,Y}+H_{Q,P;Y}
+\]
+have only the blocks
+\[
+  (\widetilde m_{Q,P;Y})_{SH}=U_0,
+  \qquad
+  (\widetilde m_{Q,P;Y})_{HS}=U_1.
+\]
+Then
+\[
+  \boxed{
+  m_{Q\circ P,Y}
+  \cong
+  \operatorname{Tr}^{H_{Q,P;Y}}
+  \bigl(
+    \widetilde m_{Q,P;Y}
+  \bigr).
+  }
+\]
+\end{theorem}
+
+\begin{proof}
+Since the left leg of \(U_1\) is the identity, the pullback apex of
+\[
+  U_1\circ U_0
+\]
+is canonically \(M_{Q\circ P,Y}\). Its source leg is
+\[
+  (a,x,z,y)\longmapsto(x,z,y).
+\]
+Its target leg is
+\[
+\begin{aligned}
+  h_1h_0(a,x,z,y)
+  &=
+  h_1
+  \bigl(
+    \delta_P(a,x),
+    \omega_P(a,x),
+    z,
+    y
+  \bigr)
+  \\
+  &=
+  \Bigl(
+    \delta_P(a,x),
+    \delta_Q(\omega_P(a,x),z),
+    \\
+    &\hspace{28mm}
+    \sigma_Y
+    \bigl(
+      \omega_Q(\omega_P(a,x),z),
+      y
+    \bigr)
+  \Bigr).
+\end{aligned}
+\]
+
+Pipeline composition in \(\operatorname{Mly}(\mathcal E)\) has
+\[
+  \delta_{Q\circ P}(a,(x,z))
+  =
+  \bigl(
+    \delta_P(a,x),
+    \delta_Q(\omega_P(a,x),z)
+  \bigr)
+\]
+and
+\[
+  \omega_{Q\circ P}(a,(x,z))
+  =
+  \omega_Q(\omega_P(a,x),z).
+\]
+The target leg is therefore exactly the Chapter~6 primitive target map of the pipeline.
+
+The \(HH\)-block and direct \(SS\)-block of \(\widetilde m_{Q,P;Y}\) are zero. Hence
+\[
+\begin{aligned}
+  \operatorname{Tr}^{H_{Q,P;Y}}
+  (\widetilde m_{Q,P;Y})
+  &=
+  U_1
+  \circ
+  \operatorname{Path}(0_{H_{Q,P;Y}})
+  \circ
+  U_0
+  \\
+  &\cong
+  U_1\circ1_{H_{Q,P;Y}}\circ U_0
+  \\
+  &\cong
+  m_{Q\circ P,Y}.
+\end{aligned}
+\]
+\end{proof}
+
+The visible object \(S_{Q\circ P,Y}\) retains the current \(P\)-state, current \(Q\)-state, and
+downstream state. Only the intermediate emitted \(B\)-arrow and its handshake phase are hidden.
+
+\section{Event realization of stateless maps}
+\label{sec:event-realization}
+
+A map-representable Mealy morphism between discrete categories has only identity input arrows.
+Its Chapter~6 primitive execution span therefore does not directly recover the graph span of its
+object map. A free event category supplies the missing input event.
+
+\begin{definition}[Internal event category]
+\label{def:internal-event-category}
+Let
+\[
+  o,d:E\rightrightarrows W
+\]
+be an internal family of directed execution events, where \(o\) is the execution origin and \(d\) is
+the execution destination.
+
+Define
+\[
+  \mathsf{Ev}(o,d)
+\]
+to be the chosen free internal category on the graph whose object object is \(W\), whose generating
+arrow object is \(E\), and whose categorical source and target are
+\[
+  s_{\mathsf{Ev}}=d,
+  \qquad
+  t_{\mathsf{Ev}}=o.
+\]
+\end{definition}
+
+Thus a categorical generator is written
+\[
+  d(e)\longrightarrow o(e).
+\]
+Under target-to-source processing, it executes in the desired direction
+\[
+  o(e)\longrightarrow d(e).
+\]
+
+For an internal category \(A\), let
+\[
+  \mathsf{ObAct}_A
+  :=
+  (A_0\xrightarrow{1_{A_0}}A_0,s_A)
+\]
+be the canonical right action of \(A\) on its object object.
+
+\begin{lemma}[Event realization]
+\label{lem:event-realization}
+Let
+\[
+  \iota:E\hookrightarrow\mathsf{Ev}(o,d)_1
+\]
+be the inclusion of length-one generators. Evaluate the identity Mealy morphism
+\[
+  1_{\mathsf{Ev}(o,d)}
+\]
+against the canonical object action
+\[
+  \mathsf{ObAct}_{\mathsf{Ev}(o,d)}.
+\]
+Restrict its primitive execution span along \(\iota\). The resulting span is
+\[
+  \boxed{
+  W\xleftarrow{o}E\xrightarrow{d}W.
+  }
+\]
+\end{lemma}
+
+\begin{proof}
+For the identity Mealy morphism on an internal category \(A\), evaluated at the canonical object
+action, the relative state object is canonically
+\[
+  S_{1_A,\mathsf{ObAct}_A}\cong A_0,
+\]
+and the primitive execution object is canonically
+\[
+  M_{1_A,\mathsf{ObAct}_A}\cong A_1.
+\]
+The primitive source and target maps are
+\[
+  t_A,
+  \qquad
+  s_A,
+\]
+respectively. Restriction along \(\iota\) therefore gives
+\[
+  t_A\iota=o,
+  \qquad
+  s_A\iota=d.
+\]
+\end{proof}
+
+\begin{corollary}[Graph spans as primitive event execution]
+\label{cor:graph-spans-as-event-execution}
+Let
+\[
+  f:X\to Y.
+\]
+Put
+\[
+  W:=X+Y,
+  \qquad
+  E:=X,
+\]
+and define
+\[
+  o:=\iota_X,
+  \qquad
+  d:=\iota_Yf.
+\]
+Then the \(X\)-to-\(Y\) block of the restricted primitive execution span of
+\(\mathsf{Ev}(o,d)\) is
+\[
+  \Gamma(f):
+  X\xleftarrow{1_X}X\xrightarrow{f}Y.
+\]
+\end{corollary}
+
+\begin{proof}
+Apply Lemma~\ref{lem:event-realization} and take the block from the \(X\)-summand of \(W\) to the
+\(Y\)-summand.
+\end{proof}
+
+\section{Open-game arena composition as step execution and feedback}
+\label{sec:open-game-feedback}
+
+For an open-normal game
+\[
+  \mathcal K=(\Lambda,P_{\mathcal K},C_{\mathcal K},\chi_{\mathcal K})
+  :
+  (X,S)\to(Z,Q),
+\]
+define
+\[
+  V_F^{\mathrm{in}}(\mathcal K)
+  :=
+  \Lambda\times X,
+\]
+\[
+  V_F^{\mathrm{out}}(\mathcal K)
+  :=
+  \Lambda\times X\times Z,
+\]
+and
+\[
+\begin{aligned}
+  \bar P_{\mathcal K}:
+  V_F^{\mathrm{in}}(\mathcal K)
+  &\longrightarrow
+  V_F^{\mathrm{out}}(\mathcal K),
+  \\
+  (\lambda,x)
+  &\longmapsto
+  (\lambda,x,P_{\mathcal K}(\lambda,x)).
+\end{aligned}
+\]
+
+Define
+\[
+  V_G^{\mathrm{in}}(\mathcal K)
+  :=
+  \Lambda\times X\times Q,
+\]
+\[
+  V_G^{\mathrm{out}}(\mathcal K)
+  :=
+  \Lambda\times X\times Q\times S,
+\]
+and
+\[
+\begin{aligned}
+  \bar C_{\mathcal K}:
+  V_G^{\mathrm{in}}(\mathcal K)
+  &\longrightarrow
+  V_G^{\mathrm{out}}(\mathcal K),
+  \\
+  (\lambda,x,q)
+  &\longmapsto
+  (\lambda,x,q,C_{\mathcal K}(\lambda,x,q)).
+\end{aligned}
+\]
+
+\begin{definition}[Extracted arena protocol and step execution]
+\label{def:step-execution-open-normal}
+Define
+\[
+  \mathsf{Prot}_{\mathrm{ar}}(\mathcal K)
+  :=
+  (\bar P_{\mathcal K},\bar C_{\mathcal K}).
+\]
+Its step execution span is
+\[
+  \operatorname{Exec}_{\mathrm{step}}
+  \bigl(
+    \mathsf{Prot}_{\mathrm{ar}}(\mathcal K)
+  \bigr)
+  :=
+  \Gamma(\bar P_{\mathcal K})
+  +
+  \Gamma(\bar C_{\mathcal K}).
+\]
+\end{definition}
+
+This definition is independent of the feedback construction below.
+
+Now let
+\[
+  \mathcal G:(X,S)\to(Y,R),
+  \qquad
+  \mathcal H:(Y,R)\to(Z,Q)
+\]
+be open-normal games with strategy objects \(\Sigma,T\).
+
+Take the phase object
+\[
+  \Phi_0
+  :=
+  \mathbbm1
+  +
+  \mathbbm1
+  +
+  \mathbbm1
+  +
+  \mathbbm1
+  +
+  \mathbbm1
+  +
+  \mathbbm1
+\]
+with its six coproduct injections denoted
+\[
+  \mathsf f_{\mathrm{in}},
+  \mathsf f_{\mathrm{mid}},
+  \mathsf f_{\mathrm{out}},
+  \mathsf g_{\mathrm{in}},
+  \mathsf g_{\mathrm{mid}},
+  \mathsf g_{\mathrm{out}}
+  :
+  \mathbbm1\to\Phi_0.
+\]
+
+The objects below carry the corresponding constant phase maps.
+
+\subsection{Forward subdivision}
+
+Define
+\[
+  V_F^{\mathrm{in}}
+  :=
+  \Sigma\times T\times X,
+\]
+\[
+  H_Y
+  :=
+  \Sigma\times T\times X\times Y,
+\]
+\[
+  V_F^{\mathrm{out}}
+  :=
+  \Sigma\times T\times X\times Z.
+\]
+Define
+\[
+\begin{aligned}
+  f_0:
+  V_F^{\mathrm{in}}
+  &\longrightarrow
+  H_Y,
+  \\
+  (\sigma,\tau,x)
+  &\longmapsto
+  \bigl(
+    \sigma,\tau,x,
+    P_{\mathcal G}(\sigma,x)
+  \bigr),
+\end{aligned}
+\]
+and
+\[
+\begin{aligned}
+  f_1:
+  H_Y
+  &\longrightarrow
+  V_F^{\mathrm{out}},
+  \\
+  (\sigma,\tau,x,y)
+  &\longmapsto
+  \bigl(
+    \sigma,\tau,x,
+    P_{\mathcal H}(\tau,y)
+  \bigr).
+\end{aligned}
+\]
+
+\subsection{Backward subdivision}
+
+Define
+\[
+  V_G^{\mathrm{in}}
+  :=
+  \Sigma\times T\times X\times Q,
+\]
+\[
+  H_R
+  :=
+  \Sigma\times T\times X\times Y\times Q\times R,
+\]
+\[
+  V_G^{\mathrm{out}}
+  :=
+  \Sigma\times T\times X\times Q\times S.
+\]
+Define
+\[
+\begin{aligned}
+  g_0:
+  V_G^{\mathrm{in}}
+  &\longrightarrow
+  H_R,
+  \\
+  (\sigma,\tau,x,q)
+  &\longmapsto
+  \Bigl(
+    \sigma,
+    \tau,
+    x,
+    P_{\mathcal G}(\sigma,x),
+    q,
+    C_{\mathcal H}
+    \bigl(
+      \tau,
+      P_{\mathcal G}(\sigma,x),
+      q
+    \bigr)
+  \Bigr),
+\end{aligned}
+\]
+and
+\[
+\begin{aligned}
+  g_1:
+  H_R
+  &\longrightarrow
+  V_G^{\mathrm{out}},
+  \\
+  (\sigma,\tau,x,y,q,r)
+  &\longmapsto
+  \bigl(
+    \sigma,
+    \tau,
+    x,
+    q,
+    C_{\mathcal G}(\sigma,x,r)
+  \bigr).
+\end{aligned}
+\]
+
+The first backward link computes the actual intermediate positive output
+\[
+  y=P_{\mathcal G}(\sigma,x)
+\]
+before applying the downstream coplay. Consequently the subdivision does not contain an independent
+unconstrained \(y\)-coordinate.
+
+\subsection{The route event category}
+
+Put
+\[
+  V^{\mathrm{in}}
+  :=
+  V_F^{\mathrm{in}}
+  +
+  V_G^{\mathrm{in}},
+\]
+\[
+  V^{\mathrm{out}}
+  :=
+  V_F^{\mathrm{out}}
+  +
+  V_G^{\mathrm{out}},
+\]
+\[
+  H:=H_Y+H_R,
+\]
+and
+\[
+  W:=V^{\mathrm{in}}+H+V^{\mathrm{out}}.
+\]
+
+Define the micro-event object
+\[
+  E_{\mathrm{micro}}
+  :=
+  V_F^{\mathrm{in}}
+  +
+  H_Y
+  +
+  V_G^{\mathrm{in}}
+  +
+  H_R.
+\]
+
+Its origin and destination maps
+\[
+  o,d:E_{\mathrm{micro}}\rightrightarrows W
+\]
+are defined summandwise by
+\[
+\begin{array}{c|c|c}
+\text{event summand}&o&d\\
+\hline
+V_F^{\mathrm{in}}
+&
+V_F^{\mathrm{in}}\hookrightarrow W
+&
+V_F^{\mathrm{in}}\xrightarrow{f_0}H_Y\hookrightarrow W
+\\[1mm]
+H_Y
+&
+H_Y\hookrightarrow W
+&
+H_Y\xrightarrow{f_1}V_F^{\mathrm{out}}\hookrightarrow W
+\\[1mm]
+V_G^{\mathrm{in}}
+&
+V_G^{\mathrm{in}}\hookrightarrow W
+&
+V_G^{\mathrm{in}}\xrightarrow{g_0}H_R\hookrightarrow W
+\\[1mm]
+H_R
+&
+H_R\hookrightarrow W
+&
+H_R\xrightarrow{g_1}V_G^{\mathrm{out}}\hookrightarrow W.
+\end{array}
+\]
+
+Define the route event category
+\[
+  \mathsf{Route}_{\mathcal H,\mathcal G}
+  :=
+  \mathsf{Ev}(o,d).
+\]
+
+By Lemma~\ref{lem:event-realization}, the primitive execution span of the identity Mealy morphism on
+\(\mathsf{Route}_{\mathcal H,\mathcal G}\), restricted to the length-one generators, is the
+phase-decorated span
+\[
+  \widetilde U_{\mathcal H,\mathcal G}:
+  V^{\mathrm{in}}+H
+  \longrightarrow
+  V^{\mathrm{out}}+H
+\]
+whose nonzero blocks are
+\[
+  (\widetilde U_{\mathcal H,\mathcal G})_{V^{\mathrm{in}},H}
+  =
+  \Gamma(f_0)+\Gamma(g_0),
+\]
+and
+\[
+  (\widetilde U_{\mathcal H,\mathcal G})_{H,V^{\mathrm{out}}}
+  =
+  \Gamma(f_1)+\Gamma(g_1).
+\]
+Its direct visible block and hidden--hidden block are zero.
+
+There are no arrows between \(H_Y\) and \(H_R\), and no additional hidden arrows.
+
+\subsection{Composite branch equations}
+
+\begin{lemma}[Extracted composite branches]
+\label{lem:extracted-composite-branches}
+The extracted forward and backward maps of the open-normal composite satisfy
+\[
+  \bar P_{\mathcal H\circ\mathcal G}
+  =
+  f_1f_0
+\]
+and
+\[
+  \bar C_{\mathcal H\circ\mathcal G}
+  =
+  g_1g_0.
+\]
+\end{lemma}
+
+\begin{proof}
+By definition,
+\[
+\begin{aligned}
+  \bar P_{\mathcal H\circ\mathcal G}
+  (\sigma,\tau,x)
+  &=
+  \Bigl(
+    \sigma,\tau,x,
+    P_{\mathcal H}
+    \bigl(
+      \tau,
+      P_{\mathcal G}(\sigma,x)
+    \bigr)
+  \Bigr)
+  \\
+  &=
+  f_1f_0(\sigma,\tau,x).
+\end{aligned}
+\]
+
+Similarly,
+\[
+\begin{aligned}
+  \bar C_{\mathcal H\circ\mathcal G}
+  (\sigma,\tau,x,q)
+  &=
+  \Bigl(
+    \sigma,\tau,x,q,
+    C_{\mathcal G}
+    \bigl(
+      \sigma,
+      x,
+      C_{\mathcal H}
+      (
+        \tau,
+        P_{\mathcal G}(\sigma,x),
+        q
+      )
+    \bigr)
+  \Bigr)
+  \\
+  &=
+  g_1g_0(\sigma,\tau,x,q).
+\end{aligned}
+\]
+\end{proof}
+
+Inside the length-two path object
+\[
+  \mathsf{Route}_{\mathcal H,\mathcal G,1}^{[2]}
+\]
+there is a subobject
+\[
+  E_{\mathrm{macro}}
+  :=
+  V_F^{\mathrm{in}}
+  +
+  V_G^{\mathrm{in}}
+\]
+whose two families are the categorical composites whose operational orders are respectively
+\[
+  f_0\text{ then }f_1,
+  \qquad
+  g_0\text{ then }g_1.
+\]
+Restricting primitive execution to these macro-event arrows gives
+\[
+  \Gamma(f_1f_0)
+  +
+  \Gamma(g_1g_0).
+\]
+
+\begin{theorem}[Strategic arena composition as step execution feedback]
+\label{thm:strategic-arena-composition-feedback}
+There is a canonical isomorphism of phase-decorated execution spans
+\[
+  \boxed{
+  \operatorname{Exec}_{\mathrm{step}}
+  \bigl(
+    \mathsf{Prot}_{\mathrm{ar}}
+    (\mathcal H\circ\mathcal G)
+  \bigr)
+  \cong
+  \operatorname{Tr}^{H}
+  \bigl(
+    \widetilde U_{\mathcal H,\mathcal G}
+  \bigr).
+  }
+\]
+The forward component is the graph span of
+\[
+  (\sigma,\tau,x)
+  \longmapsto
+  \bigl(
+    \sigma,\tau,x,
+    P_{\mathcal H}
+    (
+      \tau,
+      P_{\mathcal G}(\sigma,x)
+    )
+  \bigr),
+\]
+and the backward component is the graph span of
+\[
+\begin{aligned}
+  (\sigma,\tau,x,q)
+  \longmapsto
+  \Bigl(
+    \sigma,\tau,x,q,
+    C_{\mathcal G}
+    \bigl(
+      \sigma,
+      x,
+      C_{\mathcal H}
+      (
+        \tau,
+        P_{\mathcal G}(\sigma,x),
+        q
+      )
+    \bigr)
+  \Bigr).
+\end{aligned}
+\]
+\end{theorem}
+
+\begin{proof}
+The forward and backward route graphs are disjoint private linear chains. Their hidden--hidden block
+is zero, so
+\[
+  \operatorname{Path}(0_H)\cong1_H.
+\]
+Hence
+\[
+\begin{aligned}
+  \operatorname{Tr}^{H}
+  (\widetilde U_{\mathcal H,\mathcal G})
+  &\cong
+  \bigl(
+    \Gamma(f_1)+\Gamma(g_1)
+  \bigr)
+  \circ
+  \bigl(
+    \Gamma(f_0)+\Gamma(g_0)
+  \bigr).
+\end{aligned}
+\]
+
+Disjointness of \(H_Y\) and \(H_R\) makes the two cross-composites initial. Composition of graph
+spans gives
+\[
+  \Gamma(f_1)\circ\Gamma(f_0)
+  \cong
+  \Gamma(f_1f_0)
+\]
+and
+\[
+  \Gamma(g_1)\circ\Gamma(g_0)
+  \cong
+  \Gamma(g_1g_0).
+\]
+Therefore
+\[
+  \operatorname{Tr}^{H}
+  (\widetilde U_{\mathcal H,\mathcal G})
+  \cong
+  \Gamma(f_1f_0)+\Gamma(g_1g_0).
+\]
+
+By Lemma~\ref{lem:extracted-composite-branches},
+\[
+  \Gamma(f_1f_0)+\Gamma(g_1g_0)
+  =
+  \Gamma(\bar P_{\mathcal H\circ\mathcal G})
+  +
+  \Gamma(\bar C_{\mathcal H\circ\mathcal G}),
+\]
+which is
+\[
+  \operatorname{Exec}_{\mathrm{step}}
+  \bigl(
+    \mathsf{Prot}_{\mathrm{ar}}
+    (\mathcal H\circ\mathcal G)
+  \bigr)
+\]
+by Definition~\ref{def:step-execution-open-normal}.
+\end{proof}
+
+The response branch is not hidden by this trace. It is composed separately by stationary context
+decomposition and meet. Adjoining that evaluator branch to the traced arena branch gives the
+complete canonical protocol of the composite strategic game.
+
+\begin{remark}[Persistent state in general strategic arenas]
+For open-normal games, the intermediate value
+\[
+  P_{\mathcal G}(\sigma,x)
+\]
+may be recomputed from the visible strategy and input coordinates, so it may be placed in a private
+hidden route object during the macro event.
+
+For a genuinely stateful arena, the current Mealy carrier state cannot in general be reconstructed.
+Theorem~\ref{thm:pipeline-execution-factorization} keeps the complete relative state object visible
+and traces only the intermediate emitted-arrow handshake.
+\end{remark}
+
+\begin{remark}[No bicategorical \(\operatorname{Int}\) claim]
+The preceding theorems are theorems about execution spans after relative evaluation and event
+elaboration. They do not construct a traced symmetric monoidal bicategory of strategic Mealy systems,
+nor a bicategorical \(\operatorname{Int}\) construction.
+
+An ordinary \(\operatorname{Int}\)-morphism separates positive and negative span blocks. Additional
+indexed visible-configuration structure would be required to prove that the backward block retains
+the same persistent state generated by the forward block. The finite-path feedback theorems above do
+not require that additional claim.
+\end{remark}
+
+\section{Examples}
+\label{sec:strategic-mealy-examples}
+
+\subsection{An internal selection-function decision}
+\label{subsec:selection-function-decision}
+
+Let \(Y,R\in\mathcal E\). An internal multivalued selection function may be represented by a map
+\[
+  \varepsilon:
+  R^Y\longrightarrow\Omega^Y.
+\]
+Equivalently, it is a subobject
+\[
+  \mathsf{Sel}
+  \hookrightarrow
+  R^Y\times Y.
+\]
+
+Define
+\[
+  \mathcal D_\varepsilon:
+  (\mathbbm1,\mathbbm1)
+  \longrightarrow
+  (Y,R)
+\]
+with strategy object
+\[
+  \Sigma=Y,
+\]
+play map
+\[
+  P(y,*)=y,
+\]
+unique coplay, and classifier
+\[
+  \chi_{\mathcal D_\varepsilon}
+  (y,*,k,y')
+  :=
+  \operatorname{ev}
+  \bigl(
+    \varepsilon(k),
+    y'
+  \bigr).
+\]
+The equilibrium subobject is therefore classified by
+\[
+  (y,k)
+  \longmapsto
+  \operatorname{ev}
+  \bigl(
+    \varepsilon(k),
+    y
+  \bigr).
+\]
+
+The canonical residual is \(Y\), with forward map
+\[
+  y\longmapsto(y,y).
+\]
+The response evaluator may be the canonical extensional evaluator or a stateful controller that
+constructs the complete outcome profile and then applies \(\varepsilon\).
+
+\subsection{A sequential two-player game}
+\label{subsec:sequential-two-player-game}
+
+Let \(A\in\mathcal E\) be the first player's action object, and let
+\[
+  \pi_B:B\to A
+\]
+be an internally indexed family of second-player response objects. The contingent strategy object
+of the second player is the dependent product
+\[
+  \Sigma_2
+  :=
+  \Pi_{!_A}(B).
+\]
+Its evaluation map is
+\[
+  \operatorname{ev}:
+  \Sigma_2\times A\to B
+\]
+over \(A\).
+
+Let
+\[
+  U:B\to\mathbb R_{\mathcal E}\times\mathbb R_{\mathcal E}
+\]
+be an internal payoff map, where \(\mathbb R_{\mathcal E}\) is a chosen internal ordered-real
+object. Composite play is
+\[
+  (a,\tau)\longmapsto\operatorname{ev}(\tau,a).
+\]
+
+The first player's continuation against incumbent \(\tau\) is obtained by evaluating the payoff at
+\[
+  \operatorname{ev}(\tau,a')
+\]
+for every candidate \(a'\). The second player's local context is the unfolded history determined by
+the first incumbent action. Thus the stationary context decomposition reconstructs the usual
+normal-form response conditions.
+
+The deviation-complete unfolded-history compiler includes every first-player action as a legal
+history, whether or not it is selected by the incumbent first-player strategy. Residual stability
+therefore requires the second-player strategy to be optimal in every fibre \(B_a\), including fibres
+over off-path first-player actions. Theorem~\ref{thm:subgame-perfection} identifies this condition
+with subgame perfection.
+
+\subsection{Take-away and observation-relative minimization}
+\label{subsec:take-away-minimization}
+
+Let \(N\) and \(k\) be external positive integers and let the corresponding finite constant objects
+be used internally. A nonterminal position is
+\[
+  (n,i),
+\]
+where \(n\) is a positive heap size and \(i\) is the active player. A legal move removes
+\[
+  m\in\{1,\ldots,k\},
+  \qquad
+  m\leq n,
+\]
+and sends
+\[
+  (n,i)\longmapsto(n-m,1-i).
+\]
+
+A full-history controller stores the complete path. A positional controller stores only the current
+position. A residue controller stores
+\[
+  n\bmod(k+1).
+\]
+
+If the output protocol observes only eventual win or loss under a fixed residue policy, the
+strategic behaviour specification may factor through the residue object, with the terminally
+truncated heaps represented separately. The unrestricted arena protocol does not admit this
+quotient: exact heap sizes have different enabled moves and different remaining path lengths.
+
+Thus the residue quotient is a Nerode quotient of the chosen winner specification, not of the
+unrestricted transition protocol. The distinction is forced by
+Theorem~\ref{thm:minimal-strategic-realization}: minimization is always relative to the selected
+ready-state behaviour map.
+
+\subsection{Finite repeated prisoner's dilemma}
+\label{subsec:repeated-prisoners-dilemma}
+
+Let
+\[
+  A=\{C,D\}
+\]
+be the constant two-action object, and let the internal payoff map satisfy
+\[
+  T>R>P>S
+\]
+in the chosen ordered payoff object. Fix an external finite horizon \(N\).
+
+The repeated arena stores:
+\begin{enumerate}
+  \item the current round;
+  \item both controller states;
+  \item the accumulated payoff.
+\end{enumerate}
+Each stage executes the synchronous protocol:
+\begin{enumerate}
+  \item both controllers emit from their current states;
+  \item the joint action is evaluated;
+  \item each controller observes the opponent's emitted action;
+  \item both controller states update;
+  \item the round counter advances.
+\end{enumerate}
+
+Tit-for-tat has state object \(\{C,D\}\), initialized at \(C\), emits its state, and updates to the
+observed opponent action. Grim trigger has states
+\[
+  \{\mathsf{clean},\mathsf{triggered}\}
+\]
+with absorbing triggered state.
+
+This system lies outside the open-normal fragment because deployed strategies are persistent
+stateful controllers. It nevertheless lies in the general strategic Mealy bicategory. Product tensor
+produces simultaneous stage output, relative execution supplies the common visible state object, and
+Theorem~\ref{thm:pipeline-execution-factorization} factors each pipeline stage through a private
+handshake object.
+
+For a finite horizon, iterating those factorizations and applying the substitution and vanishing
+equations of the Chapter~9 trace gives one trace over the coproduct of the finitely many private
+stage-handshake objects. Controller states, round number, and accumulated payoff remain visible
+throughout. Strategic residual semantics identifies histories precisely when they induce equal
+future forward, backward, and counterfactual behaviours.
+
+\section{Chapter summary}
+\label{sec:strategic-mealy-games-summary}
+
+This chapter constructed strategic interaction internally in a Grothendieck topos.
+
+First, initialization was strengthened to a transition-closed right action of the input category.
+This strengthening is forced by horizontal composition of output-lax Mealy simulations: the
+downstream initialization state must be transported along the output-comparison arrow of the
+upstream simulation. Transition-closed initialized Mealy morphisms form the symmetric monoidal
+bicategory
+\[
+  \operatorname{IMly}^{\mathrm{cl}}(\mathcal E).
+\]
+
+Second, operational Mealy optics were constructed from initialized forward and backward legs.
+Residual reparametrizers carry equivariant discard sections. These sections provide the comparison
+\[
+  (!_M)_\#R
+  \Longrightarrow
+  (!_N)_\#
+\]
+needed to make visible output functorial. Operational optics form
+\[
+  \operatorname{MOpt}_{\mathrm{op}}(\mathcal E).
+\]
+
+Third, pure map-representable residual slides were formulated as map-representable residual changes
+equipped with strict invertible initialized leg comparisons and were identified by a homwise
+coidentifier. This produced
+\[
+  \overline{\operatorname{MOpt}}_{\mathrm{op}}(\mathcal E).
+\]
+The quotient makes pure residual-presentation changes identities while retaining stateful residual
+reparametrizations. The wide subcategories generated by raw tight cells form a locally wide
+symmetric monoidal fragment.
+
+Fourth, frozen strategy parameters were represented by discrete internal categories. Parametrized
+arenas and contravariant parameter maps form
+\[
+  \overline{\operatorname{ParaMOpt}}_{\mathrm{op}}(\mathcal E).
+\]
+Generalized incumbents are handled by arbitrary base change rather than by global points. The
+internally defined constructions are stable under base change through canonical pseudonatural
+comparison isomorphisms.
+
+Fifth, strategic context doctrines were formulated internally with explicitly typed
+pseudonaturality, associativity, unit, symmetry, and middle-four comparison cells. Internal deviation
+categories were constructed from free internal monoids, and internal query categories were formed
+using the core groupoid of the context category.
+
+Truth output is the one-object internal category associated to
+\[
+  (\Omega,\wedge,\top).
+\]
+Context-transparent evaluator machines transport along internal context isomorphisms. Response-strict
+evaluator simulations preserve one-query classifiers exactly and are closed under the bicategorical
+operations used in strategic composition.
+
+These structures form the symmetric monoidal bicategory
+\[
+  \operatorname{StrMlyGame}^{=}_{\mathfrak C}(\mathcal K).
+\]
+
+Sixth, internal deterministic lenses were identified with tight discrete stateless
+residual-codescent optics. This supplied the parametrized deterministic lens bicategory
+\[
+  \overline{\mathcal K}_{\mathrm{td}}.
+\]
+The stationary context doctrine was then constructed from the internal context object
+\[
+  X\times R^Y.
+\]
+Its sequential and parallel decomposition maps were derived by exponential transpose, and their
+coherence was proved by equality of the resulting local continuation maps.
+
+Seventh, internal deterministic open games were defined by strategy objects, play maps, coplay maps,
+and best-response subobjects. The first bridge theorem proved
+\[
+  \boxed{
+  \mathbf{OpenGame}_2(\mathcal E)
+  \cong
+  \mathbf{OGMly}^{\mathrm{nf}}_2(\mathcal E).
+  }
+\]
+Open-normal games realize locally faithfully in the strategic Mealy bicategory based on the
+stationary doctrine.
+
+Eighth, structured canonical branch-faithful protocol machines were constructed using chosen free
+internal protocol categories. Their forward, backward, and evaluator carrier summands are stable
+branch restrictions. A strategy-port branch and tether generators force every structured protocol
+simulation to use one common strategy reparametrization on all three branches.
+
+For a strategy map \(u:T\to\Sigma\), the input reindexing functor always exists. The output
+reindexing functor exists precisely when the play and coplay equations hold. After that functor has
+been constructed, the carrier map into the input-pullback carrier defines a strict protocol
+simulation precisely when the classifier equation holds.
+
+Protocol composition was defined by extraction, strategic composition, and recompilation. The
+second bridge theorem proved
+\[
+  \boxed{
+  \mathbf{OGMly}^{\mathrm{nf}}_2(\mathcal E)
+  \cong
+  \mathbf{CanProt}^{\mathrm{str}}_2(\mathcal E).
+  }
+\]
+Consequently,
+\[
+  \boxed{
+  \mathbf{OpenGame}_2(\mathcal E)
+  \cong
+  \mathbf{CanProt}^{\mathrm{str}}_2(\mathcal E).
+  }
+\]
+
+Forgetting only the literal chosen presentation while retaining branch, port, generator, and
+ready-family structure yields the symmetric monoidal biequivalence
+\[
+  \mathbf{CanProt}^{\mathrm{str}}_2(\mathcal E)
+  \simeq
+  \mathbf{CanProt}^{\mathrm{rep}}_2(\mathcal E).
+\]
+No claim is made after forgetting all structural markings, because extraction and compiler
+composition are then no longer determined by the underlying Mealy machine alone.
+
+Ninth, the complete branch-faithful protocol was subjected to the residual semantics of Chapter~3.
+Since a Grothendieck topos satisfies the standing exactness conditions, the strategic Nerode quotient
+exists effectively and is canonically the derivative image. The resulting restricted canonical
+behaviour machine is the unique reachable behaviourally separated minimal strategic realization.
+
+On evaluator derivatives, complete finite-word response behaviour refines one-query response
+observation. For canonical extensional evaluators, the two evaluator equivalence relations coincide.
+No such collapse is asserted for the complete forward--backward--evaluator protocol.
+
+Tenth, history-indexed synchronization was formulated over \(\Sigma\times H\) using explicitly typed
+branch input-arrow maps for legal one-step extensions. A selected incumbent-history tuple defines a
+pointed residual implementation; its generated residual protocol is the reachable transition-closed
+submachine produced by the orbit-image construction.
+
+For finite extensive games, the rooted game graph was canonically unfolded into path-history objects
+\[
+  \widehat H_n.
+\]
+Every unfolded history has a unique finite extension word from the root. Dependent continuation
+strategy bundles, restriction maps, and continuation outcome maps were then constructed over the
+unfolded history object. Residual stability was proved equivalent to subgame-perfect equilibrium.
+
+Finally, feedback was performed after genuine relative execution evaluation.
+
+For stateful Mealy pipelines, the primitive execution span factors through an intermediate emitted
+arrow and satisfies
+\[
+  \boxed{
+  m_{Q\circ P,Y}
+  \cong
+  \operatorname{Tr}^{H_{Q,P;Y}}
+  \bigl(
+    \widetilde m_{Q,P;Y}
+  \bigr).
+  }
+\]
+Persistent implementation and downstream state remain visible.
+
+For stateless open-normal branches, a free internal event category turns an object map into a genuine
+input event. Restriction of Chapter~6 primitive execution to the event generators recovers the graph
+span of the map. Private linear subdivisions, including direct zero-hidden-stage events, collapse
+under finite-path trace.
+
+Step execution of an extracted arena protocol was defined independently as the coproduct tensor of
+the graph spans of its forward and backward visible configuration maps. Sequential open-normal arena
+composition then satisfies
+\[
+  \boxed{
+  \operatorname{Exec}_{\mathrm{step}}
+  \bigl(
+    \mathsf{Prot}_{\mathrm{ar}}
+    (\mathcal H\circ\mathcal G)
+  \bigr)
+  \cong
+  \operatorname{Tr}^{H}
+  \bigl(
+    \widetilde U_{\mathcal H,\mathcal G}
+  \bigr).
+  }
+\]
+The response branch remains a separate strategic component composed by context decomposition and
+meet.

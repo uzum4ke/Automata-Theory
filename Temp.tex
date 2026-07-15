@@ -1,0 +1,2643 @@
+\section{Effectful Mealy morphisms}
+\label{sec:effectful-mealy-morphisms}
+
+The Mealy morphisms considered so far are deterministic. For every admissible
+input-state pair
+\[
+    (a,x)\in A_1\times_{t_A,A_0,p}P,
+\]
+the structure map selects a single updated state
+\[
+    \delta(a,x)
+\]
+and a single output arrow
+\[
+    \omega(a,x):
+    q(\delta(a,x))\to q(x).
+\]
+Equivalently, it selects a single element of the apex of
+\[
+    T_B(P)=B\circ P.
+\]
+
+To introduce computational effects, the next state and the output arrow should
+be placed jointly inside an effect. Thus an effectful transition has the form
+\[
+    P\circ A
+    \longrightarrow
+    \mathsf K(B\circ P),
+\]
+where \(\mathsf K\) is a monad preserving the external interfaces of the
+carrier. The order of the composite is important: the output arrow is first
+attached to the updated state, and the effect is then applied to the resulting
+joint state-output object. Consequently, different effectful branches may have
+different next states and different output arrows.
+
+The intended execution shape is
+\[
+    \begin{tikzcd}[column sep=huge]
+            u
+                \arrow[r, "a"]
+        &
+            v=p(x)
+    \end{tikzcd}
+    \qquad\leadsto\qquad
+    \mathsf K
+    \left[
+        \begin{tikzcd}[column sep=huge, baseline=-0.5ex]
+                q(x')
+                    \arrow[r, "\beta"]
+            &
+                q(x)
+        \end{tikzcd}
+    \right].
+\]
+Here both \(x'\) and \(\beta\) occur inside the same computational effect.
+
+Related categorical approaches to effectful Mealy machines have been developed
+by Bonchi, Di Lavore, and Román
+\cite{BonchiDiLavoreRomanEffectfulMealyMachines}. The construction below is
+adapted to the present setting of internal categories and span-carried state.
+
+\subsection{Interface-preserving effects}
+\label{subsec:interface-preserving-effects}
+
+For objects \(X,Y\in\mathcal E\), write
+\[
+    \mathcal C_{X,Y}
+    :=
+    \mathbf{Span}(\mathcal E)(X,Y).
+\]
+Since \(\mathcal E\) has finite products, there is a canonical isomorphism of
+categories
+\[
+    \mathcal C_{X,Y}
+    \cong
+    \mathcal E/(X\times Y).
+\]
+It sends a span
+\[
+    X\xleftarrow{p}P\xrightarrow{q}Y
+\]
+to the morphism
+\[
+    \langle p,q\rangle:P\to X\times Y.
+\]
+The correspondence is displayed by
+\[
+    \begin{tikzcd}[column sep=huge]
+            &
+                P
+                    \arrow[dl, "p"']
+                    \arrow[dr, "q"]
+                    \arrow[d, "{\langle p,q\rangle}" description]
+            &
+        \\
+            X
+            &
+                X\times Y
+                    \arrow[l, "\pi_X"]
+                    \arrow[r, "\pi_Y"']
+            &
+                Y.
+    \end{tikzcd}
+\]
+
+A monad on \(\mathcal C_{X,Y}\), equivalently on
+\(\mathcal E/(X\times Y)\), preserves the external interfaces in the sense
+that every effectful carrier remains equipped with a specified map to
+\(X\times Y\). In the fibrewise examples below, a stronger property holds:
+the effect acts pointwise and independently on each interface fibre. The
+abstract definition does not require this stronger pointwise condition.
+
+Fix internal categories
+\[
+    \mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A),
+    \qquad
+    \mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B).
+\]
+Recall the local monads
+\[
+    R_A=-\circ A,
+    \qquad
+    T_B=B\circ-
+\]
+on
+\[
+    \mathcal C_{A,B}
+    :=
+    \mathbf{Span}(\mathcal E)(A_0,B_0),
+\]
+together with the canonical distributive law
+\[
+    \lambda:
+    R_AT_B
+    \Rightarrow
+    T_BR_A
+\]
+from Proposition~\ref{prop:canonical-distributive-law}.
+
+\begin{definition}[Mealy-compatible effect datum]
+\label{def:mealy-compatible-effect-datum}
+    A \textbf{Mealy-compatible effect datum} for
+    \[
+        (\mathbb A,\mathbb B)
+    \]
+    consists of the following structure on
+    \(\mathcal C_{A,B}\).
+
+    \begin{enumerate}
+        \item A monad
+        \[
+            \mathsf K
+            =
+            (\mathsf K,\eta^{\mathsf K},\mu^{\mathsf K}).
+        \]
+
+        \item A distributive law
+        \[
+            \sigma_B:
+            T_B\mathsf K
+            \Rightarrow
+            \mathsf K T_B
+        \]
+        of the output-comparison monad over the effect monad.
+
+        \item A distributive law
+        \[
+            \rho_A:
+            R_A\mathsf K
+            \Rightarrow
+            \mathsf K R_A
+        \]
+        of the input-processing monad over the effect monad.
+
+        \item The Yang--Baxter compatibility equation
+        \begin{equation}
+        \begin{aligned}
+            &
+            (\mathsf K\lambda)
+            \circ
+            (\rho_A T_B)
+            \circ
+            (R_A\sigma_B)
+            \\
+            &\qquad=
+            (\sigma_B R_A)
+            \circ
+            (T_B\rho_A)
+            \circ
+            (\lambda\mathsf K)
+        \end{aligned}
+        \label{eq:effect-yang-baxter}
+        \end{equation}
+        as natural transformations
+        \[
+            R_AT_B\mathsf K
+            \Rightarrow
+            \mathsf K T_BR_A.
+        \]
+    \end{enumerate}
+\end{definition}
+
+The Yang--Baxter equation is the commutativity of the diagram
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+            R_AT_B\mathsf K
+                \arrow[r, "R_A\sigma_B"]
+                \arrow[d, "\lambda\mathsf K"']
+        &
+            R_A\mathsf K T_B
+                \arrow[r, "\rho_A T_B"]
+        &
+            \mathsf K R_AT_B
+                \arrow[d, "\mathsf K\lambda"]
+        \\
+            T_BR_A\mathsf K
+                \arrow[r, "T_B\rho_A"']
+        &
+            T_B\mathsf K R_A
+                \arrow[r, "\sigma_B R_A"']
+        &
+            \mathsf K T_BR_A.
+    \end{tikzcd}
+\]
+It says that input processing, output comparison, and the computational effect
+may be interchanged in either order with the same result.
+
+\subsection{The canonical fibrewise effect doctrine in
+\texorpdfstring{\(\mathbf{Set}\)}{Set}}
+\label{subsec:fibrewise-effects-set}
+
+Let
+\[
+    \mathcal E=\mathbf{Set},
+\]
+and let
+\[
+    K=(K,\eta^K,\mu^K)
+\]
+be a monad on \(\mathbf{Set}\).
+
+For a span
+\[
+    X\xleftarrow{p}P\xrightarrow{q}Y,
+\]
+write
+\[
+    P_{x,y}
+    :=
+    \{z\in P\mid p(z)=x,\ q(z)=y\}.
+\]
+Thus
+\[
+    P
+    \cong
+    \coprod_{(x,y)\in X\times Y}P_{x,y}.
+\]
+
+Define
+\[
+    \mathsf K_{X,Y}(P)
+    :=
+    \coprod_{(x,y)\in X\times Y}K(P_{x,y}),
+\]
+with the evident projection
+\[
+    \mathsf K_{X,Y}(P)\to X\times Y.
+\]
+The resulting carrier span is
+\[
+    \begin{tikzcd}
+        &
+            \displaystyle
+            \coprod_{(x,y)\in X\times Y}K(P_{x,y})
+                \arrow[dl]
+                \arrow[dr]
+        &
+        \\
+            X
+        &
+        &
+            Y.
+    \end{tikzcd}
+\]
+If
+\[
+    f:P\to Q
+\]
+is a map of spans, then \(f\) restricts to maps
+\[
+    f_{x,y}:P_{x,y}\to Q_{x,y},
+\]
+and
+\[
+    \mathsf K_{X,Y}(f)
+    =
+    \coprod_{(x,y)}
+    K(f_{x,y}).
+\]
+
+\begin{proposition}[Fibrewise effect doctrine in
+\texorpdfstring{\(\mathbf{Set}\)}{Set}]
+\label{prop:fibrewise-effect-doctrine-set}
+    Every monad
+    \[
+        K=(K,\eta^K,\mu^K)
+    \]
+    on \(\mathbf{Set}\) induces, for each pair of sets \(X,Y\), a monad
+    \[
+        \mathsf K_{X,Y}
+    \]
+    on
+    \[
+        \mathbf{Span}(\mathbf{Set})(X,Y)
+        \cong
+        \mathbf{Set}/(X\times Y)
+    \]
+    by applying \(K\) separately to each interface fibre.
+
+    For fixed small categories \(\mathbb A\) and \(\mathbb B\), this monad
+    carries canonical distributive laws
+    \[
+        \sigma_B:
+        T_B\mathsf K_{A_0,B_0}
+        \Rightarrow
+        \mathsf K_{A_0,B_0}T_B
+    \]
+    and
+    \[
+        \rho_A:
+        R_A\mathsf K_{A_0,B_0}
+        \Rightarrow
+        \mathsf K_{A_0,B_0}R_A
+    \]
+    satisfying the Yang--Baxter equation
+    \eqref{eq:effect-yang-baxter}.
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Construct the fibrewise monad.}
+        The unit and multiplication are defined fibrewise:
+        \[
+            \eta^{\mathsf K}_P
+            =
+            \coprod_{(x,y)}
+            \eta^K_{P_{x,y}},
+        \]
+        \[
+            \mu^{\mathsf K}_P
+            =
+            \coprod_{(x,y)}
+            \mu^K_{P_{x,y}}.
+        \]
+        The monad equations hold because they hold separately on every
+        interface fibre.
+
+        \item \textbf{Construct the output-comparison law.}
+        Let
+        \[
+            P=
+            \left(
+                A_0\xleftarrow{p}P\xrightarrow{q}B_0
+            \right).
+        \]
+        A generalized element of \(T_B\mathsf K(P)\) consists of an
+        effectful state
+        \[
+            \kappa\in K(P_{u,c})
+        \]
+        and an arrow
+        \[
+            \beta:c\to b
+        \]
+        in \(\mathbb B\):
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    c
+                        \arrow[r, "\beta"]
+                &
+                    b.
+            \end{tikzcd}
+        \]
+        The map
+        \[
+            P_{u,c}
+            \longrightarrow
+            (T_BP)_{u,b},
+            \qquad
+            x\longmapsto(x,\beta),
+        \]
+        induces
+        \[
+            K(P_{u,c})
+            \longrightarrow
+            K((T_BP)_{u,b}).
+        \]
+        Define
+        \[
+            \sigma_{B,P}(\kappa,\beta)
+            :=
+            K\bigl(x\mapsto(x,\beta)\bigr)(\kappa).
+        \]
+        Diagrammatically, the output arrow is moved inside the effect:
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    \kappa\in K(P_{u,c})
+                        \arrow[r, maps to]
+                &
+                    K\bigl\{
+                        (x,\beta)
+                        \mid
+                        x\in P_{u,c}
+                    \bigr\}.
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Construct the input-processing law.}
+        A generalized element of \(R_A\mathsf K(P)\) consists of an arrow
+        \[
+            a:u\to v
+        \]
+        and an effectful state
+        \[
+            \kappa\in K(P_{v,b}).
+        \]
+        The map
+        \[
+            P_{v,b}
+            \longrightarrow
+            (R_AP)_{u,b},
+            \qquad
+            x\longmapsto(a,x),
+        \]
+        induces
+        \[
+            K(P_{v,b})
+            \longrightarrow
+            K((R_AP)_{u,b}).
+        \]
+        Define
+        \[
+            \rho_{A,P}(a,\kappa)
+            :=
+            K\bigl(x\mapsto(a,x)\bigr)(\kappa).
+        \]
+        The input arrow is therefore moved inside the effect:
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    u
+                        \arrow[r, "a"]
+                &
+                    v
+                        \arrow[r, phantom, "\kappa\in K(P_{v,b})"]
+                &
+                    {}
+            \end{tikzcd}
+            \qquad\leadsto\qquad
+            K\bigl\{(a,x)\mid x\in P_{v,b}\bigr\}.
+        \]
+
+        \item \textbf{Verify the distributive-law equations.}
+        The unit equations follow from naturality of \(\eta^K\). The
+        multiplication equations follow from naturality of \(\mu^K\).
+        For example, attaching an output arrow before or after flattening a
+        nested effect gives the same map because
+        \[
+            \mu^K
+            \circ
+            KK(x\mapsto(x,\beta))
+            =
+            K(x\mapsto(x,\beta))
+            \circ
+            \mu^K.
+        \]
+        The input equations are identical in form.
+
+        \item \textbf{Verify Yang--Baxter compatibility.}
+        Fix
+        \[
+            a:u\to v,
+            \qquad
+            \beta:c\to b,
+            \qquad
+            \kappa\in K(P_{v,c}).
+        \]
+        Both sides of the Yang--Baxter equation apply \(K\) to the same map
+        \[
+            P_{v,c}
+            \longrightarrow
+            (T_BR_AP)_{u,b},
+            \qquad
+            x\longmapsto((a,x),\beta).
+        \]
+        The two presentations differ only by the canonical reassociation
+        \[
+            (a,(x,\beta))
+            \longleftrightarrow
+            ((a,x),\beta).
+        \]
+        Hence the diagram
+        \[
+            \begin{tikzcd}[column sep=huge, row sep=large]
+                    (a,\kappa,\beta)
+                        \arrow[r, maps to]
+                        \arrow[d, maps to]
+                &
+                    (a,K(x\mapsto(x,\beta))(\kappa))
+                        \arrow[d, maps to]
+                \\
+                    ((a,\kappa),\beta)
+                        \arrow[r, maps to]
+                &
+                    K(x\mapsto((a,x),\beta))(\kappa)
+            \end{tikzcd}
+        \]
+        commutes. This is precisely
+        \eqref{eq:effect-yang-baxter}.
+    \end{enumerate}
+\end{proof}
+
+Important examples of the fibrewise construction are the finite-powerset
+monad, the full powerset monad, the finite-distribution monad, the
+finite-subdistribution monad, the lift monad, and finitely supported weighted
+multiset monads.
+
+\subsection{The effectful output-comparison monad}
+\label{subsec:effectful-output-comparison-monad}
+
+The output-comparison monad and the computational effect combine into a single
+monad.
+
+\begin{proposition}[The effectful output-comparison monad]
+\label{prop:effectful-output-comparison-monad}
+    Let
+    \[
+        (\mathsf K,\sigma_B,\rho_A)
+    \]
+    be a Mealy-compatible effect datum. The composite endofunctor
+    \[
+        H_B^{\mathsf K}
+        :=
+        \mathsf K T_B
+    \]
+    carries a canonical monad structure
+    \[
+        H_B^{\mathsf K}
+        =
+        (\mathsf K T_B,\eta^H,\mu^H)
+    \]
+    on \(\mathcal C_{A,B}\).
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use the output-effect distributive law.}
+        The transformation
+        \[
+            \sigma_B:
+            T_B\mathsf K
+            \Rightarrow
+            \mathsf K T_B
+        \]
+        is a distributive law of \(T_B\) over \(\mathsf K\). Therefore the
+        composite endofunctor
+        \[
+            \mathsf K T_B
+        \]
+        carries the standard composite-monad structure.
+
+        \item \textbf{Record the unit.}
+        The unit is
+        \[
+            \eta^H_P:
+            P
+            \xrightarrow{\eta^T_P}
+            T_B(P)
+            \xrightarrow{\eta^{\mathsf K}_{T_B(P)}}
+            \mathsf K T_B(P).
+        \]
+        Thus
+        \[
+            x
+            \longmapsto
+            \eta^{\mathsf K}
+            \bigl(x,e_B(qx)\bigr).
+        \]
+        The corresponding output-comparison diagram is
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    q(x)
+                        \arrow[r, "e_B(qx)"]
+                &
+                    q(x).
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Record the multiplication.}
+        The multiplication is
+        \[
+        \begin{aligned}
+            \mu^H_P:
+            \mathsf K T_B\mathsf K T_B(P)
+                &\xrightarrow{\mathsf K\sigma_B T_B}
+            \mathsf K\mathsf K T_BT_B(P)
+            \\
+                &\xrightarrow{\mu^{\mathsf K}T_BT_B}
+            \mathsf K T_BT_B(P)
+            \xrightarrow{\mathsf K\mu^T_P}
+            \mathsf K T_B(P).
+        \end{aligned}
+        \]
+        The effect multiplication combines the nested computational effects,
+        while \(\mu^T\) composes the output-comparison arrows:
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    q(x)
+                        \arrow[r, "\beta"]
+                &
+                    b
+                        \arrow[r, "\gamma"]
+                &
+                    c
+            \end{tikzcd}
+            \qquad\longmapsto\qquad
+            \begin{tikzcd}[column sep=huge]
+                    q(x)
+                        \arrow[r, "\gamma\circ\beta"]
+                &
+                    c.
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Apply the composite-monad theorem.}
+        The monad laws follow from the monad laws for \(T_B\) and
+        \(\mathsf K\), together with the distributive-law equations for
+        \(\sigma_B\).
+    \end{enumerate}
+\end{proof}
+
+A value of
+\[
+    H_B^{\mathsf K}(P)
+    =
+    \mathsf K T_B(P)
+\]
+is an effectful value whose pure outcomes are pairs
+\[
+    (x,\beta)
+\]
+with
+\[
+    \beta:q(x)\to b.
+\]
+The state and output-comparison arrow occur inside the same effect and may
+therefore be correlated.
+
+\begin{remark}[Order of the composite]
+\label{rem:effectful-output-composite-order}
+    The intended monad is
+    \[
+        \mathsf K T_B,
+    \]
+    not
+    \[
+        T_B\mathsf K.
+    \]
+    A pure outcome of \(\mathsf K T_B(P)\) is a joint pair
+    \[
+        (x,\beta).
+    \]
+    Thus distinct nondeterministic or probabilistic branches may produce
+    distinct next states and distinct output arrows.
+
+    By contrast, an element of \(T_B\mathsf K(P)\) consists of an effectful
+    state together with one output arrow outside the effect:
+    \[
+        \begin{tikzcd}[column sep=huge]
+                \mathsf K\{x\}
+                    \arrow[r, phantom, "\text{one fixed }\beta"]
+            &
+                {}
+        \end{tikzcd}
+    \]
+    This would force every branch to share the same output-comparison arrow.
+\end{remark}
+
+\subsection{Lifting input processing through the effect}
+\label{subsec:effectful-input-processing-lift}
+
+The three pairwise distributive laws combine by the iterated
+distributive-law theorem.
+
+\begin{proposition}[The effectful input distributive law]
+\label{prop:effectful-input-distributive-law}
+    Define
+    \[
+        \chi:
+        R_AH_B^{\mathsf K}
+        \Rightarrow
+        H_B^{\mathsf K}R_A
+    \]
+    by
+    \[
+        \chi
+        :=
+        (\mathsf K\lambda)
+        \circ
+        (\rho_A T_B).
+    \]
+    Thus the component at \(P\) is
+    \[
+        R_A\mathsf K T_B(P)
+        \xrightarrow{\rho_A T_B}
+        \mathsf K R_AT_B(P)
+        \xrightarrow{\mathsf K\lambda}
+        \mathsf K T_BR_A(P).
+    \]
+    Then \(\chi\) is a distributive law of the monad \(R_A\) over the monad
+    \(H_B^{\mathsf K}\).
+\end{proposition}
+\begin{proof}
+    The monads
+    \[
+        R_A,
+        \qquad
+        T_B,
+        \qquad
+        \mathsf K
+    \]
+    are equipped with distributive laws
+    \[
+        \lambda:
+        R_AT_B\Rightarrow T_BR_A,
+    \]
+    \[
+        \rho_A:
+        R_A\mathsf K\Rightarrow\mathsf K R_A,
+    \]
+    and
+    \[
+        \sigma_B:
+        T_B\mathsf K\Rightarrow\mathsf K T_B.
+    \]
+    By Definition~\ref{def:mealy-compatible-effect-datum}, these laws satisfy
+    the Yang--Baxter equation
+    \eqref{eq:effect-yang-baxter}.
+
+    The iterated distributive-law theorem therefore applies
+    \cite{ChengIteratedDistributiveLaws}. It implies simultaneously that
+    \[
+        H_B^{\mathsf K}
+        =
+        \mathsf K T_B
+    \]
+    is a monad and that
+    \[
+        R_A\mathsf K T_B
+        \xrightarrow{\rho_A T_B}
+        \mathsf K R_AT_B
+        \xrightarrow{\mathsf K\lambda}
+        \mathsf K T_BR_A
+    \]
+    is a distributive law of \(R_A\) over \(\mathsf K T_B\).
+
+    The transformation is displayed by
+    \[
+        \begin{tikzcd}[column sep=huge]
+                R_A\mathsf K T_B(P)
+                    \arrow[r, "\rho_A T_B"]
+            &
+                \mathsf K R_AT_B(P)
+                    \arrow[r, "\mathsf K\lambda"]
+            &
+                \mathsf K T_BR_A(P).
+        \end{tikzcd}
+    \]
+    The distributive-law equations are exactly the pairwise distributive-law
+    equations together with the Yang--Baxter compatibility.
+\end{proof}
+
+\begin{corollary}[The effectful lifted input monad]
+\label{cor:effectful-lifted-input-monad}
+    The distributive law of
+    Proposition~\ref{prop:effectful-input-distributive-law} lifts \(R_A\) to a
+    monad
+    \[
+        \overline R_A^{\mathsf K}
+    \]
+    on the Kleisli category
+    \[
+        \operatorname{Kl}(H_B^{\mathsf K}).
+    \]
+\end{corollary}
+\begin{proof}
+    This is the Kleisli lifting theorem applied to
+    \[
+        \chi:
+        R_AH_B^{\mathsf K}
+        \Rightarrow
+        H_B^{\mathsf K}R_A.
+    \]
+    On objects,
+    \[
+        \overline R_A^{\mathsf K}(P)=R_A(P).
+    \]
+    If a Kleisli arrow
+    \[
+        f:P\to Q
+    \]
+    is represented in \(\mathcal C_{A,B}\) by
+    \[
+        f:P\to H_B^{\mathsf K}(Q),
+    \]
+    then its image is represented by
+    \[
+        R_A(P)
+        \xrightarrow{R_Af}
+        R_AH_B^{\mathsf K}(Q)
+        \xrightarrow{\chi_Q}
+        H_B^{\mathsf K}R_A(Q).
+    \]
+\end{proof}
+
+\subsection{Effectful Mealy morphisms}
+\label{subsec:effectful-mealy-morphisms-definition}
+
+\begin{definition}[Effectful Mealy morphism]
+\label{def:effectful-mealy-morphism}
+    Let
+    \[
+        (\mathsf K,\sigma_B,\rho_A)
+    \]
+    be a Mealy-compatible effect datum for
+    \[
+        (\mathbb A,\mathbb B).
+    \]
+
+    A \textbf{\(\mathsf K\)-effectful Mealy morphism}
+    \[
+        (P,\widehat\Phi):
+        \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B
+    \]
+    consists of a carrier span
+    \[
+        A_0\xleftarrow{p}P\xrightarrow{q}B_0
+    \]
+    and an algebra structure for
+    \[
+        \overline R_A^{\mathsf K}
+    \]
+    on \(P\) in
+    \[
+        \operatorname{Kl}(H_B^{\mathsf K}).
+    \]
+
+    Equivalently, it consists of a map in
+    \(\mathcal C_{A,B}\)
+    \[
+        \widehat\Phi:
+        R_A(P)
+        \longrightarrow
+        H_B^{\mathsf K}(P),
+    \]
+    that is,
+    \[
+        \widehat\Phi:
+        P\circ A
+        \longrightarrow
+        \mathsf K(B\circ P),
+    \]
+    satisfying
+    \begin{align}
+        \widehat\Phi\circ\eta^R_P
+        &=
+        \eta^H_P,
+        \label{eq:effectful-mealy-unit-abstract}
+        \\
+        \widehat\Phi\circ\mu^R_P
+        &=
+        \mu^H_P
+        \circ
+        H_B^{\mathsf K}(\widehat\Phi)
+        \circ
+        \chi_P
+        \circ
+        R_A(\widehat\Phi).
+        \label{eq:effectful-mealy-multiplication-abstract}
+    \end{align}
+\end{definition}
+
+The structure map is a morphism of carrier spans
+\[
+    \begin{tikzcd}[column sep=huge]
+        &
+            A_1\times_{t_A,A_0,p}P
+                \arrow[d, "\widehat\Phi" description]
+                \arrow[dl, "s_A\pi_{A_1}"']
+                \arrow[dr, "q\pi_P"]
+        &
+        \\
+            A_0
+        &
+            \mathsf K(B\circ P)
+                \arrow[l]
+                \arrow[r]
+        &
+            B_0.
+    \end{tikzcd}
+\]
+Thus the effect does not change the external input and output interfaces of the
+transition.
+
+\subsection{Fibrewise component laws}
+\label{subsec:fibrewise-effectful-mealy-laws}
+
+Assume throughout this subsection that
+\[
+    \mathcal E=\mathbf{Set}
+\]
+and that the effect datum is the canonical fibrewise datum induced by a
+Set-monad
+\[
+    K=(K,\eta^K,\mu^K)
+\]
+as in Proposition~\ref{prop:fibrewise-effect-doctrine-set}.
+
+For \(u\in A_0\) and \(b\in B_0\), define the set of typed output outcomes
+\[
+    \operatorname{Out}_P(u,b)
+    :=
+    \left\{
+        (x',\beta)\in P\times B_1
+        \ \middle|\
+        \begin{aligned}
+            p(x')&=u,\\
+            s_B(\beta)&=q(x'),\\
+            t_B(\beta)&=b
+        \end{aligned}
+    \right\}.
+\]
+This is the fibre of \(T_B(P)\) over \((u,b)\).
+
+An admissible input-state pair consists of
+\[
+    a:u\to v,
+    \qquad
+    x\in P,
+    \qquad
+    p(x)=v.
+\]
+The effectful transition has type
+\[
+    \widehat\Phi(a,x)
+    \in
+    K\bigl(
+        \operatorname{Out}_P(u,q(x))
+    \bigr).
+\]
+Every pure outcome
+\[
+    (x',\beta)
+\]
+has the typing diagram
+\[
+    \begin{tikzcd}[column sep=huge, row sep=large]
+            u
+                \arrow[r, "a"]
+        &
+            v=p(x)
+        \\
+            q(x')
+                \arrow[r, "\beta"']
+        &
+            q(x),
+    \end{tikzcd}
+\]
+where
+\[
+    p(x')=u.
+\]
+
+For a Set-monad \(K\), write
+\[
+    \operatorname{bind}_{K}(\kappa,f)
+    :=
+    \mu^K\bigl(K(f)(\kappa)\bigr).
+\]
+
+\begin{proposition}[The fibrewise effectful Mealy laws]
+\label{prop:effectful-mealy-laws}
+    Under the canonical fibrewise Set effect datum, the abstract equations
+    \eqref{eq:effectful-mealy-unit-abstract} and
+    \eqref{eq:effectful-mealy-multiplication-abstract} are equivalent to the
+    following component equations.
+
+    The unit law is
+    \begin{equation}
+        \widehat\Phi(e_A(px),x)
+        =
+        \eta^K
+        \bigl(x,e_B(qx)\bigr).
+        \label{eq:effectful-mealy-unit-component}
+    \end{equation}
+
+    For internally composable arrows
+    \[
+        a:u\to v,
+        \qquad
+        b:v\to w,
+    \]
+    and a state \(x\in P\) satisfying \(p(x)=w\), the multiplication law is
+    \begin{equation}
+    \begin{aligned}
+        \widehat\Phi(b\circ a,x)
+        =
+        \operatorname{bind}_{K}
+        \Bigl(
+            \widehat\Phi(b,x),
+            (x_b,\beta_b)
+            \longmapsto
+            \operatorname{bind}_{K}
+            \bigl(
+                \widehat\Phi(a,x_b),
+                (x_a,\beta_a)
+                \longmapsto
+                \eta^K
+                (x_a,\beta_b\circ\beta_a)
+            \bigr)
+        \Bigr).
+    \end{aligned}
+    \label{eq:effectful-mealy-composition-component}
+    \end{equation}
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Unpack the unit.}
+        The unit of \(R_A\) sends
+        \[
+            x
+            \longmapsto
+            (e_A(px),x).
+        \]
+        The unit of \(H_B^{\mathsf K}\) attaches the identity output arrow and
+        inserts the result as a pure \(K\)-outcome:
+        \[
+            x
+            \longmapsto
+            \eta^K
+            \bigl(x,e_B(qx)\bigr).
+        \]
+        Hence the algebra unit equation is precisely
+        \eqref{eq:effectful-mealy-unit-component}.
+
+        \item \textbf{Unpack the first execution.}
+        The sequential side first executes
+        \[
+            b:v\to w
+        \]
+        at \(x\). It produces effectfully a pair
+        \[
+            (x_b,\beta_b)
+        \]
+        with
+        \[
+            p(x_b)=v,
+        \]
+        and
+        \[
+            \beta_b:
+            q(x_b)\to q(x).
+        \]
+        The output is displayed by
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    q(x_b)
+                        \arrow[r, "\beta_b"]
+                &
+                    q(x).
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Unpack the second execution.}
+        Since \(p(x_b)=v=t_A(a)\), the arrow
+        \[
+            a:u\to v
+        \]
+        is admissible at \(x_b\). Its execution produces effectfully
+        \[
+            (x_a,\beta_a)
+        \]
+        with
+        \[
+            p(x_a)=u,
+        \]
+        and
+        \[
+            \beta_a:
+            q(x_a)\to q(x_b).
+        \]
+
+        \item \textbf{Compose the emitted arrows.}
+        The output-comparison multiplication composes
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    q(x_a)
+                        \arrow[r, "\beta_a"]
+                &
+                    q(x_b)
+                        \arrow[r, "\beta_b"]
+                &
+                    q(x)
+            \end{tikzcd}
+        \]
+        to obtain
+        \[
+            \beta_b\circ\beta_a:
+            q(x_a)\to q(x).
+        \]
+        The multiplication of \(K\) combines the two nested effects by
+        Kleisli extension.
+
+        \item \textbf{Compare direct and sequential execution.}
+        The other side first composes the input arrows:
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    u
+                        \arrow[r, "a"]
+                &
+                    v
+                        \arrow[r, "b"]
+                &
+                    w=p(x).
+            \end{tikzcd}
+        \]
+        It then executes
+        \[
+            b\circ a:u\to w
+        \]
+        directly at \(x\). Equality of the resulting \(K\)-values is exactly
+        \eqref{eq:effectful-mealy-composition-component}.
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}[Correlated state and output]
+\label{rem:effectful-correlated-state-output}
+    An effectful Mealy morphism does not separately select an effectful next
+    state and an effectful output. It selects an effectful joint pair
+    \[
+        (x',\beta).
+    \]
+    Consequently, the next state and emitted output may be correlated. In the
+    probabilistic case, observing the output may therefore reveal information
+    about which state transition occurred.
+\end{remark}
+
+\subsection{Pure effectful Mealy morphisms}
+\label{subsec:pure-effectful-mealy-morphisms}
+
+The deterministic theory embeds into the effectful theory at the abstract
+level.
+
+Define
+\[
+    j:
+    T_B
+    \Rightarrow
+    H_B^{\mathsf K}
+\]
+by
+\[
+    j
+    :=
+    \eta^{\mathsf K}T_B.
+\]
+Thus
+\[
+    j_P:
+    T_B(P)
+    \longrightarrow
+    \mathsf K T_B(P)
+\]
+inserts a deterministic state-output pair as a pure effectful outcome.
+
+\begin{proposition}[Pure effectful Mealy morphisms]
+\label{prop:pure-effectful-mealy-morphisms}
+    Every ordinary Mealy morphism
+    \[
+        (P,\Phi):
+        \mathbb A\rightsquigarrow\mathbb B
+    \]
+    determines a canonical \(\mathsf K\)-effectful Mealy morphism with the
+    same carrier, defined by
+    \[
+        \widehat\Phi
+        :=
+        j_P\circ\Phi
+        =
+        \eta^{\mathsf K}_{T_B(P)}
+        \circ
+        \Phi.
+    \]
+\end{proposition}
+\begin{proof}
+    The distributive-law axioms for \(\sigma_B\) imply that
+    \[
+        j:
+        T_B\Rightarrow H_B^{\mathsf K}
+    \]
+    is a morphism of monads. It therefore induces a functor
+    \[
+        J:
+        \operatorname{Kl}(T_B)
+        \longrightarrow
+        \operatorname{Kl}(H_B^{\mathsf K})
+    \]
+    which is the identity on objects and sends
+    \[
+        f:X\to T_B(Y)
+    \]
+    to
+    \[
+        j_Yf:
+        X\to H_B^{\mathsf K}(Y).
+    \]
+
+    This functor is compatible with the lifted input-processing monads. Indeed,
+    the diagram
+    \[
+        \begin{tikzcd}[column sep=huge, row sep=large]
+                R_AT_B
+                    \arrow[r, "\lambda"]
+                    \arrow[d, "R_Aj"']
+            &
+                T_BR_A
+                    \arrow[d, "jR_A"]
+            \\
+                R_AH_B^{\mathsf K}
+                    \arrow[r, "\chi"']
+            &
+                H_B^{\mathsf K}R_A
+        \end{tikzcd}
+    \]
+    commutes. Algebraically,
+    \[
+    \begin{aligned}
+        \chi\circ R_Aj
+        &=
+        (\mathsf K\lambda)
+        \circ
+        (\rho_AT_B)
+        \circ
+        R_A(\eta^{\mathsf K}T_B)
+        \\
+        &=
+        (\mathsf K\lambda)
+        \circ
+        (\eta^{\mathsf K}R_AT_B)
+        \\
+        &=
+        (\eta^{\mathsf K}T_BR_A)
+        \circ
+        \lambda
+        \\
+        &=
+        (jR_A)\circ\lambda.
+    \end{aligned}
+    \]
+    The second equality is the \(\mathsf K\)-unit equation for \(\rho_A\),
+    and the third is naturality of \(\eta^{\mathsf K}\).
+
+    Hence \(J\) sends \(\overline R_A\)-algebras to
+    \(\overline R_A^{\mathsf K}\)-algebras. Applying \(J\) to
+    \[
+        \Phi:
+        R_A(P)\to T_B(P)
+    \]
+    gives
+    \[
+        \widehat\Phi
+        =
+        \eta^{\mathsf K}_{T_B(P)}\Phi:
+        R_A(P)\to H_B^{\mathsf K}(P),
+    \]
+    as required.
+\end{proof}
+
+In the fibrewise Set case, this sends
+\[
+    \Phi(a,x)
+    =
+    \bigl(\delta(a,x),\omega(a,x)\bigr)
+\]
+to
+\[
+    \widehat\Phi(a,x)
+    =
+    \eta^K
+    \bigl(\delta(a,x),\omega(a,x)\bigr).
+\]
+
+\subsection{The one-object specialization}
+\label{subsec:one-object-effectful-mealy-morphisms}
+
+Let \(M\) and \(N\) be monoid objects, regarded as one-object internal
+categories using the standing convention
+\[
+    b\circ a=ba.
+\]
+Since
+\[
+    \mathcal C_{1,1}
+    =
+    \mathbf{Span}(\mathcal E)(1,1)
+    \cong
+    \mathcal E,
+\]
+an abstract one-object effect datum consists in particular of a monad
+\[
+    \mathsf K:\mathcal E\to\mathcal E
+\]
+together with distributive laws governing its interaction with
+\[
+    M\times-
+    \qquad\text{and}\qquad
+    -\times N.
+\]
+An effectful one-object Mealy morphism has an underlying map
+\[
+    \widehat\Phi:
+    M\times P
+    \longrightarrow
+    \mathsf K(P\times N).
+\]
+
+We now specialize to the canonical fibrewise datum induced by a Set-monad
+\(K\).
+
+\begin{proposition}[One-object fibrewise effectful Mealy morphisms]
+\label{prop:one-object-effectful-mealy-morphisms}
+    Let \(K\) be a monad on \(\mathbf{Set}\). A one-object
+    \(K\)-effectful Mealy morphism
+    \[
+        M\rightsquigarrow_KN
+    \]
+    is equivalently a set \(P\) and a map
+    \[
+        \widehat\Phi:
+        M\times P
+        \longrightarrow
+        K(P\times N)
+    \]
+    satisfying
+    \begin{equation}
+        \widehat\Phi(e_M,x)
+        =
+        \eta^K(x,e_N),
+        \label{eq:one-object-effectful-unit}
+    \end{equation}
+    and
+    \begin{equation}
+    \begin{aligned}
+        \widehat\Phi(mn,x)
+        =
+        \operatorname{bind}_{K}
+        \Bigl(
+            \widehat\Phi(m,x),
+            (x_1,u)
+            \longmapsto
+            \operatorname{bind}_{K}
+            \bigl(
+                \widehat\Phi(n,x_1),
+                (x_2,v)
+                \longmapsto
+                \eta^K(x_2,uv)
+            \bigr)
+        \Bigr).
+    \end{aligned}
+    \label{eq:one-object-effectful-composition}
+    \end{equation}
+\end{proposition}
+\begin{proof}
+    The carrier span reduces to the set \(P\), while
+    \[
+        T_N(P)=P\times N
+    \]
+    and
+    \[
+        R_M(P)=M\times P.
+    \]
+    Proposition~\ref{prop:effectful-mealy-laws} therefore applies.
+
+    Under the one-object convention, an outcome of the first execution is
+    displayed as
+    \[
+        \begin{tikzcd}[column sep=huge]
+                x
+                    \arrow[r, "{m/u}"]
+            &
+                x_1,
+        \end{tikzcd}
+    \]
+    and an outcome of the second execution is
+    \[
+        \begin{tikzcd}[column sep=huge]
+                x_1
+                    \arrow[r, "{n/v}"]
+            &
+                x_2.
+        \end{tikzcd}
+    \]
+    The two outputs compose to \(uv\), since categorical composition in the
+    one-object output category satisfies
+    \[
+        v\circ u=uv.
+    \]
+    Hence the general fibrewise law becomes
+    \eqref{eq:one-object-effectful-composition}.
+\end{proof}
+
+When \(K=\mathrm{Id}\), write
+\[
+    \widehat\Phi(m,x)
+    =
+    (x\cdot m,\omega(m,x)).
+\]
+Then
+\eqref{eq:one-object-effectful-composition} reduces to
+\[
+    x\cdot(mn)
+    =
+    (x\cdot m)\cdot n
+\]
+and
+\[
+    \omega(mn,x)
+    =
+    \omega(m,x)\omega(n,x\cdot m).
+\]
+
+\subsection{Effectful Mealy simulations}
+\label{subsec:effectful-mealy-simulations}
+
+Let
+\[
+    (P,\widehat\Phi),
+    (Q,\widehat\Psi):
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B
+\]
+be effectful Mealy morphisms. They are algebras for
+\[
+    \overline R_A^{\mathsf K}
+\]
+in
+\[
+    \operatorname{Kl}(H_B^{\mathsf K}).
+\]
+
+As in the deterministic theory, the displayed simulation direction is chosen
+opposite to the underlying algebra-morphism direction.
+
+\begin{definition}[Effectful Mealy simulation]
+\label{def:effectful-mealy-simulation}
+    An \textbf{effectful Mealy simulation}
+    \[
+        (P,\widehat\Phi)
+        \Rightarrow
+        (Q,\widehat\Psi)
+    \]
+    is a morphism
+    \[
+        (Q,\widehat\Psi)
+        \longrightarrow
+        (P,\widehat\Phi)
+    \]
+    of \(\overline R_A^{\mathsf K}\)-algebras in
+    \[
+        \operatorname{Kl}(H_B^{\mathsf K}).
+    \]
+
+    Equivalently, it consists of a map
+    \[
+        \widehat\Theta:
+        Q
+        \longrightarrow
+        H_B^{\mathsf K}(P)
+        =
+        \mathsf K T_B(P)
+    \]
+    satisfying
+    \begin{equation}
+    \begin{aligned}
+        &
+        \mu^H_P
+        \circ
+        H_B^{\mathsf K}(\widehat\Theta)
+        \circ
+        \widehat\Psi
+        \\
+        &\qquad=
+        \mu^H_P
+        \circ
+        H_B^{\mathsf K}(\widehat\Phi)
+        \circ
+        \chi_P
+        \circ
+        R_A(\widehat\Theta).
+    \end{aligned}
+    \label{eq:effectful-simulation-abstract}
+    \end{equation}
+\end{definition}
+
+Thus a state of \(Q\) may be compared with an effectful value whose pure
+outcomes consist of a state of \(P\) and an output-comparison arrow:
+\[
+    \begin{tikzcd}[column sep=huge]
+            q_P(x)
+                \arrow[r, "\alpha"]
+        &
+            q_Q(y).
+    \end{tikzcd}
+\]
+
+A useful subclass retains deterministic comparison data.
+
+\begin{definition}[Pure effectful Mealy simulation]
+\label{def:pure-effectful-mealy-simulation}
+    A \textbf{pure effectful Mealy simulation}
+    \[
+        (P,\widehat\Phi)
+        \Rightarrow
+        (Q,\widehat\Psi)
+    \]
+    consists of a map of spans
+    \[
+        \Theta:
+        Q
+        \Rightarrow
+        T_B(P)
+    \]
+    such that
+    \[
+        \widehat\Theta
+        :=
+        j_P\circ\Theta
+        =
+        \eta^{\mathsf K}_{T_B(P)}
+        \circ
+        \Theta
+    \]
+    is an effectful Mealy simulation.
+
+    Writing
+    \[
+        \Theta(y)
+        =
+        (\theta y,\alpha_y),
+    \]
+    its component data satisfy
+    \[
+        p_P\theta=p_Q,
+    \]
+    \[
+        s_B\alpha=q_P\theta,
+    \]
+    and
+    \[
+        t_B\alpha=q_Q.
+    \]
+\end{definition}
+
+The comparison data are displayed as
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            &
+                Q
+                    \arrow[d, "\theta" description]
+                    \arrow[ddl, "p_Q"', bend right=15]
+                    \arrow[ddr, "q_Q", bend left=15]
+                    \arrow[dr, "\alpha"]
+            &
+        \\
+            &
+                P
+                    \arrow[dl, "p_P"]
+                    \arrow[dr, "q_P"']
+            &
+                B_1
+                    \arrow[d, "s_B"]
+                    \arrow[ddr, "t_B", bend left=18]
+        \\
+                A_0
+            &
+            &
+                B_0
+        \\
+            &
+            &
+            &
+                B_0.
+    \end{tikzcd}
+\]
+
+\subsection{Fibrewise pure simulation laws}
+\label{subsec:fibrewise-pure-effectful-simulation-laws}
+
+Assume again that
+\[
+    \mathcal E=\mathbf{Set}
+\]
+and that the effect datum is induced fibrewise by a Set-monad \(K\).
+
+\begin{proposition}[The fibrewise pure effectful simulation law]
+\label{prop:pure-effectful-simulation-law}
+    A pair
+    \[
+        (\theta,\alpha)
+    \]
+    as in Definition~\ref{def:pure-effectful-mealy-simulation} is a pure
+    effectful Mealy simulation if and only if, for every admissible
+    input-state pair
+    \[
+        (a,y),
+    \]
+    one has
+    \begin{equation}
+    \begin{aligned}
+        &
+        \operatorname{bind}_{K}
+        \Bigl(
+            \widehat\Phi(a,\theta y),
+            (x,\beta)
+            \longmapsto
+            \eta^K
+            (x,\alpha_y\circ\beta)
+        \Bigr)
+        \\
+        &\qquad=
+        \operatorname{bind}_{K}
+        \Bigl(
+            \widehat\Psi(a,y),
+            (y',\gamma)
+            \longmapsto
+            \eta^K
+            \bigl(
+                \theta y',
+                \gamma\circ\alpha_{y'}
+            \bigr)
+        \Bigr).
+    \end{aligned}
+    \label{eq:pure-effectful-simulation-component}
+    \end{equation}
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Compare first and then execute.}
+        The state \(y\) is first compared with \(\theta y\) by
+        \[
+            \alpha_y:
+            q_P(\theta y)\to q_Q(y).
+        \]
+        Executing \(P\) along \(a\) at \(\theta y\) produces effectfully a
+        pair
+        \[
+            (x,\beta)
+        \]
+        with
+        \[
+            \beta:
+            q_P(x)\to q_P(\theta y).
+        \]
+        The resulting comparison arrow is
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    q_P(x)
+                        \arrow[r, "\beta"]
+                &
+                    q_P(\theta y)
+                        \arrow[r, "\alpha_y"]
+                &
+                    q_Q(y).
+            \end{tikzcd}
+        \]
+        Hence the output component is
+        \[
+            \alpha_y\circ\beta.
+        \]
+
+        \item \textbf{Execute first and then compare.}
+        Executing \(Q\) along \(a\) at \(y\) produces effectfully
+        \[
+            (y',\gamma)
+        \]
+        with
+        \[
+            \gamma:
+            q_Q(y')\to q_Q(y).
+        \]
+        The updated state is compared with \(\theta y'\) by
+        \[
+            \alpha_{y'}:
+            q_P(\theta y')\to q_Q(y').
+        \]
+        The resulting output arrow is
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    q_P(\theta y')
+                        \arrow[r, "\alpha_{y'}"]
+                &
+                    q_Q(y')
+                        \arrow[r, "\gamma"]
+                &
+                    q_Q(y).
+            \end{tikzcd}
+        \]
+        Hence the output component is
+        \[
+            \gamma\circ\alpha_{y'}.
+        \]
+
+        \item \textbf{Compare the two effectful outcomes.}
+        The algebra-morphism equation
+        \eqref{eq:effectful-simulation-abstract} says precisely that these two
+        effectful joint state-output values agree. This is
+        \eqref{eq:pure-effectful-simulation-component}.
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}[Recovery of deterministic simulations]
+\label{rem:effectful-simulations-recover-deterministic}
+    If
+    \[
+        K=\mathrm{Id},
+    \]
+    then
+    \eqref{eq:pure-effectful-simulation-component} is equality of the pairs
+    \[
+        \bigl(
+            \delta_P(a,\theta y),
+            \alpha_y\circ\omega_P(a,\theta y)
+        \bigr)
+    \]
+    and
+    \[
+        \bigl(
+            \theta(\delta_Q(a,y)),
+            \omega_Q(a,y)\circ
+            \alpha_{\delta_Q(a,y)}
+        \bigr).
+    \]
+    Equality of the state and output components recovers
+    \[
+        \theta(\delta_Q(a,y))
+        =
+        \delta_P(a,\theta y)
+    \]
+    and
+    \[
+        \alpha_y\circ\omega_P(a,\theta y)
+        =
+        \omega_Q(a,y)\circ
+        \alpha_{\delta_Q(a,y)}.
+    \]
+\end{remark}
+
+\begin{proposition}[Vertical composition of effectful simulations]
+\label{prop:vertical-composition-effectful-simulations}
+    Effectful Mealy simulations compose vertically.
+
+    Pure effectful simulations are closed under vertical composition. If
+    \[
+        (\theta,\alpha):
+        P\Rightarrow Q
+    \]
+    and
+    \[
+        (\kappa,\beta):
+        Q\Rightarrow R
+    \]
+    are pure effectful simulations, then their composite is pure, with state
+    map
+    \[
+        \theta\kappa:R\to P
+    \]
+    and comparison component
+    \[
+        \gamma_z
+        =
+        \beta_z\circ\alpha_{\kappa z}.
+    \]
+\end{proposition}
+\begin{proof}
+    General effectful simulations are morphisms in the category of
+    \(\overline R_A^{\mathsf K}\)-algebras in
+    \(\operatorname{Kl}(H_B^{\mathsf K})\), so their vertical composition is
+    inherited from that category.
+
+    The monad morphism
+    \[
+        j:T_B\to H_B^{\mathsf K}
+    \]
+    induces a functor of Kleisli categories. It therefore preserves Kleisli
+    composition. Hence the composite of two pure simulations is the image
+    under \(j\) of their composite in \(\operatorname{Kl}(T_B)\).
+
+    Componentwise, the comparison arrows form the path
+    \[
+        \begin{tikzcd}[column sep=huge]
+                q_P(\theta\kappa z)
+                    \arrow[r, "\alpha_{\kappa z}"]
+            &
+                q_Q(\kappa z)
+                    \arrow[r, "\beta_z"]
+            &
+                q_R(z),
+        \end{tikzcd}
+    \]
+    whose composite is
+    \[
+        \beta_z\circ\alpha_{\kappa z}.
+    \]
+\end{proof}
+
+\subsection{Effectful pipeline composition}
+\label{subsec:effectful-pipeline-composition}
+
+Effectful pipeline composition requires more than a monad on
+\(\mathbf{Set}\). The effects generated by different stages of a pipeline must
+be interchangeable when they are conditionally independent. We therefore
+assume in this subsection that
+\[
+    K=(K,\eta^K,\mu^K)
+\]
+is a \textbf{commutative monad} on \(\mathbf{Set}\), and use its canonical
+fibrewise effect doctrine.
+
+The finite-powerset, full-powerset, finite-distribution,
+finite-subdistribution, and lift monads are commutative. The weighted multiset
+monad associated to a semiring is commutative when the semiring is
+commutative.
+
+Let
+\[
+    (P,\widehat\Phi_P):
+    \mathbb A\rightsquigarrow_K\mathbb B
+\]
+and
+\[
+    (Q,\widehat\Phi_Q):
+    \mathbb B\rightsquigarrow_K\mathbb C
+\]
+be effectful Mealy morphisms. Their composite carrier is the ordinary
+pullback carrier
+\[
+    P\times_{q_P,B_0,p_Q}Q.
+\]
+A composite state is a pair
+\[
+    (x,y)
+\]
+satisfying
+\[
+    q_P(x)=p_Q(y).
+\]
+
+\begin{proposition}[Effectful pipeline composition in
+\texorpdfstring{\(\mathbf{Set}\)}{Set}]
+\label{prop:effectful-pipeline-composition-set}
+    Let \(K\) be a commutative monad on \(\mathbf{Set}\). The formula
+    \begin{equation}
+    \begin{aligned}
+        &
+        \widehat\Phi_{Q\circ P}(a,(x,y))
+        \\
+        &\quad=
+        \operatorname{bind}_{K}
+        \Bigl(
+            \widehat\Phi_P(a,x),
+            (x',\beta)
+            \longmapsto
+            \operatorname{bind}_{K}
+            \bigl(
+                \widehat\Phi_Q(\beta,y),
+                (y',\gamma)
+                \longmapsto
+                \eta^K
+                \bigl(
+                    (x',y'),
+                    \gamma
+                \bigr)
+            \bigr)
+        \Bigr)
+    \end{aligned}
+    \label{eq:effectful-pipeline-composition}
+    \end{equation}
+    defines an effectful Mealy morphism
+    \[
+        Q\circ P:
+        \mathbb A\rightsquigarrow_K\mathbb C.
+    \]
+\end{proposition}
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Check the intermediate typing.}
+        An outcome of the first machine has the form
+        \[
+            (x',\beta)
+        \]
+        with
+        \[
+            \beta:
+            q_P(x')\to q_P(x).
+        \]
+        Since
+        \[
+            q_P(x)=p_Q(y),
+        \]
+        the arrow \(\beta\) is admissible input for \(Q\) at \(y\):
+        \[
+            \begin{tikzcd}[column sep=huge]
+                    q_P(x')
+                        \arrow[r, "\beta"]
+                &
+                    q_P(x)=p_Q(y).
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Check the updated carrier.}
+        An outcome of executing \(Q\) along \(\beta\) at \(y\) has the form
+        \[
+            (y',\gamma)
+        \]
+        with
+        \[
+            p_Q(y')
+            =
+            s_B(\beta)
+            =
+            q_P(x').
+        \]
+        Hence
+        \[
+            (x',y')
+            \in
+            P\times_{B_0}Q.
+        \]
+
+        \item \textbf{Check the output typing.}
+        The output arrow is
+        \[
+            \gamma:
+            q_Q(y')\to q_Q(y),
+        \]
+        which has exactly the required type for the composite carrier.
+
+        The execution is represented by
+        \[
+            \begin{tikzcd}[column sep=huge, row sep=large]
+                    x
+                        \arrow[r, "{a/\beta}"]
+                &
+                    x'
+                \\
+                    y
+                        \arrow[r, "{\beta/\gamma}"']
+                &
+                    y'.
+            \end{tikzcd}
+        \]
+
+        \item \textbf{Verify the unit law.}
+        On the identity input \(e_A(p_Px)\), the first machine produces the
+        pure outcome
+        \[
+            (x,e_B(q_Px)).
+        \]
+        The second machine then produces the pure outcome
+        \[
+            (y,e_C(q_Qy)).
+        \]
+        The monad unit equations reduce
+        \eqref{eq:effectful-pipeline-composition} to
+        \[
+            \eta^K
+            \bigl(
+                (x,y),
+                e_C(q_Qy)
+            \bigr).
+        \]
+
+        \item \textbf{Expand sequential execution.}
+        Let
+        \[
+            a:u\to v,
+            \qquad
+            b:v\to w,
+            \qquad
+            p_P(x)=w.
+        \]
+        Sequential execution of \(b\) and then \(a\) in the pipeline has the
+        form
+        \[
+        \begin{aligned}
+            &
+            \operatorname{bind}_{K}
+            \Bigl(
+                \widehat\Phi_P(b,x),
+                (x_b,\beta_b)
+                \longmapsto
+                \operatorname{bind}_{K}
+                \Bigl(
+                    \widehat\Phi_Q(\beta_b,y),
+                    (y_b,\gamma_b)
+                    \longmapsto
+            \\
+            &\hspace{6em}
+                    \operatorname{bind}_{K}
+                    \Bigl(
+                        \widehat\Phi_P(a,x_b),
+                        (x_a,\beta_a)
+                        \longmapsto
+                        \operatorname{bind}_{K}
+                        \bigl(
+                            \widehat\Phi_Q(\beta_a,y_b),
+                            (y_a,\gamma_a)
+            \\
+            &\hspace{14em}
+                            \longmapsto
+                            \eta^K
+                            \bigl(
+                                (x_a,y_a),
+                                \gamma_b\circ\gamma_a
+                            \bigr)
+                        \bigr)
+                    \Bigr)
+                \Bigr)
+            \Bigr).
+        \end{aligned}
+        \label{eq:effectful-pipeline-sequential-expanded}
+        \]
+
+        \item \textbf{Expand direct execution.}
+        The multiplication law for \(P\) expands
+        \[
+            \widehat\Phi_P(b\circ a,x)
+        \]
+        into the sequence
+        \[
+            \widehat\Phi_P(b,x),
+            \qquad
+            \widehat\Phi_P(a,x_b),
+        \]
+        with emitted composite arrow
+        \[
+            \beta_b\circ\beta_a.
+        \]
+        The multiplication law for \(Q\) then expands
+        \[
+            \widehat\Phi_Q(\beta_b\circ\beta_a,y)
+        \]
+        into the sequence
+        \[
+            \widehat\Phi_Q(\beta_b,y),
+            \qquad
+            \widehat\Phi_Q(\beta_a,y_b),
+        \]
+        with output
+        \[
+            \gamma_b\circ\gamma_a.
+        \]
+
+        Before using commutativity, the direct expansion orders its middle
+        computations as
+        \[
+            \widehat\Phi_P(a,x_b)
+            \quad\text{then}\quad
+            \widehat\Phi_Q(\beta_b,y),
+        \]
+        whereas sequential pipeline execution orders them as
+        \[
+            \widehat\Phi_Q(\beta_b,y)
+            \quad\text{then}\quad
+            \widehat\Phi_P(a,x_b).
+        \]
+
+        \item \textbf{Use commutativity of the effect.}
+        After the first outcome
+        \[
+            (x_b,\beta_b)
+        \]
+        has been fixed, the computations
+        \[
+            \widehat\Phi_P(a,x_b)
+        \]
+        and
+        \[
+            \widehat\Phi_Q(\beta_b,y)
+        \]
+        are conditionally independent. Commutativity of \(K\) interchanges
+        these two computations without changing their joint effectful value.
+
+        After this interchange, associativity of Kleisli extension identifies
+        the direct expansion with
+        \eqref{eq:effectful-pipeline-sequential-expanded}. Associativity of
+        composition in \(\mathbb C\) identifies the emitted output arrows.
+        Hence the multiplication law holds.
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}[Why commutativity is required]
+\label{rem:effectful-pipeline-commutativity-required}
+    For a general noncommutative Set-monad, direct execution of a composite
+    input and sequential execution through a pipeline can order independent
+    effects differently.
+
+    After the first \(P\)-outcome has been selected, the direct expansion
+    orders the middle computations as
+    \[
+        P(a)
+        \quad\text{then}\quad
+        Q(\beta_b),
+    \]
+    while sequential pipeline execution orders them as
+    \[
+        Q(\beta_b)
+        \quad\text{then}\quad
+        P(a).
+    \]
+    A commutative monad supplies the interchange equating these two orders.
+    Without such interchange, formula
+    \eqref{eq:effectful-pipeline-composition} need not satisfy the effectful
+    Mealy multiplication law.
+\end{remark}
+
+\begin{remark}[Associativity and simulations]
+\label{rem:associativity-effectful-pipelines}
+    For fibrewise effects induced by a commutative Set-monad, effectful
+    pipeline composition is associative up to the canonical pullback
+    associator
+    \[
+        (P\times_{B_0}Q)\times_{C_0}R
+        \cong
+        P\times_{B_0}(Q\times_{C_0}R).
+    \]
+    The proof uses associativity and commutativity of Kleisli extension,
+    together with the canonical associativity isomorphism of pullbacks.
+
+    The identity effectful Mealy morphism is the pure effectful morphism
+    obtained from the deterministic identity Mealy morphism.
+
+    General effectful simulations compose vertically because they are
+    algebra morphisms. Constructing horizontal composition of general
+    effectful simulations requires an additional calculation compatible with
+    effectful pipeline composition and is not asserted here.
+
+    Pure simulations are closed under vertical composition, but they are not
+    generally closed under horizontal composition. Horizontally composing two
+    pure comparisons may require executing an effectful machine on an
+    output-comparison arrow, and the resulting comparison is then effectful
+    rather than pure.
+\end{remark}
+
+\subsection{Nondeterministic Mealy morphisms}
+\label{subsec:nondeterministic-mealy-morphisms}
+
+Take
+\[
+    K=\mathcal P_{\mathrm f},
+\]
+the finite-powerset monad. An effectful transition is then a finite set of
+possible next-state/output pairs:
+\[
+    \widehat\Phi(a,x)
+    \subseteq
+    \operatorname{Out}_P(s_A(a),q(x)).
+\]
+
+\begin{example}[Nondeterministic Mealy morphisms]
+\label{example:nondeterministic-mealy-morphisms}
+    A finite-nondeterministic Mealy morphism
+    \[
+        \mathbb A
+        \rightsquigarrow_{\mathcal P_{\mathrm f}}
+        \mathbb B
+    \]
+    consists of a carrier span
+    \[
+        A_0\xleftarrow{p}P\xrightarrow{q}B_0
+    \]
+    and a finite set
+    \[
+        \widehat\Phi(a,x)
+    \]
+    of typed outcomes for every admissible input-state pair.
+
+    A branch has the form
+    \[
+        \begin{tikzcd}[column sep=huge, row sep=large]
+                u
+                    \arrow[r, "a"]
+            &
+                v=p(x)
+            \\
+                q(x')
+                    \arrow[r, "\beta"']
+            &
+                q(x).
+        \end{tikzcd}
+    \]
+
+    The unit law is
+    \[
+        \widehat\Phi(e_A(px),x)
+        =
+        \bigl\{
+            (x,e_B(qx))
+        \bigr\}.
+    \]
+
+    The multiplication law is
+    \[
+    \begin{aligned}
+        \widehat\Phi(b\circ a,x)
+        =
+        \bigl\{
+            (x_a,\beta_b\circ\beta_a)
+            \ \big|\
+            &(x_b,\beta_b)\in\widehat\Phi(b,x),
+            \\
+            &(x_a,\beta_a)\in\widehat\Phi(a,x_b)
+        \bigr\}.
+    \end{aligned}
+    \]
+    Thus the outcomes of a composite input are exactly the outcomes obtained
+    by choosing one first-step branch and then one second-step branch.
+
+    In the one-object case, this is a map
+    \[
+        M\times P
+        \longrightarrow
+        \mathcal P_{\mathrm f}(P\times N)
+    \]
+    satisfying
+    \[
+        \widehat\Phi(1,x)
+        =
+        \{(x,1)\}
+    \]
+    and
+    \[
+    \begin{aligned}
+        \widehat\Phi(mn,x)
+        =
+        \bigl\{
+            (x_2,uv)
+            \ \big|\
+            &(x_1,u)\in\widehat\Phi(m,x),
+            \\
+            &(x_2,v)\in\widehat\Phi(n,x_1)
+        \bigr\}.
+    \end{aligned}
+    \]
+\end{example}
+
+The full powerset monad allows arbitrary branching. The nonempty powerset
+monad excludes deadlock, while the ordinary powerset monad permits the empty
+set of outcomes.
+
+For input and output alphabets \(\Sigma\) and \(\Gamma\), a nondeterministic
+classical Mealy machine is obtained by taking
+\[
+    M=\Sigma^\ast,
+    \qquad
+    N=\Gamma^\ast,
+\]
+and requiring generator-level outcomes to emit single letters when the
+classical letter-output convention is desired.
+
+\begin{remark}[Strictness of nondeterministic simulations]
+\label{rem:strictness-nondeterministic-simulations}
+    For the finite-powerset effect, the effectful simulation equation is an
+    equality of finite sets of compared outcomes. Hence the simulations
+    defined above are strict Kleisli algebra morphisms.
+
+    A one-sided relational simulation would instead use a lax
+    algebra-morphism condition, expressed by inclusion in the
+    order-enriched Kleisli category of the powerset monad. Such lax
+    simulations are a distinct enrichment of the present theory.
+\end{remark}
+
+\subsection{Probabilistic Mealy morphisms}
+\label{subsec:probabilistic-mealy-morphisms}
+
+Let
+\[
+    \mathcal D_{\mathrm f}(X)
+\]
+denote the set of finitely supported probability distributions on \(X\). Its
+unit is the Dirac distribution, and its multiplication integrates a
+distribution of distributions.
+
+\begin{example}[Probabilistic Mealy morphisms]
+\label{example:probabilistic-mealy-morphisms}
+    Take
+    \[
+        K=\mathcal D_{\mathrm f}.
+    \]
+    A probabilistic Mealy morphism
+    \[
+        \mathbb A
+        \rightsquigarrow_{\mathcal D_{\mathrm f}}
+        \mathbb B
+    \]
+    assigns to every admissible pair \((a,x)\) a finitely supported
+    probability distribution
+    \[
+        \widehat\Phi(a,x)
+    \]
+    on the typed next-state/output pairs
+    \[
+        (x',\beta),
+        \qquad
+        \beta:q(x')\to q(x).
+    \]
+
+    The identity input has the Dirac distribution
+    \[
+        \widehat\Phi(e_A(px),x)
+        =
+        \delta_{(x,e_B(qx))}.
+    \]
+
+    For composable arrows
+    \[
+        a:u\to v,
+        \qquad
+        b:v\to w,
+    \]
+    the probability of obtaining the outcome
+    \[
+        (x_a,\gamma)
+    \]
+    after processing \(b\circ a\) is
+    \[
+    \begin{aligned}
+        &
+        \widehat\Phi(b\circ a,x)(x_a,\gamma)
+        \\
+        &\quad=
+        \sum_{\substack{
+            x_b,\beta_b,\beta_a\\
+            \beta_b\circ\beta_a=\gamma
+        }}
+        \widehat\Phi(b,x)(x_b,\beta_b)\,
+        \widehat\Phi(a,x_b)(x_a,\beta_a).
+    \end{aligned}
+    \]
+    Only supported pairs contribute, so the sum is finite even when the
+    output category admits infinitely many abstract factorizations of
+    \(\gamma\).
+
+    The output factorization is
+    \[
+        \begin{tikzcd}[column sep=huge]
+                q(x_a)
+                    \arrow[r, "\beta_a"]
+            &
+                q(x_b)
+                    \arrow[r, "\beta_b"]
+            &
+                q(x).
+        \end{tikzcd}
+    \]
+    Thus the effectful multiplication law is a typed
+    Chapman--Kolmogorov convolution: probabilities multiply along sequential
+    executions and are summed over hidden intermediate states and output-arrow
+    factorizations.
+
+    In the one-object case, a probabilistic Mealy morphism is a finite-support
+    Markov kernel
+    \[
+        M\times P
+        \longrightarrow
+        \mathcal D_{\mathrm f}(P\times N)
+    \]
+    satisfying
+    \[
+        \widehat\Phi(1,x)
+        =
+        \delta_{(x,1)}
+    \]
+    and
+    \[
+    \begin{aligned}
+        \widehat\Phi(mn,x)(x_2,w)
+        =
+        \sum_{\substack{x_1,u,v\\uv=w}}
+        \widehat\Phi(m,x)(x_1,u)\,
+        \widehat\Phi(n,x_1)(x_2,v).
+    \end{aligned}
+    \]
+\end{example}
+
+The distribution is placed on \(P\times N\), rather than separately on \(P\)
+and \(N\). Hence the next state and output may be probabilistically correlated.
+A model in which state and output are conditionally independent is the special
+case in which the joint distribution factors.
+
+Replacing \(\mathcal D_{\mathrm f}\) by the finite-subdistribution monad
+allows loss of probability mass and therefore models failure, rejection, or
+nontermination in addition to probabilistic choice.
+
+\subsection{Partial and weighted Mealy morphisms}
+\label{subsec:partial-weighted-mealy-morphisms}
+
+\begin{example}[Partial Mealy morphisms]
+\label{example:partial-mealy-morphisms}
+    Take the lift monad
+    \[
+        K(X)=X+1.
+    \]
+    An effectful transition
+    \[
+        \widehat\Phi(a,x)
+    \]
+    is either a successful typed next-state/output pair
+    \[
+        \operatorname{inl}(x',\beta)
+    \]
+    or the distinguished failure element
+    \[
+        \operatorname{inr}(\ast).
+    \]
+
+    The unit law requires identity inputs to succeed:
+    \[
+        \widehat\Phi(e_A(px),x)
+        =
+        \operatorname{inl}
+        \bigl(x,e_B(qx)\bigr).
+    \]
+
+    Sequential execution fails if either stage fails. If both stages succeed
+    with outcomes
+    \[
+        (x_b,\beta_b)
+        \qquad\text{and}\qquad
+        (x_a,\beta_a),
+    \]
+    then the composite succeeds with
+    \[
+        (x_a,\beta_b\circ\beta_a).
+    \]
+
+    The successful output path is
+    \[
+        \begin{tikzcd}[column sep=huge]
+                q(x_a)
+                    \arrow[r, "\beta_a"]
+            &
+                q(x_b)
+                    \arrow[r, "\beta_b"]
+            &
+                q(x).
+        \end{tikzcd}
+    \]
+
+    In the one-object case this is a partial function
+    \[
+        M\times P
+        \rightharpoonup
+        P\times N
+    \]
+    compatible with the monoid multiplication.
+\end{example}
+
+\begin{example}[Semiring-weighted Mealy morphisms]
+\label{example:semiring-weighted-mealy-morphisms}
+    Let \(R\) be a semiring, and let
+    \[
+        \mathsf W_R(X)
+    \]
+    be the set of finitely supported functions
+    \[
+        X\to R.
+    \]
+    The unit assigns weight \(1\) to one point and \(0\) elsewhere, while
+    multiplication sums products of weights over intermediate points.
+
+    An \(\mathsf W_R\)-effectful Mealy morphism assigns an \(R\)-weight to
+    every possible typed next-state/output pair. Sequential execution
+    multiplies the weights of consecutive outcomes and sums over intermediate
+    states and output-arrow factorizations.
+
+    If
+    \[
+        w_{a,x}(x',\beta)\in R
+    \]
+    denotes the weight assigned to an outcome, then
+    \[
+    \begin{aligned}
+        w_{b\circ a,x}(x_a,\gamma)
+        =
+        \sum_{\substack{
+            x_b,\beta_b,\beta_a\\
+            \beta_b\circ\beta_a=\gamma
+        }}
+        w_{b,x}(x_b,\beta_b)\,
+        w_{a,x_b}(x_a,\beta_a).
+    \end{aligned}
+    \]
+
+    The Boolean semiring recovers finite nondeterminism. The natural-number
+    semiring counts executions with multiplicity. Other semirings yield
+    weighted transducers internal to the typed input-output calculus.
+
+    When \(R\) is commutative, the monad \(\mathsf W_R\) is commutative and
+    therefore supports the pipeline composition of
+    Proposition~\ref{prop:effectful-pipeline-composition-set}.
+\end{example}
+
+\subsection{Relation to the deterministic theory}
+\label{subsec:effectful-relation-deterministic-theory}
+
+The effectful construction extends the deterministic theory in three
+compatible ways.
+
+First, taking
+\[
+    \mathsf K=\mathrm{Id}
+\]
+gives
+\[
+    H_B^{\mathsf K}=T_B,
+\]
+and Definition~\ref{def:effectful-mealy-morphism} reduces to
+Definition~\ref{def:mealy-morphism}.
+
+Second, for an arbitrary Mealy-compatible effect datum, every deterministic
+Mealy morphism embeds as a pure effectful Mealy morphism by
+Proposition~\ref{prop:pure-effectful-mealy-morphisms}. The embedding is induced
+by the monad morphism
+\[
+    j:
+    T_B
+    \longrightarrow
+    \mathsf K T_B.
+\]
+
+Third, pure effectful simulations retain the deterministic state-comparison
+and output-comparison data of ordinary Mealy simulations. Their compatibility
+equation is no longer generally a pointwise equality of selected transitions;
+it is equality of the two induced effectful joint state-output behaviours.
+
+The principal fibrewise Set effects may be summarized as follows:
+\[
+\begin{array}{c|l}
+\text{effect monad} & \text{resulting Mealy behaviour} \\
+\hline
+\mathrm{Id}
+&
+\text{deterministic state transition and output}
+\\
+\mathcal P_{\mathrm f}
+&
+\text{finite nondeterministic branching}
+\\
+\mathcal P
+&
+\text{arbitrary nondeterministic branching}
+\\
+\mathcal D_{\mathrm f}
+&
+\text{finitely supported probabilistic branching}
+\\
+\text{finite subdistribution}
+&
+\text{probability with failure or nontermination}
+\\
+(-)+1
+&
+\text{partial transition and output}
+\\
+\mathsf W_R
+&
+\text{semiring-weighted transition and output.}
+\end{array}
+\]
+
+In each case, the effect is applied to the joint next-state/output object
+\[
+    B\circ P.
+\]
+The structural sequence is
+\[
+    \begin{tikzcd}[column sep=huge]
+            P\circ A
+                \arrow[r, "\widehat\Phi"]
+        &
+            \mathsf K(B\circ P),
+    \end{tikzcd}
+\]
+rather than a pair of separate maps selecting an effectful state and an
+effectful output.
+
+The input-processing monad acts through the distributive law
+\[
+    \begin{tikzcd}[column sep=huge]
+            R_A\mathsf K T_B
+                \arrow[r, "\rho_A T_B"]
+        &
+            \mathsf K R_AT_B
+                \arrow[r, "\mathsf K\lambda"]
+        &
+            \mathsf K T_BR_A.
+    \end{tikzcd}
+\]
+Consequently, identity and sequential execution remain algebra laws for a
+lifted input-processing monad. This preserves the structural organization of
+the deterministic theory while allowing the transition-output operation to
+carry computational effects.
+
+For commutative fibrewise Set effects, the pipeline formula further composes
+effectful Mealy morphisms:
+\[
+    \begin{tikzcd}[column sep=large, row sep=large]
+            x
+                \arrow[r, "{a/\beta}"]
+        &
+            x'
+        \\
+            y
+                \arrow[r, "{\beta/\gamma}"']
+        &
+            y'.
+    \end{tikzcd}
+\]
+The emitted arrow of the first machine becomes the effectful input of the
+second, while the two computational effects are combined by Kleisli extension
+and commutative interchange.

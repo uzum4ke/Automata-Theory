@@ -1,0 +1,5673 @@
+\chapter{Relative Mealy Evaluation and Polynomial Response Semantics}
+\label{ch:relative-mealy-evaluation-polynomial-response}
+\label{ch:relative-mealy-program-categories}
+\label{ch:polynomial-relative-mealy-actions}
+
+\section{Orientation: evaluating and currying execution}
+\label{sec:relative-response-orientation}
+
+The preceding chapter associated to every Mealy morphism
+\[
+    \Phi=(P,\delta_P,\omega_P):
+    \mathbb A\rightsquigarrow\mathbb B
+\]
+a labelled execution category
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbb A^{\mathrm{op}}
+    &
+    \operatorname{Exec}(\Phi)
+        \arrow[l,"I_\Phi"']
+        \arrow[r,"O_\Phi"]
+    &
+    \mathbb B^{\mathrm{op}},
+\end{tikzcd}
+\]
+together with its finite trajectory sheaf and Segal composition structure.
+The present chapter adds a downstream semantic context and develops two
+presentations of the resulting relative execution semantics.
+
+Let
+\[
+    Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a right \(\mathbb B\)-action.  Evaluating the emitted
+\(\mathbb B\)-arrow in \(Y\) couples a Mealy state with a downstream state and
+produces the relative state object
+\[
+    S_{\Phi,Y}=P\times_{q_P,B_0,r}Y.
+\]
+The associated transition is
+\[
+    (a,x,y)
+    \longmapsto
+    \bigl(
+        \delta_P(a,x),
+        \sigma(\omega_P(a,x),y)
+    \bigr).
+\]
+Its action category is the relative execution, or relative program, category
+\[
+    \mathsf{Prog}_{\Phi,Y}.
+\]
+This is the uncurried operational presentation.
+
+Whenever the relevant dependent products exist, the same labelled one-step
+data transpose to a total response profile
+\[
+    c_{\Phi,Y}:
+    S_{\Phi,Y}
+    \longrightarrow
+    \mathcal M_{\mathbb A,\mathbb B,Y}(S_{\Phi,Y}),
+\]
+with generalized-element formula
+\[
+    c_{\Phi,Y}(x,y)(a)
+    =
+    \left(
+        \omega_P(a,x),
+        \left(
+            \delta_P(a,x),
+            \sigma(\omega_P(a,x),y)
+        \right)
+    \right).
+\]
+This is the curried polynomial presentation.
+
+The chapter is organized around the equivalence
+\[
+\begin{tikzcd}[column sep=huge]
+    \text{labelled relative action}
+        \arrow[r,shift left=1.1ex,"\text{dependent-product transpose}"]
+    &
+    \text{multiplicative response coalgebra}
+        \arrow[l,shift left=1.1ex,"\text{flattening}"'].
+\end{tikzcd}
+\]
+The action category of the left-hand structure and the flattened execution
+category of the right-hand structure are canonically the same internal
+category.
+
+There are therefore four mutually compatible descriptions:
+\[
+\begin{array}{c|c}
+    \text{description} & \text{principal object} \\
+    \hline
+    \text{unevaluated execution} & \operatorname{Exec}(\Phi) \\
+    \text{evaluated relative execution} & \mathsf{Prog}_{\Phi,Y} \\
+    \text{curried total response} & c_{\Phi,Y} \\
+    \text{finite relative trajectories} &
+        \operatorname{Path}(\mathsf{Prog}_{\Phi,Y}).
+\end{array}
+\]
+The logical interpretation of selected execution witnesses, total response
+profiles, and finite trajectories is deferred to the following chapter.
+
+The principal results are as follows.
+\begin{enumerate}
+    \item A right \(\mathbb B\)-action is a terminal-output Mealy morphism
+    \[
+        \widehat Y:\mathbb B\rightsquigarrow\mathbf 1.
+    \]
+    Its execution category is its action category.
+
+    \item Relative execution is Mealy composition:
+    \[
+        \mathsf{Prog}_{\Phi,Y}
+        \cong
+        \operatorname{Exec}(\widehat Y\circ\Phi).
+    \]
+    Consequently, by the temporal pullback theorem,
+    \[
+        \mathsf{Prog}_{\Phi,Y}
+        \cong
+        \operatorname{Exec}(\Phi)
+        \times_{\mathbb B^{\mathrm{op}}}
+        \int_{\mathbb B}Y.
+    \]
+
+    \item Coalgebras for the relative response polynomial are exactly typed
+    labelled one-step response maps.  Multiplicative coalgebras are exactly
+    labelled relative actions.
+
+    \item Flattening a multiplicative coalgebra recovers its action category,
+    including the input and downstream labellings.
+
+    \item A Mealy simulation does not generally induce a strict coalgebra map
+    over the response interface.  It induces an output-lax profile
+    comparison, whose flattening is the contravariant relative execution
+    functor obtained by downstream evaluation.
+\end{enumerate}
+
+The ambient hypotheses are used locally.  Finite limits suffice for right
+actions, action categories, downstream evaluation, relative execution, and
+flattened one-step spans.  The polynomial transposes require the explicitly
+stated dependent products; local cartesian closure is a sufficient global
+hypothesis.  Regular images, coherent joins, and first-order Heyting
+quantifiers are not used in this chapter except in remarks pointing forward
+to the dynamic-logic chapter.
+
+We retain the composition convention of the preceding chapters.  For
+internally composable arrows
+\[
+    a:u\to v,
+    \qquad
+    b:v\to w,
+\]
+write
+\[
+    m_A(a,b)=b\circ a.
+\]
+Right actions process target-to-source: at a state over \(w\), the arrow
+\(b\) acts first and \(a\) acts second.  The corresponding output convention
+is
+\[
+    m_B(\alpha,\beta)=\beta\circ\alpha.
+\]
+All generalized-element calculations below denote the corresponding morphism
+equalities on the indicated pullback objects.
+
+\section{Right actions and action categories}
+\label{sec:relative-right-actions-action-categories}
+
+Throughout this section let
+\[
+\mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A)
+\]
+be an internal category in \(\mathcal E\).
+
+The use of actions as Eilenberg--Moore algebras over a slice, and the
+corresponding subobject-fibration logic used later in the chapter, follows the
+standard categorical-logic perspective on indexed predicates and their
+quantifiers \cite{Jacobs1999CategoricalLogic}.
+
+\subsection{Right internal actions}
+\label{subsec:relative-right-actions}
+
+\begin{definition}[Right internal action]
+\label{def:relative-right-action}
+A \textbf{right action} of \(\mathbb A\) consists of a morphism
+\[
+p:X\to A_0
+\]
+together with a map
+\[
+\rho:
+A_1\times_{t_A,A_0,p}X\to X
+\]
+such that
+\[
+p\rho=s_A\pi_1.
+\]
+The typing square for the action domain is
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}X
+\arrow[r,"\pi_X"]
+\arrow[d,"\pi_1"']
+&
+X
+\arrow[d,"p"]
+\\
+A_1
+\arrow[r,"t_A"']
+&
+A_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+The action map fits into
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}X
+\arrow[rr,"\rho"]
+\arrow[dr,"s_A\pi_1"']
+&&
+X
+\arrow[dl,"p"]
+\\
+& A_0 &
+\end{tikzcd}
+\]
+and satisfies the unit and multiplication laws
+\[
+\rho(e_A(px),x)=x
+\]
+and
+\[
+\rho(b\circ a,x)=\rho(a,\rho(b,x))
+\]
+for internally composable arrows
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w.
+\]
+Equivalently, using the multiplication map,
+\[
+\rho(m_A(a,b),x)=\rho(a,\rho(b,x)).
+\]
+\end{definition}
+
+\begin{definition}[Equivariant map]
+\label{def:relative-equivariant-map}
+Let
+\[
+(X\xrightarrow{p}A_0,\rho_X)
+\qquad\text{and}\qquad
+(Z\xrightarrow{q}A_0,\rho_Z)
+\]
+be right \(\mathbb A\)-actions. An \(\mathbb A\)-equivariant map
+\[
+f:X\to Z
+\]
+is a morphism in \(\mathcal E\) satisfying
+\[
+qf=p
+\]
+and
+\[
+f(\rho_X(a,x))=\rho_Z(a,f(x)).
+\]
+Equivalently, the diagrams
+\[
+\begin{tikzcd}
+X \arrow[rr,"f"] \arrow[dr,"p"'] && Z \arrow[dl,"q"] \\
+& A_0 &
+\end{tikzcd}
+\]
+and
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}X
+\arrow[r,"1\times f"]
+\arrow[d,"\rho_X"']
+&
+A_1\times_{t_A,A_0,q}Z
+\arrow[d,"\rho_Z"]
+\\
+X
+\arrow[r,"f"']
+&
+Z
+\end{tikzcd}
+\]
+commute.
+\end{definition}
+
+\begin{definition}[Category of right actions]
+\label{def:relative-action-category-external}
+The \textbf{category of right \(\mathbb A\)-actions}, denoted
+\[
+\mathbf{Act}(\mathbb A),
+\]
+has right internal \(\mathbb A\)-actions as objects and equivariant maps as
+morphisms.
+\end{definition}
+
+\subsection{Actions as Eilenberg--Moore algebras}
+\label{subsec:relative-actions-em}
+
+\begin{proposition}[Actions as Eilenberg--Moore algebras]
+\label{prop:relative-actions-em}
+The internal category \(\mathbb A\), regarded as a monad in
+\(\mathbf{Span}(\mathcal E)\), induces a monad
+\[
+T_{\mathbb A}:\mathcal E/A_0\to\mathcal E/A_0
+\]
+defined by
+\[
+T_{\mathbb A}(X\xrightarrow{p}A_0)
+=
+\left(
+A_1\times_{t_A,A_0,p}X
+\xrightarrow{s_A\pi_1}
+A_0
+\right).
+\]
+The category \(\mathbf{Act}(\mathbb A)\) is the Eilenberg--Moore category of
+\(T_{\mathbb A}\).
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify the endofunctor.}
+For an object \(p:X\to A_0\) of \(\mathcal E/A_0\), composing the span
+\[
+A_0\xleftarrow{s_A}A_1\xrightarrow{t_A}A_0
+\]
+with \(p\) gives the pullback
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}X
+\arrow[r,"\pi_X"]
+\arrow[d,"\pi_1"']
+&
+X
+\arrow[d,"p"]
+\\
+A_1
+\arrow[r,"t_A"']
+&
+A_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+,
+\]
+equipped with the structure map \(s_A\pi_1\) to \(A_0\).
+
+\item \textbf{Unpack an algebra.}
+A \(T_{\mathbb A}\)-algebra structure on \(p:X\to A_0\) is a map
+\[
+A_1\times_{t_A,A_0,p}X\to X
+\]
+over \(A_0\). This is precisely a map \(\rho\) satisfying
+\[
+p\rho=s_A\pi_1.
+\]
+
+\item \textbf{Compare the laws.}
+The unit of the monad is induced by \(e_A:A_0\to A_1\), and the multiplication
+is induced by \(m_A:A_1\times_{A_0}A_1\to A_1\). The Eilenberg--Moore unit
+and multiplication equations are exactly
+\[
+\rho(e_A(px),x)=x
+\]
+and
+\[
+\rho(b\circ a,x)=\rho(a,\rho(b,x)).
+\]
+
+\item \textbf{Compare the morphisms.}
+A morphism of Eilenberg--Moore algebras is a map over \(A_0\) commuting with
+the algebra structures. This is exactly an equivariant map.
+\end{enumerate}
+\end{proof}
+
+\subsection{Action categories}
+\label{subsec:relative-action-categories}
+
+Let
+\[
+X=(X\xrightarrow{p}A_0,\rho)
+\]
+be a right \(\mathbb A\)-action.
+
+\begin{definition}[Action category]
+\label{def:relative-action-category}
+The \textbf{action category} of \(X\), denoted
+\[
+\int_{\mathbb A}X,
+\]
+is the internal category with
+\[
+\left(\int_{\mathbb A}X\right)_0=X,
+\qquad
+\left(\int_{\mathbb A}X\right)_1
+=
+A_1\times_{t_A,A_0,p}X.
+\]
+The source and target maps are
+\[
+s(a,x)=x,
+\qquad
+t(a,x)=\rho(a,x).
+\]
+They form the span
+\[
+\begin{tikzcd}
+& A_1\times_{t_A,A_0,p}X
+\arrow[dl,"\pi_X"']
+\arrow[dr,"\rho"]
+&
+\\
+X && X
+\end{tikzcd}
+.
+\]
+The identity map is
+\[
+e(x)=(e_A(px),x).
+\]
+Composition is given by
+\[
+\bigl((b,x),(a,\rho(b,x))\bigr)
+\longmapsto
+(m_A(a,b),x).
+\]
+Equivalently, the composite of
+\[
+x\xrightarrow{\,b\,}\rho(b,x)
+\xrightarrow{\,a\,}\rho(a,\rho(b,x))
+\]
+is labelled by
+\[
+b\circ a=m_A(a,b).
+\]
+\end{definition}
+
+\begin{theorem}[Action categories]
+\label{thm:relative-action-category-internal}
+For every right \(\mathbb A\)-action \(X\), the data of
+Definition~\ref{def:relative-action-category} define an internal category
+\[
+\int_{\mathbb A}X.
+\]
+Equivalently, the span
+\[
+X
+\xleftarrow{\pi_X}
+A_1\times_{t_A,A_0,p}X
+\xrightarrow{\rho}
+X
+\]
+is a monoid object in
+\[
+\operatorname{EndSpan}_{\mathcal E}(X).
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check the target map.}
+The equation \(p\rho=s_A\pi_1\) says that the target of an action arrow is
+typed over the source of its input arrow. If
+\[
+a:u\to v,
+\qquad
+p(x)=v,
+\]
+then \(\rho(a,x)\) lies over \(u\).
+
+\item \textbf{Check identities.}
+The identity arrow at \(x\) is
+\[
+(e_A(px),x).
+\]
+It lies in the pullback because \(t_Ae_Ap=p\). The action unit law gives
+\[
+\rho(e_A(px),x)=x.
+\]
+
+\item \textbf{Describe composable pairs.}
+A composable pair in \(\int_{\mathbb A}X\) has the form
+\[
+\bigl((b,x),(a,\rho(b,x))\bigr)
+\]
+with
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w.
+\]
+The corresponding pullback diagram is
+\[
+\begin{tikzcd}
+\left(A_1\times_{A_0}X\right)
+\times_X
+\left(A_1\times_{A_0}X\right)
+\arrow[r]
+\arrow[d]
+&
+A_1\times_{A_0}X
+\arrow[d,"\pi_X"]
+\\
+A_1\times_{A_0}X
+\arrow[r,"\rho"']
+&
+X
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+
+\item \textbf{Check composition.}
+The composite
+\[
+(m_A(a,b),x)
+\]
+is defined because
+\[
+t_A(m_A(a,b))=t_A(b)=p(x).
+\]
+Its target is
+\[
+\rho(m_A(a,b),x)=\rho(a,\rho(b,x))
+\]
+by the action multiplication law.
+
+\item \textbf{Verify the laws.}
+The identity and associativity laws follow from the unit and associativity
+laws of \(\mathbb A\) together with the action laws.
+\end{enumerate}
+\end{proof}
+
+\subsection{Input-discrete functors}
+\label{subsec:relative-input-discrete-functors}
+
+The action category has a canonical internal functor
+\[
+\pi_X:\int_{\mathbb A}X\to\mathbb A^{\mathrm{op}}
+\]
+whose object part is
+\[
+p:X\to A_0
+\]
+and whose arrow part is the projection
+\[
+\pi_1:A_1\times_{t_A,A_0,p}X\to A_1.
+\]
+The source square of this functor is the defining pullback
+\[
+\begin{tikzcd}
+A_1\times_{t_A,A_0,p}X
+\arrow[r,"\pi_1"]
+\arrow[d,"\pi_X"']
+&
+A_1
+\arrow[d,"t_A"]
+\\
+X
+\arrow[r,"p"']
+&
+A_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+The use of \(t_A\) rather than \(s_A\) is because the codomain is
+\(\mathbb A^{\mathrm{op}}\).
+
+\begin{definition}[Input-discrete functor]
+\label{def:relative-input-discrete}
+Let
+\[
+J:\mathbb X\to\mathbb A^{\mathrm{op}}
+\]
+be an internal functor with object map
+\[
+J_0:X_0\to A_0.
+\]
+We say that \(J\) is \textbf{input-discrete} if the square
+\[
+\begin{tikzcd}
+X_1 \arrow[r,"J_1"] \arrow[d,"s_X"']
+&
+A_1 \arrow[d,"t_A"]
+\\
+X_0 \arrow[r,"J_0"']
+&
+A_0
+\end{tikzcd}
+\]
+is a pullback.
+\end{definition}
+
+\begin{theorem}[Actions as input-discrete functors]
+\label{thm:relative-actions-input-discrete}
+To give a right \(\mathbb A\)-action
+\[
+(X\xrightarrow{p}A_0,\rho)
+\]
+is equivalently to give an internal category \(\mathbb X\) with object of
+objects \(X\), together with an input-discrete internal functor
+\[
+J:\mathbb X\to\mathbb A^{\mathrm{op}}
+\]
+whose object map is \(p\).
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Construct the functor from an action.}
+Given a right action \(X\), take
+\[
+\mathbb X=\int_{\mathbb A}X.
+\]
+Its arrow object is
+\[
+A_1\times_{t_A,A_0,p}X,
+\]
+and the functor to \(\mathbb A^{\mathrm{op}}\) is given by the projections
+\[
+p:X\to A_0,
+\qquad
+\pi_1:A_1\times_{t_A,A_0,p}X\to A_1.
+\]
+The input-discrete square is the pullback defining the arrow object.
+
+\item \textbf{Recover an action from an input-discrete functor.}
+Conversely, suppose
+\[
+J:\mathbb X\to\mathbb A^{\mathrm{op}}
+\]
+is input-discrete with object map \(p:X\to A_0\). The pullback condition gives
+a canonical isomorphism
+\[
+X_1\cong A_1\times_{t_A,A_0,p}X.
+\]
+Transporting the target map of \(\mathbb X\) across this isomorphism gives
+\[
+\rho:A_1\times_{t_A,A_0,p}X\to X.
+\]
+
+\item \textbf{Check the typing.}
+The target compatibility of \(J\) gives
+\[
+p\rho=s_A\pi_1.
+\]
+This is the required action typing equation.
+
+\item \textbf{Check the laws.}
+Under the pullback identification, the identity map of \(\mathbb X\) is
+\[
+x\longmapsto(e_A(px),x)
+\]
+because \(J\) preserves identities. Hence the unit law for \(\rho\) follows
+from the identity law in \(\mathbb X\). Composition preservation by \(J\)
+forces the transported composition map to be
+\[
+\bigl((b,x),(a,\rho(b,x))\bigr)
+\longmapsto
+(m_A(a,b),x).
+\]
+Associativity in \(\mathbb X\) gives
+\[
+\rho(m_A(a,b),x)=\rho(a,\rho(b,x)).
+\]
+
+\item \textbf{Compare the two constructions.}
+The two assignments are inverse up to the canonical pullback isomorphism.
+\end{enumerate}
+\end{proof}
+
+
+\subsection{Right actions as terminal-output Mealy morphisms}
+\label{subsec:relative-actions-terminal-output-mealy}
+
+Let
+\[
+    Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a right \(\mathbb B\)-action.  Regard the terminal internal category
+\(\mathbf 1\) as having one object and one arrow.
+
+\begin{definition}[Terminal-output Mealy morphism of an action]
+\label{def:relative-terminal-output-mealy-action}
+The \textbf{terminal-output Mealy morphism} associated to \(Y\) is
+\[
+    \widehat Y:\mathbb B\rightsquigarrow\mathbf 1
+\]
+with carrier span
+\[
+\begin{tikzcd}
+    & Y \arrow[dl,"r"'] \arrow[dr] & \\
+    B_0 && 1,
+\end{tikzcd}
+\]
+transition map
+\[
+    \delta_{\widehat Y}(\beta,y):=\sigma(\beta,y),
+\]
+and the unique output map to the arrow object of \(\mathbf 1\).
+\end{definition}
+
+\begin{proposition}[Actions are terminal-output Mealy morphisms]
+\label{prop:relative-actions-terminal-output-mealy}
+The Mealy unit and multiplication laws for \(\widehat Y\) are exactly the unit
+and multiplication laws of the right \(\mathbb B\)-action \(Y\).
+Conversely, every Mealy morphism \(\mathbb B\rightsquigarrow\mathbf 1\) is
+canonically a right \(\mathbb B\)-action.
+\end{proposition}
+
+\begin{proof}
+The carrier anchor to \(B_0\) supplies the object of the action.  Since the
+output category is terminal, the output map and all of its axioms are unique.
+The transition map has domain
+\[
+    B_1\times_{t_B,B_0,r}Y
+\]
+and lies over \(s_B\).  The Mealy identity equation is
+\[
+    \delta_{\widehat Y}(e_B(r(y)),y)=y,
+\]
+which is the action unit law.  For composable arrows
+\[
+    \alpha:b_0\to b_1,
+    \qquad
+    \beta:b_1\to b_2,
+\]
+and \(y\) over \(b_2\), the Mealy multiplication equation is
+\[
+    \delta_{\widehat Y}(\beta\circ\alpha,y)
+    =
+    \delta_{\widehat Y}
+    \bigl(\alpha,\delta_{\widehat Y}(\beta,y)\bigr),
+\]
+which is the right-action multiplication law.  The converse reads the same
+equations in reverse.
+\end{proof}
+
+\begin{proposition}[Execution category of an action]
+\label{prop:relative-exec-terminal-output-action}
+There is a canonical isomorphism of internal categories
+\[
+    \operatorname{Exec}(\widehat Y)
+    \cong
+    \int_{\mathbb B}Y.
+\]
+Under this isomorphism, the input-labelling functor
+\[
+    I_{\widehat Y}:\operatorname{Exec}(\widehat Y)
+    \to\mathbb B^{\mathrm{op}}
+\]
+is the standard projection of the action category to
+\(\mathbb B^{\mathrm{op}}\).
+\end{proposition}
+
+\begin{proof}
+Both internal categories have object object \(Y\) and arrow object
+\[
+    B_1\times_{t_B,B_0,r}Y.
+\]
+In both cases the source is the current state \(y\), the target is
+\(\sigma(\beta,y)\), the identity is \((e_B(r(y)),y)\), and composition is
+induced by \(m_B\) together with the action multiplication law.  The
+input-labelling arrow map is the projection to \(B_1\), viewed in
+\(\mathbb B^{\mathrm{op}}\).
+\end{proof}
+
+\section{Downstream evaluation of output-comparison cells}
+\label{sec:relative-kleisli-evaluation}
+
+The construction in this section treats an output-comparison Kleisli cell as a
+context-dependent comparison which becomes an actual map only after a
+downstream action has been chosen.
+
+Fix internal categories
+\[
+\mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A),
+\qquad
+\mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B).
+\]
+Let
+\[
+\mathcal C_{A,B}:=\mathbf{Span}(\mathcal E)(A_0,B_0)
+\]
+be the local span category. The output-comparison monad is
+\[
+T_B:=B\circ -:\mathcal C_{A,B}\to\mathcal C_{A,B}.
+\]
+For a span
+\[
+P=\left(A_0\xleftarrow{p_P}P\xrightarrow{q_P}B_0\right),
+\]
+the object \(T_B(P)=B\circ P\) has apex
+\[
+P\times_{q_P,B_0,s_B}B_1
+\]
+and fits into
+\[
+\begin{tikzcd}
+P\times_{q_P,B_0,s_B}B_1
+\arrow[r,"\pi_{B_1}"]
+\arrow[d,"\pi_P"']
+&
+B_1
+\arrow[d,"s_B"]
+\\
+P
+\arrow[r,"q_P"']
+&
+B_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+
+Let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a right \(\mathbb B\)-action.
+
+\subsection{Evaluation on carriers}
+\label{subsec:relative-evaluation-carriers}
+
+\begin{definition}[Downstream evaluation on carriers]
+\label{def:relative-downstream-evaluation-carriers}
+For a span
+\[
+P=
+\left(
+A_0\xleftarrow{p_P}P\xrightarrow{q_P}B_0
+\right)
+\]
+define
+\[
+\operatorname{Ev}_Y(P)
+:=
+P\times_{q_P,B_0,r}Y
+\xrightarrow{p_P\pi_P}
+A_0.
+\]
+The underlying pullback is
+\[
+\begin{tikzcd}
+\operatorname{Ev}_Y(P)
+\arrow[r,"\pi_Y"]
+\arrow[d,"\pi_P"']
+&
+Y
+\arrow[d,"r"]
+\\
+P
+\arrow[r,"q_P"']
+&
+B_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\subsection{Evaluation of Kleisli comparisons}
+\label{subsec:relative-evaluation-kleisli-comparisons}
+
+\begin{definition}[Evaluation of a Kleisli comparison]
+\label{def:relative-kleisli-comparison-evaluation}
+Let
+\[
+\Gamma:Q\to T_B(P)=B\circ P
+\]
+be a Kleisli arrow in \(\mathrm{Kl}(T_B)\). In components, write
+\[
+\Gamma(u)=(\gamma u,\lambda_u),
+\]
+where
+\[
+\gamma:Q\to P,
+\qquad
+\lambda:Q\to B_1,
+\]
+and
+\[
+p_P\gamma=p_Q,
+\qquad
+s_B\lambda=q_P\gamma,
+\qquad
+t_B\lambda=q_Q.
+\]
+The component data are displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&& B_1
+  \arrow[dd,bend left=18,"s_B"]
+  \arrow[dd,bend right=18,"t_B"']
+&
+\\
+Q
+  \arrow[rru,"\lambda"]
+  \arrow[r,"\gamma"']
+  \arrow[drr,"q_Q"']
+  \arrow[ddrr,bend right=16,"p_Q"']
+&
+P
+  \arrow[dr,"q_P"]
+  \arrow[rdd,bend left=16,"p_P"]
+&&
+\\
+&& B_0 &
+\\
+&& A_0 &
+\end{tikzcd}
+.
+\]
+Define
+\[
+\operatorname{Ev}_Y(\Gamma):
+Q\times_{q_Q,B_0,r}Y
+\longrightarrow
+P\times_{q_P,B_0,r}Y
+\]
+by
+\[
+\operatorname{Ev}_Y(\Gamma)(u,z)
+=
+\bigl(\gamma u,\sigma(\lambda_u,z)\bigr).
+\]
+\end{definition}
+
+\begin{proposition}[Evaluation is functorial on output-comparison cells]
+\label{prop:relative-evaluation-functorial}
+For every right \(\mathbb B\)-action \(Y\), the construction
+\[
+P\longmapsto \operatorname{Ev}_Y(P),
+\qquad
+\Gamma\longmapsto \operatorname{Ev}_Y(\Gamma)
+\]
+defines a functor
+\[
+\operatorname{Ev}_Y:\mathrm{Kl}(T_B)\to \mathcal E/A_0.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check well-definedness.}
+If
+\[
+r(z)=q_Q(u)=t_B(\lambda_u),
+\]
+then \(\sigma(\lambda_u,z)\) is defined. Moreover
+\[
+r\sigma(\lambda_u,z)=s_B(\lambda_u)=q_P(\gamma u),
+\]
+so
+\[
+(\gamma u,\sigma(\lambda_u,z))
+\]
+lies in \(P\times_{B_0}Y\). It lies over \(A_0\) because
+\[
+p_P\gamma=p_Q.
+\]
+
+\item \textbf{Check identities.}
+The Kleisli identity on \(P\) is
+\[
+x\longmapsto (x,e_B(q_Px)).
+\]
+Evaluating gives
+\[
+(x,z)\longmapsto
+(x,\sigma(e_B(q_Px),z))
+=
+(x,z)
+\]
+by the unit law of the action \(Y\).
+
+\item \textbf{Compute Kleisli composition.}
+Let
+\[
+R\xrightarrow{\Delta}T_B(Q),
+\qquad
+Q\xrightarrow{\Gamma}T_B(P)
+\]
+be Kleisli arrows, with
+\[
+\Delta(w)=(\eta w,\mu_w),
+\qquad
+\Gamma(q)=(\gamma q,\lambda_q).
+\]
+The Kleisli composite has component
+\[
+w\longmapsto
+\bigl(\gamma\eta w,\;m_B(\lambda_{\eta w},\mu_w)\bigr).
+\]
+In arrow notation this is the composite
+\[
+q_P(\gamma\eta w)
+\xrightarrow{\lambda_{\eta w}}
+q_Q(\eta w)
+\xrightarrow{\mu_w}
+q_R(w).
+\]
+
+\item \textbf{Evaluate the composite.}
+Evaluation at \((w,z)\) gives
+\[
+\bigl(\gamma\eta w,
+\sigma(m_B(\lambda_{\eta w},\mu_w),z)\bigr).
+\]
+By the right-action multiplication law, this equals
+\[
+\bigl(\gamma\eta w,
+\sigma(\lambda_{\eta w},\sigma(\mu_w,z))\bigr),
+\]
+which is
+\[
+\operatorname{Ev}_Y(\Gamma)
+\bigl(
+\operatorname{Ev}_Y(\Delta)(w,z)
+\bigr).
+\]
+\end{enumerate}
+\end{proof}
+
+
+\section{Relative execution as Mealy composition}
+\label{sec:relative-execution-as-composition}
+
+Fix a Mealy morphism
+\[
+    \Phi=(P,\delta_P,\omega_P):
+    \mathbb A\rightsquigarrow\mathbb B
+\]
+and a right \(\mathbb B\)-action \(Y\).  Form the composite
+\[
+    \widehat Y\circ\Phi:
+    \mathbb A\rightsquigarrow\mathbf 1.
+\]
+Its carrier is the span composite of the carrier of \(\Phi\) with the carrier
+of \(\widehat Y\), hence its state object is
+\[
+    S_{\Phi,Y}
+    :=
+    P\times_{q_P,B_0,r}Y.
+\]
+
+\begin{proposition}[Transition of the evaluated composite]
+\label{prop:relative-evaluated-composite-transition}
+The transition of \(\widehat Y\circ\Phi\) is
+\[
+    (a,x,y)
+    \longmapsto
+    \bigl(
+        \delta_P(a,x),
+        \sigma(\omega_P(a,x),y)
+    \bigr).
+\]
+\end{proposition}
+
+\begin{proof}
+Composition of Mealy morphisms first processes the input arrow in \(\Phi\),
+producing the next \(P\)-state \(\delta_P(a,x)\) and the emitted
+\(\mathbb B\)-arrow \(\omega_P(a,x)\).  The second machine
+\(\widehat Y\) processes that arrow by the action map \(\sigma\).  The carrier
+pullback condition is preserved because
+\[
+    r\sigma(\omega_P(a,x),y)
+    =s_B\omega_P(a,x)
+    =q_P\delta_P(a,x).
+\]
+\end{proof}
+
+\begin{definition}[Relative execution category]
+\label{def:relative-execution-category-composite}
+The \textbf{relative execution category} of \((\Phi,Y)\) is
+\[
+    \mathsf{Prog}_{\Phi,Y}
+    :=
+    \operatorname{Exec}(\widehat Y\circ\Phi).
+\]
+The notation \(\mathsf{Prog}_{\Phi,Y}\) is retained because this internal
+category is the program category used by the dynamic-logic semantics of the
+following chapter.
+\end{definition}
+
+\begin{theorem}[Relative execution as a labelled pullback]
+\label{thm:relative-execution-labelled-pullback}
+There is a canonical isomorphism
+\[
+    \mathsf{Prog}_{\Phi,Y}
+    \cong
+    \operatorname{Exec}(\Phi)
+    \times_{\mathbb B^{\mathrm{op}}}
+    \int_{\mathbb B}Y.
+\]
+The two projections are respectively the input execution comparison and the
+downstream comparison functor.
+\end{theorem}
+
+\begin{proof}
+By Definition~\ref{def:relative-execution-category-composite},
+\[
+    \mathsf{Prog}_{\Phi,Y}
+    =
+    \operatorname{Exec}(\widehat Y\circ\Phi).
+\]
+The execution-composition theorem of the preceding chapter gives
+\[
+    \operatorname{Exec}(\widehat Y\circ\Phi)
+    \cong
+    \operatorname{Exec}(\Phi)
+    \times_{\mathbb B^{\mathrm{op}}}
+    \operatorname{Exec}(\widehat Y).
+\]
+Apply Proposition~\ref{prop:relative-exec-terminal-output-action} to identify
+\(\operatorname{Exec}(\widehat Y)\) with \(\int_{\mathbb B}Y\).  The
+statements about the two projections follow from the construction of the
+labelled pullback.
+\end{proof}
+
+\begin{corollary}[Relative finite trajectories]
+\label{cor:relative-finite-trajectories-pullback}
+For every finite length \(n\),
+\[
+    \operatorname{Path}(\mathsf{Prog}_{\Phi,Y})(n)
+    \cong
+    \mathscr T_\Phi(n)
+    \times_{\operatorname{Path}(\mathbb B^{\mathrm{op}})(n)}
+    \operatorname{Path}\!\left(\int_{\mathbb B}Y\right)(n).
+\]
+These degreewise isomorphisms assemble into an isomorphism of labelled
+trajectory objects.
+\end{corollary}
+
+\begin{proof}
+The finite-path construction preserves finite limits.  Apply it to the
+pullback of Theorem~\ref{thm:relative-execution-labelled-pullback}.
+\end{proof}
+
+The remaining operational sections calculate this composite explicitly and
+establish its functoriality under downstream maps and Mealy simulations.  They
+are retained because the explicit formulas are required later when the same
+data are transposed into polynomial response profiles.
+
+\section{Restriction of downstream actions along Mealy morphisms}
+\label{sec:relative-evaluation-mealy-morphisms}
+
+Let
+\[
+\Phi=(P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism. Thus \(P\) is a span
+\[
+\begin{tikzcd}
+& P \arrow[dl,"p_P"'] \arrow[dr,"q_P"] & \\
+A_0 && B_0
+\end{tikzcd}
+,
+\]
+and
+\[
+\delta_P:A_1\times_{t_A,A_0,p_P}P\to P,
+\qquad
+\omega_P:A_1\times_{t_A,A_0,p_P}P\to B_1
+\]
+satisfy
+\[
+p_P\delta_P=s_A\pi_1,
+\qquad
+s_B\omega_P=q_P\delta_P,
+\qquad
+t_B\omega_P=q_P\pi_P,
+\]
+together with the Mealy unit and multiplication laws.
+
+Let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a right \(\mathbb B\)-action.
+
+\subsection{The restricted action}
+\label{subsec:relative-restricted-action}
+
+\begin{definition}[Restricted downstream action]
+\label{def:relative-restricted-action}
+The \textbf{restriction of \(Y\) along \(\Phi\)} is the right
+\(\mathbb A\)-action
+\[
+\Phi^\ast Y
+\]
+whose underlying object over \(A_0\) is
+\[
+S_{\Phi,Y}:=
+P\times_{q_P,B_0,r}Y
+\xrightarrow{p_P\pi_P}
+A_0,
+\]
+and whose action map is
+\[
+A_1\times_{t_A,A_0,p_P\pi_P}S_{\Phi,Y}
+\to S_{\Phi,Y}
+\]
+given by
+\[
+a\cdot(x,y)
+=
+\bigl(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\bigr).
+\]
+The action square has the form
+\[
+\begin{tikzcd}
+A_1\times_{A_0}S_{\Phi,Y}
+\arrow[rr,"{(a,x,y)\mapsto(\delta_P(a,x),\sigma(\omega_P(a,x),y))}"]
+\arrow[dr,"s_A\pi_1"']
+&&
+S_{\Phi,Y}
+\arrow[dl,"p_P\pi_P"]
+\\
+& A_0 &
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\begin{theorem}[Mealy restriction of downstream actions]
+\label{thm:relative-mealy-restriction-actions}
+For every Mealy morphism
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+and every right \(\mathbb B\)-action \(Y\), the object
+\(\Phi^\ast Y\) of Definition~\ref{def:relative-restricted-action} is a right
+\(\mathbb A\)-action.
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check that the formula lands in the pullback.}
+If
+\[
+t_B\omega_P(a,x)=q_P(x)=r(y),
+\]
+then \(\sigma(\omega_P(a,x),y)\) is defined. Moreover
+\[
+r\sigma(\omega_P(a,x),y)
+=
+s_B\omega_P(a,x)
+=
+q_P\delta_P(a,x),
+\]
+so the displayed pair lies in
+\[
+P\times_{B_0}Y.
+\]
+
+\item \textbf{Check the projection to \(A_0\).}
+The projection of the result to \(A_0\) is
+\[
+p_P\delta_P(a,x)=s_A(a).
+\]
+Thus the action has the required target-to-source typing.
+
+\item \textbf{Check the unit law.}
+Using the Mealy unit laws and the unit law of \(Y\),
+\[
+e_A(p_Px)\cdot(x,y)
+=
+\bigl(
+\delta_P(e_A(p_Px),x),
+\sigma(\omega_P(e_A(p_Px),x),y)
+\bigr)
+=
+(x,y).
+\]
+
+\item \textbf{Check the multiplication law.}
+Let
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p_P(x)=w.
+\]
+Then
+\[
+(b\circ a)\cdot(x,y)
+=
+\bigl(
+\delta_P(b\circ a,x),
+\sigma(\omega_P(b\circ a,x),y)
+\bigr).
+\]
+The Mealy multiplication laws give
+\[
+\delta_P(b\circ a,x)
+=
+\delta_P(a,\delta_P(b,x))
+\]
+and
+\[
+\omega_P(b\circ a,x)
+=
+\omega_P(b,x)\circ\omega_P(a,\delta_P(b,x)).
+\]
+Equivalently,
+\[
+\omega_P(b\circ a,x)
+=
+m_B\bigl(
+\omega_P(a,\delta_P(b,x)),
+\omega_P(b,x)
+\bigr).
+\]
+The right-action multiplication law for \(Y\) gives
+\[
+(b\circ a)\cdot(x,y)
+=
+a\cdot\bigl(b\cdot(x,y)\bigr).
+\]
+\end{enumerate}
+\end{proof}
+
+\subsection{Functoriality in the downstream action}
+\label{subsec:relative-functoriality-downstream-action}
+
+\begin{proposition}[Functoriality in the downstream action]
+\label{prop:relative-functoriality-downstream-action}
+For fixed \(\Phi:\mathbb A\rightsquigarrow\mathbb B\), the assignment
+\[
+Y\longmapsto \Phi^\ast Y
+\]
+extends to a functor
+\[
+\Phi^\ast:\mathbf{Act}(\mathbb B)\to\mathbf{Act}(\mathbb A).
+\]
+If
+\[
+f:Y\to Z
+\]
+is a \(\mathbb B\)-equivariant map, then
+\[
+\Phi^\ast f:S_{\Phi,Y}\to S_{\Phi,Z}
+\]
+is given by
+\[
+(x,y)\longmapsto(x,f(y)).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check well-definedness.}
+The square
+\[
+\begin{tikzcd}
+S_{\Phi,Y}
+\arrow[r,"1_P\times f"]
+\arrow[d]
+&
+S_{\Phi,Z}
+\arrow[d]
+\\
+P
+\arrow[r,"1_P"']
+&
+P
+\end{tikzcd}
+\]
+is induced by the pullback defining \(S_{\Phi,Y}\), because \(f\) lies over
+\(B_0\).
+
+\item \textbf{Check the map over \(A_0\).}
+The \(P\)-component is unchanged, so the map lies over \(A_0\).
+
+\item \textbf{Check equivariance.}
+For an admissible input arrow \(a\),
+\[
+f(\sigma_Y(\omega_P(a,x),y))
+=
+\sigma_Z(\omega_P(a,x),f(y))
+\]
+by equivariance of \(f\) as a map of right \(\mathbb B\)-actions.
+
+\item \textbf{Check identity and composition.}
+Both follow from the corresponding equations for maps in \(\mathcal E\).
+\end{enumerate}
+\end{proof}
+
+\section{Evaluation of Mealy simulations}
+\label{sec:relative-evaluation-mealy-simulations}
+
+Let
+\[
+\Phi=(P,\delta_P,\omega_P),
+\qquad
+\Psi=(Q,\delta_Q,\omega_Q)
+:
+\mathbb A\rightsquigarrow\mathbb B
+\]
+be Mealy morphisms.
+
+\subsection{Component form}
+\label{subsec:relative-simulation-component-form}
+
+\begin{definition}[Mealy simulation, component form]
+\label{def:relative-mealy-simulation-component}
+A \textbf{Mealy simulation}
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+is a Kleisli output-comparison cell
+\[
+Q\to B\circ P.
+\]
+In components, write
+\[
+\Theta(y)=(\theta y,\alpha_y),
+\]
+where
+\[
+\theta:Q\to P,
+\qquad
+\alpha:Q\to B_1,
+\]
+and
+\[
+p_P\theta=p_Q,
+\qquad
+s_B\alpha=q_P\theta,
+\qquad
+t_B\alpha=q_Q.
+\]
+The typing data are summarized by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&& B_1
+  \arrow[dd,bend left=18,"s_B"]
+  \arrow[dd,bend right=18,"t_B"']
+&
+\\
+Q
+  \arrow[rru,"\alpha"]
+  \arrow[r,"\theta"']
+  \arrow[drr,"q_Q"']
+  \arrow[ddrr,bend right=16,"p_Q"']
+&
+P
+  \arrow[dr,"q_P"]
+  \arrow[rdd,bend left=16,"p_P"]
+&&
+\\
+&& B_0 &
+\\
+&& A_0 &
+\end{tikzcd}
+.
+\]
+The simulation equations are
+\[
+\theta(\delta_Q(a,y))
+=
+\delta_P(a,\theta y),
+\]
+and
+\[
+\alpha_y\circ \omega_P(a,\theta y)
+=
+\omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}.
+\]
+Equivalently,
+\[
+m_B\bigl(\omega_P(a,\theta y),\alpha_y\bigr)
+=
+m_B\bigl(\alpha_{\delta_Q(a,y)},\omega_Q(a,y)\bigr).
+\]
+\end{definition}
+
+\subsection{Evaluated simulations}
+\label{subsec:relative-evaluated-simulations}
+
+\begin{definition}[Evaluated simulation map]
+\label{def:relative-evaluated-simulation-map}
+Let \(Y\) be a right \(\mathbb B\)-action. The \textbf{evaluation} of
+\(\Theta\) at \(Y\) is the map
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y}
+\]
+given by
+\[
+h_{\Theta,Y}(y,z)
+=
+\bigl(\theta y,\sigma(\alpha_y,z)\bigr).
+\]
+It is induced by the diagram
+\[
+\begin{tikzcd}
+S_{\Psi,Y}
+\arrow[r,"h_{\Theta,Y}"]
+\arrow[d]
+&
+S_{\Phi,Y}
+\arrow[d]
+\\
+Q
+\arrow[r,"\theta"']
+&
+P
+\end{tikzcd}
+\]
+together with the action of \(\alpha_y\) on the \(Y\)-coordinate.
+\end{definition}
+
+\begin{theorem}[Simulations evaluate to equivariant maps]
+\label{thm:relative-simulations-evaluate-equivariantly}
+For every Mealy simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+and every right \(\mathbb B\)-action \(Y\), the map
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y}
+\]
+is an \(\mathbb A\)-equivariant map
+\[
+\Psi^\ast Y\to \Phi^\ast Y.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check well-definedness.}
+Since
+\[
+r\sigma(\alpha_y,z)=s_B\alpha_y=q_P(\theta y),
+\]
+the pair
+\[
+(\theta y,\sigma(\alpha_y,z))
+\]
+lies in \(S_{\Phi,Y}\).
+
+\item \textbf{Check the map over \(A_0\).}
+The equation
+\[
+p_P\theta=p_Q
+\]
+gives
+\[
+p_P(\theta y)=p_Q(y).
+\]
+
+\item \textbf{Compute the left-hand equivariance composite.}
+Let
+\[
+a:u\to v,
+\qquad
+p_Q(y)=v,
+\qquad
+r(z)=q_Q(y).
+\]
+Then
+\[
+h_{\Theta,Y}\bigl(a\cdot_\Psi(y,z)\bigr)
+=
+h_{\Theta,Y}
+\bigl(
+\delta_Q(a,y),
+\sigma(\omega_Q(a,y),z)
+\bigr),
+\]
+which is
+\[
+\bigl(
+\theta\delta_Q(a,y),
+\sigma(\alpha_{\delta_Q(a,y)},\sigma(\omega_Q(a,y),z))
+\bigr).
+\]
+Using the action multiplication law for \(Y\), the second component is
+\[
+\sigma\bigl(
+\omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)},
+z
+\bigr).
+\]
+
+\item \textbf{Use the simulation law.}
+The simulation law gives
+\[
+\omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}
+=
+\alpha_y\circ \omega_P(a,\theta y).
+\]
+Thus the second component becomes
+\[
+\sigma\bigl(
+\alpha_y\circ \omega_P(a,\theta y),
+z
+\bigr).
+\]
+Using the action multiplication law again, this is
+\[
+\sigma(\omega_P(a,\theta y),\sigma(\alpha_y,z)).
+\]
+
+\item \textbf{Compare with the right-hand equivariance composite.}
+The state equation
+\[
+\theta\delta_Q(a,y)=\delta_P(a,\theta y)
+\]
+gives
+\[
+h_{\Theta,Y}\bigl(a\cdot_\Psi(y,z)\bigr)
+=
+a\cdot_\Phi h_{\Theta,Y}(y,z).
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Contravariance in simulations]
+\label{cor:relative-contravariance-actions}
+For fixed \(Y\in\mathbf{Act}(\mathbb B)\), the assignment
+\[
+\Phi\longmapsto\Phi^\ast Y
+\]
+is contravariant in Mealy simulations:
+\[
+\Theta:\Phi\Rightarrow\Psi
+\quad\longmapsto\quad
+h_{\Theta,Y}:\Psi^\ast Y\to\Phi^\ast Y.
+\]
+Thus it defines a functor
+\[
+\mathbf{Mly}(\mathcal E)(\mathbb A,\mathbb B)^{\mathrm{op}}
+\longrightarrow
+\mathbf{Act}(\mathbb A).
+\]
+Here \(\mathbf{Mly}(\mathcal E)(\mathbb A,\mathbb B)\) is the hom-category
+with the displayed simulation direction of
+Chapter~\ref{ch:spans-internal-categories-mealy}.
+\end{corollary}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check identities.}
+The identity simulation uses the identity output arrows of \(\mathbb B\).
+Evaluation sends these identity output arrows to identity transitions in \(Y\).
+
+\item \textbf{Check composition.}
+Composition of simulations is Kleisli composition. By
+Proposition~\ref{prop:relative-evaluation-functorial}, downstream evaluation
+preserves Kleisli composition.
+
+\item \textbf{Check the direction.}
+A simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+is represented by a Kleisli cell from the carrier of \(\Psi\) to the
+output-comparison object of the carrier of \(\Phi\). Hence evaluation produces
+a map
+\[
+\Psi^\ast Y\to\Phi^\ast Y.
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Concrete form of the relative execution category}
+\label{sec:relative-program-categories}
+
+Fix a Mealy morphism
+\[
+\Phi=(P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+\]
+and a right \(\mathbb B\)-action
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma).
+\]
+
+\subsection{State and one-step execution objects}
+\label{subsec:relative-state-primitive-objects}
+
+\begin{definition}[Relative state and one-step execution objects]
+\label{def:relative-state-and-primitive}
+The \textbf{relative state object} is
+\[
+S_{\Phi,Y}:=P\times_{q_P,B_0,r}Y.
+\]
+A generalized element is written
+\[
+(x,y),
+\qquad
+q_P(x)=r(y).
+\]
+The \textbf{relative one-step execution object} is
+\[
+M_{\Phi,Y}
+:=
+A_1\times_{t_A,A_0,p_P\pi_P}S_{\Phi,Y}.
+\]
+It is defined by the pullback
+\[
+\begin{tikzcd}
+M_{\Phi,Y}
+\arrow[r,"\pi_S"]
+\arrow[d,"\pi_A"']
+&
+S_{\Phi,Y}
+\arrow[d,"p_P\pi_P"]
+\\
+A_1
+\arrow[r,"t_A"']
+&
+A_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+A generalized element is written
+\[
+(a,x,y),
+\qquad
+t_A(a)=p_P(x),
+\qquad
+q_P(x)=r(y).
+\]
+\end{definition}
+
+\subsection{The program category}
+\label{subsec:relative-program-category-definition}
+
+\begin{definition}[Concrete relative program category]
+\label{def:relative-mealy-program-category}
+The relative execution category introduced in
+Definition~\ref{def:relative-execution-category-composite} has the
+\textbf{action-category presentation}
+\[
+\mathsf{Prog}_{\Phi,Y}
+:=
+\int_{\mathbb A}\Phi^\ast Y.
+\]
+Explicitly,
+\[
+(\mathsf{Prog}_{\Phi,Y})_0=S_{\Phi,Y},
+\qquad
+(\mathsf{Prog}_{\Phi,Y})_1=M_{\Phi,Y}.
+\]
+The source and target maps are
+\[
+s_{\Phi,Y}(a,x,y)=(x,y),
+\]
+and
+\[
+t_{\Phi,Y}(a,x,y)
+=
+\bigl(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\bigr).
+\]
+They form the one-step execution span
+\[
+\mathbf m_{\Phi,Y}
+=
+\left(
+S_{\Phi,Y}
+\xleftarrow{s_{\Phi,Y}}
+M_{\Phi,Y}
+\xrightarrow{t_{\Phi,Y}}
+S_{\Phi,Y}
+\right).
+\]
+The identity is
+\[
+e_{\Phi,Y}(x,y)=(e_A(p_Px),x,y).
+\]
+Composition is
+\[
+\bigl(
+(b,x,y),
+(a,\delta_P(b,x),\sigma(\omega_P(b,x),y))
+\bigr)
+\longmapsto
+(m_A(a,b),x,y).
+\]
+\end{definition}
+
+\begin{theorem}[Agreement of the relative execution presentations]
+\label{thm:relative-program-categories}
+For every Mealy morphism
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+and every right \(\mathbb B\)-action \(Y\), the data of
+Definition~\ref{def:relative-mealy-program-category} define an internal
+category
+\[
+\mathsf{Prog}_{\Phi,Y}.
+\]
+This category is canonically isomorphic both to
+\[
+\operatorname{Exec}(\widehat Y\circ\Phi)
+\]
+and to
+\[
+\operatorname{Exec}(\Phi)
+\times_{\mathbb B^{\mathrm{op}}}
+\int_{\mathbb B}Y.
+\]
+Equivalently, the span
+\[
+\mathbf m_{\Phi,Y}
+=
+\left(
+S_{\Phi,Y}
+\xleftarrow{s_{\Phi,Y}}
+M_{\Phi,Y}
+\xrightarrow{t_{\Phi,Y}}
+S_{\Phi,Y}
+\right)
+\]
+is a monoid object in
+\[
+\operatorname{EndSpan}_{\mathcal E}(S_{\Phi,Y}).
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Use the restricted action.}
+By Theorem~\ref{thm:relative-mealy-restriction-actions},
+\(\Phi^\ast Y\) is a right \(\mathbb A\)-action.
+
+\item \textbf{Apply the action-category construction.}
+Theorem~\ref{thm:relative-action-category-internal} applied to this action
+gives the internal category
+\[
+\int_{\mathbb A}\Phi^\ast Y.
+\]
+
+\item \textbf{Identify the displayed formulas.}
+The source, target, identity, and composition maps in
+Definition~\ref{def:relative-mealy-program-category} are precisely the
+specialized action-category maps.
+
+\item \textbf{Compare with the composite and pullback presentations.}
+Proposition~\ref{prop:relative-evaluated-composite-transition} identifies
+the action above with the transition of \(\widehat Y\circ\Phi\).
+Theorem~\ref{thm:relative-execution-labelled-pullback} then gives the
+labelled pullback presentation.
+\end{enumerate}
+\end{proof}
+
+\subsection{Program functors induced by simulations}
+\label{subsec:relative-program-functors-simulations}
+
+\begin{definition}[Program functor induced by a simulation]
+\label{def:relative-program-functor-simulation}
+Let
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation with components
+\[
+\theta:Q\to P,
+\qquad
+\alpha:Q\to B_1.
+\]
+For every right \(\mathbb B\)-action \(Y\), define
+\[
+H_{\Theta,Y}:
+\mathsf{Prog}_{\Psi,Y}
+\to
+\mathsf{Prog}_{\Phi,Y}
+\]
+on objects by
+\[
+H_{\Theta,Y}(y,z)
+=
+\bigl(\theta y,\sigma(\alpha_y,z)\bigr),
+\]
+and on arrows by
+\[
+H_{\Theta,Y}(a,y,z)
+=
+\bigl(a,\theta y,\sigma(\alpha_y,z)\bigr).
+\]
+The arrow part is induced by the pullback square
+\[
+\begin{tikzcd}
+M_{\Psi,Y}
+\arrow[r,"k_{\Theta,Y}"]
+\arrow[d,"\pi_S"']
+&
+M_{\Phi,Y}
+\arrow[d,"\pi_S"]
+\\
+S_{\Psi,Y}
+\arrow[r,"h_{\Theta,Y}"']
+&
+S_{\Phi,Y}
+\end{tikzcd}
+\]
+because both one-step execution objects are pulled back from \(A_1\).
+\end{definition}
+
+\begin{theorem}[Simulations induce contravariant program functors]
+\label{thm:relative-simulations-program-functors}
+The maps in Definition~\ref{def:relative-program-functor-simulation} define an
+internal functor
+\[
+H_{\Theta,Y}:
+\mathsf{Prog}_{\Psi,Y}
+\to
+\mathsf{Prog}_{\Phi,Y}.
+\]
+Consequently, for fixed \(Y\), the assignment
+\[
+\Phi\longmapsto\mathsf{Prog}_{\Phi,Y}
+\]
+extends to a functor
+\[
+\mathbf{Mly}(\mathcal E)(\mathbb A,\mathbb B)^{\mathrm{op}}
+\longrightarrow
+\mathbf{Cat}_{\mathrm{int}}(\mathcal E)/\mathbb A^{\mathrm{op}}.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify the object map.}
+The object map is
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y}.
+\]
+
+\item \textbf{Identify the arrow map.}
+The arrow map is the induced map on the pullbacks defining primitive execution
+objects:
+\[
+(a,y,z)\longmapsto
+(a,\theta y,\sigma(\alpha_y,z)).
+\]
+
+\item \textbf{Check source and target preservation.}
+Source preservation is immediate. Target preservation is exactly the
+equivariance of \(h_{\Theta,Y}\), proved in
+Theorem~\ref{thm:relative-simulations-evaluate-equivariantly}.
+
+\item \textbf{Check identities and composition.}
+These follow from functoriality of action categories with respect to
+equivariant maps.
+
+\item \textbf{Check the slice condition.}
+The functor lands over \(\mathbb A^{\mathrm{op}}\) because the arrow map leaves
+the \(A_1\)-component unchanged and the object map lies over \(A_0\).
+\end{enumerate}
+\end{proof}
+
+\section{Input and downstream comparison functors}
+\label{sec:relative-input-downstream-comparison}
+
+Let
+\[
+\Phi=(P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism, and let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a right \(\mathbb B\)-action.
+
+\subsection{Input projection}
+\label{subsec:relative-input-projection}
+
+\begin{definition}[Input projection]
+\label{def:relative-input-projection}
+The \textbf{input projection}
+\[
+I_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\mathbb A^{\mathrm{op}}
+\]
+is defined on objects by
+\[
+I_{\Phi,Y}(x,y)=p_P(x),
+\]
+and on arrows by
+\[
+I_{\Phi,Y}(a,x,y)=a.
+\]
+It is displayed by
+\[
+\begin{tikzcd}
+M_{\Phi,Y}
+\arrow[r,"\pi_A"]
+\arrow[d,"s_{\Phi,Y}"']
+&
+A_1
+\arrow[d,"t_A"]
+\\
+S_{\Phi,Y}
+\arrow[r,"p_P\pi_P"']
+&
+A_0
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\subsection{Downstream comparison}
+\label{subsec:relative-downstream-comparison}
+
+\begin{definition}[Downstream comparison functor]
+\label{def:relative-downstream-comparison}
+The \textbf{downstream comparison functor}
+\[
+\Lambda_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\int_{\mathbb B}Y
+\]
+is defined on objects by
+\[
+\Lambda_{\Phi,Y}(x,y)=y,
+\]
+and on arrows by
+\[
+\Lambda_{\Phi,Y}(a,x,y)
+=
+(\omega_P(a,x),y).
+\]
+The arrow map is typed by the pullback
+\[
+\begin{tikzcd}
+M_{\Phi,Y}
+\arrow[rr,"{(a,x,y)\mapsto(\omega_P(a,x),y)}"]
+\arrow[dr,"\pi_Y\pi_S"']
+&&
+B_1\times_{t_B,B_0,r}Y
+\arrow[dl,"\pi_Y"]
+\\
+& Y &
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\begin{theorem}[Input and downstream functors]
+\label{thm:relative-input-downstream-functors}
+The input projection
+\[
+I_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\mathbb A^{\mathrm{op}}
+\]
+is input-discrete. The downstream comparison
+\[
+\Lambda_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\int_{\mathbb B}Y
+\]
+is an internal functor.
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check input-discreteness.}
+The input projection is the canonical projection associated to the right
+\(\mathbb A\)-action \(\Phi^\ast Y\). Hence it is input-discrete by
+Theorem~\ref{thm:relative-actions-input-discrete}.
+
+\item \textbf{Check that the input projection is a functor.}
+The source square is the defining pullback. The target square commutes because
+\[
+p_P\delta_P(a,x)=s_A(a),
+\]
+which is the target equation for a functor into \(\mathbb A^{\mathrm{op}}\).
+Identity and composition preservation follow from the identity and
+multiplication laws of \(\mathbb A\).
+
+\item \textbf{Check the downstream arrow map.}
+The arrow map of \(\Lambda_{\Phi,Y}\) is well-defined because
+\[
+t_B\omega_P(a,x)=q_P(x)=r(y).
+\]
+
+\item \textbf{Check source and target preservation.}
+In \(\int_{\mathbb B}Y\),
+\[
+s(\omega_P(a,x),y)=y,
+\]
+and
+\[
+t(\omega_P(a,x),y)=\sigma(\omega_P(a,x),y).
+\]
+These are the source and the \(Y\)-component of the target in
+\(\mathsf{Prog}_{\Phi,Y}\).
+
+\item \textbf{Check identities and composition.}
+Identity preservation follows from the Mealy unit law for \(\omega_P\). For
+composition, let
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p_P(x)=w.
+\]
+The composite of the two downstream arrows has \(B\)-label
+\[
+m_B\bigl(\omega_P(a,\delta_P(b,x)),\omega_P(b,x)\bigr)
+=
+\omega_P(b,x)\circ \omega_P(a,\delta_P(b,x)).
+\]
+By the Mealy multiplication law, this equals
+\[
+\omega_P(b\circ a,x).
+\]
+Thus \(\Lambda_{\Phi,Y}\) preserves composition.
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Combined labelling]
+\label{cor:relative-combined-labelling}
+Since \(\mathcal E\) has finite limits, the product internal category
+\[
+\mathbb A^{\mathrm{op}}\times\int_{\mathbb B}Y
+\]
+exists. Hence \(I_{\Phi,Y}\) and \(\Lambda_{\Phi,Y}\) assemble into an internal
+functor
+\[
+L_{\Phi,Y}:
+\mathsf{Prog}_{\Phi,Y}
+\to
+\mathbb A^{\mathrm{op}}\times\int_{\mathbb B}Y.
+\]
+On objects,
+\[
+L_{\Phi,Y}(x,y)=(p_Px,y),
+\]
+and on arrows,
+\[
+L_{\Phi,Y}(a,x,y)=\bigl(a,(\omega_P(a,x),y)\bigr).
+\]
+\end{corollary}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Use the product universal property.}
+The functors \(I_{\Phi,Y}\) and \(\Lambda_{\Phi,Y}\) have common domain
+\(\mathsf{Prog}_{\Phi,Y}\). The product internal category therefore supplies
+a unique induced functor.
+
+\item \textbf{Identify the components.}
+The displayed object and arrow maps are the two projections of this induced
+functor.
+\end{enumerate}
+\end{proof}
+
+\section{Output-comparison transformations after evaluation}
+\label{sec:relative-output-comparison-transformations}
+
+Let
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation with components
+\[
+\theta:Q\to P,
+\qquad
+\alpha:Q\to B_1.
+\]
+Let \(Y\) be a right \(\mathbb B\)-action.
+
+The induced functor
+\[
+H_{\Theta,Y}:
+\mathsf{Prog}_{\Psi,Y}\to\mathsf{Prog}_{\Phi,Y}
+\]
+strictly preserves input labels:
+\[
+I_{\Phi,Y}H_{\Theta,Y}=I_{\Psi,Y}.
+\]
+The output-comparison component \(\alpha\) becomes a natural transformation in
+the downstream action category.
+
+\subsection{The evaluated downstream transformation}
+\label{subsec:relative-downstream-transformation}
+
+\begin{definition}[Evaluated downstream comparison transformation]
+\label{def:relative-downstream-comparison-transformation}
+Define
+\[
+\lambda_{\Theta,Y}:
+\Lambda_{\Psi,Y}
+\Rightarrow
+\Lambda_{\Phi,Y}H_{\Theta,Y}
+\]
+by assigning to a state
+\[
+(y,z)\in S_{\Psi,Y}
+\]
+the arrow
+\[
+(\alpha_y,z)
+:
+z\to \sigma(\alpha_y,z)
+\]
+of the action category \(\int_{\mathbb B}Y\).
+The component lies in
+\[
+B_1\times_{t_B,B_0,r}Y
+\]
+because
+\[
+t_B\alpha_y=q_Q(y)=r(z).
+\]
+Its source and target are
+\[
+\pi_Y(\alpha_y,z)=z,
+\qquad
+\sigma(\alpha_y,z).
+\]
+The relevant typing equations for the action-arrow object are
+\[
+r\pi_Y=t_B\pi_{B_1},
+\qquad
+r\sigma=s_B\pi_{B_1}.
+\]
+Equivalently, the component is represented by the diagram
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+B_1\times_{t_B,B_0,r}Y
+\arrow[dl,"\pi_Y"']
+\arrow[dr,"\sigma"]
+\arrow[d,"\pi_{B_1}" description]
+&
+\\
+Y
+\arrow[dr,"r"']
+&
+B_1
+\arrow[d,"{(t_B,s_B)}" description]
+&
+Y
+\arrow[dl,"r"]
+\\
+&
+B_0\times B_0
+&
+\end{tikzcd}
+.
+\]
+Thus \((\alpha_y,z)\) is viewed as a right-action arrow from the object over
+\(q_Q(y)\) to the object over \(q_P(\theta y)\).
+\end{definition}
+
+\begin{theorem}[Naturality of the evaluated output comparison]
+\label{thm:relative-output-comparison-natural}
+The family
+\[
+\lambda_{\Theta,Y}
+\]
+of Definition~\ref{def:relative-downstream-comparison-transformation} is an
+internal natural transformation
+\[
+\Lambda_{\Psi,Y}
+\Rightarrow
+\Lambda_{\Phi,Y}H_{\Theta,Y}.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check the components.}
+The component at \((y,z)\) is well-defined because
+\[
+t_B\alpha_y=q_Q(y)=r(z).
+\]
+Its source is \(z\), and its target is
+\[
+\sigma(\alpha_y,z),
+\]
+which is the object part of
+\[
+\Lambda_{\Phi,Y}H_{\Theta,Y}(y,z).
+\]
+
+\item \textbf{Write the naturality square.}
+Let
+\[
+(a,y,z):(y,z)\to
+\bigl(\delta_Q(a,y),\sigma(\omega_Q(a,y),z)\bigr)
+\]
+be a primitive arrow of \(\mathsf{Prog}_{\Psi,Y}\). Naturality in
+\(\int_{\mathbb B}Y\) asks for the commutativity of
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+z
+  \arrow[r,"{(\omega_Q(a,y),z)}"]
+  \arrow[d,"{(\alpha_y,z)}"']
+&
+\sigma(\omega_Q(a,y),z)
+  \arrow[d,"{(\alpha_{\delta_Q(a,y)},\,\sigma(\omega_Q(a,y),z))}"]
+\\
+\sigma(\alpha_y,z)
+  \arrow[r,"{(\omega_P(a,\theta y),\,\sigma(\alpha_y,z))}"']
+&
+\sigma(c_{\Theta,a,y},z)
+\end{tikzcd}
+\]
+where
+\[
+c_{\Theta,a,y}
+:=
+\omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}
+=
+\alpha_y\circ \omega_P(a,\theta y).
+\]
+
+\item \textbf{Make the composition order explicit.}
+With the convention
+\[
+m_B(\beta,\gamma)=\gamma\circ\beta,
+\]
+the top-right composite corresponds to
+\[
+m_B\bigl(\alpha_{\delta_Q(a,y)},\omega_Q(a,y)\bigr)
+=
+\omega_Q(a,y)\circ\alpha_{\delta_Q(a,y)}.
+\]
+The left-bottom composite corresponds to
+\[
+m_B\bigl(\omega_P(a,\theta y),\alpha_y\bigr)
+=
+\alpha_y\circ\omega_P(a,\theta y).
+\]
+
+\item \textbf{Use the simulation law.}
+The equality of these two composites is exactly the output equation in the
+Mealy simulation law:
+\[
+\alpha_y\circ \omega_P(a,\theta y)
+=
+\omega_Q(a,y)\circ \alpha_{\delta_Q(a,y)}.
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Relative labelled functor induced by a simulation]
+\label{cor:relative-labelled-functor-simulation}
+Every Mealy simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+and every right \(\mathbb B\)-action \(Y\) induce an input-strict,
+downstream-lax labelled functor
+\[
+H_{\Theta,Y}:
+(\mathsf{Prog}_{\Psi,Y},I_{\Psi,Y},\Lambda_{\Psi,Y})
+\longrightarrow
+(\mathsf{Prog}_{\Phi,Y},I_{\Phi,Y},\Lambda_{\Phi,Y})
+\]
+consisting of
+\[
+I_{\Phi,Y}H_{\Theta,Y}=I_{\Psi,Y}
+\]
+and a canonical natural transformation
+\[
+\lambda_{\Theta,Y}:
+\Lambda_{\Psi,Y}
+\Rightarrow
+\Lambda_{\Phi,Y}H_{\Theta,Y}.
+\]
+\end{corollary}
+
+
+\section{Polynomial preliminaries and dependent operators}
+\label{sec:relative-polynomial-preliminaries}
+
+The operational constructions above require only finite limits.  We now
+assume the specific dependent products used below exist.  A sufficient global
+hypothesis is that \(\mathcal E\) is locally cartesian closed.
+
+\subsection{Dependent sums, pullbacks, and products}
+\label{subsec:poly-relative-dependent-operators}
+
+For a morphism
+\[
+f:X\to Y,
+\]
+write
+\[
+f^\ast:\mathcal E/Y\to\mathcal E/X
+\]
+for pullback along \(f\),
+\[
+\Sigma_f:\mathcal E/X\to\mathcal E/Y
+\]
+for postcomposition with \(f\), and
+\[
+\Pi_f:\mathcal E/X\to\mathcal E/Y
+\]
+for the right adjoint to \(f^\ast\), when it exists:
+\[
+\Sigma_f\dashv f^\ast\dashv\Pi_f.
+\]
+The adjunctions are summarized by
+\[
+\begin{tikzcd}[column sep=large]
+\mathcal E/X
+  \arrow[r,shift left=1.1ex,"\Sigma_f"]
+&
+\mathcal E/Y
+  \arrow[l,shift left=.2ex,"f^\ast"]
+  \arrow[l,shift right=1.1ex,"\Pi_f"']
+\end{tikzcd}
+\]
+where
+\[
+\Sigma_f\dashv f^\ast
+\qquad\text{and}\qquad
+f^\ast\dashv\Pi_f.
+\]
+
+All equalities of polynomial and span constructions are read after the
+canonical associativity, unit, distributivity, and Beck--Chevalley
+identifications.
+
+\section{Polynomial spans and linear spans}
+\label{sec:poly-relative-polynomial-spans}
+
+\subsection{Polynomial spans}
+\label{subsec:poly-relative-polynomial-spans}
+
+\begin{definition}[Polynomial span]
+\label{def:poly-relative-polynomial-span}
+A \textbf{polynomial span} from \(I\) to \(J\) is a diagram
+\[
+\begin{tikzcd}[column sep=large]
+I
+&
+E
+  \arrow[l,"s"']
+  \arrow[r,"p"]
+&
+B
+  \arrow[r,"t"]
+&
+J.
+\end{tikzcd}
+\]
+When the required dependent product exists, it induces a functor
+\[
+\Sigma_t\Pi_p s^\ast:
+\mathcal E/I\to\mathcal E/J.
+\]
+\end{definition}
+
+Thus a polynomial span is read as the composite
+\[
+\begin{tikzcd}[column sep=huge]
+\mathcal E/I
+  \arrow[r,"s^\ast"]
+&
+\mathcal E/E
+  \arrow[r,"\Pi_p"]
+&
+\mathcal E/B
+  \arrow[r,"\Sigma_t"]
+&
+\mathcal E/J .
+\end{tikzcd}
+\]
+This is the dependent polynomial functor associated to the displayed diagram
+\cite{GambinoKock2013Polynomial}.
+
+Fibrewise, if \(X\to I\), then
+\[
+\left(\Sigma_t\Pi_p s^\ast X\right)_j
+\cong
+\sum_{b\in B_j}
+\prod_{e\in E_b}
+X_{s(e)}.
+\]
+
+\subsection{Linear spans}
+\label{subsec:poly-relative-linear-spans}
+
+\begin{remark}[Linear spans]
+\label{rem:poly-relative-linear-spans}
+An ordinary span
+\[
+I\xleftarrow{s}R\xrightarrow{t}J
+\]
+is the linear polynomial span
+\[
+\begin{tikzcd}[column sep=large]
+I
+&
+R
+  \arrow[l,"s"']
+  \arrow[r,"1_R"]
+&
+R
+  \arrow[r,"t"]
+&
+J.
+\end{tikzcd}
+\]
+The induced functor is
+\[
+\Sigma_t\Pi_{1_R}s^\ast
+\cong
+\Sigma_t s^\ast.
+\]
+Thus ordinary spans are the special case in which each execution witness has a
+single continuation position.  The response polynomials below replace this
+single position by a dependent family of admissible input-query positions.
+\end{remark}
+
+The polynomial-functor reading of a span is covariant:
+\[
+\Sigma_t s^\ast:\mathcal E/I\to\mathcal E/J.
+\]
+The dynamic-logic reading used later is the predicate-transformer reading:
+\[
+\langle R\rangle=\exists_s t^\ast.
+\]
+The two readings use the same span shape but act on different indexed
+categories and with different variance.
+
+
+\section{Response transposition of right actions}
+\label{sec:relative-response-transposition-actions}
+
+The first polynomial construction curries an ordinary right action before
+output labels are added.  It provides the model for the relative response
+polynomial constructed later.
+
+\subsection{The action-response polynomial}
+\label{subsec:poly-relative-action-response-polynomial}
+
+Assume that the dependent product
+\[
+\Pi_{t_A}
+\]
+exists.
+
+\begin{definition}[Action-response polynomial]
+\label{def:poly-relative-action-response-polynomial}
+The \textbf{action-response polynomial} of \(\mathbb A\) is the endofunctor on
+\(\mathcal E/A_0\)
+\[
+\mathcal R_{\mathbb A}(X)
+:=
+\Pi_{t_A}s_A^\ast X.
+\]
+Fibrewise,
+\[
+\mathcal R_{\mathbb A}(X)_v
+\cong
+\prod_{a:u\to v}X_u.
+\]
+\end{definition}
+
+The action map transposes along
+\[
+t_A^\ast\dashv\Pi_{t_A}
+\]
+to a map over \(A_0\)
+\[
+\widehat\rho:
+X\to\mathcal R_{\mathbb A}(X).
+\]
+The transpose relation is displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+t_A^\ast X
+  \arrow[rr,"\rho"]
+  \arrow[d]
+&&
+s_A^\ast X
+  \arrow[d]
+\\
+A_1
+  \arrow[rr,equal]
+&&
+A_1
+\end{tikzcd}
+\qquad\Longleftrightarrow\qquad
+\begin{tikzcd}[column sep=large,row sep=large]
+X
+  \arrow[rr,"\widehat\rho"]
+  \arrow[dr,"p"']
+&&
+\Pi_{t_A}s_A^\ast X
+  \arrow[dl]
+\\
+&
+A_0
+&
+\end{tikzcd}
+\]
+and in generalized-element notation
+\[
+\widehat\rho(x)(a)=\rho(a,x).
+\]
+
+\subsection{Multiplicativity}
+\label{subsec:poly-relative-action-response-multiplicativity}
+
+\begin{definition}[Multiplicative action-response coalgebra]
+\label{def:poly-relative-multiplicative-action-coalgebra}
+A coalgebra
+\[
+c:X\to\mathcal R_{\mathbb A}(X)
+\]
+is \textbf{multiplicative} if, writing
+\[
+c(x)(a)=x_a,
+\]
+it satisfies
+\[
+c(x)(e_A(px))=x,
+\]
+and, for
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w,
+\]
+if
+\[
+c(x)(b)=x_b,
+\qquad
+c(x_b)(a)=x_{ab},
+\]
+then
+\[
+c(x)(m_A(a,b))=x_{ab}.
+\]
+\end{definition}
+
+Here
+\[
+m_A(a,b)=b\circ a.
+\]
+Operationally, the right action executes \(b\) first at the current state and
+then executes \(a\) at the updated state.
+
+\begin{proposition}[Actions as multiplicative response coalgebras]
+\label{prop:poly-relative-actions-as-response-coalgebras}
+Assume \(\Pi_{t_A}\) exists.  To give a right \(\mathbb A\)-action
+\[
+(X\xrightarrow{p}A_0,\rho)
+\]
+is equivalently to give a multiplicative coalgebra
+\[
+c:X\to\mathcal R_{\mathbb A}(X).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Transpose the action map.}
+The adjunction
+\[
+t_A^\ast\dashv\Pi_{t_A}
+\]
+identifies maps
+\[
+t_A^\ast X\to s_A^\ast X
+\]
+over \(A_1\) with maps
+\[
+X\to\Pi_{t_A}s_A^\ast X
+\]
+over \(A_0\).
+
+\item \textbf{Read the transpose in elements.}
+Under this identification,
+\[
+\rho(a,x)
+\]
+corresponds to
+\[
+c(x)(a).
+\]
+
+\item \textbf{Compare unit laws.}
+The action unit law
+\[
+\rho(e_A(px),x)=x
+\]
+is exactly
+\[
+c(x)(e_A(px))=x.
+\]
+
+\item \textbf{Compare multiplication laws.}
+For
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\qquad
+p(x)=w,
+\]
+the action multiplication law
+\[
+\rho(m_A(a,b),x)=\rho(a,\rho(b,x))
+\]
+is exactly the multiplicativity equation
+\[
+c(x)(m_A(a,b))=c(c(x)(b))(a).
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Labelled relative actions}
+\label{sec:poly-relative-labelled-actions}
+
+\subsection{Labelled actions over a downstream action}
+\label{subsec:poly-relative-labelled-actions-definition}
+
+Fix an internal category \(\mathbb B\) and a right \(\mathbb B\)-action
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma).
+\]
+The action category of \(Y\) has arrow object
+\[
+B_1\times_{t_B,B_0,r}Y
+\]
+and source-target span
+\[
+\begin{tikzcd}
+&
+B_1\times_{t_B,B_0,r}Y
+  \arrow[dl,"\pi_Y"']
+  \arrow[dr,"\sigma"]
+&
+\\
+Y && Y .
+\end{tikzcd}
+\]
+
+\begin{definition}[Labelled relative action]
+\label{def:poly-relative-labelled-action}
+A \textbf{labelled relative action over \(Y\)} consists of:
+\begin{enumerate}
+\item a right \(\mathbb A\)-action
+\[
+(X\xrightarrow{p_X}A_0,\rho);
+\]
+\item a map
+\[
+y_X:X\to Y;
+\]
+\item a map
+\[
+\lambda:
+A_1\times_{t_A,A_0,p_X}X\to B_1
+\]
+such that
+\[
+t_B\lambda(a,z)=r(y_Xz),
+\]
+and
+\[
+y_X(\rho(a,z))
+=
+\sigma(\lambda(a,z),y_Xz);
+\]
+\item the unit and multiplication laws saying that
+\[
+(a,z)\longmapsto(\lambda(a,z),y_Xz)
+\]
+is the arrow map of an internal functor
+\[
+\Lambda_X:\int_{\mathbb A}X\to\int_{\mathbb B}Y.
+\]
+\end{enumerate}
+\end{definition}
+
+The arrow map into the downstream action category is typed by the diagram
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+A_1\times_{t_A,A_0,p_X}X
+  \arrow[rr,"{(a,z)\mapsto(\lambda(a,z),y_Xz)}"]
+  \arrow[dr,"y_X\pi_2"']
+&&
+B_1\times_{t_B,B_0,r}Y
+  \arrow[dl,"\pi_Y"]
+  \arrow[d,"\pi_{B_1}" description]
+\\
+&
+Y
+  \arrow[d,"r"']
+&
+B_1
+  \arrow[dl,"t_B"]
+  \arrow[dr,"s_B"]
+\\
+&
+B_0
+&&
+B_0 .
+\end{tikzcd}
+\]
+The left triangle records the source condition
+\[
+t_B\lambda=r y_X\pi_2.
+\]
+The target preservation condition is the triangle
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+A_1\times_{t_A,A_0,p_X}X
+  \arrow[rr,"\rho"]
+  \arrow[dr,"{(\lambda,y_X\pi_2)}"']
+&&
+X
+  \arrow[dl,"y_X"]
+\\
+&
+Y
+&
+\end{tikzcd}
+\]
+where the diagonal map lands in the downstream arrow object and is followed by
+the downstream target map \(\sigma\).
+
+Thus a labelled relative action is equivalently a right \(\mathbb A\)-action
+whose action category maps to the downstream action category
+\[
+\int_{\mathbb B}Y.
+\]
+
+\subsection{The labelled action associated to a Mealy morphism}
+\label{subsec:poly-relative-mealy-labelled-action}
+
+For the labelled action associated to a Mealy morphism
+\[
+\Phi=(P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B,
+\]
+one has
+\[
+X=S_{\Phi,Y}=P\times_{B_0}Y,
+\]
+\[
+y_X=\pi_Y:S_{\Phi,Y}\to Y,
+\]
+\[
+\rho(a,x,y)
+=
+\bigl(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\bigr),
+\]
+and
+\[
+\lambda(a,x,y)=\omega_P(a,x).
+\]
+The construction is displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+A_1\times_{t_A,A_0,p_P\pi_P}S_{\Phi,Y}
+  \arrow[rr,"{\rho=\alpha_{\Phi,Y}}"]
+  \arrow[dr,"{(\omega_P,\pi_Y)}"']
+&&
+S_{\Phi,Y}
+  \arrow[dl,"\pi_Y"]
+\\
+&
+Y
+&
+\end{tikzcd}
+\]
+where the diagonal map represents the downstream arrow
+\[
+(a,x,y)\longmapsto(\omega_P(a,x),y).
+\]
+
+\begin{remark}
+\label{rem:poly-relative-labelled-not-bare-action}
+The bare action \(\Phi^\ast Y\) remembers the next coupled state
+\[
+\bigl(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\bigr).
+\]
+It need not remember the raw output arrow \(\omega_P(a,x)\), because different
+\(\mathbb B\)-arrows may induce the same transition in \(Y\).  Output-sensitive
+constructions therefore use the labelled relative action
+\[
+(\Phi^\ast Y,\Lambda_{\Phi,Y}),
+\]
+not only the underlying right \(\mathbb A\)-action.
+\end{remark}
+
+\section{The relative response interface}
+\label{sec:poly-relative-interface}
+
+\subsection{The interface object}
+\label{subsec:poly-relative-interface-object}
+
+Fix the downstream action
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma).
+\]
+
+\begin{definition}[Relative response interface]
+\label{def:poly-relative-response-interface}
+The \textbf{relative response interface} is
+\[
+J_Y:=A_0\times Y.
+\]
+Write
+\[
+\pi_A:J_Y\to A_0,
+\qquad
+\pi_Y:J_Y\to Y
+\]
+for its projections.
+\end{definition}
+
+The product is displayed by
+\[
+\begin{tikzcd}
+J_Y=A_0\times Y
+  \arrow[r,"\pi_Y"]
+  \arrow[d,"\pi_A"']
+&
+Y
+  \arrow[d]
+\\
+A_0
+  \arrow[r]
+&
+1
+\arrow[ul,phantom,very near start,"\lrcorner"] .
+\end{tikzcd}
+\]
+
+For a labelled relative action \(X\), define
+\[
+j_X:X\to J_Y,
+\qquad
+j_X(z)=(p_Xz,y_Xz).
+\]
+The defining diagram is
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+X
+  \arrow[dl,"p_X"']
+  \arrow[dr,"y_X"]
+  \arrow[d,dashed,"j_X" description]
+&
+\\
+A_0
+&
+J_Y
+  \arrow[l,"\pi_A"]
+  \arrow[r,"\pi_Y"']
+&
+Y .
+\end{tikzcd}
+\]
+For a Mealy morphism \(\Phi\), this gives
+\[
+j_{\Phi,Y}:S_{\Phi,Y}\to J_Y,
+\qquad
+j_{\Phi,Y}(x,y)=(p_Px,y).
+\]
+
+\subsection{Interfaces and simulations}
+\label{subsec:poly-relative-interface-simulations}
+
+\begin{remark}[Interface and simulations]
+\label{rem:poly-relative-interface-and-simulations}
+The interface \(J_Y=A_0\times Y\) is the base for strict response profiles.  A
+Mealy simulation does not generally preserve this base strictly.  If
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+has output-comparison component \(\alpha\), then
+\[
+h_{\Theta,Y}(y,z)
+=
+(\theta y,\sigma(\alpha_y,z))
+\]
+preserves the \(A_0\)-component, but changes the \(Y\)-component from \(z\) to
+\[
+\sigma(\alpha_y,z).
+\]
+This is why simulations become output-lax profile comparisons rather than
+ordinary coalgebra morphisms over \(J_Y\).
+\end{remark}
+
+The failure of strictness over \(J_Y\) is displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+S_{\Psi,Y}
+  \arrow[r,"h_{\Theta,Y}"]
+  \arrow[d,"j_{\Psi,Y}"']
+&
+S_{\Phi,Y}
+  \arrow[d,"j_{\Phi,Y}"]
+\\
+J_Y
+  \arrow[r,dashed,"?"]
+&
+J_Y .
+\end{tikzcd}
+\]
+The \(A_0\)-component is preserved, but the \(Y\)-component is transformed by
+the evaluated comparison arrow.
+
+\section{Queries, responses, and policies}
+\label{sec:poly-relative-queries-responses}
+
+The following construction has the usual container shape: one first forms an
+object of admissible input positions, then an object of possible responses at
+each position, and finally a dependent product of responses over all positions
+at a given interface \cite{AbbottAltenkirchGhani2005Containers}.
+
+\subsection{Input queries}
+\label{subsec:poly-relative-input-queries}
+
+\begin{definition}[Input-query object]
+\label{def:poly-relative-input-query-object}
+The \textbf{input-query object} is the pullback
+\[
+\mathrm{Inp}_Y:=A_1\times_{t_A,A_0,\pi_A}J_Y.
+\]
+Thus
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathrm{Inp}_Y
+  \arrow[r,"\overline a"]
+  \arrow[d,"\kappa_Y"']
+&
+A_1
+  \arrow[d,"t_A"]
+\\
+J_Y
+  \arrow[r,"\pi_A"']
+&
+A_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+\]
+is a pullback square.
+\end{definition}
+
+A generalized element of \(\mathrm{Inp}_Y\) is written
+\[
+(a,y),
+\]
+where \(a:u\to v\) is an arrow of \(\mathbb A\) and \(y\in Y\).  Its current
+interface is
+\[
+\kappa_Y(a,y)=(t_Aa,y).
+\]
+There is also a next-input-interface map
+\[
+\lambda_A:\mathrm{Inp}_Y\to A_0,
+\qquad
+\lambda_A(a,y)=s_A(a).
+\]
+The maps are displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+\mathrm{Inp}_Y
+  \arrow[dl,"\lambda_A"']
+  \arrow[d,"\kappa_Y"]
+  \arrow[dr,"\overline a"]
+&
+\\
+A_0
+&
+J_Y
+  \arrow[l,"\pi_A"]
+  \arrow[r,"\pi_Y"']
+&
+A_1
+  \arrow[l,bend left=12,"t_A"]
+  \arrow[ll,bend right=16,"s_A"']
+\end{tikzcd}
+\]
+
+\subsection{Output responses}
+\label{subsec:poly-relative-output-responses}
+
+A response to a query \((a:u\to v,y)\) is an arrow of \(\mathbb B\)
+\[
+\beta:b'\to r(y).
+\]
+This arrow may be consumed by the right \(\mathbb B\)-action \(Y\), giving the
+downstream continuation state
+\[
+\sigma(\beta,y).
+\]
+
+\begin{definition}[Output-response object]
+\label{def:poly-relative-output-response-object}
+The \textbf{output-response object} is
+\[
+\mathrm{Resp}_Y
+:=
+\mathrm{Inp}_Y\times_{r\pi_Y\kappa_Y,B_0,t_B}B_1.
+\]
+Thus
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathrm{Resp}_Y
+  \arrow[r,"\overline\beta"]
+  \arrow[d,"q_Y"']
+&
+B_1
+  \arrow[d,"t_B"]
+\\
+\mathrm{Inp}_Y
+  \arrow[r,"r\pi_Y\kappa_Y"']
+&
+B_0
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+\]
+is a pullback square.
+\end{definition}
+
+A generalized element is written
+\[
+(a,y,\beta),
+\]
+where
+\[
+t_B(\beta)=r(y).
+\]
+
+Define the continuation-interface map
+\[
+n_Y:\mathrm{Resp}_Y\to J_Y
+\]
+by
+\[
+n_Y(a,y,\beta)
+=
+\bigl(
+s_A(a),
+\sigma(\beta,y)
+\bigr).
+\]
+Equivalently,
+\[
+\pi_A n_Y=\lambda_A q_Y,
+\qquad
+\pi_Y n_Y=\sigma(\overline\beta,\pi_Y\kappa_Yq_Y).
+\]
+The typing of \(n_Y\) is displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathrm{Resp}_Y
+  \arrow[rr,"n_Y"]
+  \arrow[drr,bend left=16,"\lambda_Aq_Y"]
+  \arrow[dr,"\overline\beta"']
+&&
+J_Y
+  \arrow[d,"\pi_Y"]
+  \arrow[ddl,bend left=16,"\pi_A"]
+\\
+&
+B_1
+&
+Y
+\\
+&
+A_0
+&
+\end{tikzcd}
+\]
+where the \(Y\)-component is obtained by applying the action map \(\sigma\).
+
+\subsection{Total response policies}
+\label{subsec:poly-relative-total-policies}
+
+A total output policy at an interface
+\[
+(v,y)\in J_Y
+\]
+assigns to every input arrow
+\[
+a:u\to v
+\]
+an output arrow
+\[
+\beta_a:b'_a\to r(y).
+\]
+
+\begin{definition}[Policy object]
+\label{def:poly-relative-policy-object}
+Assume the dependent product below exists.  The \textbf{policy object} is
+\[
+K_{\mathbb A,\mathbb B,Y}
+:=
+\Pi_{\kappa_Y}(\mathrm{Resp}_Y\xrightarrow{q_Y}\mathrm{Inp}_Y).
+\]
+It is an object over \(J_Y\).  Write
+\[
+t_{\mathbb A,\mathbb B,Y}:
+K_{\mathbb A,\mathbb B,Y}\to J_Y
+\]
+for its structure map.
+\end{definition}
+
+A generalized element of \(K_{\mathbb A,\mathbb B,Y}\) over \((v,y)\) is a
+policy
+\[
+\pi_0:
+\{a:u\to v\}
+\to
+\{\beta:b'\to r(y)\}.
+\]
+
+Now form the pullback
+\[
+E_{\mathbb A,\mathbb B,Y}
+:=
+\mathrm{Inp}_Y\times_{J_Y}K_{\mathbb A,\mathbb B,Y},
+\]
+where the maps to \(J_Y\) are \(\kappa_Y\) and
+\(t_{\mathbb A,\mathbb B,Y}\).  Thus
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+E_{\mathbb A,\mathbb B,Y}
+  \arrow[r,"\epsilon_Q"]
+  \arrow[d,"p_{\mathbb A,\mathbb B,Y}"']
+&
+\mathrm{Inp}_Y
+  \arrow[d,"\kappa_Y"]
+\\
+K_{\mathbb A,\mathbb B,Y}
+  \arrow[r,"t_{\mathbb A,\mathbb B,Y}"']
+&
+J_Y
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+\]
+is a pullback square.
+
+The counit of
+\[
+\kappa_Y^\ast\dashv\Pi_{\kappa_Y}
+\]
+gives an evaluation map
+\[
+\operatorname{ev}:
+E_{\mathbb A,\mathbb B,Y}\to \mathrm{Resp}_Y
+\]
+over \(\mathrm{Inp}_Y\).  The evaluation diagram is
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+E_{\mathbb A,\mathbb B,Y}
+  \arrow[rr,"\operatorname{ev}"]
+  \arrow[dr,"\epsilon_Q"']
+&&
+\mathrm{Resp}_Y
+  \arrow[dl,"q_Y"]
+\\
+&
+\mathrm{Inp}_Y
+&
+\end{tikzcd}
+\]
+and in generalized-element notation,
+\[
+\operatorname{ev}(a,y,\pi_0)=(a,y,\pi_0(a)).
+\]
+
+Define
+\[
+s_{\mathbb A,\mathbb B,Y}
+:=
+n_Y\operatorname{ev}:
+E_{\mathbb A,\mathbb B,Y}\to J_Y.
+\]
+The structure maps are summarized by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+E_{\mathbb A,\mathbb B,Y}
+  \arrow[dl,"s_{\mathbb A,\mathbb B,Y}"']
+  \arrow[d,"p_{\mathbb A,\mathbb B,Y}"]
+  \arrow[dr,"\operatorname{ev}"]
+&
+\\
+J_Y
+&
+K_{\mathbb A,\mathbb B,Y}
+  \arrow[l,"t_{\mathbb A,\mathbb B,Y}"]
+&
+\mathrm{Resp}_Y
+  \arrow[ll,"n_Y"]
+\end{tikzcd}
+\]
+
+\subsection{Dependent products required}
+\label{subsec:poly-relative-dependent-products-required}
+
+We also assume that the projection
+\[
+p_{\mathbb A,\mathbb B,Y}:
+E_{\mathbb A,\mathbb B,Y}\to K_{\mathbb A,\mathbb B,Y}
+\]
+admits a dependent product.  This is automatic if \(\mathcal E\) is locally
+cartesian closed.  More generally, it follows whenever \(\kappa_Y\) is
+exponentiable and exponentiable morphisms are stable under pullback, since
+\(p_{\mathbb A,\mathbb B,Y}\) is the pullback of \(\kappa_Y\) along
+\[
+t_{\mathbb A,\mathbb B,Y}:K_{\mathbb A,\mathbb B,Y}\to J_Y.
+\]
+
+\section{The relative Mealy response polynomial}
+\label{sec:poly-relative-response-polynomial}
+
+\subsection{Definition of the polynomial}
+\label{subsec:poly-relative-response-polynomial-definition}
+
+\begin{definition}[Relative Mealy response polynomial]
+\label{def:poly-relative-mealy-response-polynomial}
+The \textbf{relative Mealy response polynomial} associated to
+\[
+(\mathbb A,\mathbb B,Y)
+\]
+is the polynomial span
+\[
+\begin{tikzcd}[column sep=large]
+J_Y
+&
+E_{\mathbb A,\mathbb B,Y}
+  \arrow[l,"s_{\mathbb A,\mathbb B,Y}"']
+  \arrow[r,"p_{\mathbb A,\mathbb B,Y}"]
+&
+K_{\mathbb A,\mathbb B,Y}
+  \arrow[r,"t_{\mathbb A,\mathbb B,Y}"]
+&
+J_Y.
+\end{tikzcd}
+\]
+It induces an endofunctor
+\[
+\mathcal M_{\mathbb A,\mathbb B,Y}:
+\mathcal E/J_Y\to\mathcal E/J_Y
+\]
+defined by
+\[
+\mathcal M_{\mathbb A,\mathbb B,Y}(X)
+=
+\Sigma_{t_{\mathbb A,\mathbb B,Y}}
+\Pi_{p_{\mathbb A,\mathbb B,Y}}
+s_{\mathbb A,\mathbb B,Y}^{\ast}X.
+\]
+\end{definition}
+
+In the following diagram,
+\[
+J_Y^{\mathrm{cur}}
+\qquad\text{and}\qquad
+J_Y^{\mathrm{next}}
+\]
+are two displayed copies of the same object \(J_Y\), used only to distinguish
+the current response interface from the continuation response interface.
+
+The full construction can be displayed as
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+\mathrm{Resp}_Y
+  \arrow[rr,"\overline\beta"]
+  \arrow[d,"q_Y"']
+  \arrow[ddd,bend left=18,"n_Y"]
+&&
+B_1
+  \arrow[d,"t_B"]
+\\
+E_{\mathbb A,\mathbb B,Y}
+  \arrow[ur,"\operatorname{ev}"]
+  \arrow[r,"\epsilon_Q" description]
+  \arrow[d,"p_{\mathbb A,\mathbb B,Y}"']
+  \arrow[ddr,bend right=16,"s_{\mathbb A,\mathbb B,Y}=n_Y\operatorname{ev}"']
+  \arrow[dr,phantom,very near start,"\lrcorner"]
+&
+\mathrm{Inp}_Y
+  \arrow[rr,"r\pi_Y\kappa_Y" description]
+  \arrow[d,"\kappa_Y"]
+  \arrow[dr,"\overline a" description]
+&&
+B_0
+\\
+K_{\mathbb A,\mathbb B,Y}
+  \arrow[r,"t_{\mathbb A,\mathbb B,Y}"']
+&
+J_Y^{\mathrm{cur}}
+&
+A_1
+&
+\\
+&
+J_Y^{\mathrm{next}}
+&
+&
+\end{tikzcd}
+\]
+
+\subsection{Dependent distributivity}
+\label{subsec:poly-relative-dependent-distributivity}
+
+\begin{lemma}[Dependent distributivity for response policies]
+\label{lem:poly-relative-dependent-distributivity}
+In the locally cartesian closed setting, the dependent distributivity
+isomorphism for the polynomial data gives a canonical fibrewise isomorphism
+\[
+\sum_{\pi_0\in\prod_a O_a}
+\prod_a X_{a,\pi_0(a)}
+\cong
+\prod_a
+\sum_{\beta\in O_a}X_{a,\beta}.
+\]
+Equivalently, this is the internal distributivity of dependent sums over
+dependent products associated to the family of response objects over the input
+query object.  It is not an external choice principle.
+\end{lemma}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Define the forward map.}
+Given a pair
+\[
+(\pi_0,(x_a)_a)
+\]
+where
+\[
+\pi_0(a)\in O_a
+\qquad\text{and}\qquad
+x_a\in X_{a,\pi_0(a)},
+\]
+send it to the family
+\[
+\bigl(\pi_0(a),x_a\bigr)_a
+\in
+\prod_a\sum_{\beta\in O_a}X_{a,\beta}.
+\]
+
+\item \textbf{Define the inverse map.}
+Given a family
+\[
+(\beta_a,x_a)_a
+\]
+with
+\[
+\beta_a\in O_a
+\qquad\text{and}\qquad
+x_a\in X_{a,\beta_a},
+\]
+define
+\[
+\pi_0(a):=\beta_a.
+\]
+Then the second components form a family
+\[
+x_a\in X_{a,\pi_0(a)}.
+\]
+
+\item \textbf{Check the two composites.}
+The two composites are the identity by the uniqueness clauses for dependent
+sums and dependent products.
+\end{enumerate}
+\end{proof}
+
+\subsection{Fibre calculation}
+\label{subsec:poly-relative-fibre-calculation}
+
+\begin{proposition}[Fibre calculation]
+\label{prop:poly-relative-fibre-calculation}
+Let
+\[
+X\to J_Y=A_0\times Y
+\]
+be an object over the response interface.  For every generalized interface
+\[
+(v,y)\in J_Y,
+\]
+there is a canonical fibrewise description
+\[
+\mathcal M_{\mathbb A,\mathbb B,Y}(X)_{(v,y)}
+\cong
+\prod_{a:u\to v}
+\sum_{\beta:b'\to r(y)}
+X_{(u,\sigma(\beta,y))}.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Describe policies.}
+A point of \(K_{\mathbb A,\mathbb B,Y}\) over \((v,y)\) is a total policy
+\[
+\pi_0:a\mapsto\beta_a
+\]
+assigning to each input arrow \(a:u\to v\) an output arrow
+\[
+\beta_a:b'_a\to r(y).
+\]
+
+\item \textbf{Describe positions over a policy.}
+The object \(E_{\mathbb A,\mathbb B,Y}\) has, over such a policy, one position
+for each input arrow
+\[
+a:u\to v.
+\]
+The continuation-interface map sends that position to
+\[
+(u,\sigma(\beta_a,y)).
+\]
+
+\item \textbf{Apply the dependent product.}
+Thus
+\[
+\Pi_{p_{\mathbb A,\mathbb B,Y}}
+s_{\mathbb A,\mathbb B,Y}^{\ast}X
+\]
+assigns to a policy \(\pi_0\) a family
+\[
+x_a\in X_{(u,\sigma(\pi_0(a),y))}
+\]
+for every input arrow \(a:u\to v\).
+
+\item \textbf{Apply the dependent sum.}
+Applying
+\[
+\Sigma_{t_{\mathbb A,\mathbb B,Y}}
+\]
+regards the result as lying over \((v,y)\).  Therefore the fibre is first
+\[
+\sum_{\pi_0}
+\prod_{a:u\to v}
+X_{(u,\sigma(\pi_0(a),y))}.
+\]
+
+\item \textbf{Use dependent distributivity.}
+The dependent distributivity isomorphism of
+Lemma~\ref{lem:poly-relative-dependent-distributivity} gives
+\[
+\sum_{\pi_0}
+\prod_{a:u\to v}
+X_{(u,\sigma(\pi_0(a),y))}
+\cong
+\prod_{a:u\to v}
+\sum_{\beta:b'\to r(y)}
+X_{(u,\sigma(\beta,y))}.
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{remark}
+\label{rem:poly-relative-response-polynomial-meaning}
+At interface \((v,y)\), a total response profile must respond to every
+admissible input arrow \(a:u\to v\).  For each such input, it chooses an output
+arrow
+\[
+\beta:b'\to r(y)
+\]
+and a continuation state over
+\[
+(u,\sigma(\beta,y)).
+\]
+\end{remark}
+
+\section{Coalgebras and labelled one-step data}
+\label{sec:poly-relative-coalgebras}
+
+\subsection{Coalgebras over the response interface}
+\label{subsec:poly-relative-coalgebras-over-interface}
+
+Let
+\[
+X\xrightarrow{j_X}J_Y
+\]
+be an object over the response interface.  Write
+\[
+p_X:=\pi_Aj_X:X\to A_0,
+\qquad
+y_X:=\pi_Yj_X:X\to Y.
+\]
+Thus
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+X
+  \arrow[dl,"p_X"']
+  \arrow[dr,"y_X"]
+  \arrow[d,"j_X" description]
+&
+\\
+A_0
+&
+J_Y
+  \arrow[l,"\pi_A"]
+  \arrow[r,"\pi_Y"']
+&
+Y .
+\end{tikzcd}
+\]
+
+A coalgebra
+\[
+c:X\to\mathcal M_{\mathbb A,\mathbb B,Y}(X)
+\]
+assigns to each
+\[
+z\in X_{(v,y)}
+\]
+and each input arrow
+\[
+a:u\to v
+\]
+a pair
+\[
+c(z)(a)=(\beta_a,z_a),
+\]
+where
+\[
+\beta_a:b'_a\to r(y),
+\qquad
+z_a\in X_{(u,\sigma(\beta_a,y))}.
+\]
+
+Thus \(c\) determines uncurried maps
+\[
+\rho_c:
+A_1\times_{t_A,A_0,p_X}X\to X
+\]
+and
+\[
+\lambda_c:
+A_1\times_{t_A,A_0,p_X}X\to B_1
+\]
+by
+\[
+c(z)(a)=(\lambda_c(a,z),\rho_c(a,z)).
+\]
+
+These satisfy
+\[
+p_X\rho_c(a,z)=s_A(a),
+\]
+\[
+t_B\lambda_c(a,z)=r(y_Xz),
+\]
+and
+\[
+y_X\rho_c(a,z)
+=
+\sigma(\lambda_c(a,z),y_Xz).
+\]
+Conversely, such maps \((\rho,\lambda)\) determine a coalgebra by
+\[
+c(z)(a)=(\lambda(a,z),\rho(a,z)).
+\]
+
+\subsection{Currying theorem}
+\label{subsec:poly-relative-currying-labelled-one-step}
+
+\begin{theorem}[Currying labelled one-step data]
+\label{thm:poly-relative-currying-labelled-one-step}
+To give a coalgebra
+\[
+c:X\to\mathcal M_{\mathbb A,\mathbb B,Y}(X)
+\]
+is equivalently to give maps
+\[
+\rho:
+A_1\times_{t_A,A_0,p_X}X\to X,
+\qquad
+\lambda:
+A_1\times_{t_A,A_0,p_X}X\to B_1
+\]
+satisfying
+\[
+p_X\rho=s_A\pi_1,
+\]
+\[
+t_B\lambda=r y_X\pi_2,
+\]
+and
+\[
+y_X\rho=\sigma(\lambda,y_X\pi_2).
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Start from the policy fibre.}
+The polynomial was defined in policy form, so its fibre over \((v,y)\) is
+initially
+\[
+\sum_{\pi_0\in\prod_{a:u\to v}O_a}
+\prod_{a:u\to v}
+X_{(u,\sigma(\pi_0(a),y))},
+\]
+where \(O_a\) is the fibre of possible output arrows
+\[
+\beta:b'\to r(y)
+\]
+for the input \(a:u\to v\).
+
+\item \textbf{Distribute policies into pointwise responses.}
+By Lemma~\ref{lem:poly-relative-dependent-distributivity}, this is
+canonically isomorphic to
+\[
+\prod_{a:u\to v}
+\sum_{\beta:b'\to r(y)}
+X_{(u,\sigma(\beta,y))}.
+\]
+
+\item \textbf{Read a coalgebra in fibres.}
+Thus a coalgebra over \(J_Y\) is equivalently a choice, for every state
+\[
+z\in X_{(v,y)}
+\]
+and every admissible input
+\[
+a:u\to v,
+\]
+of an output arrow
+\[
+\lambda(a,z):b'\to r(y)
+\]
+and a continuation state
+\[
+\rho(a,z)\in X_{(u,\sigma(\lambda(a,z),y))}.
+\]
+
+\item \textbf{Translate the fibre conditions into morphism equations.}
+The statement that
+\[
+\rho(a,z)\in X_{(u,\sigma(\lambda(a,z),y))}
+\]
+is exactly the conjunction
+\[
+p_X\rho=s_A\pi_1,
+\]
+\[
+t_B\lambda=r y_X\pi_2,
+\]
+and
+\[
+y_X\rho=\sigma(\lambda,y_X\pi_2).
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Multiplicative labelled response coalgebras}
+\label{sec:poly-relative-multiplicative-coalgebras}
+
+\subsection{Definition of multiplicativity}
+\label{subsec:poly-relative-multiplicative-definition}
+
+The coalgebra map records typed one-step labelled response data.  To correspond
+to an action category, this profile must preserve identities and composition.
+
+We keep the composition convention of the previous chapters: for internally
+composable arrows
+\[
+x\xrightarrow{\alpha}y\xrightarrow{\beta}z
+\]
+in \(\mathbb B\),
+\[
+m_B(\alpha,\beta)=\beta\circ\alpha.
+\]
+
+\begin{definition}[Multiplicative labelled response coalgebra]
+\label{def:poly-relative-multiplicative-response-coalgebra}
+A coalgebra
+\[
+c:X\to\mathcal M_{\mathbb A,\mathbb B,Y}(X)
+\]
+is \textbf{multiplicative} if, writing
+\[
+c(z)(a)=(\beta_a,z_a),
+\]
+the following equations hold.
+\begin{enumerate}
+\item For every \(z\in X\),
+\[
+c(z)(e_A(p_Xz))
+=
+(e_B(r(y_Xz)),z).
+\]
+
+\item For every composable pair
+\[
+a:u\to v,
+\qquad
+b:v\to w,
+\]
+and every \(z\in X_{(w,y)}\), if
+\[
+c(z)(b)=(\beta,z')
+\]
+and
+\[
+c(z')(a)=(\alpha,z'')
+\]
+then
+\[
+c(z)(m_A(a,b))
+=
+(m_B(\alpha,\beta),z'').
+\]
+\end{enumerate}
+\end{definition}
+
+Here \(m_A(a,b)=b\circ a\), but operationally the right action executes \(b\)
+first at the current state and then executes \(a\) at the updated state.
+Similarly, the output arrow for the composite is
+\[
+m_B(\alpha,\beta)=\beta\circ\alpha.
+\]
+
+\subsection{Multiplicative coalgebras as labelled actions}
+\label{subsec:poly-relative-coalgebras-labelled-actions}
+
+\begin{proposition}[Multiplicative coalgebras as labelled actions]
+\label{prop:poly-relative-coalgebras-labelled-actions}
+Assume the relevant dependent products exist.  To give a multiplicative
+coalgebra
+\[
+c:X\to\mathcal M_{\mathbb A,\mathbb B,Y}(X)
+\]
+is equivalently to give:
+\begin{enumerate}
+\item a right \(\mathbb A\)-action on \(X\xrightarrow{p_X}A_0\);
+\item an internal functor
+\[
+\Lambda_X:\int_{\mathbb A}X\to\int_{\mathbb B}Y
+\]
+whose object map is \(y_X:X\to Y\).
+\end{enumerate}
+Equivalently, it is a labelled relative action over \(Y\).
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Uncurry the coalgebra.}
+By Theorem~\ref{thm:poly-relative-currying-labelled-one-step}, a coalgebra is
+equivalent to maps
+\[
+\rho:
+A_1\times_{t_A,A_0,p_X}X\to X,
+\qquad
+\lambda:
+A_1\times_{t_A,A_0,p_X}X\to B_1
+\]
+with the displayed typing equations.
+
+\item \textbf{Recover the right action.}
+The first component \(\rho\), together with the identity and composition
+clauses of multiplicativity, is exactly a right \(\mathbb A\)-action on
+\(X\).
+
+\item \textbf{Construct the action category.}
+The action category \(\int_{\mathbb A}X\) has object object \(X\) and arrow
+object
+\[
+A_1\times_{t_A,A_0,p_X}X.
+\]
+
+\item \textbf{Construct the downstream functor.}
+The map
+\[
+(a,z)\longmapsto(\lambda(a,z),y_Xz)
+\]
+is well-defined as a map into the arrow object of \(\int_{\mathbb B}Y\)
+because
+\[
+t_B\lambda(a,z)=r(y_Xz).
+\]
+Its source and target compatibility are displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+A_1\times_{t_A,A_0,p_X}X
+  \arrow[rr,"{(\lambda,y_X\pi_2)}"]
+  \arrow[d,"\pi_2"']
+&&
+B_1\times_{t_B,B_0,r}Y
+  \arrow[d,"\pi_Y"]
+\\
+X
+  \arrow[rr,"y_X"']
+&&
+Y
+\end{tikzcd}
+\]
+and
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+A_1\times_{t_A,A_0,p_X}X
+  \arrow[rr,"{(\lambda,y_X\pi_2)}"]
+  \arrow[d,"\rho"']
+&&
+B_1\times_{t_B,B_0,r}Y
+  \arrow[d,"\sigma"]
+\\
+X
+  \arrow[rr,"y_X"']
+&&
+Y .
+\end{tikzcd}
+\]
+
+\item \textbf{Compare identity and composition.}
+The unit and multiplication clauses of multiplicativity are precisely identity
+and composition preservation for this internal functor.
+\end{enumerate}
+\end{proof}
+
+\section{The coalgebra induced by a Mealy morphism}
+\label{sec:poly-relative-induced-coalgebra}
+
+\subsection{Definition of the induced coalgebra}
+\label{subsec:poly-relative-induced-coalgebra-definition}
+
+Let
+\[
+\Phi=(P,\delta_P,\omega_P):\mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism and let
+\[
+Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+be a right \(\mathbb B\)-action.
+
+Recall that
+\[
+S_{\Phi,Y}=P\times_{B_0}Y
+\]
+maps to
+\[
+J_Y=A_0\times Y
+\]
+by
+\[
+j_{\Phi,Y}(x,y)=(p_Px,y).
+\]
+The structure map is displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+S_{\Phi,Y}
+  \arrow[dl,"p_P\pi_P"']
+  \arrow[dr,"\pi_Y"]
+  \arrow[d,"j_{\Phi,Y}" description]
+&
+\\
+A_0
+&
+J_Y
+  \arrow[l,"\pi_A"]
+  \arrow[r,"\pi_Y"']
+&
+Y .
+\end{tikzcd}
+\]
+
+\begin{definition}[Relative Mealy response coalgebra]
+\label{def:poly-relative-mealy-response-coalgebra}
+The \textbf{relative Mealy response coalgebra} induced by \(\Phi\) at \(Y\) is
+the coalgebra
+\[
+c_{\Phi,Y}:
+S_{\Phi,Y}\to
+\mathcal M_{\mathbb A,\mathbb B,Y}(S_{\Phi,Y})
+\]
+given fibrewise by
+\[
+c_{\Phi,Y}(x,y)(a)
+=
+\left(
+\omega_P(a,x),
+\left(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\right)
+\right).
+\]
+\end{definition}
+
+\subsection{Transpose of the labelled action}
+\label{subsec:poly-relative-mealy-coalgebra-transpose}
+
+\begin{theorem}[Mealy coalgebra as transpose of labelled action]
+\label{thm:poly-relative-mealy-coalgebra-transpose}
+The coalgebra
+\[
+c_{\Phi,Y}
+\]
+is the dependent-product transpose of the labelled relative action
+\[
+(\Phi^\ast Y,\Lambda_{\Phi,Y}).
+\]
+Moreover, it is multiplicative.
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Recall the action map.}
+The action map of \(\Phi^\ast Y\) is
+\[
+(a,x,y)
+\longmapsto
+\left(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\right).
+\]
+
+\item \textbf{Recall the downstream label.}
+The downstream comparison functor supplies the output label
+\[
+(a,x,y)\longmapsto\omega_P(a,x).
+\]
+
+\item \textbf{Combine the two components.}
+Together these give the uncurried labelled one-step data
+\[
+(a,x,y)
+\longmapsto
+\left(
+\omega_P(a,x),
+\left(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\right)
+\right).
+\]
+
+\item \textbf{Transpose.}
+By Theorem~\ref{thm:poly-relative-currying-labelled-one-step}, this
+uncurried labelled map transposes to \(c_{\Phi,Y}\).
+
+\item \textbf{Check multiplicativity.}
+Multiplicativity follows from the Mealy unit and multiplication equations for
+\(\Phi\) and from the unit and multiplication laws of the right
+\(\mathbb B\)-action \(Y\).  Equivalently, it follows from
+Proposition~\ref{prop:poly-relative-coalgebras-labelled-actions}, since
+\[
+\Lambda_{\Phi,Y}:\mathsf{Prog}_{\Phi,Y}\to\int_{\mathbb B}Y
+\]
+is an internal functor.
+\end{enumerate}
+\end{proof}
+
+\section{Flattening response coalgebras}
+\label{sec:poly-relative-flattening}
+
+\subsection{Position objects}
+\label{subsec:poly-relative-position-objects}
+
+Let
+\[
+J_Y
+\xleftarrow{s}
+E_{\mathbb A,\mathbb B,Y}
+\xrightarrow{p}
+K_{\mathbb A,\mathbb B,Y}
+\xrightarrow{t}
+J_Y
+\]
+be the relative response polynomial.
+
+For an object
+\[
+X\to J_Y,
+\]
+define the position object at \(X\) by
+\[
+\mathrm{Pos}_X
+:=
+E_{\mathbb A,\mathbb B,Y}
+\times_{K_{\mathbb A,\mathbb B,Y}}
+\Pi_p(s^\ast X).
+\]
+It is displayed by the pullback
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathrm{Pos}_X
+  \arrow[r]
+  \arrow[d]
+&
+\Pi_p(s^\ast X)
+  \arrow[d]
+\\
+E_{\mathbb A,\mathbb B,Y}
+  \arrow[r,"p"']
+&
+K_{\mathbb A,\mathbb B,Y}
+\arrow[ul,phantom,very near start,"\lrcorner"] .
+\end{tikzcd}
+\]
+It carries a canonical projection
+\[
+\partial_X:\mathrm{Pos}_X\to
+\mathcal M_{\mathbb A,\mathbb B,Y}(X).
+\]
+Externally, a point of \(\mathrm{Pos}_X\) is a total response profile together
+with a chosen input position.  This is the usual passage from a container-like
+total object to its object of positions
+\cite{AbbottAltenkirchGhani2005Containers}.
+
+The position object has evaluation maps
+\[
+\operatorname{in}:\mathrm{Pos}_X\to A_1,
+\]
+\[
+\operatorname{out}:\mathrm{Pos}_X\to B_1,
+\]
+\[
+\operatorname{down}:\mathrm{Pos}_X\to
+\left(\int_{\mathbb B}Y\right)_1,
+\]
+and
+\[
+\operatorname{next}:\mathrm{Pos}_X\to X.
+\]
+They extract the chosen input arrow, raw output arrow, downstream transition,
+and continuation state.  These maps fit into
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+\mathrm{Pos}_X
+  \arrow[dl,"\operatorname{in}"']
+  \arrow[d,"\operatorname{down}" description]
+  \arrow[dr,"\operatorname{next}"]
+&
+\\
+A_1
+&
+\left(\int_{\mathbb B}Y\right)_1
+  \arrow[d,"\pi_{B_1}" description]
+  \arrow[r,"\sigma"]
+&
+Y
+\\
+&
+B_1
+&
+\end{tikzcd}
+\]
+with
+\[
+\operatorname{out}
+=
+\pi_{B_1}\operatorname{down},
+\qquad
+y_X\operatorname{next}
+=
+\sigma\operatorname{down}.
+\]
+
+\subsection{Flattening a coalgebra}
+\label{subsec:poly-relative-flattening-coalgebra}
+
+Let
+\[
+c:X\to\mathcal M_{\mathbb A,\mathbb B,Y}(X)
+\]
+be a coalgebra.  Pulling back the position projection along \(c\) gives
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+M_c
+  \arrow[r]
+  \arrow[d,"s_c"']
+&
+\mathrm{Pos}_X
+  \arrow[d,"\partial_X"]
+\\
+X
+  \arrow[r,"c"']
+&
+\mathcal M_{\mathbb A,\mathbb B,Y}(X)
+\arrow[ul,phantom,very near start,"\lrcorner"] .
+\end{tikzcd}
+\]
+The object \(M_c\) is the flattened one-step execution object of \(c\).
+
+Under the uncurried presentation of \(c\), one has
+\[
+M_c\cong A_1\times_{t_A,A_0,p_X}X.
+\]
+The source map is
+\[
+s_c(a,z)=z,
+\]
+and the target map is
+\[
+t_c(a,z)=\rho_c(a,z).
+\]
+The flattened execution span is
+\[
+\begin{tikzcd}
+&
+M_c
+  \arrow[dl,"s_c"']
+  \arrow[dr,"t_c"]
+&
+\\
+X && X .
+\end{tikzcd}
+\]
+
+\subsection{Flattening multiplicative coalgebras}
+\label{subsec:poly-relative-flattening-multiplicative}
+
+\begin{theorem}[Flattening multiplicative coalgebras]
+\label{thm:poly-relative-flattening-multiplicative}
+If
+\[
+c:X\to\mathcal M_{\mathbb A,\mathbb B,Y}(X)
+\]
+is multiplicative, then the flattened span
+\[
+X\xleftarrow{s_c}M_c\xrightarrow{t_c}X
+\]
+is the one-step execution span of the action category
+\[
+\int_{\mathbb A}X.
+\]
+Moreover, the evaluation maps on \(M_c\) recover the input projection and the
+downstream comparison functor
+\[
+\int_{\mathbb A}X\to\int_{\mathbb B}Y.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Replace the coalgebra by labelled action data.}
+By Proposition~\ref{prop:poly-relative-coalgebras-labelled-actions}, a
+multiplicative coalgebra is equivalently a right \(\mathbb A\)-action on
+\(X\) equipped with an internal functor
+\[
+\Lambda_X:\int_{\mathbb A}X\to\int_{\mathbb B}Y.
+\]
+
+\item \textbf{Identify the flattened position object.}
+The flattened position object is exactly
+\[
+A_1\times_{t_A,A_0,p_X}X,
+\]
+with source \(z\) and target \(\rho_c(a,z)\).
+
+\item \textbf{Identify the action-category span.}
+These are the source and target of the action category
+\[
+\int_{\mathbb A}X.
+\]
+
+\item \textbf{Read the evaluation maps.}
+The evaluation maps give the chosen input arrow, output arrow, downstream
+transition, and continuation state, hence recover the input projection and the
+arrow map of \(\Lambda_X\).
+\end{enumerate}
+\end{proof}
+
+\subsection{Flattening the Mealy coalgebra}
+\label{subsec:poly-relative-flattening-mealy-coalgebra}
+
+\begin{lemma}[Flattening pullback for the Mealy coalgebra]
+\label{lem:poly-relative-mealy-position-pullback}
+For the relative Mealy response coalgebra
+\[
+c_{\Phi,Y}:S_{\Phi,Y}\to
+\mathcal M_{\mathbb A,\mathbb B,Y}(S_{\Phi,Y}),
+\]
+the pullback of the position projection
+\[
+\partial_S:\mathrm{Pos}_S\to
+\mathcal M_{\mathbb A,\mathbb B,Y}(S_{\Phi,Y})
+\]
+along \(c_{\Phi,Y}\) is canonically isomorphic to
+\[
+M_{\Phi,Y}
+=
+A_1\times_{t_A,A_0,p_P\pi_P}S_{\Phi,Y}.
+\]
+Under this isomorphism,
+\[
+\operatorname{in}=\iota_A,
+\qquad
+\operatorname{out}=\iota_B,
+\qquad
+\operatorname{down}=\lambda_{\Phi,Y},
+\qquad
+\operatorname{next}=t_{\Phi,Y}.
+\]
+\end{lemma}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Pull back positions along the coalgebra.}
+Pulling back \(\partial_S\) along \(c_{\Phi,Y}\) chooses, from the total
+response profile determined by a state \((x,y)\), a single input position
+\[
+a:u\to p_P(x).
+\]
+
+\item \textbf{Identify the resulting object.}
+Thus the resulting object is precisely the object of primitive executions
+\[
+A_1\times_{t_A,A_0,p_P\pi_P}S_{\Phi,Y}.
+\]
+
+\item \textbf{Identify the evaluation maps.}
+The four evaluation maps read off, respectively, the input arrow, the raw
+emitted output, the downstream transition, and the next coupled state.  These
+are exactly
+\[
+\iota_A,\qquad
+\iota_B,\qquad
+\lambda_{\Phi,Y},\qquad
+t_{\Phi,Y}.
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Program category recovered by flattening]
+\label{thm:poly-relative-program-category-recovered}
+Flattening the relative Mealy response coalgebra
+\[
+c_{\Phi,Y}
+\]
+recovers the one-step execution span
+\[
+\mathbf m_{\Phi,Y}
+=
+\left(
+S_{\Phi,Y}
+\xleftarrow{s_{\Phi,Y}}
+M_{\Phi,Y}
+\xrightarrow{t_{\Phi,Y}}
+S_{\Phi,Y}
+\right)
+\]
+of the relative program category
+\[
+\mathsf{Prog}_{\Phi,Y}.
+\]
+Explicitly,
+\[
+M_{\Phi,Y}
+=
+A_1\times_{t_A,A_0,p_P\pi_P}S_{\Phi,Y},
+\]
+\[
+s_{\Phi,Y}(a,x,y)=(x,y),
+\]
+and
+\[
+t_{\Phi,Y}(a,x,y)
+=
+\left(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\right).
+\]
+Consequently, the internal category recovered from the flattened coalgebra is
+\[
+\mathsf{Prog}_{\Phi,Y}
+=
+\int_{\mathbb A}\Phi^\ast Y.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Use multiplicativity.}
+By Theorem~\ref{thm:poly-relative-mealy-coalgebra-transpose},
+\(c_{\Phi,Y}\) is multiplicative.
+
+\item \textbf{Apply flattening.}
+Theorem~\ref{thm:poly-relative-flattening-multiplicative} identifies the
+flattened span with the one-step execution span of the action category.
+
+\item \textbf{Use the Mealy pullback calculation.}
+Lemma~\ref{lem:poly-relative-mealy-position-pullback} identifies this flattened
+one-step object with
+\[
+M_{\Phi,Y}.
+\]
+
+\item \textbf{Read the explicit formulas.}
+The source and target maps are the uncurried maps defining the labelled action
+associated to \(\Phi\).
+\end{enumerate}
+\end{proof}
+
+\begin{remark}
+\label{rem:poly-relative-polynomial-not-replacement}
+The polynomial coalgebra does not replace the program category.  It is the
+curried total-response presentation of the same labelled one-step data whose
+flattened form is the one-step execution span.
+\end{remark}
+
+\section{Output-lax profile comparisons}
+\label{sec:poly-relative-output-lax-profile-comparisons}
+
+\subsection{Why ordinary coalgebra morphisms are too strict}
+\label{subsec:poly-relative-ordinary-morphisms-too-strict}
+
+The relative response polynomial lives over
+\[
+J_Y=A_0\times Y.
+\]
+Ordinary coalgebra morphisms over \(J_Y\) are too strict for Mealy simulations,
+because simulations execute output-comparison arrows in \(Y\) and therefore
+change the \(Y\)-component of the interface.
+
+Thus we isolate the correct comparison structure.
+
+\subsection{Definition of output-lax comparison}
+\label{subsec:poly-relative-output-lax-comparison-definition}
+
+Let
+\[
+c:X\to\mathcal M_{\mathbb A,\mathbb B,Y}(X),
+\qquad
+d:Z\to\mathcal M_{\mathbb A,\mathbb B,Y}(Z)
+\]
+be multiplicative labelled response coalgebras.  Write their uncurried data as
+\[
+(\rho_X,\lambda_X)
+\qquad\text{and}\qquad
+(\rho_Z,\lambda_Z).
+\]
+
+\begin{definition}[Output-lax profile comparison]
+\label{def:poly-relative-output-lax-profile-comparison}
+An \textbf{output-lax profile comparison}
+\[
+(c:X\to\mathcal M(X))
+\longrightarrow
+(d:Z\to\mathcal M(Z))
+\]
+consists of maps
+\[
+h:X\to Z,
+\qquad
+\chi:X\to B_1,
+\]
+such that
+\[
+p_Zh=p_X,
+\]
+\[
+t_B\chi=r y_X,
+\qquad
+s_B\chi=r y_Zh,
+\]
+and
+\[
+y_Zh=\sigma(\chi,y_X).
+\]
+Thus \(\chi_x\) is an arrow
+\[
+r(y_Zh(x))\longrightarrow r(y_Xx)
+\]
+in \(\mathbb B\), and it evaluates in the right action \(Y\) as an arrow
+\[
+y_Xx\longrightarrow y_Zh(x)
+\]
+of \(\int_{\mathbb B}Y\).
+
+Writing
+\[
+c(x)(a)=(\beta_X(a,x),x_a)
+\]
+and
+\[
+d(hx)(a)=(\beta_Z(a,hx),z_a),
+\]
+the comparison also satisfies the strict input-target equation
+\[
+z_a=h(x_a),
+\]
+or equivalently
+\[
+\rho_Z(a,hx)=h(\rho_X(a,x)).
+\]
+Finally, the output-lax naturality equation is
+\[
+\chi_x\circ \beta_Z(a,hx)
+=
+\beta_X(a,x)\circ \chi_{x_a}.
+\]
+Equivalently,
+\[
+m_B(\beta_Z(a,hx),\chi_x)
+=
+m_B(\chi_{x_a},\beta_X(a,x)).
+\]
+\end{definition}
+
+The structure equations can be displayed as
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+X
+  \arrow[dl,"y_X"']
+  \arrow[dr,"y_Zh"]
+  \arrow[d,"\chi" description]
+&
+\\
+Y
+  \arrow[d,"r"']
+&
+B_1
+  \arrow[dl,"t_B" description]
+  \arrow[dr,"s_B" description]
+&
+Y
+  \arrow[d,"r"]
+\\
+B_0
+&&
+B_0 .
+\end{tikzcd}
+\]
+The action condition is the additional equation
+\[
+y_Zh=\sigma(\chi,y_X).
+\]
+
+\subsection{Flattening output-lax comparisons}
+\label{subsec:poly-relative-flatten-output-lax-comparisons}
+
+\begin{proposition}[Flattening an output-lax profile comparison]
+\label{prop:poly-relative-flatten-output-lax-profile-comparison}
+An output-lax profile comparison \((h,\chi):c\to d\) induces:
+\begin{enumerate}
+\item an internal functor
+\[
+H:\int_{\mathbb A}X\to\int_{\mathbb A}Z
+\]
+strictly over \(\mathbb A^{\mathrm{op}}\);
+\item an internal natural transformation
+\[
+\lambda^\chi:
+\Lambda_X\Rightarrow\Lambda_ZH
+\]
+with codomain \(\int_{\mathbb B}Y\).
+\end{enumerate}
+The functor \(H\) is given by
+\[
+H_0=h,
+\qquad
+H_1(a,x)=(a,hx),
+\]
+and the natural transformation has component
+\[
+(\chi_x,y_Xx):y_Xx\to y_Zh(x)
+\]
+at \(x\).
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Define the object map.}
+Set
+\[
+H_0=h:X\to Z.
+\]
+The equation
+\[
+p_Zh=p_X
+\]
+says that this map is over \(A_0\).
+
+\item \textbf{Define the arrow map.}
+The arrow map is
+\[
+H_1(a,x)=(a,hx).
+\]
+It is well-defined because
+\[
+t_A(a)=p_Xx=p_Zh(x).
+\]
+
+\item \textbf{Check source preservation.}
+Source preservation is immediate from
+\[
+s(a,x)=x
+\]
+and
+\[
+s(a,hx)=hx.
+\]
+
+\item \textbf{Check target preservation.}
+The strict input-target equation
+\[
+\rho_Z(a,hx)=h(\rho_X(a,x))
+\]
+says exactly that \(H\) preserves targets of primitive arrows.
+
+\item \textbf{Check identities and composition.}
+Since the input arrow \(a\) is unchanged and \(h\) preserves the action targets,
+identity and composition preservation follow from multiplicativity of the two
+coalgebras.
+
+\item \textbf{Construct the downstream natural transformation.}
+The component
+\[
+(\chi_x,y_Xx)
+\]
+is a well-defined arrow of \(\int_{\mathbb B}Y\) because
+\[
+t_B\chi_x=r(y_Xx)
+\]
+and
+\[
+y_Zh(x)=\sigma(\chi_x,y_Xx).
+\]
+
+\item \textbf{Check naturality.}
+The output-lax naturality equation
+\[
+\chi_x\circ \beta_Z(a,hx)
+=
+\beta_X(a,x)\circ \chi_{x_a}
+\]
+is exactly the naturality square in the downstream action category.
+\end{enumerate}
+\end{proof}
+
+The naturality square is
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+y_Xx
+  \arrow[r,"{(\beta_X(a,x),y_Xx)}"]
+  \arrow[d,"{(\chi_x,y_Xx)}"']
+&
+y_Xx_a
+  \arrow[d,"{(\chi_{x_a},y_Xx_a)}"]
+\\
+y_Zh(x)
+  \arrow[r,"{(\beta_Z(a,hx),y_Zh(x))}"']
+&
+y_Zh(x_a).
+\end{tikzcd}
+\]
+
+\section{Mealy simulations as output-lax profile comparisons}
+\label{sec:poly-relative-mealy-simulations-profile-comparisons}
+
+\subsection{Evaluated comparison data}
+\label{subsec:poly-relative-simulation-evaluated-data}
+
+Let
+\[
+\Phi=(P,\delta_P,\omega_P),
+\qquad
+\Psi=(Q,\delta_Q,\omega_Q)
+:
+\mathbb A\rightsquigarrow\mathbb B
+\]
+be Mealy morphisms, and let
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation with components
+\[
+\theta:Q\to P,
+\qquad
+\alpha:Q\to B_1.
+\]
+Thus
+\[
+p_P\theta=p_Q,
+\qquad
+s_B\alpha=q_P\theta,
+\qquad
+t_B\alpha=q_Q,
+\]
+and
+\[
+\theta(\delta_Q(a,y))
+=
+\delta_P(a,\theta y),
+\]
+\[
+\alpha_y\circ\omega_P(a,\theta y)
+=
+\omega_Q(a,y)\circ\alpha_{\delta_Q(a,y)}.
+\]
+
+Let \(Y\) be a right \(\mathbb B\)-action.  The evaluated state comparison is
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y},
+\qquad
+h_{\Theta,Y}(y,z)
+=
+\bigl(\theta y,\sigma(\alpha_y,z)\bigr).
+\]
+Define
+\[
+\chi_{\Theta,Y}:S_{\Psi,Y}\to B_1
+\]
+by
+\[
+\chi_{\Theta,Y}(y,z)=\alpha_y.
+\]
+
+\subsection{Simulations induce output-lax comparisons}
+\label{subsec:poly-relative-simulation-output-lax-theorem}
+
+\begin{theorem}[Simulations induce output-lax profile comparisons]
+\label{thm:poly-relative-simulations-profile-comparisons}
+The pair
+\[
+(h_{\Theta,Y},\chi_{\Theta,Y})
+\]
+is an output-lax profile comparison
+\[
+c_{\Psi,Y}\longrightarrow c_{\Phi,Y}.
+\]
+After flattening, it recovers the input-strict functor
+\[
+H_{\Theta,Y}:
+\mathsf{Prog}_{\Psi,Y}\to\mathsf{Prog}_{\Phi,Y}
+\]
+and the downstream comparison natural transformation
+\[
+\lambda_{\Theta,Y}:
+\Lambda_{\Psi,Y}
+\Rightarrow
+\Lambda_{\Phi,Y}H_{\Theta,Y}.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check input strictness.}
+The map \(h_{\Theta,Y}\) is strict over \(A_0\) because
+\[
+p_P\theta=p_Q.
+\]
+
+\item \textbf{Check the output-comparison typing.}
+The map \(\chi_{\Theta,Y}\) satisfies
+\[
+t_B\chi_{\Theta,Y}(y,z)=t_B\alpha_y=q_Qy=r(z),
+\]
+and
+\[
+s_B\chi_{\Theta,Y}(y,z)=s_B\alpha_y=q_P\theta y
+=
+r(\sigma(\alpha_y,z)).
+\]
+
+\item \textbf{Check evaluation in the downstream action.}
+Moreover,
+\[
+\pi_Yh_{\Theta,Y}(y,z)=\sigma(\alpha_y,z)
+=
+\sigma(\chi_{\Theta,Y}(y,z),z).
+\]
+
+\item \textbf{Compute the source response.}
+The source coalgebra \(c_{\Psi,Y}\) has
+\[
+c_{\Psi,Y}(y,z)(a)
+=
+\left(
+\omega_Q(a,y),
+\left(
+\delta_Q(a,y),
+\sigma(\omega_Q(a,y),z)
+\right)
+\right).
+\]
+
+\item \textbf{Compute the target response at the compared state.}
+The target coalgebra at \(h_{\Theta,Y}(y,z)\) has
+\[
+c_{\Phi,Y}(\theta y,\sigma(\alpha_y,z))(a)
+=
+\left(
+\omega_P(a,\theta y),
+\left(
+\delta_P(a,\theta y),
+\sigma(\omega_P(a,\theta y),\sigma(\alpha_y,z))
+\right)
+\right).
+\]
+
+\item \textbf{Check strict target preservation.}
+The strict input-target equation is
+\[
+\rho_{\Phi}(a,h_{\Theta,Y}(y,z))
+=
+h_{\Theta,Y}(\rho_{\Psi}(a,y,z)).
+\]
+Indeed, the left-hand side is
+\[
+\left(
+\delta_P(a,\theta y),
+\sigma(\omega_P(a,\theta y),\sigma(\alpha_y,z))
+\right),
+\]
+while the right-hand side is
+\[
+\left(
+\theta\delta_Q(a,y),
+\sigma(\alpha_{\delta_Q(a,y)},\sigma(\omega_Q(a,y),z))
+\right).
+\]
+The first components agree by the state part of the simulation law.  The second
+components agree by the output part of the simulation law and the right-action
+multiplication law for \(Y\).
+
+\item \textbf{Check output-lax naturality.}
+The output-lax square is precisely
+\[
+\alpha_y\circ\omega_P(a,\theta y)
+=
+\omega_Q(a,y)\circ\alpha_{\delta_Q(a,y)}.
+\]
+Therefore \((h_{\Theta,Y},\chi_{\Theta,Y})\) is an output-lax profile
+comparison.
+
+\item \textbf{Flatten.}
+The final statement is
+Proposition~\ref{prop:poly-relative-flatten-output-lax-profile-comparison}
+specialized to the Mealy-induced coalgebras.
+\end{enumerate}
+\end{proof}
+
+\begin{remark}
+\label{rem:poly-relative-not-ordinary-coalgebra-map}
+The map
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y}
+\]
+is generally not a map over \(J_Y=A_0\times Y\), since it changes the
+downstream component from \(z\) to \(\sigma(\alpha_y,z)\).  The correct
+polynomial comparison is therefore output-lax, not an ordinary coalgebra
+morphism in \(\mathcal E/J_Y\).
+\end{remark}
+
+
+\section{Finite trajectories of response coalgebras}
+\label{sec:relative-response-temporalization}
+
+A multiplicative response coalgebra carries no temporal structure beyond the
+labelled action already encoded by its multiplication laws.  Its finite
+trajectories are therefore obtained by flattening and applying the path
+construction of the preceding chapter.
+
+\begin{definition}[Trajectory object of a multiplicative response coalgebra]
+\label{def:relative-response-coalgebra-trajectories}
+Let
+\[
+    c:X\to\mathcal M_{\mathbb A,\mathbb B,Y}(X)
+\]
+be multiplicative, and let
+\[
+    \Lambda_X:\int_{\mathbb A}X\to\int_{\mathbb B}Y
+\]
+be the corresponding labelled relative action.  Define
+\[
+    \mathscr T_c
+    :=
+    \operatorname{Path}\!\left(\int_{\mathbb A}X\right).
+\]
+\end{definition}
+
+\begin{proposition}[Currying does not change finite execution]
+\label{prop:relative-currying-preserves-trajectories}
+Under the equivalence between multiplicative response coalgebras and labelled
+relative actions, the trajectory object \(\mathscr T_c\) depends only on the
+uncurried labelled action.  Flattening \(c\) and then forming finite paths
+recovers the same labelled trajectory object.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:poly-relative-coalgebras-labelled-actions}, the
+multiplicative coalgebra and the labelled action are two transposes of the
+same maps \((\rho,\lambda)\).  By
+Theorem~\ref{thm:poly-relative-flattening-multiplicative}, flattening recovers
+the one-step span and internal-category operations of
+\(\int_{\mathbb A}X\), together with the downstream labelling functor.
+Applying \(\operatorname{Path}\) therefore gives the same labelled path
+object in every degree.
+\end{proof}
+
+\begin{corollary}[Relative Mealy trajectories from the response coalgebra]
+\label{cor:relative-mealy-response-trajectories}
+For the canonical response coalgebra \(c_{\Phi,Y}\),
+\[
+    \mathscr T_{c_{\Phi,Y}}
+    \cong
+    \operatorname{Path}(\mathsf{Prog}_{\Phi,Y})
+\]
+and hence
+\[
+    \mathscr T_{c_{\Phi,Y}}
+    \cong
+    \mathscr T_\Phi
+    \times_{\operatorname{Path}(\mathbb B^{\mathrm{op}})}
+    \operatorname{Path}\!\left(\int_{\mathbb B}Y\right).
+\]
+\end{corollary}
+
+\begin{proof}
+The first isomorphism follows from
+Theorem~\ref{thm:poly-relative-program-category-recovered}.  The second is
+Corollary~\ref{cor:relative-finite-trajectories-pullback}.
+\end{proof}
+
+\begin{remark}[Multiplicativity as curried Segal coherence]
+\label{rem:relative-multiplicativity-segal}
+The unit and multiplication equations of a response coalgebra are the
+curried form of identity insertion and contraction in its execution category.
+Thus the Segal coherence of finite execution and the multiplicativity of the
+total response profile express the same categorical structure in uncurried
+and curried form, respectively.
+\end{remark}
+
+\section{The one-object specialization}
+\label{sec:poly-relative-one-object-specialization}
+
+\subsection{One-object Mealy response profiles}
+\label{subsec:poly-relative-one-object-response-profiles}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as
+one-object internal categories with the convention
+\[
+b\circ a=ba.
+\]
+A Mealy morphism
+\[
+\Phi:M\rightsquigarrow N
+\]
+consists of an object \(P\), a right \(M\)-action
+\[
+x\cdot m:=\delta_P(m,x),
+\]
+and an \(N\)-valued output cocycle
+\[
+\omega_P:M\times P\to N
+\]
+satisfying
+\[
+\omega_P(1,x)=1,
+\qquad
+\omega_P(mn,x)=\omega_P(m,x)\omega_P(n,x\cdot m).
+\]
+
+Let \(Y\) be a right \(N\)-object.  Then
+\[
+J_Y=1\times Y\cong Y.
+\]
+The relative response polynomial has fibre
+\[
+\mathcal M_{M,N,Y}(X)_y
+\cong
+\prod_{m\in M}
+\sum_{n\in N}
+X_{y\cdot n}.
+\]
+The induced coalgebra is
+\[
+c_{\Phi,Y}(x,y)(m)
+=
+\left(
+\omega_P(m,x),
+\left(
+x\cdot m,
+y\cdot\omega_P(m,x)
+\right)
+\right).
+\]
+
+\begin{proposition}[One-object cascade response coalgebra]
+\label{prop:poly-relative-one-object-cascade-response}
+In the one-object case, the relative Mealy response coalgebra is the total
+response profile of the cascade action
+\[
+(x,y)\cdot m
+=
+\bigl(x\cdot m,\;y\cdot\omega_P(m,x)\bigr).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify the state object.}
+Since both object objects are terminal,
+\[
+S_{\Phi,Y}=P\times Y.
+\]
+
+\item \textbf{Identify the response interface.}
+The interface is
+\[
+J_Y\cong Y.
+\]
+
+\item \textbf{Specialize the coalgebra.}
+The general formula
+\[
+c_{\Phi,Y}(x,y)(a)
+=
+\left(
+\omega_P(a,x),
+\left(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\right)
+\right)
+\]
+becomes
+\[
+c_{\Phi,Y}(x,y)(m)
+=
+\left(
+\omega_P(m,x),
+\left(
+x\cdot m,
+y\cdot\omega_P(m,x)
+\right)
+\right).
+\]
+\end{enumerate}
+\end{proof}
+
+\subsection{One-object simulations}
+\label{subsec:poly-relative-one-object-simulations}
+
+A one-object Mealy simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+has components
+\[
+\theta:Q\to P,
+\qquad
+\alpha:Q\to N.
+\]
+For every right \(N\)-object \(Y\), the evaluated map is
+\[
+Q\times Y\to P\times Y,
+\qquad
+(y,z)\longmapsto(\theta y,z\cdot\alpha_y).
+\]
+The output-lax comparison component is
+\[
+\chi(y,z)=\alpha_y.
+\]
+The simulation equation becomes
+\[
+\alpha_y\,\omega_P(m,\theta y)
+=
+\omega_Q(m,y)\,\alpha_{y\cdot m}.
+\]
+
+\begin{proposition}[One-object output-lax profile comparison]
+\label{prop:poly-relative-one-object-output-lax}
+A one-object Mealy simulation evaluates to an output-lax profile comparison
+between the corresponding cascade response coalgebras.
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify the evaluated state map.}
+The state map is
+\[
+(y,z)\mapsto(\theta y,z\cdot\alpha_y).
+\]
+
+\item \textbf{Identify strict input-target preservation.}
+The state component of the simulation says
+\[
+\theta(y\cdot m)=\theta y\cdot m.
+\]
+
+\item \textbf{Identify output-lax naturality.}
+The output equation
+\[
+\alpha_y\,\omega_P(m,\theta y)
+=
+\omega_Q(m,y)\,\alpha_{y\cdot m}
+\]
+is exactly the one-object output-lax naturality equation.
+
+\item \textbf{Flatten.}
+Flattening gives the input-strict functor between the one-object program
+categories.
+\end{enumerate}
+\end{proof}
+
+\section{The stateless specialization}
+\label{sec:poly-relative-stateless-specialization}
+
+\subsection{Stateless response coalgebras}
+\label{subsec:poly-relative-stateless-response-coalgebras}
+
+Let
+\[
+F:\mathbb A\to\mathbb B
+\]
+be an internal functor with object map \(F_0\) and arrow map \(F_1\).  Regard
+\(F\) as the representable Mealy morphism with carrier
+\[
+\begin{tikzcd}
+&
+A_0
+  \arrow[dl,"1_{A_0}"']
+  \arrow[dr,"F_0"]
+&
+\\
+A_0 && B_0 .
+\end{tikzcd}
+\]
+
+For a right \(\mathbb B\)-action \(Y\), the relative state object is
+\[
+S_{F,Y}:=A_0\times_{F_0,B_0,r}Y.
+\]
+It is displayed by
+\[
+\begin{tikzcd}
+S_{F,Y}
+  \arrow[r,"\pi_Y"]
+  \arrow[d,"\pi_A"']
+&
+Y
+  \arrow[d,"r"]
+\\
+A_0
+  \arrow[r,"F_0"']
+&
+B_0
+\arrow[ul,phantom,very near start,"\lrcorner"] .
+\end{tikzcd}
+\]
+The induced coalgebra is
+\[
+c_{F,Y}:
+S_{F,Y}\to
+\mathcal M_{\mathbb A,\mathbb B,Y}(S_{F,Y}),
+\]
+given by
+\[
+c_{F,Y}(v,y)(a)
+=
+\left(
+F_1(a),
+\left(
+s_A(a),
+\sigma(F_1(a),y)
+\right)
+\right),
+\]
+for every arrow \(a:u\to v\).
+
+\begin{proposition}[Stateless relative response coalgebra]
+\label{prop:poly-relative-stateless-response-coalgebra}
+The coalgebra \(c_{F,Y}\) is the relative response coalgebra associated to the
+representable Mealy morphism induced by \(F\).  Its flattened action category
+is the action category of the ordinary restricted action \(F^\ast Y\).
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Specialize the carrier.}
+For the representable carrier, the state component is the current input object
+\(v\in A_0\).
+
+\item \textbf{Identify the state update.}
+The state update is forced:
+\[
+\delta(a,v)=s_A(a).
+\]
+
+\item \textbf{Identify the output arrow.}
+The emitted output arrow is
+\[
+\omega(a,v)=F_1(a).
+\]
+
+\item \textbf{Substitute into the general coalgebra formula.}
+Substituting these into
+Definition~\ref{def:poly-relative-mealy-response-coalgebra} gives the
+displayed coalgebra.
+
+\item \textbf{Flatten.}
+Flattening recovers the usual restriction of a right \(\mathbb B\)-action
+along \(F\).
+\end{enumerate}
+\end{proof}
+
+\subsection{Terminal stateless case}
+\label{subsec:poly-relative-terminal-stateless-case}
+
+\begin{corollary}[Terminal stateless coalgebra]
+\label{cor:poly-relative-terminal-stateless-coalgebra}
+For
+\[
+Y=\mathbf 1_{\mathbb B},
+\]
+one has
+\[
+S_{F,\mathbf 1_{\mathbb B}}\cong A_0,
+\]
+and the coalgebra becomes
+\[
+c_F(v)(a)=(F_1(a),s_A(a)).
+\]
+The recovered program category is
+\[
+\mathbb A^{\mathrm{op}},
+\]
+and the output labelling is
+\[
+F^{\mathrm{op}}:\mathbb A^{\mathrm{op}}\to\mathbb B^{\mathrm{op}}.
+\]
+\end{corollary}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify the state object.}
+For the terminal downstream action,
+\[
+S_{F,\mathbf 1_{\mathbb B}}
+=
+A_0\times_{F_0,B_0,1_{B_0}}B_0
+\cong A_0.
+\]
+
+\item \textbf{Identify the coalgebra.}
+The action of an input arrow \(a:u\to v\) sends \(v\) to \(u=s_A(a)\) and
+emits \(F_1(a)\).  Hence
+\[
+c_F(v)(a)=(F_1(a),s_A(a)).
+\]
+
+\item \textbf{Flatten.}
+The recovered program category is the action category of the terminal right
+\(\mathbb A\)-action, namely
+\[
+\mathbb A^{\mathrm{op}}.
+\]
+
+\item \textbf{Identify the output labelling.}
+The output labelling sends \(a\) to \(F_1(a)\), viewed oppositely, hence is
+\[
+F^{\mathrm{op}}.
+\]
+\end{enumerate}
+\end{proof}
+
+\section{Examples}
+\label{sec:poly-relative-examples}
+
+\subsection{Terminal downstream response polynomial}
+\label{subsec:poly-relative-example-terminal-downstream-response}
+
+Let
+\[
+Y=\mathbf 1_{\mathbb B}
+=
+(B_0\xrightarrow{1_{B_0}}B_0,\tau_B)
+\]
+be the terminal right \(\mathbb B\)-action.  Then
+\[
+\tau_B(\beta,t_B\beta)=s_B\beta.
+\]
+The response interface is
+\[
+J_{\mathbf 1_{\mathbb B}}=A_0\times B_0.
+\]
+The fibre formula becomes
+\[
+\mathcal M_{\mathbb A,\mathbb B,\mathbf 1_{\mathbb B}}(X)_{(v,b)}
+\cong
+\prod_{a:u\to v}
+\sum_{\beta:b'\to b}
+X_{(u,b')}.
+\]
+
+Moreover,
+\[
+S_{\Phi,\mathbf 1_{\mathbb B}}
+=
+P\times_{B_0}B_0
+\cong P.
+\]
+Under this isomorphism,
+\[
+c_{\Phi,\mathbf 1_{\mathbb B}}(x)(a)
+=
+(\omega_P(a,x),\delta_P(a,x)).
+\]
+
+\begin{corollary}[Terminal Mealy polynomial]
+\label{cor:poly-relative-terminal-mealy-polynomial}
+The terminal downstream response polynomial of a Mealy morphism
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+is the special case \(Y=\mathbf 1_{\mathbb B}\) of the relative response
+polynomial.  Its induced coalgebra is the terminal output-response profile
+\[
+x
+\longmapsto
+\left(
+a
+\longmapsto(\omega_P(a,x),\delta_P(a,x))
+\right).
+\]
+Flattening this coalgebra recovers the terminal relative program category
+\[
+\mathsf{Prog}_\Phi.
+\]
+\end{corollary}
+
+\subsection{Terminal simulation comparison}
+\label{subsec:poly-relative-example-terminal-simulation}
+
+\begin{proposition}[Terminal simulation comparison]
+\label{prop:poly-relative-terminal-simulation-comparison}
+Let
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation with components \((\theta,\alpha)\).  In the terminal
+downstream case, the output-lax profile comparison has state map
+\[
+\theta:Q\to P
+\]
+and output-comparison component
+\[
+\alpha_y:q_P(\theta y)\to q_Q(y).
+\]
+After flattening, it gives the input-strict functor
+\[
+\mathsf{Prog}_\Psi\to\mathsf{Prog}_\Phi
+\]
+and the natural transformation
+\[
+\Lambda_{\Psi,\mathbf 1_{\mathbb B}}
+\Rightarrow
+\Lambda_{\Phi,\mathbf 1_{\mathbb B}}H_\Theta
+\]
+with components
+\[
+\alpha_y^{\mathrm{op}}:
+q_Q(y)\longrightarrow q_P(\theta y)
+\]
+in \(\mathbb B^{\mathrm{op}}\), where
+\[
+\alpha_y:q_P(\theta y)\to q_Q(y)
+\]
+is the underlying arrow of \(\mathbb B\).
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify terminal evaluated states.}
+In the terminal downstream action,
+\[
+S_{\Psi,\mathbf 1_{\mathbb B}}\cong Q
+\qquad\text{and}\qquad
+S_{\Phi,\mathbf 1_{\mathbb B}}\cong P.
+\]
+The evaluated state map is therefore
+\[
+\theta:Q\to P.
+\]
+
+\item \textbf{Identify the output comparison.}
+The output-comparison component remains
+\[
+\alpha_y:q_P(\theta y)\to q_Q(y)
+\]
+in \(\mathbb B\).
+
+\item \textbf{View the comparison oppositely.}
+Since the terminal downstream action category is
+\[
+\int_{\mathbb B}\mathbf 1_{\mathbb B}\cong\mathbb B^{\mathrm{op}},
+\]
+the component is viewed as
+\[
+\alpha_y^{\mathrm{op}}:
+q_Q(y)\to q_P(\theta y)
+\]
+in \(\mathbb B^{\mathrm{op}}\).
+
+\item \textbf{Flatten.}
+Flattening gives the input-strict functor between terminal relative program
+categories and the displayed natural transformation.
+\end{enumerate}
+\end{proof}
+
+\subsection{Word inputs and total response profiles}
+\label{subsec:poly-relative-example-words}
+
+If \(\mathbb A=I^\ast\) is the one-object category associated to the free
+monoid of input words, then the response profile at a state is total over all
+words:
+\[
+w\longmapsto
+\left(
+\omega_P(w,x),
+\delta_P(w,x)
+\right).
+\]
+Letter-step execution is obtained either by restricting one-step inputs to
+the length-one subobject of \(I^\ast\), or by beginning with a generator-level
+operation and extending it multiplicatively to \(I^\ast\).
+
+
+\section{Chapter synthesis}
+\label{sec:relative-response-synthesis}
+
+\subsection{Operational evaluation}
+\label{subsec:relative-response-operational-summary}
+
+\begin{theorem}[Relative execution by downstream evaluation]
+\label{thm:relative-response-operational-summary}
+For every Mealy morphism
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+and right \(\mathbb B\)-action \(Y\), the following constructions agree:
+\begin{enumerate}
+    \item the action category of the restricted action \(\Phi^{\ast}Y\);
+    \item the execution category of the composite
+    \[
+        \widehat Y\circ\Phi:\mathbb A\rightsquigarrow\mathbf 1;
+    \]
+    \item the labelled pullback
+    \[
+        \operatorname{Exec}(\Phi)
+        \times_{\mathbb B^{\mathrm{op}}}
+        \int_{\mathbb B}Y.
+    \]
+\end{enumerate}
+The common internal category is \(\mathsf{Prog}_{\Phi,Y}\).  Its object
+object is
+\[
+    S_{\Phi,Y}=P\times_{B_0}Y,
+\]
+and its one-step arrow object is
+\[
+    A_1\times_{A_0}S_{\Phi,Y}.
+\]
+\end{theorem}
+
+\begin{proof}
+The restricted action is Theorem
+\ref{thm:relative-mealy-restriction-actions}.  Its action category is
+Theorem~\ref{thm:relative-program-categories}.  The composite and pullback
+presentations are Definition~\ref{def:relative-execution-category-composite}
+and Theorem~\ref{thm:relative-execution-labelled-pullback}.
+\end{proof}
+
+\subsection{Currying and flattening}
+\label{subsec:relative-response-currying-summary}
+
+\begin{theorem}[Relative response equivalence]
+\label{thm:relative-response-main-equivalence}
+Assume the required dependent products exist.  Then:
+\begin{enumerate}
+    \item coalgebras
+    \[
+        c:X\to\mathcal M_{\mathbb A,\mathbb B,Y}(X)
+    \]
+    are equivalent to typed labelled one-step response maps;
+
+    \item multiplicative coalgebras are equivalent to labelled relative
+    actions
+    \[
+        \Lambda_X:\int_{\mathbb A}X\to\int_{\mathbb B}Y;
+    \]
+
+    \item the canonical Mealy coalgebra
+    \[
+        c_{\Phi,Y}(x,y)(a)
+        =
+        \left(
+            \omega_P(a,x),
+            \left(
+                \delta_P(a,x),
+                \sigma(\omega_P(a,x),y)
+            \right)
+        \right)
+    \]
+    is the dependent-product transpose of
+    \((\Phi^{\ast}Y,\Lambda_{\Phi,Y})\);
+
+    \item flattening \(c_{\Phi,Y}\) recovers
+    \(\mathsf{Prog}_{\Phi,Y}\), including its input and downstream
+    comparison functors;
+
+    \item finite paths of the flattened category recover the relative
+    trajectory pullback
+    \[
+        \mathscr T_\Phi
+        \times_{\operatorname{Path}(\mathbb B^{\mathrm{op}})}
+        \operatorname{Path}\!\left(\int_{\mathbb B}Y\right).
+    \]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The first two statements are Theorem
+\ref{thm:poly-relative-currying-labelled-one-step} and Proposition
+\ref{prop:poly-relative-coalgebras-labelled-actions}.  The induced coalgebra
+and transpose theorem are Definition
+\ref{def:poly-relative-mealy-response-coalgebra} and Theorem
+\ref{thm:poly-relative-mealy-coalgebra-transpose}.  Flattening is Theorem
+\ref{thm:poly-relative-program-category-recovered}.  The trajectory statement
+is Corollary~\ref{cor:relative-mealy-response-trajectories}.
+\end{proof}
+
+\subsection{Variance and comparison structure}
+\label{subsec:relative-response-variance-summary}
+
+\begin{theorem}[Simulations after evaluation, currying, and flattening]
+\label{thm:relative-response-simulation-summary}
+Let
+\[
+    \Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation.  For every right \(\mathbb B\)-action \(Y\):
+\begin{enumerate}
+    \item downstream evaluation gives an equivariant state map
+    \[
+        h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y};
+    \]
+
+    \item this state map induces a contravariant internal functor
+    \[
+        H_{\Theta,Y}:
+        \mathsf{Prog}_{\Psi,Y}	o\mathsf{Prog}_{\Phi,Y};
+    \]
+
+    \item the raw output comparison gives a natural transformation
+    \[
+        \Lambda_{\Psi,Y}
+        \Rightarrow
+        \Lambda_{\Phi,Y}H_{\Theta,Y};
+    \]
+
+    \item polynomially, the same data form an output-lax profile comparison
+    \[
+        c_{\Psi,Y}\longrightarrow c_{\Phi,Y};
+    \]
+
+    \item flattening this output-lax comparison recovers the functor and
+    natural transformation above.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Operational evaluation is Theorem
+\ref{thm:relative-simulations-evaluate-equivariantly}; the induced program
+functor and downstream transformation are Theorem
+\ref{thm:relative-simulations-program-functors} and Theorem
+\ref{thm:relative-output-comparison-natural}.  The polynomial comparison and
+its flattening are Theorem
+\ref{thm:poly-relative-simulations-profile-comparisons}.
+\end{proof}
+
+\begin{remark}[Conceptual summary]
+\label{rem:relative-response-final-conceptual-summary}
+No new machine is introduced by the polynomial construction.  The labelled
+relative action, multiplicative response coalgebra, flattened program
+category, and finite relative trajectory object are four presentations of the
+same evaluated Mealy semantics:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+    (\Phi^{\ast}Y,\Lambda_{\Phi,Y})
+        \arrow[r,shift left=1.2ex,"\text{curry}"]
+        \arrow[d,"\int_{\mathbb A}"']
+    &
+    c_{\Phi,Y}
+        \arrow[l,shift left=1.2ex,"\text{uncurry}"']
+        \arrow[d,"\text{flatten}"]
+    \\
+    \mathsf{Prog}_{\Phi,Y}
+        \arrow[r,equal]
+        \arrow[d,"\operatorname{Path}"']
+    &
+    \mathsf{Prog}_{\Phi,Y}
+        \arrow[d,"\operatorname{Path}"]
+    \\
+    \mathscr T_{\Phi,Y}
+        \arrow[r,equal]
+    &
+    \mathscr T_{\Phi,Y}.
+\end{tikzcd}
+\]
+The next chapter places predicates on each of these presentations.  Span
+modalities quantify over selected one-step execution witnesses, polynomial
+predicate liftings quantify over positions in total response profiles, and
+trajectory modalities quantify over the finite paths of the relative
+execution category.
+\end{remark}

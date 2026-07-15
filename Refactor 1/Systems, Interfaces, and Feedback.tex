@@ -1,3 +1,4 @@
+```latex
 \chapter{Systems, Interfaces, and Feedback}
 \label{chap:systems-interfaces-feedback}
 
@@ -46,8 +47,12 @@ This is not merely an analogy.  The formal objects developed below directly
 realize the basic vocabulary of systems and cybernetics.  Interfaces are
 internal categories.  Open systems are Mealy morphisms.  Maps of systems are
 Mealy simulations.  Interconnection is pullback over shared interface data.
-Behavior is residual semantics.  Specifications are subobjects of behavior
-space.  Environments are downstream actions.  Feedback is trace over a hidden
+Behavior is residual semantics.  Behavioral predicates are subobjects of
+behavior space, and derivative-closed predicates may be read as residual
+behavioral contracts.  The theory also contains several distinct exact forms
+of abstraction: representation as a Mealy morphism, semantic black-boxing,
+Myhill--Nerode minimization, and contract-relative quotienting of operations.
+Environments are downstream actions.  Feedback is trace over a hidden
 interface.  Parallelism is product tensor.  True concurrency is cubical
 execution.
 
@@ -346,8 +351,10 @@ witnesses.
 \section{The systems dictionary}
 \label{sec:systems-dictionary}
 
-The systems-theoretic reading used throughout the manuscript is summarized by
-the following dictionary:
+The principal systems-theoretic reading available for the formalism is
+summarized by the following dictionary.  The entries concerning contracts and
+abstraction are intended as translations into established systems language;
+they do not require the technical development to replace its own terminology.
 \[
 \begin{array}{c|c}
 \text{systems-theoretic language}
@@ -411,13 +418,37 @@ the following dictionary:
 &
 \text{behavior assignment}
 \\
-\text{specification}
+\text{behavioral predicate or raw contract}
 &
-\text{coequational subobject of behavior}
+\text{subobject of canonical behavior}
 \\
-\text{black-boxing}
+\text{residual behavioral contract}
 &
-\text{semantic image or residual quotient}
+\text{derivative-closed coequational subobject}
+\\
+\text{contract presentation}
+&
+\text{map into canonical behavior}
+\\
+\text{contract satisfaction}
+&
+\text{factorization of the semantic map}
+\\
+\text{structural abstraction}
+&
+\text{representation as a Mealy morphism}
+\\
+\text{behavioral or black-box abstraction}
+&
+\text{semantic image of a system}
+\\
+\text{minimal residual abstraction}
+&
+\text{Myhill--Nerode quotient and minimal realization}
+\\
+\text{contract-relative operational abstraction}
+&
+\text{quotient by the operation congruence}
 \\
 \text{may modality}
 &
@@ -461,8 +492,11 @@ The table should be read as a disciplined interpretation rather than as a
 loose metaphor.  The point is not that every word from systems theory is
 automatically available.  The point is that the central structural words of
 systems theory---interface, system, interaction, behavior, specification,
-environment, feedback, and concurrency---already have precise mathematical
-realizations in the categorical automata developed here.
+contract, abstraction, environment, feedback, and concurrency---have precise
+translations in the categorical automata developed here.  In particular,
+``contract'' and ``abstraction'' are not single additional structures imposed
+on the theory.  They name several structures that are already distinguished
+categorically.
 
 \section{Composition as interconnection}
 \label{sec:composition-as-interconnection}
@@ -638,14 +672,387 @@ theory most directly.  A system is not only a state machine.  It is also a
 generator of admissible behavior inside a universe of possible behavior
 \cite{Willems2007BehavioralApproach,AdamDahleh2019AbstractBehavioralApproach}.
 
-\section{Specifications and requirements}
+\section{Contracts and the several forms of abstraction}
+\label{sec:contracts-and-abstraction}
+
+The words ``contract'' and ``abstraction'' are used in several neighboring
+areas of systems theory, but neither word has a unique mathematical meaning.
+The constructions of this manuscript admit precise translations into that
+language.  This section records those translations without changing the
+technical names of the constructions themselves.
+
+\subsection{Behavioral predicates and residual contracts}
+\label{subsec:behavioral-predicates-residual-contracts}
+
+Fix interfaces \(A\) and \(B\), put
+\[
+  Z=A_0\times B_0,
+\]
+and write
+\[
+  \mathrm{Beh}_0
+\]
+for the carrier of the canonical behavior object
+\[
+  \mathrm{Beh}^{\mathrm{can}}_{A,B}.
+\]
+An arbitrary subobject
+\[
+  C\hookrightarrow \mathrm{Beh}_0
+\]
+in \(\mathcal E/Z\) is a \emph{behavioral predicate}: it selects a class of
+admissible residual behaviors.  In systems language, such a predicate may be
+read as a \emph{raw behavioral contract}.  It states which behaviors are
+allowed, but it need not yet be stable under continued interaction.
+
+A behavioral predicate
+\[
+  V\hookrightarrow \mathrm{Beh}_0
+\]
+is \emph{residually invariant} when it is closed under every canonical
+derivative:
+\[
+  H\in V_v,\quad a:u\to v
+  \quad\Longrightarrow\quad
+  \partial_aH\in V_u.
+\]
+Equivalently, the canonical derivative map restricts to \(V\).  The technical
+term for such a predicate is a \emph{local coequational theory}.  Its
+systems-theoretic translation is a \emph{residual behavioral contract}.  The
+word ``residual'' records the decisive closure condition: a behavior admitted
+now must continue to satisfy the contract after every typed input event for
+which a residual behavior is formed.
+
+A map
+\[
+  k:K\to \mathrm{Beh}_0
+\]
+is more general than a subobject.  It presents a family of designated
+behaviors and may therefore be read as a \emph{contract presentation}.  Its
+derivative image
+\[
+  \mathrm{Der}_0(K)
+\]
+is the least residual behavioral contract containing the image of \(k\).  In
+this interpretation, \(\mathrm{Der}_0(K)\) is the \emph{generated residual
+contract} of the presentation.
+
+There are in fact two canonical ways to pass between arbitrary behavioral
+predicates and residual contracts.  Let
+\[
+  \mathsf{Pred}_{A,B}
+  =
+  \operatorname{Sub}_{\mathcal E/Z}(\mathrm{Beh}_0)
+\]
+be the poset of behavioral predicates, and let
+\[
+  \mathsf{RCtr}_{A,B}
+  \subseteq
+  \mathsf{Pred}_{A,B}
+\]
+be the full subposet of residually invariant predicates.  Write
+\[
+  I_{\partial}:
+  \mathsf{RCtr}_{A,B}
+  \hookrightarrow
+  \mathsf{Pred}_{A,B}
+\]
+for the inclusion.
+
+For a predicate \(C\), its \emph{generated residual closure}
+\[
+  \operatorname{Gen}_{\partial}(C)
+\]
+is the least residually invariant predicate containing \(C\).  It is computed
+by the derivative image:
+\[
+  \operatorname{Gen}_{\partial}(C)
+  =
+  \operatorname{im}
+  \left(
+    A_1\times_{t_A,A_0,p_C}C
+    \xrightarrow{\;\partial(1\times j_C)\;}
+    \mathrm{Beh}_0
+  \right).
+\]
+Thus \(\operatorname{Gen}_{\partial}\) freely adds every residual consequence
+forced by the behaviors already admitted by \(C\).
+
+Dually, let
+\[
+  D\mathrm{Beh}
+  =
+  A_1\times_{t_A,A_0,p_{\mathrm{Beh}}}\mathrm{Beh}_0,
+\]
+and write
+\[
+  \pi_{\mathrm{Beh}}:D\mathrm{Beh}\to\mathrm{Beh}_0,
+  \qquad
+  \partial:D\mathrm{Beh}\to\mathrm{Beh}_0
+\]
+for the projection to the original behavior and the canonical derivative.
+The \emph{residual safety core} of \(C\) is
+\[
+  \operatorname{Safe}_{\partial}(C)
+  =
+  \forall_{\pi_{\mathrm{Beh}}}\bigl(\partial^\ast C\bigr).
+\]
+Here the pullback and dependent universal quantification are taken in
+\(\mathcal E\), and the resulting subobject of \(\mathrm{Beh}_0\) is viewed
+over \(Z\).  Internally,
+\[
+  H\in\operatorname{Safe}_{\partial}(C)
+  \quad\Longleftrightarrow\quad
+  \forall a:u\to p_{\mathrm{Beh}}(H),\;
+  \partial_aH\in C.
+\]
+It is the greatest residually invariant predicate contained in \(C\).  It
+removes precisely those behaviors having some residual continuation that
+violates the original predicate.
+
+These constructions form the adjoint triple
+\[
+  \boxed{
+  \operatorname{Gen}_{\partial}
+  \dashv
+  I_{\partial}
+  \dashv
+  \operatorname{Safe}_{\partial}.
+  }
+\]
+Consequently,
+\[
+  \operatorname{Safe}_{\partial}(C)
+  \leq
+  C
+  \leq
+  \operatorname{Gen}_{\partial}(C),
+\]
+and the residual behavioral contracts are exactly the common fixed points:
+\[
+  \operatorname{Gen}_{\partial}(V)=V
+  \quad\Longleftrightarrow\quad
+  V\text{ is residually invariant}
+  \quad\Longleftrightarrow\quad
+  \operatorname{Safe}_{\partial}(V)=V.
+\]
+The left adjoint gives the least contract obtained by closing a predicate
+under residual behavior.  The right adjoint gives the largest contract that
+can safely be asserted inside a possibly non-invariant predicate.
+
+When the ambient subobject lattices are Heyting algebras, an
+assumption--guarantee pair can also be represented at the predicate level.
+For behavioral predicates
+\[
+  \mathsf{Assm},\mathsf{Guar}
+  \hookrightarrow
+  \mathrm{Beh}_0,
+\]
+the implication
+\[
+  \mathsf{Assm}\Rightarrow\mathsf{Guar}
+\]
+is a raw assume--guarantee contract, while
+\[
+  \operatorname{Safe}_{\partial}
+  \bigl(\mathsf{Assm}\Rightarrow\mathsf{Guar}\bigr)
+\]
+is its largest residual behavioral contract.  This translation locates
+assumption--guarantee reasoning inside the semantic doctrine; it does not by
+itself assert a complete assume--guarantee calculus.
+
+A system
+\[
+  P:A\rightsquigarrow B
+\]
+satisfies a residual behavioral contract \(V\) precisely when its semantic map
+factors through \(V\):
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  P
+    \ar[rr,"\beta_P"]
+    \ar[dr,dashed,"\bar\beta_P"']
+  &&
+  \mathrm{Beh}^{\mathrm{can}}_{A,B}
+  \\
+  &
+  V
+    \ar[ur,hook,"j_V"']
+  &
+\end{tikzcd}
+\]
+Equivalently,
+\[
+  \mathrm{Beh}(P)\leq V.
+\]
+Thus the usual model relation may be read as \emph{contract satisfaction}.
+The semantic image \(\mathrm{Beh}(P)\) is the least residual behavioral
+contract through which the semantics of \(P\) factors, and may therefore be
+read as the \emph{principal residual contract generated by the system}.
+Conversely, the restriction of the canonical behavior machine to \(V\) is the
+canonical realization of that contract.
+
+\subsection{Several exact meanings of abstraction}
+\label{subsec:several-exact-meanings-abstraction}
+
+The theory contains several mathematically distinct operations that may all be
+described informally as abstraction.  They should not be conflated.
+
+\paragraph{Structural abstraction.}
+A concrete stateful mechanism is structurally abstracted when it is represented
+as a Mealy morphism
+\[
+  P:A\rightsquigarrow B.
+\]
+This forgets implementation detail not represented by the chosen state object,
+interfaces, transition, and output maps.  It is abstraction into the formal
+language of the theory rather than a quotient constructed inside that
+language.
+
+\paragraph{Behavioral or black-box abstraction.}
+The terminal semantic map has a regular epi--mono factorization
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+  P
+    \ar[rr,"\beta_P"]
+    \ar[dr,two heads,"\eta_P"']
+  &&
+  \mathrm{Beh}^{\mathrm{can}}_{A,B}
+  \\
+  &
+  \mathrm{Beh}(P)
+    \ar[ur,hook]
+  &
+\end{tikzcd}
+\]
+The passage
+\[
+  P\twoheadrightarrow\mathrm{Beh}(P)
+\]
+forgets distinctions between states that have the same residual semantics.
+This is the basic \emph{behavioral abstraction} or \emph{black-box
+abstraction} of a system.
+
+\paragraph{Minimal residual abstraction.}
+For a behavior or contract presentation
+\[
+  k:K\to\mathrm{Beh}_0,
+\]
+the formal derivative orbit \(D_K\) carries a residual evaluation map whose
+kernel pair is the Myhill--Nerode equivalence
+\[
+  {\equiv_K}.
+\]
+The quotient satisfies
+\[
+  D_K/{\equiv_K}
+  \cong
+  \mathrm{Der}_0(K),
+\]
+and the corresponding restricted canonical machine
+\[
+  \mathrm{Min}(K)
+\]
+is the minimal reachable behaviorally separated realization of the generated
+residual contract.  This is a stronger abstraction than merely taking the
+semantic image of a pre-existing implementation: it constructs the canonical
+minimal residual realization of the presented behavior.
+
+\paragraph{Contract-relative operational abstraction.}
+A residual behavioral contract
+\[
+  V\hookrightarrow\mathrm{Beh}_0
+\]
+determines an observational congruence \(R_V\) on input operations.  Two
+suitably typed operations are identified when they induce the same
+transition--output action on every behavior admitted by \(V\):
+\[
+  a\,R_V\,a'
+  \quad\Longleftrightarrow\quad
+  \forall H\in V,\;
+  \chi_V(a,H)=\chi_V(a',H).
+\]
+The quotient
+\[
+  \mathrm{Op}(V)
+  \cong
+  A^{\mathrm{op}}/R_V
+\]
+is therefore the \emph{contract-relative operational abstraction}: it retains
+exactly the operational distinctions observable by behaviors satisfying
+\(V\).  For a presentation \(k\), the syntactic transition--output category
+\[
+  \mathrm{SynTO}(K)
+  =
+  \mathrm{Op}\bigl(\mathrm{Der}_0(K)\bigr)
+\]
+is the corresponding syntactic abstraction of the generated residual
+contract.
+
+These meanings of abstraction act on different data:
+\[
+\begin{array}{c|c|c}
+\text{form of abstraction}
+&
+\text{data being abstracted}
+&
+\text{result}
+\\
+\hline
+\text{structural}
+&
+\text{concrete mechanism}
+&
+\text{Mealy morphism}
+\\
+\text{behavioral or black-box}
+&
+\text{implementation states}
+&
+\mathrm{Beh}(P)
+\\
+\text{minimal residual}
+&
+\text{formal residual presentations}
+&
+\mathrm{Min}(K)
+\\
+\text{contract-relative operational}
+&
+\text{input operations}
+&
+\mathrm{Op}(V)
+\end{array}
+\]
+They are exact images or quotients.  They are not, merely by being called
+abstractions, instances of approximate abstract interpretation.  Such an
+interpretation would require additional concrete and abstract domains, an
+approximation order, and a soundness relation.
+
+The technical vocabulary of residual behavior, semantic image,
+Myhill--Nerode quotient, local coequational theory, operation congruence, and
+syntactic transition--output category remains more discriminating than the
+single words ``contract'' and ``abstraction.''  The purpose of the present
+translation is therefore interpretive: it identifies how established systems
+language maps onto the categorical structures without requiring those
+structures to be renamed elsewhere.
+
+\section{Specifications, contracts, and requirements}
 \label{sec:specifications-and-requirements}
 
-Specifications are behavioral constraints.  Locally, a specification is a
-subobject of canonical behavior:
+Specifications are behavioral constraints.  An arbitrary specification may be
+represented by a behavioral predicate
 \[
-  V\hookrightarrow \mathrm{Beh}^{\mathrm{can}}_{A,B}.
+  C\hookrightarrow \mathrm{Beh}_0.
 \]
+In the translation established above, this is a raw behavioral contract.  A
+specification stable under every residual derivative is a local coequational
+theory
+\[
+  V\hookrightarrow \mathrm{Beh}^{\mathrm{can}}_{A,B},
+\]
+and may be read as a residual behavioral contract.
+
 A system
 \[
   P:A\rightsquigarrow B
@@ -665,20 +1072,43 @@ satisfies the specification when its semantic map factors through \(V\):
   &
 \end{tikzcd}
 \]
-The class of all such systems is the model class of \(V\).
+The class of all such systems is the model class of \(V\).  In contract
+language, the same factorization says that \(P\) satisfies \(V\).  The
+terminological translation adds no new satisfaction relation: modelhood and
+contract satisfaction are the same semantic factorization.
 
-Thus requirements are semantic before they are syntactic.  Syntax is later
-extracted from behavior through transition-output images, operational
-congruences, and syntactic transition-output categories.  This reverses a
-common order of presentation.  Rather than beginning with an algebra of syntax
-and then assigning semantics, the manuscript first constructs behavior space
-and then extracts the algebraic syntax recognized by behavioral constraints.
+The distinction between a raw predicate and a residual contract clarifies two
+ways of repairing a specification that is not derivative-closed.  Its
+generated residual closure
+\[
+  \operatorname{Gen}_{\partial}(C)
+\]
+adds all residual consequences and is the least residual contract containing
+\(C\).  Its residual safety core
+\[
+  \operatorname{Safe}_{\partial}(C)
+\]
+removes unsafe behaviors and is the greatest residual contract contained in
+\(C\).  These are respectively the permissive closure and conservative core
+of the original requirement.
+
+Requirements are semantic before they are syntactic.  Syntax is extracted
+from behavior through transition-output images, operational congruences, and
+syntactic transition-output categories.  This reverses a common order of
+presentation.  Rather than beginning with an algebra of syntax and then
+assigning semantics, the manuscript first constructs behavior space and then
+extracts the algebraic syntax recognized by behavioral constraints.
 
 The Birkhoff theorems express this idea categorically.  Behaviorally
 definable classes of systems are exactly those closed under the appropriate
 system-theoretic operations: homomorphic preimage, quotient, coproduct, and
-reindexing, depending on the local or global setting.  The result is a
-categorical theory of requirements and model classes.
+reindexing, depending on the local or global setting.  Under the contract
+translation, these are contract-definability theorems: they characterize the
+classes of systems definable by residual behavioral contracts.  Under the
+abstraction translation, the semantic image supplying the defining theory is
+the behavioral abstraction generated by the class.  These readings are
+interpretive descriptions of the same categorical results, not alternative
+technical formulations.
 
 \section{Observation and dynamic logic}
 \label{sec:observation-and-dynamic-logic}
@@ -953,6 +1383,10 @@ the categorical structure supports it.
 \label{sec:systems-reading-guide}
 
 The chapters that follow develop the formal machinery behind the dictionary.
+The contract and abstraction vocabulary recorded in
+Section~\ref{sec:contracts-and-abstraction} is a translation of that machinery;
+the technical development may retain the more specific terms appropriate to
+each construction.
 
 The first technical layer constructs Mealy morphisms between internal
 categories and Mealy simulations between them.  This gives the basic calculus
@@ -1001,13 +1435,17 @@ systems.  Interactions are the operations that compose, couple, tensor,
 execute, iterate, or trace systems.  Pullbacks express interconnection by
 shared interface data.  Downstream actions provide environments.  Relative
 program categories describe execution in an environment.  Residual semantics
-gives behavior.  Coequational subobjects give specifications.  Homwise
-coproduct gives choice.  Product tensor gives parallelism and, after cubical
-resolution, true concurrency.  Coproduct trace gives feedback by finite
-hidden-path closure.
+gives behavior.  Behavioral predicates give raw contracts, while
+derivative-closed coequational subobjects give residual contracts and
+specifications.  Semantic images, Myhill--Nerode quotients, and operational
+congruences provide distinct exact forms of abstraction.  Homwise coproduct
+gives choice.  Product tensor gives parallelism and, after cubical resolution,
+true concurrency.  Coproduct trace gives feedback by finite hidden-path
+closure.
 
 The point is not metaphorical.  The categorical structures themselves carry
 the systems-theoretic interpretation.  Category theory with persistent state
 naturally becomes a theory of typed open systems, their interfaces, their
 interactions, their maps, their behavior, their feedback, and their concurrent
 execution.
+```

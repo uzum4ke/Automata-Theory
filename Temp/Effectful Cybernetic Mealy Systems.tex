@@ -1,0 +1,2219 @@
+\chapter{Effectful Cybernetic Mealy Systems}
+\label{chap:effectful-cybernetic-mealy-systems}
+
+\section{Orientation}
+\label{sec:effectful-cybernetic-orientation}
+
+The preceding chapters developed Mealy morphisms as typed stateful open systems.  A Mealy morphism
+\[
+\Phi:A\rightsquigarrow B
+\]
+has an input interface \(A\), an output interface \(B\), an internal state carrier, a transition
+structure, and an output-comparison structure.  It is therefore a typed deterministic open process:
+a current state and an admissible input event determine a next state together with a structured
+output event.
+
+This chapter adds effects to that process presentation and then uses the resulting effectful Mealy
+systems to describe cybernetic feedback.  The guiding progression is
+\[
+\text{Mealy morphism}
+\quad\leadsto\quad
+\text{typed deterministic open process}
+\quad\leadsto\quad
+\text{effectful typed open process}
+\quad\leadsto\quad
+\text{feedback-closed cybernetic process}.
+\]
+Probability appears as one instance of the effect structure.  The first constructions do not depend
+on probability.  They apply equally to nondeterminism, partiality, weighted computation,
+probability, subprobability, and combinations of such effects whenever the corresponding response
+effect has been constructed.
+
+The central thesis of the chapter is:
+\[
+\boxed{
+\text{An effectful cybernetic system is a feedback composite of effectful Mealy components.}
+}
+\]
+In the probabilistic instance this becomes a typed categorical model of reinforcement-learning style
+interaction:
+\[
+\boxed{
+\text{environment feedback}
+\quad+\quad
+\text{stateful policy}
+\quad+\quad
+\text{optimizer/update dynamics}
+\quad+\quad
+\text{feedback closure}.
+}
+\]
+
+There are four distinctions to keep separate.
+
+First, a one-step transition-output assignment is not yet a Mealy morphism.  It becomes a Mealy
+morphism only when it satisfies the identity and composite-input laws.
+
+Second, an open Mealy process is not yet an autonomous process.  It has shape
+\[
+\text{state}+\text{admissible input}
+\longmapsto
+\text{next state}+\text{output}.
+\]
+Only after the input-output boundary is closed by a policy, controller, or environment does one
+obtain an autonomous process.
+
+Third, output is not automatically reward.  A Mealy morphism produces structured output in the
+output interface.  A reward process is obtained only when part of this output is interpreted as a
+reward, cost, performance signal, or value certificate.
+
+Fourth, feedback trace supplies wiring.  It does not by itself create optimization or learning.
+Those are stateful components of the controller.  The trace hides the plant-controller interaction
+interface; the controller state carries policy, model, optimizer, and updater information.
+
+This chapter does not prove convergence, optimality, Bellman optimality, regret bounds, or
+statistical consistency.  It constructs the typed categorical process in which such learning
+dynamics live.
+
+\section{Deterministic Mealy Morphisms as Typed Open Processes}
+\label{sec:deterministic-mealy-process-presentation}
+
+Let \(E\) be the ambient category used for internal categories and spans in the preceding chapters.
+Let
+\[
+\Phi:A\rightsquigarrow B
+\]
+be a Mealy morphism with carrier span
+\[
+A_0 \xleftarrow{p} P \xrightarrow{q} B_0 .
+\]
+The object \(P\) is the state object.  The maps \(p\) and \(q\) record the input-side and
+output-side types exposed by a state.
+
+\begin{definition}[Admissible state-input object]
+\label{def:admissible-state-input-object}
+The admissible state-input object of the carrier span \(P\) is
+\[
+D_P
+=
+A_1\times_{t_A,A_0,p}P .
+\]
+When \(P\) is the carrier of \(\Phi\), we also write
+\[
+D_\Phi=D_P .
+\]
+Thus an element of \(D_\Phi\) is a pair
+\[
+(a,x)
+\]
+where
+\[
+a:u\to p(x)
+\]
+is an input arrow of \(A\) whose target matches the input-side exposure of the state \(x\).
+\end{definition}
+
+Write
+\[
+\pi_A:D_\Phi\to A_1,
+\qquad
+\pi_x:D_\Phi\to P
+\]
+for the projections.
+
+\begin{definition}[Typed next-output object]
+\label{def:typed-next-output-object}
+First define
+\[
+E_P
+=
+D_P
+\times_{s_A\pi_A,A_0,p}
+P .
+\]
+Thus \(E_P\) is the object of triples
+\[
+(a,x,y)
+\]
+satisfying
+\[
+t_A(a)=p(x),
+\qquad
+p(y)=s_A(a).
+\]
+Let
+\[
+\pi_y:E_P\to P
+\]
+denote the projection to the third component.  The typed next-output object of the carrier span
+\(P\) is
+\[
+N_P
+=
+E_P
+\times_{(q\pi_y,q\pi_x),\,B_0\times B_0,\,(s_B,t_B)}
+B_1 .
+\]
+Equivalently, \(N_P\) is the object of tuples
+\[
+(a,x,y,\beta)
+\]
+satisfying
+\[
+t_A(a)=p(x),
+\qquad
+p(y)=s_A(a),
+\qquad
+s_B(\beta)=q(y),
+\qquad
+t_B(\beta)=q(x).
+\]
+The projection
+\[
+\rho_P:N_P\to D_P
+\]
+sends
+\[
+(a,x,y,\beta)\longmapsto(a,x).
+\]
+When \(P\) is the carrier of \(\Phi\), we write
+\[
+N_\Phi=N_P .
+\]
+\end{definition}
+
+The deterministic Mealy structure assigns to each admissible pair \((a,x)\) a next state
+\[
+\delta_\Phi(a,x)\in P
+\]
+and an output comparison
+\[
+\omega_\Phi(a,x):q(\delta_\Phi(a,x))\to q(x)
+\]
+in \(B\).  The next state is typed by the source of the input arrow:
+\[
+p(\delta_\Phi(a,x))=s_A(a).
+\]
+Thus the Mealy structure determines a section
+\[
+\chi_\Phi:D_\Phi\to N_\Phi
+\]
+of \(\rho_\Phi:N_\Phi\to D_\Phi\), given elementwise by
+\[
+\chi_\Phi(a,x)
+=
+\bigl(a,x,\delta_\Phi(a,x),\omega_\Phi(a,x)\bigr).
+\]
+
+\begin{proposition}[One-step process presentation]
+\label{prop:one-step-process-presentation}
+Every Mealy morphism
+\[
+\Phi:A\rightsquigarrow B
+\]
+determines a typed deterministic one-step open process
+\[
+P
+\xleftarrow{\;\pi_x\;}
+D_\Phi
+\xrightarrow{\;\delta_\Phi\;}
+P
+\]
+together with a structured output map
+\[
+\omega_\Phi:D_\Phi\to B_1.
+\]
+Equivalently, it determines a section
+\[
+\chi_\Phi:D_\Phi\to N_\Phi
+\]
+of the typed next-output object.
+\end{proposition}
+
+\begin{proof}
+The Mealy transition and output-comparison data assign to each admissible pair
+\[
+(a,x)\in A_1\times_{t_A,A_0,p}P
+\]
+a next state \(\delta_\Phi(a,x)\) and an output arrow
+\[
+\omega_\Phi(a,x):q(\delta_\Phi(a,x))\to q(x).
+\]
+The typing equations are exactly the equations defining \(N_\Phi\).  Hence the assignment
+\[
+(a,x)\mapsto
+\bigl(a,x,\delta_\Phi(a,x),\omega_\Phi(a,x)\bigr)
+\]
+is a section of \(N_\Phi\to D_\Phi\).
+\end{proof}
+
+The converse requires equations.  A section \(D_\Phi\to N_\Phi\) is merely one-step data unless it
+is compatible with identities and composite input events.
+
+\begin{proposition}[Mealy laws in process form]
+\label{prop:mealy-laws-process-form}
+Let
+\[
+A_0\xleftarrow{p}P\xrightarrow{q}B_0
+\]
+be a carrier span.  A section
+\[
+\chi:D_P\to N_P
+\]
+with components
+\[
+(a,x)\longmapsto(\delta(a,x),\omega(a,x))
+\]
+defines a Mealy morphism structure on the carrier span precisely when the following equations hold.
+
+For every state \(x\),
+\[
+\delta(1_{p(x)},x)=x,
+\qquad
+\omega(1_{p(x)},x)=1_{q(x)}.
+\]
+
+For composable input arrows
+\[
+b:w\to u,
+\qquad
+a:u\to p(x),
+\]
+one has
+\[
+\delta(a\circ b,x)
+=
+\delta\bigl(b,\delta(a,x)\bigr),
+\]
+and
+\[
+\omega(a\circ b,x)
+=
+\omega(a,x)\circ
+\omega\bigl(b,\delta(a,x)\bigr).
+\]
+\end{proposition}
+
+\begin{proof}
+The identity equations express the unit law for the input-processing monad
+\[
+R_A=-\circ A
+\]
+acting on the carrier.  The composite-input equations express the algebra multiplication law for
+\(R_A\), with the output comparison composed in \(B\).  Conversely, these equations give precisely
+the unit and multiplication compatibility required for an \(R_A\)-algebra in the Kleisli category
+of the output-comparison monad
+\[
+T_B=B\circ - .
+\]
+Thus the section defines the original Mealy morphism data exactly when these laws hold.
+\end{proof}
+
+The process is open.  It does not define a map
+\[
+P\to P
+\]
+because no input arrow has been chosen.  It instead defines a deterministic controlled transition
+whose admissible input object at \(x\) is the fibre
+\[
+\{a:u\to p(x)\}.
+\]
+
+\subsection{One-object specialization}
+\label{subsec:one-object-deterministic-process-specialization}
+
+When \(A\) and \(B\) are one-object categories, their arrows form monoids.  In the free-monoid
+case
+\[
+A=\Sigma^\ast,
+\qquad
+B=\Gamma^\ast,
+\]
+a classical deterministic Mealy machine has state set \(S\), transition map
+\[
+\tau:S\times \Sigma\to S,
+\]
+and output map
+\[
+\lambda:S\times \Sigma\to \Gamma .
+\]
+The generator-level one-step process presentation is
+\[
+S\times \Sigma\to S\times \Gamma,
+\qquad
+(s,a)\mapsto(\tau(s,a),\lambda(s,a)).
+\]
+The full word-level Mealy morphism is obtained when these one-step maps extend coherently along
+the free monoid, equivalently when the identity and composite-input equations above hold.
+
+\section{Indexed Response Effects}
+\label{sec:indexed-response-effects}
+
+The deterministic one-step process chooses a single next-state/output pair.  An effectful process
+replaces this choice by an effectful response.  The correct place to add the effect is not only the
+next state and not only the output; it is the typed next-state/output object.
+
+The effect must also be indexed.  The response object
+\[
+N_P\to D_P
+\]
+is a displayed family of possible responses over the displayed family of admissible state-inputs.
+Moreover, the composite-input law first samples one response and then uses the sampled next state
+to choose the base of the second response.  Thus ordinary Kleisli extension in a single global
+category is not enough; one needs dependent Kleisli substitution over slices.
+
+\begin{definition}[Response-effect context]
+\label{def:response-effect-context}
+A response-effect context on \(E\) consists of an indexed Kleisli doctrine
+\[
+X\longmapsto \mathsf M_X:E/X\to E/X
+\]
+with the following structure.
+
+\begin{enumerate}
+\item For each object \(X\in E\), \(\mathsf M_X\) is a monad on the slice category \(E/X\).
+
+\item For each map \(f:X'\to X\), there is a reindexing comparison
+\[
+f^\ast\mathsf M_X
+\Longrightarrow
+\mathsf M_{X'}f^\ast
+\]
+compatible with the units and Kleisli extensions.
+
+\item Dependent Kleisli substitution is available: if
+\[
+Y\to X
+\]
+is a displayed response family and
+\[
+Z\to Y
+\]
+is a further displayed response family depending on the first response, then sections
+\[
+r:X\to \mathsf M_X(Y),
+\qquad
+k:Y\to \mathsf M_Y(Z)
+\]
+compose to a section
+\[
+r\bind k:X\to \mathsf M_X(Z).
+\]
+\end{enumerate}
+
+The object
+\[
+\mathsf M_X(Y)\to X
+\]
+is read as the family of effectful responses over the same base \(X\).
+\end{definition}
+
+Thus, if
+\[
+Y\to X
+\]
+is a displayed family of possible responses over inputs \(X\), then
+\[
+\mathsf M_X(Y)\to X
+\]
+is the displayed family of effectful responses over the same inputs.
+
+When \(E\) has a terminal object \(1\), we write
+\[
+\mathsf M=\mathsf M_1
+\]
+for the global effect on \(E\cong E/1\).
+
+\subsection{Basic examples}
+\label{subsec:basic-response-effects}
+
+In finite sets, if \(Y\to X\) has fibres \(Y_x\), then the finite-distribution response effect has
+fibres
+\[
+\mathsf M_X(Y)_x
+=
+\mathcal D(Y_x).
+\]
+The finite powerset response effect has fibres
+\[
+\mathsf M_X(Y)_x
+=
+\mathcal P_{\mathrm f}(Y_x),
+\]
+the maybe response effect has fibres
+\[
+\mathsf M_X(Y)_x
+=
+Y_x+1,
+\]
+and a finite subprobability response effect has fibres given by finite subprobability distributions
+on \(Y_x\).
+
+The intended readings are:
+\[
+\begin{array}{c|l}
+\text{effect} & \text{meaning of an effectful response}\\
+\hline
+\mathrm{Id} & \text{a single deterministic response}\\
+\mathcal P_{\mathrm f} & \text{a finite set of possible responses}\\
+(-)+1 & \text{a response or failure}\\
+\mathcal D & \text{a finite probability distribution over responses}\\
+\mathcal S & \text{a finite subprobability distribution, allowing divergence or nontermination}\\
+\mathcal W & \text{a finite weighted family of responses over a chosen semiring}
+\end{array}
+\]
+
+Probability is therefore not a change to the underlying Mealy shape.  It is one choice of response
+effect.
+
+\section{Effectful Mealy Processes and Effectful Mealy Morphisms}
+\label{sec:effectful-mealy-morphisms}
+
+Let \(A\) and \(B\) be internal categories and let
+\[
+A_0\xleftarrow{p}P\xrightarrow{q}B_0
+\]
+be a carrier span.
+
+\begin{definition}[Effectful one-step Mealy process]
+\label{def:effectful-one-step-mealy-process}
+An \(\mathsf M\)-effectful one-step Mealy process from \(A\) to \(B\) on the carrier span \(P\)
+is a section
+\[
+\kappa:
+D_P
+\longrightarrow
+\mathsf M_{D_P}(N_P)
+\]
+of the effectful response family over \(D_P\).
+\end{definition}
+
+Elementwise, for
+\[
+(a,x)\in D_P,
+\qquad
+a:u\to p(x),
+\]
+the value
+\[
+\kappa(a,x)
+\]
+is an effectful response over the fibre
+\[
+\{(y,\beta)\mid p(y)=u,\;\beta:q(y)\to q(x)\}.
+\]
+Thus, in element notation,
+\[
+\boxed{
+\kappa(a,x)
+\in
+\mathsf M
+\{(y,\beta):p(y)=s_A(a),\;\beta:q(y)\to q(x)\}.
+}
+\]
+
+A one-step effectful response is not yet an effectful Mealy morphism.  It must satisfy the
+effectful versions of the identity and composite-input laws.
+
+\begin{definition}[Composable state-input object]
+\label{def:composable-state-input-object}
+Let
+\[
+A_0\xleftarrow{p}P\xrightarrow{q}B_0
+\]
+be a carrier span.  The composable state-input object is
+\[
+C_P
+=
+\bigl(A_1\times_{s_A,A_0,t_A}A_1\bigr)
+\times_{t_A\pi_1,A_0,p}
+P .
+\]
+Thus an element of \(C_P\) is a triple
+\[
+(a,b,x)
+\]
+where
+\[
+b:w\to u,
+\qquad
+a:u\to p(x).
+\]
+The composite input is
+\[
+a\circ b:w\to p(x).
+\]
+\end{definition}
+
+\begin{definition}[Effectful Mealy morphism]
+\label{def:effectful-mealy-morphism}
+An \(\mathsf M\)-effectful Mealy morphism
+\[
+\Phi:A\rightsquigarrow_{\mathsf M}B
+\]
+consists of a carrier span
+\[
+A_0\xleftarrow{p}P\xrightarrow{q}B_0
+\]
+and an effectful one-step response
+\[
+\kappa_\Phi:D_\Phi\to\mathsf M_{D_\Phi}(N_\Phi)
+\]
+satisfying the following laws.
+
+For every state \(x\),
+\[
+\kappa_\Phi(1_{p(x)},x)
+=
+\eta\bigl(x,1_{q(x)}\bigr),
+\]
+where the right-hand side denotes the unit response at the point
+\[
+(1_{p(x)},x,x,1_{q(x)})\in N_\Phi .
+\]
+
+The composite-input law is an equality of sections over the composable state-input object
+\[
+C_\Phi=C_P .
+\]
+Elementwise, for composable input arrows
+\[
+b:w\to u,
+\qquad
+a:u\to p(x),
+\]
+one has
+\[
+\kappa_\Phi(a\circ b,x)
+=
+\kappa_\Phi(a,x)
+\bind
+\Bigl((y,\beta)\mapsto
+\kappa_\Phi(b,y)
+\bind
+\bigl((z,\gamma)\mapsto
+\eta(z,\beta\circ\gamma)\bigr)
+\Bigr).
+\]
+The right-hand side is formed by dependent Kleisli substitution: after sampling
+\[
+(y,\beta):q(y)\to q(x)
+\]
+from the response to \((a,x)\), the second response is taken at the state \(y\) and input \(b\).
+\end{definition}
+
+Thus the deterministic principle
+\[
+\text{state plus typed input}
+\longmapsto
+\text{next state plus typed output}
+\]
+is replaced by
+\[
+\text{state plus typed input}
+\longmapsto
+\text{effectful next-state/output response}.
+\]
+
+\begin{theorem}[Unit embedding of deterministic Mealy morphisms]
+\label{thm:deterministic-mealy-embedding-effectful}
+Every deterministic Mealy morphism
+\[
+\Phi:A\rightsquigarrow B
+\]
+determines an \(\mathsf M\)-effectful Mealy morphism
+\[
+\eta\Phi:A\rightsquigarrow_{\mathsf M}B
+\]
+by
+\[
+\kappa_{\eta\Phi}(a,x)
+=
+\eta
+\bigl(\delta_\Phi(a,x),\omega_\Phi(a,x)\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+The deterministic Mealy morphism gives a section
+\[
+\chi_\Phi:D_\Phi\to N_\Phi .
+\]
+Composing this section with the unit of the slice effect
+\[
+\eta:N_\Phi\to \mathsf M_{D_\Phi}(N_\Phi)
+\]
+gives the required effectful response map.  The deterministic identity law is sent to the
+effectful identity law by the unit.  For a composite input \(a\circ b\), the deterministic
+composite-input equation says that the unique response to \(a\circ b\) is obtained by first taking
+the unique response to \(a\), then the unique response to \(b\) at the resulting state, and then
+composing the two output comparisons.  Applying the unit of \(\mathsf M\) turns this deterministic
+composition into the displayed dependent Kleisli composite.  Hence \(\eta\Phi\) is an effectful
+Mealy morphism.
+\end{proof}
+
+\section{Effectful Output-Comparison Kleisli Structure}
+\label{sec:effectful-output-comparison-kleisli-structure}
+
+The deterministic output-comparison monad from the Mealy-morphism calculus is
+\[
+T_B=B\circ - .
+\]
+The input-processing monad is
+\[
+R_A=-\circ A .
+\]
+A deterministic Mealy morphism may be regarded as an \(R_A\)-algebra in the Kleisli category of
+\(T_B\).
+
+To add effects, one should not assert that an arbitrary monad composed with \(T_B\) is automatically
+again a monad.  The required object is an effectful output-comparison Kleisli structure.
+
+\begin{definition}[Effectful output-comparison Kleisli structure]
+\label{def:effectful-output-comparison-kleisli-structure}
+An effectful output-comparison Kleisli structure for \(B\) consists of the following data.
+
+\begin{enumerate}
+\item A monad
+\[
+T_B^{\mathsf M}
+\]
+on the relevant local span category
+\[
+\Span(E)(A_0,B_0).
+\]
+
+\item A comparison of monads
+\[
+T_B\longrightarrow T_B^{\mathsf M}
+\]
+embedding deterministic output-comparison cells as unit-valued effectful output-comparison cells.
+
+\item A lift of the input-processing monad
+\[
+R_A=-\circ A
+\]
+to the Kleisli category
+\[
+\Kl(T_B^{\mathsf M}).
+\]
+\end{enumerate}
+\end{definition}
+
+On the process presentation, \(T_B^{\mathsf M}\) sends the deterministic next-output object
+\[
+N_\Phi\to D_\Phi
+\]
+to the effectful next-output object
+\[
+\mathsf M_{D_\Phi}(N_\Phi)\to D_\Phi .
+\]
+In bicategorical notation this is written suggestively as
+\[
+T_B^{\mathsf M}P
+=
+\mathsf M(B\circ P),
+\]
+where \(\mathsf M\) is understood as acting in the appropriate displayed, indexed, or hom-category.
+The notation \(T_B^{\mathsf M}\) records the structure actually needed: an effectful version of
+output comparison together with a Kleisli action of input processing.
+
+\begin{proposition}[Kleisli-algebra form]
+\label{prop:effectful-kleisli-algebra-form}
+Given an effectful output-comparison Kleisli structure for \(B\), an
+\(\mathsf M\)-effectful Mealy morphism
+\[
+\Phi:A\rightsquigarrow_{\mathsf M}B
+\]
+is equivalently an algebra for the lifted input-processing monad
+\[
+R_A
+\]
+in
+\[
+\Kl(T_B^{\mathsf M}).
+\]
+Equivalently, it is a Kleisli algebra structure
+\[
+\alpha_\Phi:
+R_A P
+\longrightarrow
+T_B^{\mathsf M}P,
+\]
+or, informally,
+\[
+P\circ A
+\longrightarrow
+\mathsf M(B\circ P).
+\]
+\end{proposition}
+
+\begin{proof}
+The object \(R_A P=P\circ A\) is the typed state-input object.  The object
+\(T_B^{\mathsf M}P\) is the effectful typed next-state/output-comparison object.  Thus a Kleisli
+arrow
+\[
+R_A P\to T_B^{\mathsf M}P
+\]
+is exactly an effectful one-step response.  The algebra unit law is the identity-input law, and the
+algebra multiplication law is the dependent Kleisli composite-input law.
+\end{proof}
+
+When the response effect comes from a monad that distributes over output comparison, the structure
+\(T_B^{\mathsf M}\) may be constructed as a genuine composite
+\[
+\mathsf M\circ T_B .
+\]
+The definition above isolates the structure needed for the Mealy calculus itself.
+
+\section{Effectful Mealy Simulations}
+\label{sec:effectful-mealy-simulations}
+
+The previous chapters treat not only Mealy morphisms but also maps between them.  In the Mealy
+simulation convention used here, simulations are oppositely directed on state carriers.
+
+\begin{definition}[Strict effectful Mealy simulation]
+\label{def:strict-effectful-mealy-simulation}
+Let
+\[
+\Phi,\Psi:A\rightsquigarrow_{\mathsf M}B
+\]
+be effectful Mealy morphisms with carrier spans
+\[
+A_0\xleftarrow{p_P}P\xrightarrow{q_P}B_0,
+\qquad
+A_0\xleftarrow{p_Q}Q\xrightarrow{q_Q}B_0.
+\]
+A strict effectful Mealy simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+is a map
+\[
+\theta:Q\to P
+\]
+over \(A_0\) and \(B_0\),
+\[
+p_P\theta=p_Q,
+\qquad
+q_P\theta=q_Q,
+\]
+such that the square of effectful responses commutes:
+\[
+\mathsf M(N_\theta)\circ \kappa_\Psi
+=
+\kappa_\Phi\circ D_\theta .
+\]
+Here
+\[
+D_\theta:D_\Psi\to D_\Phi
+\]
+is induced by \(\theta\), and
+\[
+N_\theta:N_\Psi\to N_\Phi
+\]
+sends
+\[
+(a,x,y,\beta)
+\longmapsto
+(a,\theta x,\theta y,\beta).
+\]
+\end{definition}
+
+The map \(N_\theta\) is well typed because \(\theta\) lies over \(B_0\).  If
+\[
+\beta:q_Q(y)\to q_Q(x),
+\]
+then
+\[
+q_P(\theta y)=q_Q(y),
+\qquad
+q_P(\theta x)=q_Q(x),
+\]
+so the same output-comparison arrow \(\beta\) may be read as
+\[
+\beta:q_P(\theta y)\to q_P(\theta x).
+\]
+
+\begin{proposition}[Deterministic simulations embed strictly]
+\label{prop:deterministic-simulations-embed}
+A strict deterministic Mealy simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+with carrier component
+\[
+\theta:Q\to P
+\]
+embeds as a strict effectful Mealy simulation
+\[
+\eta\Theta:\eta\Phi\Rightarrow\eta\Psi .
+\]
+\end{proposition}
+
+\begin{proof}
+The deterministic simulation equation says that transporting the response of \(\Psi\) along
+\(\theta\) agrees with the response of \(\Phi\) after transporting the current state along
+\(\theta\).  Applying the unit of the response effect gives
+\[
+\mathsf M(N_\theta)\circ \kappa_{\eta\Psi}
+=
+\kappa_{\eta\Phi}\circ D_\theta .
+\]
+\end{proof}
+
+More general output-lax simulations are obtained algebraically as Kleisli algebra morphisms for
+\(R_A\) in
+\[
+\Kl(T_B^{\mathsf M}),
+\]
+whenever the effectful output-comparison Kleisli structure is available.  The strict simulations
+above are the identity-output-comparison special case.
+
+\section{Abstract Cybernetic Mealy Architectures}
+\label{sec:abstract-cybernetic-mealy-architectures}
+
+We now move from single open processes to feedback architectures.
+
+A cybernetic system contains a regulated component and a regulating component.  We call the
+regulated component the plant and the regulating component the adaptive controller.  The plant
+consumes actions and produces observations and performance signals.  The controller consumes
+observations and performance signals and produces actions, together with any visible certificates,
+values, or traces.
+
+Let
+\[
+A=\text{action interface},
+\]
+\[
+O=\text{observation interface},
+\]
+\[
+R=\text{reward, cost, or performance interface},
+\]
+and
+\[
+V=\text{visible value, certificate, or trace interface}.
+\]
+
+In the concrete adaptive-controller presentation below, we write
+\[
+V=W\times T,
+\]
+where \(W\) is the value or certificate object and \(T\) is the trace or auxiliary-output object.
+Thus the controller's visible output interface \(V\) records both value/certificate data and
+policy-trace data.
+
+There are two useful operational time conventions.
+
+In the previous-feedback convention, the controller has type
+\[
+\mathbf K_{\mathrm{op}}:O\times R\rightsquigarrow A\times V.
+\]
+The input at time \(t\) is read as
+\[
+(o_t,r_{t-1}).
+\]
+Thus the reward or performance input is the feedback signal available before the current action is
+chosen.
+
+In the decision-update convention used for the closed-loop construction below, the controller is
+decomposed into a within-step policy/evaluator and an across-step updater.  The policy chooses
+using the current observation, and the updater changes the controller state after the plant returns
+the next state and performance signal.
+
+\subsection{Operational cybernetic architecture}
+\label{subsec:operational-cybernetic-architecture}
+
+The compact operational plant and controller have types
+\[
+\mathbf P:A\rightsquigarrow O\times R,
+\qquad
+\mathbf K_{\mathrm{op}}:O\times R\rightsquigarrow A\times V.
+\]
+The operational feedback loop is the synchronous closed-loop process obtained by feeding the action
+output of the controller into the plant and the observation/performance output of the plant back
+into the controller.  In the decision-update convention, this feedback is implemented by the
+policy--plant--updater composite constructed in
+Section~\ref{sec:closed-loop-process-presentation-effectful}.
+
+\subsection{Signed-interface cybernetic architecture}
+\label{subsec:signed-interface-cybernetic-architecture}
+
+In the signed-interface convention, an Int morphism
+\[
+(X^+,X^-)\to(Y^+,Y^-)
+\]
+is represented by a Mealy morphism
+\[
+X^+ + Y^-\rightsquigarrow Y^+ + X^- .
+\]
+Thus the plant
+\[
+\mathbf P:A\rightsquigarrow O\times R
+\]
+represents an Int morphism
+\[
+\mathbf P:(0,0)\to(O\times R,A).
+\]
+The split controller has underlying Mealy type
+\[
+\mathbf K_{\mathrm{sgn}}:O\times R\rightsquigarrow (W\times T)+A.
+\]
+It represents an Int morphism
+\[
+\mathbf K_{\mathrm{sgn}}:(O\times R,A)\to(W\times T,0).
+\]
+Their signed feedback composite is
+\[
+\mathbf K_{\mathrm{sgn}}\circ_{\mathrm{Int}}\mathbf P:(0,0)\to(W\times T,0),
+\]
+where composition traces over the middle signed interface
+\[
+(O\times R,A).
+\]
+
+\begin{definition}[Abstract signed cybernetic Mealy system]
+\label{def:abstract-signed-cybernetic-mealy-system}
+An abstract signed cybernetic Mealy system consists of a plant
+\[
+\mathbf P:A\rightsquigarrow O\times R
+\]
+and a split adaptive controller
+\[
+\mathbf K_{\mathrm{sgn}}:O\times R\rightsquigarrow (W\times T)+A,
+\]
+together with their signed-interface feedback composite
+\[
+\mathbf K_{\mathrm{sgn}}\circ_{\mathrm{Int}}\mathbf P:(0,0)\to(W\times T,0).
+\]
+\end{definition}
+
+The trace supplies the feedback wiring.  The stateful Mealy components supply the transition,
+output, memory, and adaptation.
+
+\section{Effectful Cybernetic Mealy Systems}
+\label{sec:effectful-cybernetic-mealy-systems}
+
+The effectful version replaces the plant and controller by effectful Mealy components.
+
+\begin{definition}[Operational effectful cybernetic Mealy system]
+\label{def:operational-effectful-cybernetic-mealy-system}
+Let \(\mathsf M\) be a response effect.  An operational \(\mathsf M\)-effectful cybernetic Mealy
+system consists of an effectful plant
+\[
+\mathbf P_{\mathsf M}:A\rightsquigarrow_{\mathsf M}O\times R
+\]
+and an effectful operational controller
+\[
+\mathbf K_{\mathsf M,\mathrm{op}}:O\times R\rightsquigarrow_{\mathsf M}A\times(W\times T).
+\]
+Its decision-update closed-loop semantics is the synchronous effectful process constructed in
+Theorem~\ref{thm:closed-loop-effectful-process}.
+\end{definition}
+
+\begin{definition}[Signed effectful cybernetic Mealy system]
+\label{def:signed-effectful-cybernetic-mealy-system}
+Let \(\mathsf M\) be a response effect for which the relevant signed feedback trace is available.
+A signed \(\mathsf M\)-effectful cybernetic Mealy system consists of an effectful plant
+\[
+\mathbf P_{\mathsf M}:A\rightsquigarrow_{\mathsf M}O\times R
+\]
+and an effectful split controller
+\[
+\mathbf K_{\mathsf M,\mathrm{sgn}}:O\times R\rightsquigarrow_{\mathsf M}(W\times T)+A,
+\]
+together with their signed feedback composite
+\[
+\mathbf K_{\mathsf M,\mathrm{sgn}}\circ_{\mathrm{Int}}\mathbf P_{\mathsf M}.
+\]
+\end{definition}
+
+The interpretation is:
+\[
+\boxed{
+\text{trace supplies wiring;}
+}
+\]
+\[
+\boxed{
+\text{the effect supplies one-step uncertainty, branching, failure, cost, or sampling;}
+}
+\]
+\[
+\boxed{
+\text{Mealy state supplies memory and adaptation.}
+}
+\]
+
+The deterministic cybernetic systems are the unit image of the effectful theory.  If
+\[
+\mathsf M=\mathcal D
+\]
+is the finite distribution effect, then deterministic systems embed as Dirac-valued one-step
+systems.
+
+\section{Adaptive Controllers}
+\label{sec:adaptive-controllers-effectful}
+
+For the remainder of the concrete cybernetic presentation, we work in the object-level
+one-object or discrete-interface specialization.  Thus \(A,O,R,W,T\) denote the action,
+observation, reward/performance, value/certificate, and trace objects.  The fully typed
+internal-category version replaces these objects by the corresponding object-of-arrows and by the
+pullbacks enforcing source-target compatibility.
+
+The adaptive controller is itself stateful.  Its internal state decomposes into controller mode,
+policy/model state, optimizer state, and updater memory.
+
+\begin{definition}[Adaptive controller state]
+\label{def:adaptive-controller-state-effectful}
+An adaptive controller has internal state object
+\[
+K_0=C\times \Theta\times Z\times U,
+\]
+where
+\[
+C=\text{controller mode, guard, or safety state},
+\]
+\[
+\Theta=\text{policy, model, parameter, critic, or belief state},
+\]
+\[
+Z=\text{optimizer state},
+\]
+and
+\[
+U=\text{updater memory}.
+\]
+\end{definition}
+
+The four pieces have different functions.  The controller mode \(C\) records modes, guards, and
+safety information.  The policy/model state \(\Theta\) stores the information used to choose
+actions.  The optimizer state \(Z\) stores tie-breaking, search state, cache data, gradient state,
+or other optimization information.  The updater memory \(U\) stores the information needed to
+change future controller behaviour.
+
+\subsection{Guards and admissible actions}
+\label{subsec:effectful-guards-admissible-actions}
+
+A controller may restrict the actions that are currently admissible.  This is represented by a
+subobject
+\[
+G\hookrightarrow C\times O\times A.
+\]
+In finite sets, this is equivalently a family of admissible action sets
+\[
+G(c,o)\subseteq A.
+\]
+
+Let
+\[
+J=Z\times\Theta\times C\times O.
+\]
+Pull back the guard along
+\[
+J\times A\to C\times O\times A
+\]
+to obtain
+\[
+G_J\hookrightarrow J\times A.
+\]
+Thus \(G_J\) is the object of tuples
+\[
+(z,\theta,c,o,a)
+\]
+such that \(a\) is admissible in mode \(c\) under observation \(o\).
+
+\subsection{Evaluation}
+\label{subsec:effectful-evaluation}
+
+Let \(W\) be a value or certificate object.  An evaluator is a map
+\[
+Q:\Theta\times C\times O\times A\longrightarrow W.
+\]
+For fixed \((\theta,c,o)\), the evaluator assigns to each admissible action \(a\) a value
+\[
+Q(\theta,c,o,a).
+\]
+The evaluator scores actions; it does not itself have to choose one.
+
+\subsection{Effectful guarded policies}
+\label{subsec:effectful-policies}
+
+Let \(T\) be a trace or auxiliary-output object.  Elements of \(T\) may record log-probabilities,
+value estimates, gradients, scores, chosen branches, certificates, or other data needed for
+learning.
+
+\begin{definition}[Effectful guarded policy]
+\label{def:effectful-guarded-policy}
+An effectful guarded policy is a response map over \(J\)
+\[
+\Pi_G:
+J\longrightarrow
+\mathsf M_J\bigl(G_J\times_J(T\times Z)\bigr).
+\]
+Elementwise, this is a response
+\[
+\Pi_G(z,\theta,c,o)
+\in
+\mathsf M\{(a,t,z^+)\mid a\in G(c,o)\}.
+\]
+The induced unguarded policy is obtained by composing with the inclusion
+\[
+G_J\times_J(T\times Z)
+\hookrightarrow
+J\times A\times T\times Z.
+\]
+\end{definition}
+
+In deterministic greedy control, the policy is the unit of a selected action, trace, and next
+optimizer state:
+\[
+\Pi(z,\theta,c,o)
+=
+\eta(a^\ast,t^\ast,z^+).
+\]
+In probabilistic control, \(\Pi(z,\theta,c,o)\) is a distribution over admissible actions, traces,
+and next optimizer states.
+
+\subsection{Optimizers and the max/argmax instance}
+\label{subsec:effectful-optimizers}
+
+A deterministic greedy optimizer is a special case of an effectful policy mechanism.  In this
+subsection, \(W\) is read in an ordered-value specialization, so that values of
+\[
+Q:\Theta\times C\times O\times A\to W
+\]
+can be compared along admissible action fibres.
+
+An optimizer may produce
+\[
+\Omega:Z\times\Theta\times C\times O
+\longrightarrow A\times T\times W\times Z.
+\]
+Writing
+\[
+\Omega(z,\theta,c,o)=(a^\ast,t^\ast,w^\ast,z^+),
+\]
+the intended equations are
+\[
+a^\ast\in \operatorname{argmax}_{a\in G(c,o)}Q(\theta,c,o,a),
+\]
+and
+\[
+w^\ast=\max_{a\in G(c,o)}Q(\theta,c,o,a).
+\]
+
+This max/argmax structure is important, but it is not the universal form of optimization.  It is
+the deterministic greedy instance.  In stochastic policy-gradient or entropy-regularized control,
+one may instead produce a distribution
+\[
+\Pi(z,\theta,c,o)\in \mathcal D(G(c,o)\times T\times Z)
+\]
+or update parameters by a gradient-like rule.
+
+The span-valued version avoids choosing a representative maximizer.  The optimizing relation is the
+subobject
+\[
+\operatorname{Opt}_Q
+\hookrightarrow
+Z\times\Theta\times C\times O\times A\times T\times W\times Z
+\]
+classifying tuples
+\[
+(z,\theta,c,o,a,t,w,z^+)
+\]
+such that \(a\) is admissible, \(w=Q(\theta,c,o,a)\), and \(w\) is maximal among the values
+\[
+Q(\theta,c,o,b)
+\]
+for admissible \(b\in G(c,o)\).  A deterministic optimizer is a section of this optimizing
+subobject.  Without such a section, the optimizer is naturally span-valued or nondeterministic.
+
+\subsection{Updaters}
+\label{subsec:effectful-updaters}
+
+The updater changes the future controller, policy, model, optimizer, and memory state after the
+plant consequence is observed.
+
+\begin{definition}[Effectful updater]
+\label{def:effectful-updater}
+An effectful updater is a response map
+\[
+\mathcal U:
+C\times\Theta\times Z\times U
+\times O\times A\times T\times W\times R\times O
+\longrightarrow
+\mathsf M(C\times\Theta\times Z\times U).
+\]
+\end{definition}
+
+The input variables are:
+\[
+c,\theta,z,u
+\]
+for the current adaptive-controller state,
+\[
+o
+\]
+for the observation used to choose the present action,
+\[
+a
+\]
+for the selected action,
+\[
+t
+\]
+for the policy trace,
+\[
+w
+\]
+for the value or certificate,
+\[
+r
+\]
+for the resulting reward, cost, or performance signal,
+and
+\[
+o'
+\]
+for the post-action observation.
+
+The distinction is:
+\[
+\boxed{
+\text{policy/optimizer = within-step decision;}
+}
+\]
+\[
+\boxed{
+\text{updater = across-step adaptation.}
+}
+\]
+The policy or optimizer chooses using the current policy/model and optimizer state.  The updater
+changes that state for future choices.
+
+\section{Closed-Loop Process Presentation}
+\label{sec:closed-loop-process-presentation-effectful}
+
+We now derive the autonomous process obtained after closing the plant-controller loop in the
+decision-update presentation.
+
+Let the plant state object be \(X\).  Let the adaptive-controller state object be
+\[
+C\times\Theta\times Z\times U.
+\]
+The closed-loop state object is
+\[
+S=X\times C\times\Theta\times Z\times U.
+\]
+
+Let
+\[
+B_{\mathrm{vis}}
+\]
+be the visible behaviour object.  For reinforcement-learning style systems, a useful choice is
+\[
+B_{\mathrm{vis}}=O\times A\times R\times W\times T,
+\]
+recording observation, action, reward or performance signal, value certificate, and policy trace.
+
+\subsection{Deterministic closed loop}
+\label{subsec:deterministic-closed-loop-effectful-chapter}
+
+In the deterministic case, suppose the plant has transition, observation, and performance maps
+\[
+\tau:X\times A\to X,
+\]
+\[
+h:X\to O,
+\]
+and
+\[
+\rho:X\times A\times X\to R.
+\]
+Suppose the controller uses a deterministic optimizer
+\[
+\Omega:Z\times\Theta\times C\times O\to A\times T\times W\times Z
+\]
+and deterministic updater
+\[
+L:
+C\times\Theta\times Z\times U
+\times O\times A\times T\times W\times R\times O
+\to
+C\times\Theta\times Z\times U.
+\]
+
+Given
+\[
+s=(x,c,\theta,z,u)\in S,
+\]
+define
+\[
+o=h(x).
+\]
+The optimizer produces
+\[
+(a^\ast,t^\ast,w^\ast,z^+)=\Omega(z,\theta,c,o).
+\]
+The plant responds by
+\[
+x'=\tau(x,a^\ast).
+\]
+The post-action observation is
+\[
+o'=h(x').
+\]
+The performance signal is
+\[
+r=\rho(x,a^\ast,x').
+\]
+The updater then produces
+\[
+(c',\theta',z',u')
+=
+L(c,\theta,z^+,u,o,a^\ast,t^\ast,w^\ast,r,o').
+\]
+Thus the closed-loop transition is
+\[
+F:S\to S,
+\]
+defined by
+\[
+F(x,c,\theta,z,u)=(x',c',\theta',z',u').
+\]
+The visible behaviour map is
+\[
+b:S\to B_{\mathrm{vis}},
+\qquad
+b(x,c,\theta,z,u)=(o,a^\ast,r,w^\ast,t^\ast).
+\]
+
+\begin{proposition}[Closed deterministic cybernetic process]
+\label{prop:closed-deterministic-cybernetic-process}
+Every deterministic adaptive cybernetic system of the above form determines an autonomous
+deterministic process
+\[
+F:S\to S
+\]
+on the coupled state object
+\[
+S=X\times C\times\Theta\times Z\times U
+\]
+together with a visible behaviour map
+\[
+b:S\to B_{\mathrm{vis}}.
+\]
+\end{proposition}
+
+\begin{proof}
+The displayed equations define each component of the next closed-loop state uniquely as a function
+of the current closed-loop state.  Hence they define a function \(F:S\to S\).  The same equations
+define the visible behaviour map \(b:S\to B_{\mathrm{vis}}\).
+\end{proof}
+
+\subsection{Effectful closed loop}
+\label{subsec:effectful-closed-loop}
+
+The effectful case replaces deterministic choices by Kleisli composition.
+
+Let the plant be an effectful response
+\[
+\mathcal P:X\times A\longrightarrow \mathsf M(X\times R).
+\]
+Let the observation readout be
+\[
+h:X\to O.
+\]
+Let the policy be
+\[
+\Pi:Z\times\Theta\times C\times O
+\longrightarrow
+\mathsf M(A\times T\times Z).
+\]
+Let the evaluator be
+\[
+Q:\Theta\times C\times O\times A\to W.
+\]
+Let the updater be
+\[
+\mathcal U:
+C\times\Theta\times Z\times U
+\times O\times A\times T\times W\times R\times O
+\longrightarrow
+\mathsf M(C\times\Theta\times Z\times U).
+\]
+
+\begin{theorem}[Closed-loop effectful process]
+\label{thm:closed-loop-effectful-process}
+The above data determine a closed-loop effectful process
+\[
+K:S\to \mathsf M(S\times B_{\mathrm{vis}})
+\]
+on the coupled state object
+\[
+S=X\times C\times\Theta\times Z\times U,
+\]
+where
+\[
+B_{\mathrm{vis}}=O\times A\times R\times W\times T.
+\]
+\end{theorem}
+
+\begin{proof}
+The closed-loop process is the Kleisli composite
+\[
+K:S\to \mathsf M(S\times B_{\mathrm{vis}})
+\]
+defined by the following do-notation:
+\[
+\begin{aligned}
+K(x,c,\theta,z,u)
+=
+{}&
+\text{\rm let } o=h(x) \text{\rm ;}\\
+&
+(a,t,z^+)\leftarrow \Pi(z,\theta,c,o);\\
+&
+\text{\rm let } w=Q(\theta,c,o,a) \text{\rm ;}\\
+&
+(x',r)\leftarrow \mathcal P(x,a);\\
+&
+\text{\rm let } o'=h(x') \text{\rm ;}\\
+&
+(c',\theta',z',u')
+\leftarrow
+\mathcal U(c,\theta,z^+,u,o,a,t,w,r,o');\\
+&
+\eta\bigl((x',c',\theta',z',u'),(o,a,r,w,t)\bigr).
+\end{aligned}
+\]
+The policy, plant, and updater are composable Kleisli arrows for \(\mathsf M\).  The observation
+readout and evaluator are ordinary deterministic maps and therefore enter through the unit of the
+effect.  By associativity of Kleisli composition, the displayed composite is a well-defined map
+\[
+S\to \mathsf M(S\times B_{\mathrm{vis}}).
+\]
+\end{proof}
+
+\begin{corollary}[Unit embedding of deterministic closed loops]
+\label{cor:unit-embedding-deterministic-closed-loops}
+The deterministic closed-loop transition and visible behaviour
+\[
+F:S\to S,
+\qquad
+b:S\to B_{\mathrm{vis}}
+\]
+embed into the effectful theory by
+\[
+K_F(s)=\eta(F(s),b(s)).
+\]
+\end{corollary}
+
+\begin{proof}
+This is the image of the deterministic closed-loop process under the unit of \(\mathsf M\).
+\end{proof}
+
+\begin{remark}[Observation-emitting plants]
+\label{rem:observation-emitting-plants}
+The presentation above uses a deterministic readout
+\[
+h:X\to O
+\]
+and an effectful plant response
+\[
+\mathcal P:X\times A\to\mathsf M(X\times R).
+\]
+A partially observed or sensor-noisy variant replaces this by an observation-emitting plant kernel
+\[
+\mathcal P:X\times A\to\mathsf M(X\times O\times R).
+\]
+The same Kleisli construction applies, with the sampled observation replacing \(h(x')\).
+\end{remark}
+
+\section{Trace-Compatible Effectful Feedback}
+\label{sec:trace-compatible-effectful-feedback}
+
+The operational closed loop above is a synchronous one-cycle feedback construction.  Chapter~9's
+feedback trace is a different but related construction: it hides a coproduct summand by finite
+hidden-path closure.
+
+For spans, a morphism
+\[
+R:X+H\to Y+H
+\]
+has block decomposition
+\[
+R=
+\begin{pmatrix}
+R_{XY} & R_{XH}\\
+R_{HY} & R_{HH}
+\end{pmatrix},
+\]
+and the coproduct trace is
+\[
+\Tr_H(R)
+=
+R_{XY}
+\boxplus
+R_{HY}\circ \Path(R_{HH})\circ R_{XH}.
+\]
+The hidden interface \(H\) is traversed for finitely many hidden steps before exiting.
+
+In an effectful setting, hidden paths must be composed using Kleisli composition.  This is not
+automatic for every response effect.
+
+\begin{definition}[Trace-compatible response effect]
+\label{def:trace-compatible-response-effect}
+A response effect \(\mathsf M\) is trace-compatible on a class of effectful spans if the following
+operations are available inside that class.
+
+\begin{enumerate}
+\item Kleisli composition of effectful spans, denoted
+\[
+\odot .
+\]
+
+\item Finite Kleisli powers of every hidden endospan
+\[
+U:H\to H,
+\qquad
+U^{\odot n}:H\to H.
+\]
+
+\item A finite-path object
+\[
+\Path_{\mathsf M}(U)
+=
+\coprod_{n\geq 0}U^{\odot n}
+\]
+representing finite hidden Kleisli executions.
+
+\item For every block effectful span
+\[
+R:X+H\to Y+H
+\]
+with block decomposition
+\[
+R=
+\begin{pmatrix}
+R_{XY} & R_{XH}\\
+R_{HY} & R_{HH}
+\end{pmatrix},
+\]
+the expression
+\[
+\Tr_H^{\mathsf M}(R)
+=
+R_{XY}
+\boxplus
+R_{HY}\odot
+\Path_{\mathsf M}(R_{HH})
+\odot
+R_{XH}
+\]
+is again an effectful span of the same class.
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[Effectful hidden-path trace]
+\label{prop:effectful-hidden-path-trace}
+For a trace-compatible response effect \(\mathsf M\), every effectful span
+\[
+R:X+H\to Y+H
+\]
+in the trace-compatible class determines a traced effectful span
+\[
+\Tr_H^{\mathsf M}(R):X\to Y
+\]
+by finite Kleisli hidden-path closure.
+\end{proposition}
+
+\begin{proof}
+The trace-compatible structure supplies Kleisli powers
+\[
+R_{HH}^{\odot n}
+\]
+and their finite-path closure
+\[
+\Path_{\mathsf M}(R_{HH})=\coprod_{n\geq 0}R_{HH}^{\odot n}.
+\]
+Composing first from \(X\) into \(H\), then along a finite hidden path, and finally from \(H\) to
+\(Y\), and adding the direct \(X\to Y\) component, gives the displayed formula for
+\(\Tr_H^{\mathsf M}(R)\).
+\end{proof}
+
+For nondeterminism, this collects all finite hidden behaviours.  For subprobability, it sums the
+mass of finite hidden trajectories that eventually exit.  For the finite-distribution monad,
+unbounded hidden-path trace is not automatically a finite distribution.  It is available in guarded
+finite-horizon, nilpotent, or finitely exiting cases, and also after moving to a countable or
+subprobabilistic kernel setting in which the total mass of finite exiting trajectories is defined.
+Otherwise the probabilistic operational closure should be read as a one-step Markov kernel rather
+than as an unbounded coproduct trace.
+
+Thus, for probabilistic cybernetics, it is important to distinguish:
+\[
+\text{synchronous one-cycle closed interaction}
+\]
+from
+\[
+\text{episode-level guarded trace}.
+\]
+The first gives ordinary Markov-kernel dynamics.  The second gives finite rollout or guarded-while
+semantics.
+
+\section{Probabilistic Cybernetic Mealy Systems}
+\label{sec:probabilistic-cybernetic-mealy-systems}
+
+We now instantiate the response effect by finite probability.  Let
+\[
+\mathcal D(X)
+\]
+denote the set of finite probability distributions on \(X\).  In this case an effectful Mealy
+process has response
+\[
+D_\Phi\to \mathcal D_{D_\Phi}(N_\Phi),
+\]
+or elementwise
+\[
+\kappa_\Phi(a,x)
+\in
+\mathcal D
+\{(y,\beta):p(y)=s_A(a),\;\beta:q(y)\to q(x)\}.
+\]
+The deterministic Mealy morphism embeds by Dirac distributions:
+\[
+(a,x)\mapsto
+\delta_{(\delta_\Phi(a,x),\omega_\Phi(a,x))}.
+\]
+
+\begin{definition}[Finite probabilistic adaptive cybernetic system]
+\label{def:finite-probabilistic-adaptive-cybernetic-system}
+A finite probabilistic adaptive cybernetic system consists of:
+\[
+X,\ C,\ \Theta,\ Z,\ U
+\]
+for plant, controller, policy/model, optimizer, and updater state;
+interfaces
+\[
+A,\ O,\ R,\ W,\ T;
+\]
+an observation readout
+\[
+h:X\to O;
+\]
+a guard relation
+\[
+G\hookrightarrow C\times O\times A;
+\]
+a plant kernel
+\[
+\mathcal P:X\times A\to \mathcal D(X\times R);
+\]
+a policy kernel
+\[
+\Pi:Z\times\Theta\times C\times O\to \mathcal D(A\times T\times Z)
+\]
+whose action component is supported on admissible actions;
+an evaluator
+\[
+Q:\Theta\times C\times O\times A\to W;
+\]
+and an updater kernel
+\[
+\mathcal U:
+C\times\Theta\times Z\times U
+\times O\times A\times T\times W\times R\times O
+\to
+\mathcal D(C\times\Theta\times Z\times U).
+\]
+\end{definition}
+
+The closed-loop state is
+\[
+S=X\times C\times\Theta\times Z\times U.
+\]
+The visible behaviour object is usually taken to be
+\[
+B_{\mathrm{vis}}=O\times A\times R\times W\times T.
+\]
+
+\begin{theorem}[Closed-loop Markov kernel]
+\label{thm:closed-loop-markov-kernel}
+Every finite probabilistic adaptive cybernetic system determines a Markov kernel
+\[
+K:S\to \mathcal D(S\times B_{\mathrm{vis}})
+\]
+on the coupled state object
+\[
+S=X\times C\times\Theta\times Z\times U.
+\]
+If the plant, policy, and updater kernels are Dirac-valued, then \(K\) is Dirac-valued and the
+system is deterministic.
+\end{theorem}
+
+\begin{proof}
+The kernel is the Kleisli composite for the finite distribution monad:
+\[
+\begin{aligned}
+K(x,c,\theta,z,u)
+=
+{}&
+\text{\rm let } o=h(x) \text{\rm ;}\\
+&
+(a,t,z^+)\sim \Pi(z,\theta,c,o);\\
+&
+\text{\rm let } w=Q(\theta,c,o,a) \text{\rm ;}\\
+&
+(x',r)\sim \mathcal P(x,a);\\
+&
+\text{\rm let } o'=h(x') \text{\rm ;}\\
+&
+(c',\theta',z',u')
+\sim
+\mathcal U(c,\theta,z^+,u,o,a,t,w,r,o');\\
+&
+\delta_{\bigl((x',c',\theta',z',u'),(o,a,r,w,t)\bigr)} .
+\end{aligned}
+\]
+Since \(\mathcal D\) is a monad, sequencing the policy, plant, and updater kernels gives a
+probability distribution on the resulting closed-loop state and visible behaviour.  If every
+component kernel is Dirac-valued, the composite distribution is Dirac-valued.
+\end{proof}
+
+This is the Markov-process object canonically produced by the probabilistic cybernetic pattern.
+Before feedback closure, the system is an open stochastic controlled process.  After operational
+closure, it is an autonomous Markov kernel on the coupled state object.
+
+\subsection{Relation to controlled Markov processes}
+\label{subsec:relation-to-mdps}
+
+The probabilistic Mealy process has the shape of a typed stochastic controlled process:
+\[
+\text{state}+\text{admissible typed action}
+\longmapsto
+\text{distribution over next state and structured output}.
+\]
+In the one-object finite-set case this resembles the usual controlled kernel
+\[
+X\times A\to \mathcal D(X\times R)
+\]
+together with an observation readout
+\[
+h:X\to O.
+\]
+The general typed version remembers more structure:
+\[
+D_\Phi=A_1\times_{t_A,A_0,p}P
+\]
+is the admissible state-action object, and the outputs are arrows in an output interface rather
+than unstructured labels.
+
+A Markov reward process is obtained only after the reward or performance interface \(R\) is chosen
+as part of the output, or after a further readout map
+\[
+B_1\to R
+\]
+is supplied.  Thus reward is not inherent in the Mealy structure; it is an interpretation of part
+of the structured output.
+
+\section{Examples}
+\label{sec:effectful-cybernetic-examples}
+
+\subsection{Dirac deterministic thermostat}
+\label{subsec:dirac-deterministic-thermostat}
+
+This example illustrates the deterministic unit embedding.
+
+Let the plant state be
+\[
+X=\{0,1,2,3,4\}.
+\]
+Let the action set be
+\[
+A=\{H,I,C\},
+\]
+where \(H\) heats, \(I\) idles, and \(C\) cools.  Define
+\[
+\tau(x,H)=\min(4,x+1),
+\]
+\[
+\tau(x,I)=x,
+\]
+and
+\[
+\tau(x,C)=\max(0,x-1).
+\]
+Let the observation be full-state observation:
+\[
+h(x)=x.
+\]
+Let the performance signal be
+\[
+\rho(x,a,x')=-|x'-2|.
+\]
+
+A deterministic plant kernel is the Dirac kernel
+\[
+\mathcal P(x,a)
+=
+\delta_{(\tau(x,a),\rho(x,a,\tau(x,a)))}.
+\]
+The post-action observation is then recovered as
+\[
+h(\tau(x,a)).
+\]
+A deterministic greedy policy is represented by a Dirac policy kernel
+\[
+\Pi(z,\theta,c,o)=\delta_{(a^\ast,t^\ast,z^+)}
+\]
+where \(a^\ast\) maximizes a chosen evaluator
+\[
+Q(\theta,c,o,a).
+\]
+The closed-loop stochastic process is therefore Dirac-valued.
+
+\subsection{Stochastic thermostat}
+\label{subsec:stochastic-thermostat}
+
+This example illustrates a probabilistic plant kernel.
+
+A stochastic variant keeps the same action set but allows plant noise.  After choosing the intended
+next temperature
+\[
+\bar x=\tau(x,a),
+\]
+the realized next temperature may be
+\[
+x'\in\{\max(0,\bar x-1),\bar x,\min(4,\bar x+1)\}
+\]
+with probabilities depending on external disturbance.  Thus the plant is now a genuine kernel
+\[
+\mathcal P:X\times A\to \mathcal D(X\times R),
+\]
+where the reward component is computed from the realized \(x'\).  The policy may remain
+deterministic, or it may sample among admissible actions.  The feedback-closed system is then a
+Markov kernel on
+\[
+S=X\times C\times\Theta\times Z\times U.
+\]
+
+\subsection{Stochastic bandit learning}
+\label{subsec:stochastic-bandit-learning}
+
+This example illustrates terminal observation and adaptive updating.
+
+Let
+\[
+A=\{0,1\}
+\]
+be the action set.  The observation object is terminal:
+\[
+O=1.
+\]
+Let the reward object be
+\[
+R=\{0,1\}.
+\]
+A stochastic bandit plant is a kernel
+\[
+\mathcal P:X\times A\to \mathcal D(X\times R).
+\]
+For a stationary two-armed bandit, the plant state \(X\) may be terminal and the kernel is
+determined by reward probabilities
+\[
+\Pr(r=1\mid 0)=\mu_0,
+\qquad
+\Pr(r=1\mid 1)=\mu_1.
+\]
+
+Let the policy/model state \(\Theta\) store estimated values
+\[
+\theta=(\hat r_0,\hat r_1).
+\]
+A greedy deterministic policy chooses
+\[
+i^\ast\in\operatorname{argmax}_{i\in A}\hat r_i.
+\]
+An exploratory stochastic policy may instead use
+\[
+\Pi(z,\theta,c,\ast)\in\mathcal D(A\times T\times Z),
+\]
+for example an \(\epsilon\)-greedy or softmax distribution.
+
+The updater changes the estimate of the selected arm after observing the reward:
+\[
+\theta'\sim \mathcal U(c,\theta,z,u,\ast,i,t,w,r,\ast).
+\]
+The deterministic table update is the Dirac special case.  Stochastic approximation, randomized
+exploration schedules, and noisy update rules are represented by non-Dirac updater kernels.
+
+\subsection{Inventory regulation with stochastic demand}
+\label{subsec:stochastic-inventory-regulation}
+
+This example illustrates a stochastic plant with model update.
+
+Let inventory levels be
+\[
+I=\{0,1,2,3,4,5\}
+\]
+and actions be order quantities
+\[
+A=\{0,1,2,3\}.
+\]
+The plant state is the current inventory level \(x\).  Let the true demand be sampled from a
+plant-side distribution
+\[
+d\sim \nu_x,
+\]
+or, in the stationary case,
+\[
+d\sim \nu.
+\]
+Given order \(a\), the stocked amount is
+\[
+y=\min(5,x+a).
+\]
+The next inventory is
+\[
+x'=\max(0,y-d).
+\]
+The reward may be negative cost:
+\[
+r=-(2\max(0,d-y)+\max(0,y-d)+a).
+\]
+Thus
+\[
+\mathcal P(x,a)
+\in
+\mathcal D(I\times R)
+\]
+is induced by the demand distribution.  The policy state \(\Theta\) may store an estimate of the
+demand law, the controller state \(C\) may store cooldown or budget mode, and the updater changes
+\(\Theta\) after observing realized demand.
+
+\subsection{Concurrent plants under a shared adaptive controller}
+\label{subsec:concurrent-plants-effectful}
+
+This example illustrates product tensor together with a coupled controller guard.
+
+Let two plants have state objects \(X_1,X_2\), action interfaces \(A_1,A_2\), and plant kernels
+\[
+\mathcal P_i:X_i\times A_i\to \mathsf M(X_i\times R_i).
+\]
+Their parallel plant has state object
+\[
+X=X_1\times X_2
+\]
+and action object
+\[
+A=A_1\times A_2.
+\]
+
+For a general response effect, forming the product plant requires a product or Fubini operation
+\[
+\mathsf M(X)\times\mathsf M(Y)\to\mathsf M(X\times Y).
+\]
+For independent finite probability, this is the ordinary product distribution:
+\[
+\mathcal P_1\otimes \mathcal P_2.
+\]
+
+A shared controller may impose a coupled guard
+\[
+G\hookrightarrow C\times O_1\times O_2\times A_1\times A_2,
+\]
+such as an energy or resource constraint.  The plant dynamics remain parallel; the controller
+introduces coupled decision-making through the guard and evaluator.  Thus causal dependence through
+the controller does not collapse the plant-side product into interleaving semantics.
+
+\section{Specifications and Behaviour}
+\label{sec:effectful-cybernetic-specifications}
+
+After operational feedback closure, an effectful cybernetic system gives
+\[
+K:S\to \mathsf M(S\times B_{\mathrm{vis}}).
+\]
+State specifications are subobjects
+\[
+\varphi\hookrightarrow S.
+\]
+For relational or nondeterministic effects, the diamond modality expresses possible reachability
+and the box modality expresses necessary preservation.  For probabilistic effects, one may instead
+interpret specifications by probability thresholds, expectation, almost-sure properties, or
+subprobability mass.
+
+In the deterministic unit case
+\[
+K(s)=\eta(F(s),b(s)),
+\]
+the one-step diamond and box reduce to inverse image along \(F\).  Let
+\[
+U_F:S\to S
+\]
+be the endospan associated to \(F:S\to S\).  Finite-execution reachability and invariance are
+expressed by
+\[
+\langle \Path(U_F)\rangle\varphi
+\]
+and
+\[
+[\Path(U_F)]\varphi.
+\]
+Thus one-step modalities are pullback modalities along \(F\), while path modalities are finite
+iteration modalities.
+
+Visible behaviour is obtained by projecting to
+\[
+B_{\mathrm{vis}}.
+\]
+In the deterministic case, an initial state \(s_0\) produces a stream
+\[
+b(s_0),\ b(F(s_0)),\ b(F^2(s_0)),\ldots .
+\]
+In the probabilistic case, an initial state induces a distribution over visible behaviour streams,
+or over finite traces when a guarded finite horizon is chosen.
+
+\section{Chapter Summary}
+\label{sec:effectful-cybernetic-summary}
+
+The constructions of this chapter form the following hierarchy.
+
+\begin{enumerate}
+\item Every deterministic Mealy morphism
+\[
+\Phi:A\rightsquigarrow B
+\]
+has a typed one-step process presentation
+\[
+D_\Phi\to N_\Phi,
+\]
+where
+\[
+D_\Phi=A_1\times_{t_A,A_0,p}P
+\]
+is the admissible state-input object and \(N_\Phi\to D_\Phi\) is the typed next-output object.
+
+\item A one-step process presentation is a Mealy morphism precisely when it satisfies the identity
+and composite-input Mealy laws:
+\[
+\delta(1_{p(x)},x)=x,
+\qquad
+\omega(1_{p(x)},x)=1_{q(x)},
+\]
+and
+\[
+\delta(a\circ b,x)
+=
+\delta\bigl(b,\delta(a,x)\bigr),
+\]
+\[
+\omega(a\circ b,x)
+=
+\omega(a,x)\circ
+\omega\bigl(b,\delta(a,x)\bigr).
+\]
+
+\item A response-effect context is an indexed Kleisli doctrine sending a typed response family
+\[
+N\to D
+\]
+to an effectful response family
+\[
+\mathsf M_D(N)\to D
+\]
+and supporting dependent Kleisli substitution.
+
+\item An effectful Mealy morphism
+\[
+\Phi:A\rightsquigarrow_{\mathsf M}B
+\]
+is an effectful one-step response
+\[
+D_\Phi\to\mathsf M_{D_\Phi}(N_\Phi)
+\]
+satisfying the Kleisli identity law and the dependent Kleisli composite-input law over the
+composable state-input object
+\[
+C_\Phi
+=
+\bigl(A_1\times_{s_A,A_0,t_A}A_1\bigr)
+\times_{t_A\pi_1,A_0,p}
+P .
+\]
+
+\item Deterministic Mealy morphisms embed into effectful Mealy morphisms by the unit of the
+response effect:
+\[
+(a,x)\mapsto
+\eta(\delta_\Phi(a,x),\omega_\Phi(a,x)).
+\]
+
+\item When an effectful output-comparison Kleisli structure is available, including a lift of
+\[
+R_A=-\circ A
+\]
+to
+\[
+\Kl(T_B^{\mathsf M}),
+\]
+effectful Mealy morphisms are \(R_A\)-algebras in
+\[
+\Kl(T_B^{\mathsf M}).
+\]
+
+\item Strict effectful simulations are oppositely directed carrier maps commuting with effectful
+response maps.  A strict simulation
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+with carriers \(P\) and \(Q\) has carrier component
+\[
+\theta:Q\to P.
+\]
+More general output-lax simulations are obtained as Kleisli algebra morphisms in the same
+effectful output-comparison setting.
+
+\item Operational cybernetic feedback produces a closed-loop effectful process
+\[
+K:S\to\mathsf M(S\times B_{\mathrm{vis}})
+\]
+on the coupled state object
+\[
+S=X\times C\times\Theta\times Z\times U.
+\]
+
+\item Signed-interface cybernetic feedback uses the coproduct trace.  The controller must be
+presented in split form
+\[
+O\times R\rightsquigarrow (W\times T)+A
+\]
+to represent an Int morphism
+\[
+(O\times R,A)\to(W\times T,0).
+\]
+
+\item Trace feedback is available for trace-compatible response effects and is computed by
+effectful finite hidden-path closure:
+\[
+\Tr^{\mathsf M}_H(R)
+=
+R_{XY}
+\boxplus
+R_{HY}\odot
+\Path_{\mathsf M}(R_{HH})
+\odot
+R_{XH}.
+\]
+
+\item In the finite probabilistic specialization, the operational closed loop is a Markov kernel
+\[
+K:S\to\mathcal D(S\times B_{\mathrm{vis}}).
+\]
+If the plant, policy, and updater kernels are Dirac-valued, this Markov kernel is deterministic.
+\end{enumerate}
+
+Thus probabilistic reinforcement-learning style interaction is obtained not by replacing the Mealy
+theory, but by choosing the finite distribution response effect and closing the resulting effectful
+Mealy network by cybernetic feedback.

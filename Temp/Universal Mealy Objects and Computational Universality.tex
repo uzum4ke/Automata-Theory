@@ -1,0 +1,3053 @@
+\chapter{Universal Mealy Evaluators and Intensional Program Objects}
+\label{chap:universal-mealy-evaluators}
+
+\section{Orientation: syntax, operators, and behaviour}
+\label{sec:universal-mealy-orientation}
+
+The preceding chapters constructed the ingredients needed for a categorical account of universal
+Mealy evaluation.
+
+Chapter~3 constructed canonical residual behaviour machines.  For a fixed pair of input and output
+interfaces, the behaviour assignment of a Mealy morphism is the unique strict semantic map into the
+canonical behaviour object.  This is a final-semantics form of universality: it classifies residual
+behaviours, not transition operators.
+
+Chapter~5 constructed, for a carrier
+\[
+        I \xleftarrow{p} P \xrightarrow{q} B_0 ,
+\]
+the internal category
+\[
+        \mathrm{KlEnd}_B(P)
+\]
+of fibrewise output-comparison Kleisli endomorphisms of \(P\).  This internal category does not
+classify behaviours.  It classifies executable transition-output operators on the fixed carrier
+\(P\).
+
+Chapter~9 constructed finite hidden execution by feedback trace.  For a sub-endospan
+\[
+        R\hookrightarrow m
+\]
+of an execution span, the associated feedback span
+\[
+        L_R
+        =
+        \begin{pmatrix}
+        0 & 1\\
+        1 & R
+        \end{pmatrix}
+\]
+has trace
+\[
+        \Tr(L_R)\cong \mathrm{Path}(R),
+\]
+where
+\[
+        \mathrm{Path}(R)=\coprod_{n\geq 0}R^{[n]}.
+\]
+Thus trace supplies finite path execution.
+
+The present chapter isolates the fixed-carrier universal-machine structure implicit in these
+constructions.  The central point is that there are two distinct universal objects.
+
+The first is extensional:
+\[
+        \mathsf U_B(P):=\mathrm{KlEnd}_B(P)^{\operatorname{op}}.
+\]
+Its arrows are not syntactic names for transition-output operators.  Its arrows are the internally
+represented transition-output operators themselves, oriented as input instructions.
+
+The second is intensional:
+\[
+        \mathsf{Prog}_B(P)
+        :=
+        \mathrm{FreeCat}\bigl(\mathsf U_B(P)_{\mathrm{gr}}\bigr).
+\]
+Its arrows are formal finite strings of universal instructions.  Composition is concatenation of
+programs, not Kleisli composition of operators.
+
+The canonical comparison between them is the decoding functor
+\[
+        \operatorname{decode}_{B,P}:
+        \mathsf{Prog}_B(P)\longrightarrow \mathsf U_B(P),
+\]
+which sends a formal program to its compiled transition-output operator.
+
+Thus the basic architecture of universal Mealy evaluation is
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathsf{Prog}_B(P)
+\ar[r,"\operatorname{decode}_{B,P}"]
+&
+\mathsf U_B(P)
+\ar[r,"\mathbb U_{B,P}"]
+&
+B .
+\end{tikzcd}
+\]
+The first object is an intensional programming object.  The second object is an extensional
+operator object.  The first map is compilation.  The second displayed Mealy morphism is evaluation.
+
+The chapter separates three levels:
+\[
+\begin{array}{c|c|c}
+\text{level} & \text{canonical object} & \text{equality means} \\ \hline
+\text{formal programs}
+    & \mathsf{Prog}_B(P),\ A,\ C
+    & \text{same formal arrow in the given intensional category} \\
+\text{carrier operators}
+    & \mathsf U_B(P),\ \operatorname{CarOp}(\Phi)
+    & \text{same represented transition-output operation on }P \\
+\text{residual behaviour}
+    & \Beh^{\operatorname{can}}_{A,B}
+    & \text{same residual behaviour.}
+\end{array}
+\]
+
+For \(\mathsf{Prog}_B(P)\), equality is equality of finite paths in the underlying graph of
+\(\mathsf U_B(P)\).  Since the primitive letters of this graph are already arrows of
+\(\mathsf U_B(P)\), primitive equality is already operator equality.  The intensional distinction
+is therefore a distinction between formal composites and their compiled one-step operator effects.
+
+This distinction is essential.  A Mealy input category may remember generators, labels, program
+texts, derivations, circuits, proof terms, machine descriptions, or other syntactic structure.
+Extensionality appears only after such syntax is interpreted as a transition-output operation on
+the carrier \(P\).  The category
+\[
+        \mathsf U_B(P)
+\]
+is the canonical target of that interpretation.
+
+The main constructions of the chapter are:
+\[
+\begin{array}{c|c}
+\text{construction} & \text{role} \\ \hline
+\mathsf U_B(P)=\mathrm{KlEnd}_B(P)^{\operatorname{op}}
+    & \text{universal extensional operator category} \\
+\mathbb U_{B,P}:\mathsf U_B(P)\rightsquigarrow B
+    & \text{universal extensional Mealy evaluator} \\
+\mathsf{Prog}_B(P)=\mathrm{FreeCat}(\mathsf U_B(P)_{\mathrm{gr}})
+    & \text{canonical intensional straight-line program category} \\
+\operatorname{decode}_{B,P}:\mathsf{Prog}_B(P)\to\mathsf U_B(P)
+    & \text{canonical compiler} \\
+\mathbb P_{B,P}:=\operatorname{decode}_{B,P}^{\ast}\mathbb U_{B,P}
+    & \text{canonical intensional universal Mealy program machine.}
+\end{array}
+\]
+
+The main results are:
+\[
+\begin{array}{c|l}
+\text{genericity} &
+\text{fixed-carrier Mealy structures are classified by functors into }\mathsf U_B(P);\\
+\text{terminality} &
+\mathbb U_{B,P}\text{ is terminal among fixed-carrier evaluators;}\\
+\text{one-step full abstraction} &
+\text{universal instruction equality is equality of represented carrier effect;}\\
+\text{extensional collapse} &
+\text{input syntax maps into }\mathsf U_B(P)\text{ through its operational image;}\\
+\text{straight-line compilation} &
+\mathsf{Prog}_B(P)\to\mathsf U_B(P)\text{ compiles formal programs;}\\
+\text{operational quotient} &
+\mathsf U_B(P)\text{ is the quotient of }\mathsf{Prog}_B(P)\text{ by operational equality;}\\
+\text{diagonal obstruction} &
+\text{full total extensional universality cannot generally be self-coded.}
+\end{array}
+\]
+
+Classical Turing-style universality appears as an additional refinement.  It requires intensional
+codes, partial evaluation, composition tracking, parameterization, and iteration.  These structures
+are not the source of the universal operator category.  They describe how a chosen effective
+subcategory of the universal operator category is represented by codes.
+
+The conceptual progression is:
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+\text{syntax}
+\ar[r,"\text{interpret}"]
+&
+\text{carrier operators}
+\ar[r,"\text{black-box}"]
+&
+\text{residual behaviour}
+\\
+A,\ C,\ \mathsf{Prog}_B(P)
+\ar[r]
+&
+\mathsf U_B(P)
+\ar[r,dashed]
+&
+\Beh^{\operatorname{can}}_{A,B}.
+\end{tikzcd}
+\]
+The dashed arrow is not a functor defined on the full universal operator category in general.  It
+indicates the behavioural quotient induced by residual semantics on the operator image generated by
+a given Mealy action.
+
+\section{Ambient categorical base}
+\label{sec:universal-mealy-ambient-base}
+
+The constructions in this chapter use three kinds of structure: dependent products for
+fibrewise operator representation, regular image factorizations for operational quotients, and
+finite-path free internal categories for formal programs.  We isolate these requirements once.
+
+\begin{definition}[Universal Mealy program base]
+\label{def:universal-mealy-program-base}
+A \textbf{universal Mealy program base} is a finitely complete regular category \(\mathcal E\)
+satisfying the following conditions.
+
+\begin{enumerate}
+    \item \textbf{Fibrewise operator representation.}
+    For every internal category \(B\) in \(\mathcal E\) and every carrier
+    \[
+            I\xleftarrow{p}P\xrightarrow{q}B_0,
+    \]
+    the dependent product
+    \[
+            \Pi_{\pi_{\mathrm{src}}}\bigl(E_B(P)^{[2]}\bigr)
+    \]
+    defined in Section~\ref{sec:operator-category-of-a-carrier} exists in the slice
+    \(\mathcal E/(I\times I)\), and the resulting object carries the identity and Kleisli
+    composition maps making \(\mathrm{KlEnd}_B(P)\) an internal category with object-of-objects
+    \(I\).
+
+    \item \textbf{Regular images of identity-on-objects internal functors.}
+    If
+    \[
+            F:C\longrightarrow D
+    \]
+    is an identity-on-objects internal functor with common object-of-objects \(I\), then the
+    regular image of
+    \[
+            F_1:C_1\longrightarrow D_1
+    \]
+    in the slice \(\mathcal E/(I\times I)\) is closed under identities and composition.  Hence it
+    carries the unique internal category structure for which the regular epi--mono factorization
+    of \(F_1\) is a factorization by identity-on-objects internal functors.
+
+    \item \textbf{Effective operational quotients.}
+    For each identity-on-objects internal functor used below, the kernel pair of its arrow map in
+    \(\mathcal E/(I\times I)\) has an effective quotient, and this quotient agrees with the
+    regular image factorization.
+
+    \item \textbf{Free internal categories by finite paths.}
+    For every internal graph
+    \[
+            G\rightrightarrows I
+    \]
+    used below, the finite path objects
+    \[
+            G_1^{[n]}
+    \]
+    of composable \(n\)-tuples exist, the coproduct
+    \[
+            \coprod_{n\geq 0}G_1^{[n]}
+    \]
+    exists in \(\mathcal E/(I\times I)\), and these coproducts are disjoint and stable under
+    pullback.  With unit given by length-zero paths and composition given by concatenation, this
+    finite-path object is the free internal category on \(G\).
+\end{enumerate}
+\end{definition}
+
+Unless explicitly stated otherwise, \(\mathcal E\) denotes a universal Mealy program base.
+
+The first clause is the only structure needed for the extensional evaluator
+\[
+        \mathbb U_{B,P}.
+\]
+The fourth clause is used only for the intensional program object
+\[
+        \mathsf{Prog}_B(P).
+\]
+The regularity and quotient clauses are used for operational images and extensional quotients.
+
+\begin{proposition}[Locally cartesian closed bases supply operator objects]
+\label{prop:lccc-operator-objects}
+Let \(\mathcal E\) be locally cartesian closed.  Then, for every internal category \(B\) and every
+carrier
+\[
+        I\xleftarrow{p}P\xrightarrow{q}B_0,
+\]
+the representing object
+\[
+        \Pi_{\pi_{\mathrm{src}}}\bigl(E_B(P)^{[2]}\bigr)
+\]
+exists.  Consequently the fibrewise output-comparison Kleisli endomorphisms of \(P\) are
+representable.
+\end{proposition}
+
+\begin{proof}
+Since \(\mathcal E\) is locally cartesian closed, pullback along every morphism has a right
+adjoint between slices.  Applying this to the source-state projection
+\[
+        \pi_{\mathrm{src}}:P_{\mathrm{src}}\to I\times I
+\]
+gives the required dependent product.  The evaluation map is the counit of the adjunction
+\[
+        \pi_{\mathrm{src}}^{\ast}\dashv \Pi_{\pi_{\mathrm{src}}}.
+\]
+The identity and Kleisli composition maps are obtained by transposing, respectively, the identity
+transition-output section and the sequential evaluation of two composable transition-output
+sections.
+\end{proof}
+
+\section{The operator category of a carrier}
+\label{sec:operator-category-of-a-carrier}
+
+Let \(B\) be an internal category in \(\mathcal E\), and let
+\[
+        I \xleftarrow{p} P \xrightarrow{q} B_0
+\]
+be a carrier over the object \(I\) of input-state types and the object \(B_0\) of output objects.
+
+When an input category \(A\) is fixed, we identify
+\[
+        I=A_0.
+\]
+
+Chapter~5 constructs the internal category
+\[
+        \mathrm{KlEnd}_B(P)
+\]
+of fibrewise output-comparison Kleisli endomorphisms of \(P\).  Its object-of-objects is \(I\).
+
+A generalized arrow
+\[
+        \varphi:v\longrightarrow u
+\]
+of \(\mathrm{KlEnd}_B(P)\) is a family sending
+\[
+        x\in P_v
+\]
+to
+\[
+        \bigl(\varphi_0(x),\alpha_x^\varphi\bigr),
+\]
+where
+\[
+        \varphi_0(x)\in P_u,
+        \qquad
+        \alpha_x^\varphi:q(\varphi_0(x))\longrightarrow q(x)
+\]
+is an arrow of \(B\).
+
+The target-to-source convention is essential.  An input arrow
+\[
+        a:u\longrightarrow v
+\]
+acts, contravariantly, as a Kleisli operation
+\[
+        P_v\rightsquigarrow P_u.
+\]
+Thus the input arrow points from \(u\) to \(v\), while the induced state operation points from the
+fibre over \(v\) to the fibre over \(u\):
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+u \ar[r,"a"] & v \\
+P_u & P_v \ar[l,swap,"\chi_P(a^{\operatorname{op}})"] .
+\end{tikzcd}
+\]
+
+We recall the representing construction.  Over \(I\times I\), regard a generalized point
+\[
+        (v,u)
+\]
+as the formal arrow type
+\[
+        v\longrightarrow u.
+\]
+Let
+\[
+        P_{\mathrm{src}}:=\pi_1^{\ast}P,
+        \qquad
+        P_{\mathrm{tgt}}:=\pi_2^{\ast}P
+\]
+over \(I\times I\).  Thus
+\[
+        (P_{\mathrm{src}})_{(v,u)}=P_v,
+        \qquad
+        (P_{\mathrm{tgt}})_{(v,u)}=P_u.
+\]
+Let
+\[
+        \pi_{\mathrm{src}}:P_{\mathrm{src}}\longrightarrow I\times I
+\]
+be the source-state projection.
+
+Define
+\[
+        E_B(P)^{[2]}\longrightarrow P_{\mathrm{src}}
+\]
+to be the object whose generalized elements over \((v,u,x)\), with \(x\in P_v\), are pairs
+\[
+        (y,\alpha)
+\]
+where
+\[
+        y\in P_u,
+        \qquad
+        \alpha:q(y)\longrightarrow q(x)
+\]
+is an arrow of \(B\).  Equivalently,
+\[
+        E_B(P)^{[2]}
+        :=
+        \bigl(P_{\mathrm{src}}\times_{I\times I}P_{\mathrm{tgt}}\bigr)
+        \times_{B_0\times B_0}
+        B_1,
+\]
+where \(B_1\to B_0\times B_0\) is \((s_B,t_B)\), and where
+\[
+        P_{\mathrm{src}}\times_{I\times I}P_{\mathrm{tgt}}
+        \longrightarrow B_0\times B_0
+\]
+sends
+\[
+        (x,y)\longmapsto(q(y),q(x)).
+\]
+Equivalently, \(E_B(P)^{[2]}\) is defined by the pullback square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+E_B(P)^{[2]}
+\ar[r]
+\ar[d]
+&
+B_1
+\ar[d,"{(s_B,t_B)}"]
+\\
+P_{\mathrm{src}}\times_{I\times I}P_{\mathrm{tgt}}
+\ar[r,swap,"{(q_{\mathrm{tgt}},q_{\mathrm{src}})}"]
+&
+B_0\times B_0 .
+\end{tikzcd}
+\]
+The projection
+\[
+        E_B(P)^{[2]}\to P_{\mathrm{src}}
+\]
+forgets \(y\) and \(\alpha\).
+
+Define
+\[
+        \mathrm{KlEnd}_B(P)_1
+        :=
+        \Pi_{\pi_{\mathrm{src}}}\bigl(E_B(P)^{[2]}\bigr)
+\]
+as an object of the slice \(\mathcal E/(I\times I)\).  Its universal evaluation map is the counit
+\[
+        \operatorname{ev}:
+        \mathrm{KlEnd}_B(P)_1\times_{I\times I}P_{\mathrm{src}}
+        \longrightarrow
+        E_B(P)^{[2]}.
+\]
+Thus
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathrm{KlEnd}_B(P)_1\times_{I\times I}P_{\mathrm{src}}
+\ar[r,"\operatorname{ev}"]
+\ar[d]
+&
+E_B(P)^{[2]}
+\ar[d]
+\\
+\mathrm{KlEnd}_B(P)_1
+\ar[r]
+&
+I\times I .
+\end{tikzcd}
+\]
+
+The identities are given by
+\[
+        1_v(x)=(x,1_{q(x)}).
+\]
+
+Composition is Kleisli composition.  We write
+\[
+        \varphi\diamond\psi
+\]
+for the Kleisli composite that executes \(\psi\) first and \(\varphi\) second.  Thus, for
+\[
+        \psi:w\longrightarrow v,
+        \qquad
+        \varphi:v\longrightarrow u
+\]
+in \(\mathrm{KlEnd}_B(P)\), their composite is
+\[
+        \varphi\diamond\psi:w\longrightarrow u.
+\]
+It is obtained by first evaluating \(\psi\) and then evaluating \(\varphi\):
+\[
+        x\longmapsto
+        \left(
+            \varphi_0(\psi_0(x)),
+            \alpha_x^\psi\circ\alpha_{\psi_0(x)}^\varphi
+        \right).
+\]
+The output-comparison component is the categorical composite
+\[
+        q(\varphi_0(\psi_0(x)))
+        \xrightarrow{\alpha_{\psi_0(x)}^\varphi}
+        q(\psi_0(x))
+        \xrightarrow{\alpha_x^\psi}
+        q(x).
+\]
+In the manuscript's multiplicative convention \(b\circ a=ba\), this may equivalently be written as
+\[
+        \alpha_x^\psi\,\alpha_{\psi_0(x)}^\varphi .
+\]
+
+The composition pattern is:
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+w \ar[r,"\psi"] & v \ar[r,"\varphi"] & u
+\\
+P_w \ar[r,swap,"\psi"] &
+P_v \ar[r,swap,"\varphi"] &
+P_u .
+\end{tikzcd}
+\]
+The lower row displays the carrier-level Kleisli execution.
+
+The internal category
+\[
+        \mathrm{KlEnd}_B(P)
+\]
+is therefore an operator category.  Its arrows are not syntactic representatives of operators.
+They are the represented fibrewise transition-output operators themselves.
+
+\section{The extensional universal Mealy category}
+\label{sec:extensional-universal-mealy-category}
+
+\begin{definition}[Extensional universal Mealy category]
+Let \(B\) be an internal category and let
+\[
+        I \xleftarrow{p} P \xrightarrow{q} B_0
+\]
+be a carrier.  The \textbf{extensional universal Mealy category} of \(P\) over \(B\) is
+\[
+        \mathsf U_B(P):=\mathrm{KlEnd}_B(P)^{\operatorname{op}}.
+\]
+\end{definition}
+
+The opposite is forced by the target-to-source convention of Mealy execution.  An input arrow
+\[
+        a:u\longrightarrow v
+\]
+acts as an operator
+\[
+        P_v\rightsquigarrow P_u.
+\]
+Thus a Mealy structure on \(P\) is an identity-on-objects functor
+\[
+        A^{\operatorname{op}}\longrightarrow \mathrm{KlEnd}_B(P),
+\]
+or equivalently an identity-on-objects functor
+\[
+        A\longrightarrow
+        \mathrm{KlEnd}_B(P)^{\operatorname{op}}
+        =
+        \mathsf U_B(P).
+\]
+
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+A^{\operatorname{op}}
+\ar[r,"\chi_P"]
+&
+\mathrm{KlEnd}_B(P)
+\\
+A
+\ar[r,"\ulcorner -\urcorner"']
+\ar[u,phantom,"\operatorname{op}" description]
+&
+\mathsf U_B(P)=\mathrm{KlEnd}_B(P)^{\operatorname{op}}
+\ar[u,phantom,"\operatorname{op}" description] .
+\end{tikzcd}
+\]
+
+\begin{definition}[Universal extensional evaluator]
+The \textbf{universal extensional Mealy evaluator}
+\[
+        \mathbb U_{B,P}:\mathsf U_B(P)\rightsquigarrow B
+\]
+is the Mealy morphism whose carrier is
+\[
+        I\xleftarrow{p}P\xrightarrow{q}B_0
+\]
+and whose Kleisli action is the identity functor
+\[
+        1_{\mathrm{KlEnd}_B(P)}:
+        \mathrm{KlEnd}_B(P)\longrightarrow \mathrm{KlEnd}_B(P).
+\]
+\end{definition}
+
+In generalized elements, if
+\[
+        \varphi:v\longrightarrow u
+        \quad\text{in}\quad
+        \mathrm{KlEnd}_B(P),
+\]
+then the corresponding instruction is
+\[
+        \varphi^{\operatorname{op}}:u\longrightarrow v
+        \quad\text{in}\quad
+        \mathsf U_B(P).
+\]
+The universal evaluator executes this instruction by evaluation:
+\[
+        \delta_{\mathbb U}(\varphi^{\operatorname{op}},x)=\varphi_0(x),
+        \qquad
+        \omega_{\mathbb U}(\varphi^{\operatorname{op}},x)=\alpha_x^\varphi.
+\]
+The orientation is:
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+u
+\ar[r,"{\varphi^{\operatorname{op}}\text{ in }\mathsf U_B(P)}"]
+&
+v
+\\
+P_u
+&
+P_v
+\ar[l,swap,"{\varphi:P_v\rightsquigarrow P_u\text{ in }\mathrm{KlEnd}_B(P)}"]
+\\
+q(\varphi_0(x))
+\ar[r,swap,"{\alpha_x^\varphi}"]
+&
+q(x) .
+\end{tikzcd}
+\]
+
+\section{Genericity and terminality of the universal evaluator}
+\label{sec:genericity-terminality-universal-evaluator}
+
+The first universal theorem says that \(\mathbb U_{B,P}\) is the generic evaluator for all
+Mealy structures on the fixed carrier \(P\).
+
+\begin{theorem}[Genericity of the extensional universal evaluator]
+\label{thm:genericity-universal-mealy}
+Let \(B\) be an internal category and let
+\[
+        I \xleftarrow{p} P \xrightarrow{q} B_0
+\]
+be a carrier.  Let \(A\) be an internal category with object-of-objects \(I\).  Then the data of a
+Mealy structure on the fixed carrier \(P\), with input category \(A\) and output category \(B\), is
+naturally bijective to the data of an identity-on-objects internal functor
+\[
+        A\longrightarrow \mathsf U_B(P).
+\]
+Equivalently,
+\[
+        \mathrm{MlyStr}_{A,B}(P)
+        \cong
+        \mathrm{Cat}_I(A,\mathsf U_B(P)),
+\]
+where \(\mathrm{MlyStr}_{A,B}(P)\) denotes the collection of fixed-carrier Mealy structures on
+\(P\), and \(\mathrm{Cat}_I\) denotes identity-on-objects internal functors over \(I\).
+
+In machine form, for every Mealy morphism
+\[
+        \Phi:A\rightsquigarrow B
+\]
+with carrier \(P\), there is a unique identity-on-objects classifying functor
+\[
+        \ulcorner\Phi\urcorner:A\longrightarrow\mathsf U_B(P)
+\]
+such that \(\Phi\) is canonically identified, as a fixed-carrier Mealy structure, with
+\[
+        \ulcorner\Phi\urcorner^{\ast}\mathbb U_{B,P}.
+\]
+\end{theorem}
+
+\begin{proof}
+A Mealy structure on the fixed carrier \(P\), with input category \(A\) and output category \(B\),
+is equivalently a fibrewise Kleisli action
+\[
+        \chi_P:A^{\operatorname{op}}\longrightarrow \mathrm{KlEnd}_B(P)
+\]
+which is identity on object-of-objects.
+
+Taking opposites converts this datum into an identity-on-objects functor
+\[
+        \ulcorner\Phi\urcorner
+        :=
+        \chi_P^{\operatorname{op}}:
+        A\longrightarrow
+        \mathrm{KlEnd}_B(P)^{\operatorname{op}}
+        =
+        \mathsf U_B(P).
+\]
+Conversely, any identity-on-objects functor
+\[
+        F:A\longrightarrow \mathsf U_B(P)
+\]
+opposes to an identity-on-objects functor
+\[
+        F^{\operatorname{op}}:
+        A^{\operatorname{op}}\longrightarrow \mathrm{KlEnd}_B(P),
+\]
+and hence determines a Mealy structure on \(P\).
+
+The universal Mealy morphism \(\mathbb U_{B,P}\) is induced by the identity action of
+\(\mathrm{KlEnd}_B(P)\).  Restricting it along
+\[
+        \ulcorner\Phi\urcorner:A\to\mathsf U_B(P)
+\]
+gives the action
+\[
+        A^{\operatorname{op}}
+        \xrightarrow{\ulcorner\Phi\urcorner^{\operatorname{op}}}
+        \mathrm{KlEnd}_B(P)
+        \xrightarrow{1}
+        \mathrm{KlEnd}_B(P),
+\]
+which is precisely \(\chi_P\).  Thus
+\[
+        \Phi
+        =
+        \ulcorner\Phi\urcorner^{\ast}\mathbb U_{B,P}
+\]
+as a fixed-carrier Mealy structure.  Uniqueness follows because any classifying functor with this
+property must oppose to the Kleisli action \(\chi_P\).
+\end{proof}
+
+The theorem says that every fixed-carrier Mealy machine is obtained by interpreting its
+instructions as arrows of
+\[
+        \mathsf U_B(P).
+\]
+
+The genericity statement is summarized by the pullback-of-evaluator diagram
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+A
+\ar[r,"\ulcorner\Phi\urcorner"]
+\ar[dr,swap,"\Phi"]
+&
+\mathsf U_B(P)
+\ar[d,"\mathbb U_{B,P}"]
+\\
+&
+B .
+\end{tikzcd}
+\]
+
+The same fact can be expressed as terminality.
+
+\begin{definition}[Fixed-carrier evaluator category]
+Let \(\mathrm{Eval}_B(P)\) be the category whose objects are Mealy morphisms
+\[
+        \Phi:A\rightsquigarrow B
+\]
+with carrier
+\[
+        I\xleftarrow{p}P\xrightarrow{q}B_0.
+\]
+A morphism
+\[
+        F:\Phi\longrightarrow\Psi
+\]
+from
+\[
+        \Phi:A\rightsquigarrow B
+        \qquad\text{to}\qquad
+        \Psi:C\rightsquigarrow B
+\]
+is an identity-on-objects internal functor
+\[
+        F:A\longrightarrow C
+\]
+such that the fixed-carrier Mealy structure of \(\Phi\) is obtained by restricting the
+fixed-carrier Mealy structure of \(\Psi\) along \(F\).
+\end{definition}
+
+Thus, if
+\[
+        \chi_\Phi:A^{\operatorname{op}}\to\mathrm{KlEnd}_B(P),
+        \qquad
+        \chi_\Psi:C^{\operatorname{op}}\to\mathrm{KlEnd}_B(P)
+\]
+are the corresponding Kleisli actions, the condition is
+\[
+        \chi_\Phi
+        =
+        \chi_\Psi F^{\operatorname{op}}.
+\]
+Equivalently,
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+A^{\operatorname{op}}
+\ar[rr,"\chi_\Phi"]
+\ar[dr,swap,"F^{\operatorname{op}}"]
+&
+&
+\mathrm{KlEnd}_B(P)
+\\
+&
+C^{\operatorname{op}}
+\ar[ur,swap,"\chi_\Psi"]
+&
+.
+\end{tikzcd}
+\]
+
+\begin{theorem}[Terminal fixed-carrier evaluator]
+\label{thm:terminal-fixed-carrier-evaluator}
+The universal extensional evaluator
+\[
+        \mathbb U_{B,P}:\mathsf U_B(P)\rightsquigarrow B
+\]
+is terminal in \(\mathrm{Eval}_B(P)\).
+\end{theorem}
+
+\begin{proof}
+Let
+\[
+        \Phi:A\rightsquigarrow B
+\]
+be an object of \(\mathrm{Eval}_B(P)\).  By
+Theorem~\ref{thm:genericity-universal-mealy}, \(\Phi\) has a unique classifying functor
+\[
+        \ulcorner\Phi\urcorner:A\to\mathsf U_B(P)
+\]
+such that
+\[
+        \Phi
+        =
+        \ulcorner\Phi\urcorner^{\ast}\mathbb U_{B,P}
+\]
+as a fixed-carrier Mealy structure.  This classifying functor is precisely a morphism
+\[
+        \Phi\longrightarrow \mathbb U_{B,P}
+\]
+in \(\mathrm{Eval}_B(P)\).
+
+If
+\[
+        F:\Phi\to\mathbb U_{B,P}
+\]
+is any other morphism in \(\mathrm{Eval}_B(P)\), then the corresponding action
+\[
+        A^{\operatorname{op}}
+        \xrightarrow{F^{\operatorname{op}}}
+        \mathrm{KlEnd}_B(P)
+\]
+must equal \(\chi_\Phi\).  Hence
+\[
+        F=\ulcorner\Phi\urcorner.
+\]
+Therefore every object of \(\mathrm{Eval}_B(P)\) has a unique morphism to
+\(\mathbb U_{B,P}\), so \(\mathbb U_{B,P}\) is terminal.
+\end{proof}
+
+\section{One-step operational full abstraction}
+\label{sec:operational-full-abstraction}
+
+The extensional universal category has an exact equality theory for represented one-step carrier
+effects.  Here ``operational'' means equality of represented fibrewise transition-output sections
+over the carrier \(P\), not equality after residual black-boxing.
+
+\begin{definition}[Operational equality of universal instructions]
+Let
+\[
+        \varphi^{\operatorname{op}},\psi^{\operatorname{op}}:u\longrightarrow v
+\]
+be arrows of
+\[
+        \mathsf U_B(P)=\mathrm{KlEnd}_B(P)^{\operatorname{op}}.
+\]
+They are \textbf{operationally equal on \(P\)} if their corresponding Kleisli operators
+\[
+        \varphi,\psi:v\longrightarrow u
+\]
+in \(\mathrm{KlEnd}_B(P)\) have the same represented section
+\[
+        P_v\longrightarrow E_B(P)^{[2]}_{(v,u)}.
+\]
+In internal element notation this says
+\[
+        \varphi_0(x)=\psi_0(x),
+        \qquad
+        \alpha_x^\varphi=\alpha_x^\psi
+\]
+for \(x\in P_v\).
+\end{definition}
+
+\begin{theorem}[One-step operational full abstraction]
+\label{thm:operational-full-abstraction}
+For arrows
+\[
+        \varphi^{\operatorname{op}},\psi^{\operatorname{op}}:u\longrightarrow v
+\]
+of \(\mathsf U_B(P)\), the following are equivalent:
+\[
+        \varphi^{\operatorname{op}}=\psi^{\operatorname{op}},
+\]
+and the two represented sections
+\[
+        P_v\longrightarrow E_B(P)^{[2]}_{(v,u)}
+\]
+obtained by evaluating \(\varphi\) and \(\psi\) are equal.  Equivalently,
+\[
+        \operatorname{ev}(\varphi,x)=\operatorname{ev}(\psi,x)
+\]
+for \(x\in P_v\).
+\end{theorem}
+
+\begin{proof}
+Equality
+\[
+        \varphi^{\operatorname{op}}=\psi^{\operatorname{op}}
+\]
+in \(\mathsf U_B(P)\) is the same as equality
+\[
+        \varphi=\psi
+\]
+in \(\mathrm{KlEnd}_B(P)\).  The arrow object
+\[
+        \mathrm{KlEnd}_B(P)_1
+        =
+        \Pi_{\pi_{\mathrm{src}}}\bigl(E_B(P)^{[2]}\bigr)
+\]
+represents sections of
+\[
+        E_B(P)^{[2]}\to P_{\mathrm{src}}.
+\]
+Therefore two arrows of \(\mathrm{KlEnd}_B(P)\) are equal precisely when the corresponding
+represented sections over the source-state family are equal.  These represented sections are the
+evaluated maps
+\[
+        x\longmapsto
+        \bigl(\varphi_0(x),\alpha_x^\varphi\bigr)
+\]
+and
+\[
+        x\longmapsto
+        \bigl(\psi_0(x),\alpha_x^\psi\bigr).
+\]
+This proves the equivalence.
+\end{proof}
+
+The representation can be displayed as:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+P_v
+\ar[r,bend left=15,"{\operatorname{ev}(\varphi,-)}"]
+\ar[r,bend right=15,swap,"{\operatorname{ev}(\psi,-)}"]
+&
+E_B(P)^{[2]}_{(v,u)}
+\ar[r]
+&
+B_1 .
+\end{tikzcd}
+\]
+
+\begin{lemma}[Regular-epimorphic detection of operator equality]
+\label{lem:regular-epi-detection-operator-equality}
+For generalized families
+\[
+        \varphi,\psi:X\to\mathrm{KlEnd}_B(P)_1
+\]
+over \(I\times I\), equality \(\varphi=\psi\) is detected by equality of the corresponding
+evaluated maps after a regular-epimorphic cover of the pulled-back source-state family.
+\end{lemma}
+
+\begin{proof}
+Pull back
+\[
+        P_{\mathrm{src}}\to I\times I
+\]
+along
+\[
+        X\to I\times I
+\]
+to obtain the source-state family
+\[
+        X\times_{I\times I}P_{\mathrm{src}}\to X.
+\]
+The generalized families \(\varphi\) and \(\psi\) determine evaluated maps
+\[
+        X\times_{I\times I}P_{\mathrm{src}}
+        \longrightarrow
+        E_B(P)^{[2]}.
+\]
+If these evaluated maps agree after a regular-epimorphic cover of
+\[
+        X\times_{I\times I}P_{\mathrm{src}},
+\]
+then they agree before the cover because regular epimorphisms are epimorphisms.  By the
+representing property of
+\[
+        \mathrm{KlEnd}_B(P)_1
+        =
+        \Pi_{\pi_{\mathrm{src}}}\bigl(E_B(P)^{[2]}\bigr),
+\]
+equality of evaluated maps is equivalent to equality of the represented generalized operators
+\[
+        \varphi=\psi.
+\]
+\end{proof}
+
+Thus
+\[
+        \text{same universal instruction}
+        \quad\Longleftrightarrow\quad
+        \text{same represented one-step transition-output effect on }P.
+\]
+The category \(\mathsf U_B(P)\) is therefore fully abstract for one-step carrier-level effect.  It
+does not preserve intensional distinctions between distinct syntactic expressions that denote the
+same carrier operator.
+
+\section{Extensional collapse of instruction syntax}
+\label{sec:extensional-collapse-instruction-syntax}
+
+A Mealy morphism may have an intensional input category.  Its arrows may be generators, labels,
+program texts, derivations, words, proofs, or machine instructions.  The universal evaluator
+interprets these arrows as operators on \(P\), and this interpretation may identify distinct
+arrows.
+
+Let
+\[
+        \Phi:A\rightsquigarrow B
+\]
+be a Mealy morphism with carrier
+\[
+        I\xleftarrow{p}P\xrightarrow{q}B_0.
+\]
+Its action is an identity-on-objects functor
+\[
+        \chi_\Phi:A^{\operatorname{op}}\longrightarrow\mathrm{KlEnd}_B(P).
+\]
+Equivalently, by Theorem~\ref{thm:genericity-universal-mealy}, it has a classifying functor
+\[
+        \ulcorner\Phi\urcorner:A\longrightarrow\mathsf U_B(P).
+\]
+
+\begin{definition}[Carrier operational equivalence]
+Let \(a,b:u\to v\) be arrows of \(A\).  They are \textbf{carrier-operationally equivalent on \(P\)}
+if their induced transition-output operators are equal:
+\[
+        \chi_\Phi(a^{\operatorname{op}})
+        =
+        \chi_\Phi(b^{\operatorname{op}})
+        \quad\text{in}\quad
+        \mathrm{KlEnd}_B(P).
+\]
+Equivalently,
+\[
+        \ulcorner\Phi\urcorner(a)
+        =
+        \ulcorner\Phi\urcorner(b)
+        \quad\text{in}\quad
+        \mathsf U_B(P).
+\]
+We write
+\[
+        a\equiv_P b.
+\]
+\end{definition}
+
+\begin{definition}[Carrier operational image]
+The \textbf{carrier operational image} of
+\[
+        \Phi:A\rightsquigarrow B
+\]
+is the identity-on-objects regular image of its action:
+\[
+        \operatorname{CarOp}(\Phi)
+        :=
+        \operatorname{RegIm}_I
+        \bigl(
+            \chi_\Phi:
+            A^{\operatorname{op}}\to\mathrm{KlEnd}_B(P)
+        \bigr).
+\]
+Equivalently,
+\[
+        \operatorname{CarOp}(\Phi)^{\operatorname{op}}
+        =
+        \operatorname{RegIm}_I
+        \bigl(
+            \ulcorner\Phi\urcorner:
+            A\to\mathsf U_B(P)
+        \bigr).
+\]
+\end{definition}
+
+The defining factorization is
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+A
+\ar[rr,"\ulcorner\Phi\urcorner"]
+\ar[dr,swap,two heads]
+&
+&
+\mathsf U_B(P)
+\\
+&
+\operatorname{CarOp}(\Phi)^{\operatorname{op}}
+\ar[ur,swap,hook]
+&
+.
+\end{tikzcd}
+\]
+On arrow objects, this is the regular epi--mono factorization in the slice over \(I\times I\).
+
+\begin{theorem}[Extensional collapse]
+\label{thm:extensional-collapse}
+The classifying functor
+\[
+        \ulcorner\Phi\urcorner:A\longrightarrow\mathsf U_B(P)
+\]
+factors through the carrier-operational quotient of \(A\):
+\[
+        A
+        \twoheadrightarrow
+        \operatorname{CarOp}(\Phi)^{\operatorname{op}}
+        \hookrightarrow
+        \mathsf U_B(P).
+\]
+The kernel congruence of this factorization is precisely carrier-operational equivalence:
+\[
+        a\equiv_P b
+        \quad\Longleftrightarrow\quad
+        \ulcorner\Phi\urcorner(a)=\ulcorner\Phi\urcorner(b).
+\]
+\end{theorem}
+
+\begin{proof}
+By definition,
+\[
+        \operatorname{CarOp}(\Phi)^{\operatorname{op}}
+\]
+is the identity-on-objects regular image of
+\[
+        \ulcorner\Phi\urcorner:A\to\mathsf U_B(P).
+\]
+The regular image factorization of the arrow map gives
+\[
+        A_1
+        \twoheadrightarrow
+        \operatorname{CarOp}(\Phi)^{\operatorname{op}}_1
+        \hookrightarrow
+        \mathsf U_B(P)_1
+\]
+over \(I\times I\).  By the definition of a universal Mealy program base, the middle object
+carries the induced internal category structure and the two displayed maps are internal functors.
+
+The kernel congruence of the regular epimorphism identifies exactly those arrows of \(A\) with the
+same image under \(\ulcorner\Phi\urcorner\).  This is carrier-operational equivalence by
+definition.
+\end{proof}
+
+This theorem does not say that automata are extensional.  It says that the universal operator
+evaluator receives any instruction syntax only through its operational action on the chosen carrier.
+The input category \(A\) may remain intensional.  Its image in \(\mathsf U_B(P)\) is extensional.
+
+When \(P\) is the derivative-closed behaviour carrier associated to a specification \(K\), this
+construction recovers the syntactic transition-output category of Chapter~5:
+\[
+        \mathrm{SynTO}_{A,B}(K)
+        =
+        \operatorname{RegIm}_I\left(
+            A^{\operatorname{op}}
+            \longrightarrow
+            \mathrm{KlEnd}_B(\operatorname{Der}_0(K))
+        \right).
+\]
+Thus \(\mathrm{SynTO}_{A,B}(K)\) is the extensional operational image of the input syntax on the
+minimal derivative carrier of \(K\).
+
+\begin{proposition}[Local coding from operational density]
+\label{prop:local-coding-operational-density}
+Let
+\[
+        \mathcal C\hookrightarrow \mathrm{KlEnd}_B(P)
+\]
+be an identity-on-objects internal subcategory.  Suppose a Mealy morphism
+\[
+        \Phi:A\rightsquigarrow B
+\]
+with carrier \(P\) has action
+\[
+        \chi_\Phi:A^{\operatorname{op}}\to\mathrm{KlEnd}_B(P)
+\]
+which factors through \(\mathcal C\), and suppose the induced arrow map
+\[
+        (A^{\operatorname{op}})_1\twoheadrightarrow \mathcal C_1
+\]
+is a regular epimorphism in the slice over \(I\times I\).
+
+Then every generalized family
+\[
+        \theta:X\to\mathcal C_1
+\]
+over \(I\times I\) of transition-output operators is locally named by an input arrow of \(A\).
+Explicitly, there exists a regular epimorphism
+\[
+        e:\widetilde X\twoheadrightarrow X
+\]
+over \(I\times I\) and a map
+\[
+        \bar\theta:\widetilde X\to (A^{\operatorname{op}})_1
+\]
+over \(I\times I\) such that
+\[
+        \chi_\Phi\bar\theta=\theta e.
+\]
+Moreover, the evaluated transition-output operations agree after pullback along \(e\).
+\end{proposition}
+
+\begin{proof}
+Pull back the regular epimorphism
+\[
+        (A^{\operatorname{op}})_1\twoheadrightarrow \mathcal C_1
+\]
+along
+\[
+        \theta:X\to\mathcal C_1
+\]
+in the slice \(\mathcal E/(I\times I)\).  This gives the pullback square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\widetilde X
+\ar[r,"\bar\theta"]
+\ar[d,swap,"e"]
+&
+(A^{\operatorname{op}})_1
+\ar[d,two heads]
+\\
+X
+\ar[r,swap,"\theta"]
+\ar[ur,phantom,very near start,"\lrcorner"]
+&
+\mathcal C_1 .
+\end{tikzcd}
+\]
+Regular epimorphisms are pullback-stable in a regular category, so
+\[
+        e:\widetilde X\twoheadrightarrow X
+\]
+is a regular epimorphism.  The defining pullback square gives
+\[
+        \chi_\Phi\bar\theta=\theta e.
+\]
+Pulling back the universal evaluation map along these equal maps gives the same evaluated
+transition-output operation over
+\[
+        \widetilde X\times_{I\times I}P_{\mathrm{src}}.
+\]
+\end{proof}
+
+This proposition is the operational coding form of the extensional-collapse theorem.  Density of
+the input syntax in an operator subcategory says that every operator in that subcategory is locally
+named by syntax.
+
+\section{The intensional universal program category}
+\label{sec:intensional-universal-program-category}
+
+The extensional universal category
+\[
+        \mathsf U_B(P)
+\]
+has all transition-output operators as primitive instructions.  Since its arrows are already
+operators, its composition compiles finite instruction strings immediately.
+
+To retain formal program structure, we forget composition and freely generate a category.
+
+\begin{definition}[Intensional universal program category]
+The \textbf{intensional universal program category} of \(P\) over \(B\) is
+\[
+        \mathsf{Prog}_B(P)
+        :=
+        \mathrm{FreeCat}\bigl(\mathsf U_B(P)_{\mathrm{gr}}\bigr),
+\]
+where \(\mathsf U_B(P)_{\mathrm{gr}}\) is the underlying internal graph of
+\(\mathsf U_B(P)\).
+\end{definition}
+
+Thus
+\[
+        \mathsf{Prog}_B(P)_0=I.
+\]
+By the finite-path presentation of the free internal category,
+\[
+        \mathsf{Prog}_B(P)_1
+        =
+        \coprod_{n\geq 0}\mathsf U_B(P)_1^{[n]},
+\]
+where \(\mathsf U_B(P)_1^{[n]}\) denotes the object of composable \(n\)-tuples of arrows in the
+underlying graph of \(\mathsf U_B(P)\), with
+\[
+        \mathsf U_B(P)_1^{[0]}=I.
+\]
+
+A generalized arrow of \(\mathsf{Prog}_B(P)\) is a finite composable word
+\[
+        u_0
+        \xrightarrow{\varphi_1^{\operatorname{op}}}
+        u_1
+        \xrightarrow{\varphi_2^{\operatorname{op}}}
+        \cdots
+        \xrightarrow{\varphi_n^{\operatorname{op}}}
+        u_n
+\]
+in \(\mathsf U_B(P)\).  Equivalently, each letter corresponds to a Kleisli operator
+\[
+        \varphi_i:u_i\longrightarrow u_{i-1}
+        \quad\text{in}\quad
+        \mathrm{KlEnd}_B(P).
+\]
+
+The empty word at \(u\) is the identity program at \(u\).  Composition is concatenation:
+\[
+[\varphi_1^{\operatorname{op}},\ldots,\varphi_m^{\operatorname{op}}]
+;
+[\psi_1^{\operatorname{op}},\ldots,\psi_n^{\operatorname{op}}]
+=
+[\varphi_1^{\operatorname{op}},\ldots,\varphi_m^{\operatorname{op}},
+  \psi_1^{\operatorname{op}},\ldots,\psi_n^{\operatorname{op}}],
+\]
+whenever the target of the first word is the source of the second.
+
+The distinction between free concatenation and operator composition is:
+\[
+\begin{tikzcd}[column sep=huge,row sep=large]
+\mathsf U_B(P)_{\mathrm{gr}}
+\ar[r,hook]
+\ar[dr,swap,"\mathrm{id}_{\mathsf U_B(P)_{\mathrm{gr}}}"]
+&
+\mathsf{Prog}_B(P)
+\ar[d,dashed,"\operatorname{decode}_{B,P}"]
+\\
+&
+\mathsf U_B(P).
+\end{tikzcd}
+\]
+
+The category \(\mathsf{Prog}_B(P)\) does not identify a two-step program with its compiled one-step
+operator.  In general,
+\[
+        [\varphi^{\operatorname{op}},\psi^{\operatorname{op}}]
+\]
+and
+\[
+        [(\varphi\diamond\psi)^{\operatorname{op}}]
+\]
+are different arrows of \(\mathsf{Prog}_B(P)\), even though they decode to the same arrow of
+\(\mathsf U_B(P)\), whenever the displayed word is composable.
+
+\begin{proposition}[Intensionality of formal programs]
+\label{prop:intensionality-formal-programs}
+In the canonical finite-path construction of the free internal category, equality in
+\[
+        \mathsf{Prog}_B(P)
+\]
+is equality of formal composable paths in the underlying graph of \(\mathsf U_B(P)\).  In
+particular, a one-letter word and a two-letter word are not identified merely because they decode
+to the same arrow of \(\mathsf U_B(P)\).
+\end{proposition}
+
+\begin{proof}
+The arrow object of the free internal category is
+\[
+        \mathsf{Prog}_B(P)_1
+        =
+        \coprod_{n\geq 0}\mathsf U_B(P)_1^{[n]}.
+\]
+The \(n\)-th summand records composable words of length \(n\).  Disjointness of the path-length
+coproducts keeps different lengths distinct.  Composition is concatenation, not evaluation in
+\(\mathsf U_B(P)\).  Hence relations coming from composition in \(\mathsf U_B(P)\) are imposed
+only after applying the decoder.
+\end{proof}
+
+\begin{remark}
+Since the underlying graph of \(\mathsf U_B(P)\) includes the identity arrows of
+\(\mathsf U_B(P)\), the one-letter program
+\[
+        [1_u]
+\]
+is a primitive instruction of length one.  It is not the empty word at \(u\) in the free category.
+The decoder identifies them:
+\[
+        \operatorname{decode}_{B,P}([1_u])
+        =
+        \operatorname{decode}_{B,P}([])
+        =
+        1_u.
+\]
+Thus even identity instructions are separated from formal identity programs before decoding.
+\end{remark}
+
+\section{Decoding and straight-line compilation}
+\label{sec:decoding-straight-line-compilation}
+
+Because \(\mathsf{Prog}_B(P)\) is free on the underlying graph of \(\mathsf U_B(P)\), the identity
+graph map
+\[
+        \mathsf U_B(P)_{\mathrm{gr}}
+        \longrightarrow
+        \mathsf U_B(P)_{\mathrm{gr}}
+\]
+extends uniquely to an internal functor
+\[
+        \operatorname{decode}_{B,P}:
+        \mathsf{Prog}_B(P)\longrightarrow\mathsf U_B(P).
+\]
+
+\begin{definition}[Canonical decoder]
+The \textbf{canonical decoder}, or \textbf{straight-line compiler},
+\[
+        \operatorname{decode}_{B,P}:
+        \mathsf{Prog}_B(P)\longrightarrow\mathsf U_B(P)
+\]
+is the unique identity-on-objects functor extending the identity map on primitive universal
+instructions.
+\end{definition}
+
+In generalized elements, if
+\[
+        w=
+        [\varphi_1^{\operatorname{op}},\ldots,\varphi_n^{\operatorname{op}}]
+\]
+is a word
+\[
+        u_0
+        \xrightarrow{\varphi_1^{\operatorname{op}}}
+        u_1
+        \xrightarrow{\varphi_2^{\operatorname{op}}}
+        \cdots
+        \xrightarrow{\varphi_n^{\operatorname{op}}}
+        u_n ,
+\]
+where
+\[
+        \varphi_i:u_i\to u_{i-1}
+        \quad\text{in}\quad
+        \mathrm{KlEnd}_B(P),
+\]
+then
+\[
+        \operatorname{decode}_{B,P}(w)
+        =
+        (\varphi_1\diamond\varphi_2\diamond\cdots\diamond\varphi_n)^{\operatorname{op}}.
+\]
+The order is important.  The composite
+\[
+        \varphi_1\diamond\varphi_2\diamond\cdots\diamond\varphi_n
+\]
+is the Kleisli operator
+\[
+        u_n\longrightarrow u_0
+\]
+which applies \(\varphi_n\) to the source state first, then \(\varphi_{n-1}\), and so on, ending
+with \(\varphi_1\).
+
+The decoder sits in
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathsf U_B(P)_{\mathrm{gr}}
+\ar[r,hook]
+\ar[dr,swap,"\mathrm{id}"]
+&
+\mathsf{Prog}_B(P)
+\ar[d,"\operatorname{decode}_{B,P}"]
+\\
+&
+\mathsf U_B(P).
+\end{tikzcd}
+\]
+
+The execution order is:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+u_0
+\ar[r,"\varphi_1^{\operatorname{op}}"]
+&
+u_1
+\ar[r,"\varphi_2^{\operatorname{op}}"]
+&
+\cdots
+\ar[r,"\varphi_{n-1}^{\operatorname{op}}"]
+&
+u_{n-1}
+\ar[r,"\varphi_n^{\operatorname{op}}"]
+&
+u_n
+\\
+P_{u_0}
+&
+P_{u_1}
+\ar[l,swap,"\varphi_1"]
+&
+\cdots
+\ar[l,swap,"\varphi_2"]
+&
+P_{u_{n-1}}
+\ar[l,swap,"\varphi_{n-1}"]
+&
+P_{u_n}
+\ar[l,swap,"\varphi_n"] .
+\end{tikzcd}
+\]
+
+\begin{definition}[Intensional universal Mealy program machine]
+The \textbf{intensional universal Mealy program machine} is the pullback of the extensional
+universal evaluator along the decoder:
+\[
+        \mathbb P_{B,P}
+        :=
+        \operatorname{decode}_{B,P}^{\ast}\mathbb U_{B,P}.
+\]
+Thus
+\[
+        \mathbb P_{B,P}:\mathsf{Prog}_B(P)\rightsquigarrow B
+\]
+has carrier \(P\), and executes a formal program by decoding it to its compiled transition-output
+operator.
+\end{definition}
+
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathsf{Prog}_B(P)
+\ar[r,"\operatorname{decode}_{B,P}"]
+\ar[dr,swap,"\mathbb P_{B,P}"]
+&
+\mathsf U_B(P)
+\ar[d,"\mathbb U_{B,P}"]
+\\
+&
+B .
+\end{tikzcd}
+\]
+
+\begin{theorem}[Straight-line compilation]
+\label{thm:straight-line-compilation}
+Every finite straight-line program in universal instructions has a canonical compiled universal
+instruction.  Explicitly, for every word
+\[
+        w=
+        [\varphi_1^{\operatorname{op}},\ldots,\varphi_n^{\operatorname{op}}]
+\]
+in \(\mathsf{Prog}_B(P)\),
+\[
+        \operatorname{decode}_{B,P}(w)
+        =
+        (\varphi_1\diamond\cdots\diamond\varphi_n)^{\operatorname{op}}.
+\]
+Executing \(w\) in the intensional universal machine has the same transition-output effect as
+executing \(\operatorname{decode}_{B,P}(w)\) in the extensional universal machine:
+\[
+        \mathbb P_{B,P}(w)
+        =
+        \mathbb U_{B,P}\bigl(\operatorname{decode}_{B,P}(w)\bigr).
+\]
+Moreover, the compiled instruction is unique with this transition-output effect.
+\end{theorem}
+
+\begin{proof}
+The free-category universal property gives a unique functor
+\[
+        \operatorname{decode}_{B,P}:
+        \mathsf{Prog}_B(P)\to\mathsf U_B(P)
+\]
+extending the identity on primitive universal instructions.  Since
+\(\operatorname{decode}_{B,P}\) is a functor, it sends a finite word to the categorical composite
+of its letters in \(\mathsf U_B(P)\).
+
+Composition in
+\[
+        \mathsf U_B(P)=\mathrm{KlEnd}_B(P)^{\operatorname{op}}
+\]
+is opposite to Kleisli composition in \(\mathrm{KlEnd}_B(P)\).  Therefore
+\[
+        [\varphi_1^{\operatorname{op}},\ldots,\varphi_n^{\operatorname{op}}]
+\]
+decodes to
+\[
+        (\varphi_1\diamond\cdots\diamond\varphi_n)^{\operatorname{op}},
+\]
+where the underlying Kleisli operator executes
+\[
+        \varphi_n,\ \varphi_{n-1},\ \ldots,\ \varphi_1
+\]
+in that order.
+
+By definition,
+\[
+        \mathbb P_{B,P}
+        =
+        \operatorname{decode}_{B,P}^{\ast}\mathbb U_{B,P}.
+\]
+Therefore executing \(w\) in \(\mathbb P_{B,P}\) is executing its decoded instruction in
+\(\mathbb U_{B,P}\).  If another universal instruction has the same transition-output effect as
+\(\operatorname{decode}_{B,P}(w)\), then Theorem~\ref{thm:operational-full-abstraction} identifies
+it with \(\operatorname{decode}_{B,P}(w)\).  Hence the compiled instruction is unique.
+\end{proof}
+
+Thus
+\[
+        \operatorname{decode}_{B,P}
+\]
+is the canonical straight-line compiler:
+\[
+        \text{formal program}
+        \longmapsto
+        \text{single extensional transition-output instruction}.
+\]
+
+\begin{corollary}[One-letter normal forms]
+\label{cor:one-letter-normal-forms}
+Every formal universal program has a unique one-letter normal form up to operational equality.
+Specifically, for every
+\[
+        w\in \mathsf{Prog}_B(P)_1,
+\]
+the one-letter word
+\[
+        [\operatorname{decode}_{B,P}(w)]
+\]
+has the same evaluated transition-output effect as \(w\), and its letter is uniquely determined in
+\(\mathsf U_B(P)\).
+\end{corollary}
+
+\begin{proof}
+By Theorem~\ref{thm:straight-line-compilation}, \(w\) compiles to the instruction
+\[
+        \operatorname{decode}_{B,P}(w).
+\]
+The one-letter word
+\[
+        [\operatorname{decode}_{B,P}(w)]
+\]
+decodes to the same instruction.  Operational full abstraction gives uniqueness of the compiled
+instruction.
+\end{proof}
+
+The corollary is the formal version of straight-line program compilation.  The intensional object
+remembers the program as written.  The extensional object remembers only its compiled effect.
+
+\section{The extensional quotient of the intensional program category}
+\label{sec:extensional-quotient-intensional-language}
+
+The decoder induces the operational quotient of the intensional program category.
+
+\begin{definition}[Operational congruence on universal programs]
+Let \(w,w'\) be arrows of \(\mathsf{Prog}_B(P)\) with the same source and target.  They are
+\textbf{operationally congruent} if
+\[
+        \operatorname{decode}_{B,P}(w)
+        =
+        \operatorname{decode}_{B,P}(w')
+\]
+in \(\mathsf U_B(P)\).  We write
+\[
+        w\equiv_{\operatorname{op}} w'.
+\]
+\end{definition}
+
+\begin{theorem}[Extensional quotient of the intensional program category]
+\label{thm:prog-quotient-u}
+The decoder
+\[
+        \operatorname{decode}_{B,P}:
+        \mathsf{Prog}_B(P)\longrightarrow\mathsf U_B(P)
+\]
+exhibits \(\mathsf U_B(P)\) as the operational quotient of
+\(\mathsf{Prog}_B(P)\):
+\[
+        \mathsf U_B(P)
+        \cong
+        \mathsf{Prog}_B(P)/{\equiv_{\operatorname{op}}}.
+\]
+\end{theorem}
+
+\begin{proof}
+The functor
+\[
+        \operatorname{decode}_{B,P}
+\]
+is identity-on-objects.  Let
+\[
+        j_1:\mathsf U_B(P)_1\longrightarrow \mathsf{Prog}_B(P)_1
+\]
+be the one-letter inclusion, sending an instruction \(\theta\) to the word \([\theta]\).  Then
+\[
+        \operatorname{decode}_{B,P,1}\,j_1
+        =
+        1_{\mathsf U_B(P)_1}.
+\]
+Hence the arrow map of the decoder is a split epimorphism, and therefore a regular epimorphism in
+a regular category.
+
+The kernel congruence of the arrow map of the decoder is precisely
+\[
+        w\equiv_{\operatorname{op}}w'.
+\]
+Since the decoder is a regular epimorphism on arrows and identity-on-objects, its regular image is
+all of \(\mathsf U_B(P)\).  By the effective operational quotient condition in
+Definition~\ref{def:universal-mealy-program-base}, the quotient by its kernel congruence is
+isomorphic to \(\mathsf U_B(P)\), with quotient functor
+\[
+        \operatorname{decode}_{B,P}.
+\]
+\end{proof}
+
+The quotient picture is:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathsf{Prog}_B(P)
+\ar[rr,"\operatorname{decode}_{B,P}"]
+\ar[dr,swap,two heads]
+&
+&
+\mathsf U_B(P)
+\\
+&
+\mathsf{Prog}_B(P)/{\equiv_{\operatorname{op}}}
+\ar[ur,swap,"\cong"]
+&
+.
+\end{tikzcd}
+\]
+
+This theorem identifies the source of extensionality.  The universal operator category
+\[
+        \mathsf U_B(P)
+\]
+is not the primitive intensional language.  It is the fully abstract operational quotient of the
+canonical intensional straight-line language
+\[
+        \mathsf{Prog}_B(P).
+\]
+
+\begin{corollary}[Full abstraction of the quotient]
+\label{cor:full-abstraction-quotient}
+The quotient
+\[
+        \mathsf{Prog}_B(P)\twoheadrightarrow\mathsf U_B(P)
+\]
+is fully abstract for carrier-level transition-output effect.  That is,
+\[
+        w\equiv_{\operatorname{op}}w'
+\]
+if and only if \(w\) and \(w'\) have the same evaluated transition-output effect on \(P\).
+\end{corollary}
+
+\begin{proof}
+By definition,
+\[
+        w\equiv_{\operatorname{op}}w'
+\]
+means
+\[
+        \operatorname{decode}_{B,P}(w)
+        =
+        \operatorname{decode}_{B,P}(w').
+\]
+By Theorem~\ref{thm:operational-full-abstraction}, equality of decoded universal instructions is
+equivalent to equality of their evaluated transition-output effects.  Since
+\[
+        \mathbb P_{B,P}
+        =
+        \operatorname{decode}_{B,P}^{\ast}\mathbb U_{B,P},
+\]
+the evaluated effect of a formal program is the evaluated effect of its decoded instruction.
+\end{proof}
+
+\section{Generated intensional languages}
+\label{sec:generated-intensional-languages}
+
+The canonical intensional program category
+\[
+        \mathsf{Prog}_B(P)
+\]
+has all universal operators as primitive instructions.  It is canonical, but a concrete programming
+language is obtained by choosing a graph of primitive instruction symbols and interpreting those
+symbols in the universal operator category.
+
+Let
+\[
+        G\rightrightarrows I
+\]
+be an internal graph.  A generalized arrow of \(G\) is a primitive instruction symbol with a source
+and target object of \(I\).
+
+\begin{definition}[Primitive decoding]
+A \textbf{primitive decoding} of \(G\) into the universal Mealy evaluator is a map of internal
+graphs
+\[
+        \gamma:G\longrightarrow \mathsf U_B(P)_{\mathrm{gr}}.
+\]
+Equivalently, it assigns to each primitive instruction symbol an extensional transition-output
+operator on \(P\), with matching source and target types.
+\end{definition}
+
+Let
+\[
+        \mathrm{FreeCat}(G)
+\]
+be the free internal category on \(G\).
+
+\begin{theorem}[Free intensional extension]
+\label{thm:free-intensional-extension}
+Every primitive decoding
+\[
+        \gamma:G\longrightarrow \mathsf U_B(P)_{\mathrm{gr}}
+\]
+extends uniquely to an identity-on-objects internal functor
+\[
+        \widehat{\gamma}:
+        \mathrm{FreeCat}(G)
+        \longrightarrow
+        \mathsf U_B(P).
+\]
+The induced Mealy morphism
+\[
+        \widehat{\gamma}^{\ast}\mathbb U_{B,P}
+        :
+        \mathrm{FreeCat}(G)\rightsquigarrow B
+\]
+is the Mealy machine whose programs are formal words in the primitive instructions of \(G\), and
+whose execution is obtained by universal evaluation after decoding.
+\end{theorem}
+
+\begin{proof}
+The primitive decoding
+\[
+        \gamma:G\to\mathsf U_B(P)_{\mathrm{gr}}
+\]
+is a graph map into the underlying graph of the internal category \(\mathsf U_B(P)\).  By the
+universal property of \(\mathrm{FreeCat}(G)\), it extends uniquely to an internal functor
+\[
+        \widehat{\gamma}:\mathrm{FreeCat}(G)\to\mathsf U_B(P).
+\]
+Restricting the universal evaluator
+\[
+        \mathbb U_{B,P}:\mathsf U_B(P)\rightsquigarrow B
+\]
+along \(\widehat{\gamma}\) gives a Mealy morphism
+\[
+        \widehat{\gamma}^{\ast}\mathbb U_{B,P}
+        :
+        \mathrm{FreeCat}(G)\rightsquigarrow B.
+\]
+Its carrier is \(P\), its input programs are formal words in \(G\), and its transition-output
+operation is obtained by decoding those words into \(\mathsf U_B(P)\).
+\end{proof}
+
+Thus a programming language over \(P\) is not another universal operator category.  It is an
+intensional graph or category lying over the universal operator category:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+G
+\ar[r,"\gamma"]
+\ar[d]
+&
+\mathsf U_B(P)_{\mathrm{gr}}
+\ar[d]
+\\
+\mathrm{FreeCat}(G)
+\ar[r,"\widehat{\gamma}"]
+&
+\mathsf U_B(P).
+\end{tikzcd}
+\]
+
+The induced evaluator fits into:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathrm{FreeCat}(G)
+\ar[r,"\widehat{\gamma}"]
+\ar[dr,swap,"\widehat{\gamma}^{\ast}\mathbb U_{B,P}"]
+&
+\mathsf U_B(P)
+\ar[d,"\mathbb U_{B,P}"]
+\\
+&
+B .
+\end{tikzcd}
+\]
+
+The extensional operational image of such a language is
+\[
+        \operatorname{RegIm}_I(\widehat{\gamma})
+        \hookrightarrow
+        \mathsf U_B(P).
+\]
+This is the generated operator fragment of the language.
+
+\begin{definition}[Generated operational fragment]
+Let
+\[
+        \gamma:G\to\mathsf U_B(P)_{\mathrm{gr}}
+\]
+be a primitive decoding.  The \textbf{generated operational fragment} of \(\gamma\) is
+\[
+        \operatorname{GenOp}(\gamma)
+        :=
+        \operatorname{RegIm}_I
+        \bigl(
+            \widehat{\gamma}:\mathrm{FreeCat}(G)\to\mathsf U_B(P)
+        \bigr).
+\]
+\end{definition}
+
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathrm{FreeCat}(G)
+\ar[rr,"\widehat{\gamma}"]
+\ar[dr,swap,two heads]
+&
+&
+\mathsf U_B(P)
+\\
+&
+\operatorname{GenOp}(\gamma)
+\ar[ur,swap,hook]
+&
+.
+\end{tikzcd}
+\]
+
+\begin{proposition}[Image universal property of generated operational fragments]
+\label{prop:minimality-generated-operational-fragment}
+The subcategory
+\[
+        \operatorname{GenOp}(\gamma)\hookrightarrow \mathsf U_B(P)
+\]
+is the identity-on-objects regular image of
+\[
+        \widehat{\gamma}:\mathrm{FreeCat}(G)\to\mathsf U_B(P).
+\]
+Consequently, every identity-on-objects internal subcategory
+\[
+        \mathcal D\hookrightarrow \mathsf U_B(P)
+\]
+through which \(\widehat{\gamma}\) factors contains \(\operatorname{GenOp}(\gamma)\).
+\end{proposition}
+
+\begin{proof}
+The first statement is the definition of \(\operatorname{GenOp}(\gamma)\).  Since
+\(\widehat{\gamma}\) is an internal functor, its regular image is an identity-on-objects internal
+subcategory of \(\mathsf U_B(P)\).  If
+\[
+        \widehat{\gamma}:\mathrm{FreeCat}(G)\to\mathcal D\hookrightarrow \mathsf U_B(P)
+\]
+is a factorization through an identity-on-objects subcategory \(\mathcal D\), then the regular
+image of \(\widehat{\gamma}\) in \(\mathsf U_B(P)\) factors through \(\mathcal D\).  Hence
+\(\mathcal D\) contains \(\operatorname{GenOp}(\gamma)\).
+\end{proof}
+
+This proposition is the categorical form of the distinction between a primitive instruction set
+and the operator category generated by that instruction set.
+
+\section{Carrier images, syntactic images, and behaviour}
+\label{sec:carrier-syntactic-behaviour-images}
+
+The preceding section separates syntax from operators.  This section relates that separation to
+the image constructions used earlier in the manuscript.
+
+Let
+\[
+        d:C\longrightarrow\mathsf U_B(P)
+\]
+be an identity-on-objects functor from an intensional instruction category \(C\).  The
+\textbf{operational image} of \(C\) on \(P\) is
+\[
+        \operatorname{OpIm}_P(C)
+        :=
+        \operatorname{RegIm}_I(d)
+        \hookrightarrow
+        \mathsf U_B(P).
+\]
+This is the extensional fragment generated by the intensional language \(C\).
+
+For a Mealy morphism
+\[
+        \Phi:A\rightsquigarrow B
+\]
+with carrier \(P\), the classifying functor
+\[
+        \ulcorner\Phi\urcorner:A\to\mathsf U_B(P)
+\]
+has operational image
+\[
+        \operatorname{OpIm}_P(A)
+        =
+        \operatorname{CarOp}(\Phi)^{\operatorname{op}}.
+\]
+
+For a specification \(K\), when the carrier is the derivative-closed behaviour carrier
+\[
+        \operatorname{Der}_0(K),
+\]
+the same construction gives the syntactic transition-output category:
+\[
+        \mathrm{SynTO}_{A,B}(K)^{\operatorname{op}}
+        \hookrightarrow
+        \mathsf U_B(\operatorname{Der}_0(K)).
+\]
+
+The distinction is:
+\[
+\begin{array}{c|c|c}
+\text{object} & \text{formed from} & \text{role} \\ \hline
+A,\ C,\ \mathrm{FreeCat}(G)
+    & \text{syntax or chosen primitives}
+    & \text{intensional program category} \\
+\operatorname{CarOp}(\Phi)
+    & \text{carrier action of }\Phi
+    & \text{operators generated on }P \\
+\mathrm{SynTO}_{A,B}(K)
+    & \text{action on }\operatorname{Der}_0(K)
+    & \text{syntactic operator image of a specification} \\
+\mathrm{KlEnd}_B(P)
+    & \text{all fibrewise Kleisli endomorphisms of }P
+    & \text{full extensional operator category.}
+\end{array}
+\]
+
+There is also a behavioural level.  Terminal residual semantics sends a state of a Mealy morphism
+to its residual behaviour.  Thus two implementation-level operators may become behaviourally
+identified after passing from carrier states to residual behaviours.  The universal operator
+category lives before this black-boxing step:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\text{syntax}
+\ar[r]
+&
+\text{carrier operators}
+\ar[r]
+&
+\text{residual behaviours}
+\\
+A
+\ar[r,"\ulcorner\Phi\urcorner"]
+&
+\mathsf U_B(P)
+\ar[r,dashed]
+&
+\operatorname{Op}_{\mathrm{beh}}(\Phi)^{\operatorname{op}} .
+\end{tikzcd}
+\]
+The dashed arrow denotes the behavioural quotient induced by residual semantics on the operators
+generated by the given input action.  It is not a functor out of the full universal operator
+category in general.
+
+\begin{definition}[Behavioural transition-output image]
+Let
+\[
+        \Phi:A\rightsquigarrow B
+\]
+have carrier \(P\), and let
+\[
+        \beta_P:P\longrightarrow \Beh^{\operatorname{can}}_{A,B}
+\]
+be its residual semantics map.  Let
+\[
+        \Beh(\Phi)\hookrightarrow \Beh^{\operatorname{can}}_{A,B}
+\]
+be the regular image of \(\beta_P\).  Since \(\beta_P\) is a strict semantic homomorphism, the
+carrier-level transition-output action descends to the behavioural image.  The
+\textbf{behavioural transition-output image} of \(\Phi\) is
+\[
+        \operatorname{Op}_{\mathrm{beh}}(\Phi)
+        :=
+        \operatorname{RegIm}_I
+        \left(
+            A^{\operatorname{op}}
+            \longrightarrow
+            \mathrm{KlEnd}_B(\Beh(\Phi))
+        \right).
+\]
+\end{definition}
+
+\begin{proposition}[Behavioural collapse of carrier operators]
+\label{prop:behavioural-collapse-carrier-operators}
+There is a canonical identity-on-objects comparison
+\[
+        \operatorname{CarOp}(\Phi)
+        \longrightarrow
+        \operatorname{Op}_{\mathrm{beh}}(\Phi).
+\]
+When the induced action on the behavioural image is the regular quotient of the carrier action,
+this comparison is a regular epimorphism.  Its kernel identifies precisely those generated carrier
+operators whose induced effects agree on the residual behavioural image
+\[
+        \Beh(\Phi).
+\]
+\end{proposition}
+
+\begin{proof}
+The carrier operational image is generated by the action
+\[
+        A^{\operatorname{op}}\to\mathrm{KlEnd}_B(P).
+\]
+The residual semantics map
+\[
+        \beta_P:P\to\Beh^{\operatorname{can}}_{A,B}
+\]
+is a strict semantic homomorphism, so it is compatible with the transition-output action of
+\(A^{\operatorname{op}}\).  Taking the regular image
+\[
+        \Beh(\Phi)\hookrightarrow\Beh^{\operatorname{can}}_{A,B}
+\]
+and restricting the induced action gives a transition-output action
+\[
+        A^{\operatorname{op}}\to\mathrm{KlEnd}_B(\Beh(\Phi)).
+\]
+
+We now check that the carrier operational quotient maps to the behavioural operational quotient.
+Suppose \(a,b:u\to v\) have the same image in \(\operatorname{CarOp}(\Phi)\).  Equivalently, their
+induced Kleisli operators on \(P\) are equal.  Since \(\beta_P\) is strict, applying \(\beta_P\)
+after either transition gives the same transition on the residual image.  Pulling back along the
+regular-epimorphic cover
+\[
+        P\twoheadrightarrow \Beh(\Phi)
+\]
+therefore makes the two induced behavioural operators equal.  By
+Lemma~\ref{lem:regular-epi-detection-operator-equality}, the induced operators on
+\(\Beh(\Phi)\) are equal.  Hence the kernel of the carrier action is contained in the kernel of
+the behavioural-image action.
+
+It follows, by the universal property of the carrier operational image, that the behavioural-image
+action factors through a canonical identity-on-objects comparison
+\[
+        \operatorname{CarOp}(\Phi)
+        \longrightarrow
+        \operatorname{Op}_{\mathrm{beh}}(\Phi).
+\]
+If the behavioural-image action is the regular quotient of the carrier action, then the induced
+comparison of regular images is a regular epimorphism.  Its kernel is exactly the relation of
+agreeing on the residual behavioural image.
+\end{proof}
+
+This proposition records the distinction between implementation-level operational equality and
+black-box behavioural equality.  The universal category \(\mathsf U_B(P)\) is extensional at the
+operator level, not necessarily at the behavioural level.
+
+\section{Finite Mealy--Cayley representation}
+\label{sec:finite-mealy-cayley-representation}
+
+The one-object finite-state case gives a concrete theorem showing that the abstract construction
+recovers the full transformation-output monoid.
+
+Let \(N\) be a monoid, regarded as a one-object category, and let \(Q\) be a finite set.  Set
+\[
+        I=1,
+        \qquad
+        B=N,
+        \qquad
+        P=Q.
+\]
+Then a fibrewise output-comparison Kleisli endomorphism of \(Q\) consists of a function
+\[
+        f:Q\to Q
+\]
+together with an output labelling
+\[
+        \omega:Q\to N.
+\]
+
+We write elements of
+\[
+        N^Q\rtimes\operatorname{End}(Q)
+\]
+as pairs
+\[
+        (f,\omega),
+\]
+with the endomap displayed first.
+
+Write
+\[
+        (f,\omega)\star(g,\nu)
+\]
+for the operation which executes \((f,\omega)\) first and \((g,\nu)\) second.
+
+\begin{theorem}[Finite Mealy--Cayley representation]
+\label{thm:finite-mealy-cayley}
+There is an isomorphism of monoids
+\[
+        \mathrm{KlEnd}_N(Q)
+        \cong
+        N^Q\rtimes \operatorname{End}(Q),
+\]
+where the semidirect product multiplication is
+\[
+        (f,\omega)\star(g,\nu)
+        =
+        \left(g\circ f,\;q\mapsto \omega(q)\circ\nu(fq)\right)
+\]
+in ordinary categorical composition notation.
+
+Equivalently, using the manuscript's multiplicative convention \(b\circ a=ba\),
+\[
+        (f,\omega)\star(g,\nu)
+        =
+        \left(g\circ f,\;q\mapsto \omega(q)\,\nu(fq)\right).
+\]
+The unit is
+\[
+        (1_Q,q\mapsto 1_N).
+\]
+Consequently, every deterministic \(N\)-output Mealy action of an input monoid \(M\) on \(Q\) is
+equivalently a monoid homomorphism
+\[
+        M^{\operatorname{op}}
+        \longrightarrow
+        N^Q\rtimes\operatorname{End}(Q).
+\]
+\end{theorem}
+
+\begin{proof}
+Since \(I=1\), there is only one fibre of the carrier, namely \(Q\).  Since \(B=N\) is a
+one-object category, the output-comparison arrow associated to a transition from \(q\) to \(f(q)\)
+is an element of \(N\).  Hence a Kleisli endomorphism is precisely a pair
+\[
+        (f,\omega),
+        \qquad
+        f:Q\to Q,
+        \quad
+        \omega:Q\to N.
+\]
+
+Executing \((f,\omega)\) first and \((g,\nu)\) second sends
+\[
+        q
+        \longmapsto
+        f(q)
+        \longmapsto
+        g(f(q)).
+\]
+Thus the state component of the composite is
+\[
+        g\circ f.
+\]
+The output component first contributes
+\[
+        \omega(q)
+\]
+and then contributes
+\[
+        \nu(f(q)).
+\]
+With ordinary categorical composition, the resulting output comparison is
+\[
+        \omega(q)\circ\nu(f(q)).
+\]
+Using the manuscript's multiplicative convention \(b\circ a=ba\), this is
+\[
+        \omega(q)\,\nu(fq).
+\]
+The identity operation is
+\[
+        (1_Q,q\mapsto 1_N).
+\]
+Therefore
+\[
+        \mathrm{KlEnd}_N(Q)
+        \cong
+        N^Q\rtimes\operatorname{End}(Q).
+\]
+
+A deterministic \(N\)-output Mealy action of an input monoid \(M\) on \(Q\) is a one-object Mealy
+structure, hence a Kleisli action
+\[
+        M^{\operatorname{op}}\to\mathrm{KlEnd}_N(Q).
+\]
+Using the displayed isomorphism gives the required homomorphism
+\[
+        M^{\operatorname{op}}\to N^Q\rtimes\operatorname{End}(Q).
+\]
+\end{proof}
+
+This theorem is the Mealy analogue of the Cayley representation by transformations.  The ordinary
+full transformation monoid
+\[
+        \operatorname{End}(Q)
+\]
+is replaced by the full transformation-output monoid
+\[
+        N^Q\rtimes\operatorname{End}(Q).
+\]
+
+The corresponding universal finite-state Mealy morphism is
+\[
+        \mathbb U_{N,Q}:
+        \bigl(N^Q\rtimes \operatorname{End}(Q)\bigr)^{\operatorname{op}}
+        \rightsquigarrow N.
+\]
+It executes
+\[
+        \delta_{\mathbb U}((f,\omega)^{\operatorname{op}},q)=f(q),
+        \qquad
+        \omega_{\mathbb U}((f,\omega)^{\operatorname{op}},q)=\omega(q).
+\]
+
+The intensional universal program monoid is
+\[
+        \mathrm{FreeMon}\bigl(N^Q\rtimes\operatorname{End}(Q)\bigr).
+\]
+Its decoder sends a word
+\[
+        [(f_1,\omega_1)^{\operatorname{op}},\ldots,(f_n,\omega_n)^{\operatorname{op}}]
+\]
+to
+\[
+        \bigl(
+        (f_n,\omega_n)\star\cdots\star(f_1,\omega_1)
+        \bigr)^{\operatorname{op}}.
+\]
+This is the same order as in the general formula: the last letter of the input word is executed
+first at the carrier level.
+
+Thus the finite-state case has the same three levels:
+\[
+\begin{array}{c|c}
+\text{level} & \text{finite one-object form} \\ \hline
+\text{intensional programs}
+    & \mathrm{FreeMon}\bigl(N^Q\rtimes\operatorname{End}(Q)\bigr) \\
+\text{extensional operators}
+    & N^Q\rtimes\operatorname{End}(Q) \\
+\text{execution}
+    & \mathbb U_{N,Q}:
+        \bigl(N^Q\rtimes\operatorname{End}(Q)\bigr)^{\operatorname{op}}
+        \rightsquigarrow N .
+\end{array}
+\]
+
+\section{Lawvere diagonal obstruction to total self-coding}
+\label{sec:lawvere-diagonal-obstruction}
+
+The extensional universal operator category is canonical, but it is not a self-coded
+stored-program universal computer.  In total settings, full extensional self-coding is obstructed
+by diagonalization.
+
+\begin{theorem}[Lawvere diagonal obstruction]
+\label{thm:lawvere-diagonal-obstruction}
+Let \(\mathcal E=\mathrm{Set}\), let \(P\) be a set, and suppose \(P\) has a fixed-point-free
+endomap
+\[
+        s:P\longrightarrow P.
+\]
+Then there is no map
+\[
+        e:P\times P\longrightarrow P
+\]
+which is point-surjective for all endomaps \(P\to P\).  That is, there is no \(e\) such that for
+every function
+\[
+        f:P\longrightarrow P
+\]
+there exists \(p\in P\) with
+\[
+        f(x)=e(p,x)
+        \quad\text{for all }x\in P.
+\]
+\end{theorem}
+
+\begin{proof}
+Assume, for contradiction, that such an evaluator
+\[
+        e:P\times P\to P
+\]
+exists.  Define the diagonal function
+\[
+        d:P\to P,
+        \qquad
+        d(x)=s(e(x,x)).
+\]
+By point-surjectivity of \(e\), there exists \(p\in P\) such that
+\[
+        d(x)=e(p,x)
+\]
+for all \(x\).  Evaluating at \(x=p\), one obtains
+\[
+        e(p,p)=d(p)=s(e(p,p)).
+\]
+Thus \(e(p,p)\) is a fixed point of \(s\), contradicting the assumption that \(s\) is fixed-point
+free.
+\end{proof}
+
+This is the Cantor--Lawvere phenomenon in computational form \cite{Lawvere1969}.  It explains why
+the full total extensional operator object
+\[
+        \mathsf U_1(P)=\operatorname{End}(P)^{\operatorname{op}}
+\]
+cannot generally be coded by \(P\) itself.
+
+In the one-object total case,
+\[
+        I=1,
+        \qquad
+        B=1,
+\]
+the extensional universal evaluator is ordinary evaluation
+\[
+        \operatorname{End}(P)\times P\longrightarrow P.
+\]
+A self-coded total evaluator would require a coding map
+\[
+        P\longrightarrow \operatorname{End}(P)
+\]
+which is surjective enough to represent all total endomaps.  The theorem says that this is
+impossible whenever \(P\) has a fixed-point-free endomap.
+
+For example, with
+\[
+        P=\mathbb N
+\]
+and
+\[
+        s(n)=n+1,
+\]
+there is no total self-indexed evaluator
+\[
+        e:\mathbb N\times\mathbb N\to\mathbb N
+\]
+representing all total functions \(\mathbb N\to\mathbb N\).
+
+This does not contradict the existence of
+\[
+        \mathsf U_1(\mathbb N)=\operatorname{End}(\mathbb N)^{\operatorname{op}}.
+\]
+It says that the full extensional instruction object
+\[
+        \operatorname{End}(\mathbb N)
+\]
+cannot be replaced by the state object \(\mathbb N\) itself in a total extensional way.
+
+Thus:
+\[
+\boxed{
+\text{full extensional operator universality}
+\neq
+\text{total self-coded universal computation.}
+}
+\]
+Classical self-coded universality requires intensional codes and, for ordinary recursion theory,
+partial evaluation.
+
+\begin{corollary}[No total primitive-recursive universal evaluator for primitive recursion]
+\label{cor:no-total-pr-self-universal}
+There is no primitive-recursive function
+\[
+        U:\mathbb N\times\mathbb N\to\mathbb N
+\]
+such that every unary primitive-recursive function
+\[
+        f:\mathbb N\to\mathbb N
+\]
+has an index \(e\in\mathbb N\) with
+\[
+        f(x)=U(e,x)
+        \quad\text{for all }x.
+\]
+\end{corollary}
+
+\begin{proof}
+Suppose, for contradiction, that such a primitive-recursive evaluator \(U\) exists.  Define
+\[
+        g(x)=U(x,x)+1.
+\]
+Since \(U\) is primitive recursive, \(g\) is primitive recursive.  By universality, there exists an
+index \(e_0\) such that
+\[
+        g(x)=U(e_0,x)
+\]
+for all \(x\).  Evaluating at \(x=e_0\), one obtains
+\[
+        U(e_0,e_0)+1
+        =
+        g(e_0)
+        =
+        U(e_0,e_0),
+\]
+a contradiction.
+\end{proof}
+
+The point is not that primitive recursion is irrelevant.  The point is that a total evaluator
+cannot be both primitive recursive and universal for all unary primitive-recursive functions.
+Classical universality escapes this diagonal obstruction through partiality, intensional coding, or
+by using an evaluator outside the represented total class.
+
+\section{Partiality, coding, and classical universality}
+\label{sec:partiality-coding-classical-universality}
+
+The constructions above are total.  They isolate the categorical universal operator evaluator and
+its canonical intensional straight-line language.
+
+Classical universal computation adds further structure:
+\[
+\begin{array}{c}
+\text{intensional codes} \\
+{}+\ \text{partial evaluation} \\
+{}+\ \text{composition tracking} \\
+{}+\ \text{parameterization} \\
+{}+\ \text{finite or unbounded iteration.}
+\end{array}
+\]
+
+\begin{definition}[Stable fibrewise partiality structure]
+A \textbf{stable fibrewise partiality structure} on the slices of \(\mathcal E\) consists of
+monads
+\[
+        L_X:\mathcal E/X\longrightarrow \mathcal E/X
+\]
+for the slices used below, stable under pullback in \(X\), together with Kleisli composition and
+units compatible with reindexing.
+\end{definition}
+
+Given such a structure, a partial transition-output operator over \(I\times I\) is a Kleisli
+section in the slice over \(P_{\mathrm{src}}\):
+\[
+        P_{\mathrm{src}}
+        \longrightarrow
+        L_{P_{\mathrm{src}}}\bigl(E_B(P)^{[2]}\bigr).
+\]
+
+\begin{definition}[Partial operator category]
+A stable fibrewise partiality structure \(L\) is \textbf{admissible for the carrier \(P\) over
+\(B\)} if the partial transition-output operators defined above admit identities and Kleisli
+composition internally, forming an internal category
+\[
+        \mathrm{KlEnd}^L_B(P).
+\]
+The corresponding partial universal Mealy category is
+\[
+        \mathsf U^L_B(P)
+        :=
+        \mathrm{KlEnd}^L_B(P)^{\operatorname{op}}.
+\]
+\end{definition}
+
+\begin{proposition}[Partial universal Mealy category]
+\label{prop:partial-universal-mealy-category}
+Let \(L\) be admissible for \(P\) over \(B\).  Then
+\[
+        \mathsf U^L_B(P):=\mathrm{KlEnd}^L_B(P)^{\operatorname{op}}
+\]
+represents partial Mealy structures on the fixed carrier \(P\).
+\end{proposition}
+
+\begin{proof}
+A partial Mealy structure on \(P\) is a fibrewise partial Kleisli action
+\[
+        A^{\operatorname{op}}\longrightarrow \mathrm{KlEnd}^L_B(P).
+\]
+Taking opposites converts this datum into an identity-on-objects internal functor
+\[
+        A\longrightarrow
+        \mathrm{KlEnd}^L_B(P)^{\operatorname{op}}
+        =
+        \mathsf U^L_B(P).
+\]
+The converse construction is obtained by opposing such a functor.  This is the partial analogue of
+Theorem~\ref{thm:genericity-universal-mealy}.
+\end{proof}
+
+An effective or computable programming language is not obtained canonically from
+\(\mathsf U^L_B(P)\) alone.  One must choose an effective operator subcategory
+\[
+        \mathcal C\hookrightarrow \mathrm{KlEnd}^L_B(P)
+\]
+and a code object mapping to its arrows.
+
+\begin{definition}[Turing-style Mealy coding refinement]
+A \textbf{Turing-style Mealy coding refinement} consists of:
+\begin{enumerate}
+    \item a stable fibrewise partiality structure \(L\);
+    \item an internal category \(B\);
+    \item a carrier
+    \[
+            I\xleftarrow{p}P\xrightarrow{q}B_0;
+    \]
+    \item an identity-on-objects effective operator subcategory
+    \[
+            \mathcal C\hookrightarrow \mathrm{KlEnd}^L_B(P);
+    \]
+    \item an object of typed codes
+    \[
+            c:\operatorname{Code}\to I\times I;
+    \]
+    \item a coding map over \(I\times I\)
+    \[
+            \gamma:\operatorname{Code}\to \mathcal C_1;
+    \]
+    \item a code-indexed one-step partial evaluator, defined by pulling back universal partial
+    evaluation along \(\gamma\);
+    \item identity and composition tracking on codes, meaning maps on codes whose images under
+    \(\gamma\) are the identity and Kleisli-composite operators in \(\mathcal C\).
+\end{enumerate}
+It is \textbf{universal for \(\mathcal C\)} when
+\[
+        \gamma:\operatorname{Code}\to\mathcal C_1
+\]
+is a regular epimorphism in \(\mathcal E/(I\times I)\), or a split epimorphism when global chosen
+codes are required.
+\end{definition}
+
+\begin{proposition}[Coded partial evaluation]
+\label{prop:coded-partial-evaluation}
+A Turing-style Mealy coding refinement determines a partial Mealy morphism
+\[
+        \mathcal C^{\operatorname{op}}\rightsquigarrow B
+\]
+whose primitive instructions are the operators of \(\mathcal C\).  The code object locally names
+these instructions, and the code-indexed one-step evaluator is the pullback of universal partial
+evaluation along
+\[
+        \gamma:\operatorname{Code}\to\mathcal C_1.
+\]
+With either a free category of coded programs or explicit identity and composition tracking on
+codes, this extends to a coded partial program evaluator.
+\end{proposition}
+
+\begin{proof}
+The inclusion
+\[
+        \mathcal C\hookrightarrow \mathrm{KlEnd}^L_B(P)
+\]
+opposes to an inclusion
+\[
+        \mathcal C^{\operatorname{op}}\hookrightarrow \mathsf U^L_B(P).
+\]
+Restricting the partial universal Mealy evaluator along this inclusion gives a partial Mealy
+morphism
+\[
+        \mathcal C^{\operatorname{op}}\rightsquigarrow B.
+\]
+The coding map
+\[
+        \gamma:\operatorname{Code}\to\mathcal C_1
+\]
+locally names the arrows of \(\mathcal C\).  Pulling back universal partial evaluation along
+\(\gamma\) gives the code-indexed one-step evaluator.  If the codes freely generate a coded program
+category, or if the code object carries identity and composition tracking, then the one-step
+evaluator extends to a coded partial program evaluator.
+\end{proof}
+
+This situation is summarized by:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\operatorname{Code}
+\ar[r,"\gamma"]
+\ar[d]
+&
+\mathcal C_1
+\ar[d,hook]
+\\
+I\times I
+&
+\mathrm{KlEnd}^L_B(P)_1
+\ar[l]
+\end{tikzcd}
+\]
+
+In the one-object case
+\[
+        I=1,
+        \qquad
+        P=\mathbb N,
+        \qquad
+        B=1,
+\]
+choosing the effective subcategory of partial recursive endomaps and an acceptable enumeration
+\[
+        \gamma:\mathbb N\longrightarrow \mathcal C_1
+\]
+recovers the ordinary universal partial recursive evaluator
+\[
+        (e,x)\longmapsto \varphi_e(x)
+\]
+as a coded pullback of partial universal Mealy evaluation \cite{Kleene1952,Rogers1967}.  The
+\(s\)-\(m\)-\(n\) theorem supplies parameterization, and computable manipulation of indices tracks
+composition.
+
+Categorical accounts of such partial-computability structures include Turing categories and
+related abstract-computability frameworks \cite{CockettHofstra2008}.  These structures refine the
+total construction
+\[
+        \mathsf{Prog}_B(P)\to\mathsf U_B(P)
+\]
+by choosing codes and partial effective operator fragments.
+
+\section{Examples}
+\label{sec:universal-mealy-examples}
+
+\subsection{Total functions in \(\mathrm{Set}\)}
+
+Let
+\[
+        \mathcal E=\mathrm{Set},
+        \qquad
+        I=1,
+        \qquad
+        B=1,
+        \qquad
+        P=X.
+\]
+Then
+\[
+        \mathrm{KlEnd}_1(X)\cong \operatorname{End}(X)
+\]
+as a one-object category.  The extensional universal Mealy category is
+\[
+        \mathsf U_1(X)=\operatorname{End}(X)^{\operatorname{op}}.
+\]
+The universal evaluator is ordinary evaluation:
+\[
+        \delta_{\mathbb U}(f^{\operatorname{op}},x)=f(x).
+\]
+
+The intensional universal program category is the free monoid on the set of endomaps:
+\[
+        \mathsf{Prog}_1(X)
+        \cong
+        \mathrm{FreeMon}(\operatorname{End}(X)).
+\]
+A program is a finite word
+\[
+        [f_1^{\operatorname{op}},\ldots,f_n^{\operatorname{op}}].
+\]
+The decoder is ordinary composition with the opposite-category order:
+\[
+        [f_1^{\operatorname{op}},\ldots,f_n^{\operatorname{op}}]
+        \longmapsto
+        (f_1\circ\cdots\circ f_n)^{\operatorname{op}},
+\]
+so the carrier-level execution applies
+\[
+        f_n,\ f_{n-1},\ \ldots,\ f_1
+\]
+in that order.
+
+Thus
+\[
+        \operatorname{End}(X)
+\]
+is the extensional quotient of the free straight-line language on all primitive transformations of
+\(X\).
+
+For \(X=\mathbb N\), this is not an effective computability object.  It contains all functions
+\[
+        \mathbb N\to\mathbb N,
+\]
+including noncomputable functions.  The construction is a total extensional operator universe, not
+an effective programming language.
+
+\subsection{Finite-state transformation-output monoids}
+
+Let
+\[
+        I=1,
+\]
+let \(Q\) be a finite set, and let \(B\) be the one-object category associated to a monoid \(N\).
+By Theorem~\ref{thm:finite-mealy-cayley},
+\[
+        \mathrm{KlEnd}_N(Q)
+        \cong
+        N^Q\rtimes \operatorname{End}(Q).
+\]
+The extensional universal finite-state Mealy morphism is
+\[
+        \mathbb U_{N,Q}:
+        \bigl(N^Q\rtimes \operatorname{End}(Q)\bigr)^{\operatorname{op}}
+        \rightsquigarrow N.
+\]
+The intensional universal program monoid is
+\[
+        \mathrm{FreeMon}\bigl(N^Q\rtimes\operatorname{End}(Q)\bigr).
+\]
+The decoder sends a word to the corresponding semidirect product composite, in the reversed
+\(\star\)-order specified in Section~\ref{sec:finite-mealy-cayley-representation}.  This is
+finite-state operational universality.  It is not Turing universality, since the carrier is finite.
+
+\subsection{Generated instruction languages}
+
+Let
+\[
+        G\rightrightarrows I
+\]
+be a chosen graph of primitive instructions, and let
+\[
+        \gamma:G\to\mathsf U_B(P)_{\mathrm{gr}}
+\]
+assign to each primitive instruction a transition-output operator.
+
+Then
+\[
+        \mathrm{FreeCat}(G)
+\]
+is the intensional program category generated by those primitives.  Its decoder
+\[
+        \widehat{\gamma}:\mathrm{FreeCat}(G)\to\mathsf U_B(P)
+\]
+is the unique extension of \(\gamma\).  Its operational image
+\[
+        \operatorname{RegIm}_I(\widehat{\gamma})
+        \hookrightarrow
+        \mathsf U_B(P)
+\]
+is the extensional operator category generated by those primitives.
+
+This is the general pattern for concrete programming languages, instruction sets, gate sets,
+rewrite systems, register-machine primitives, and circuit bases.
+
+\subsection{Presheaf and sheaf bases}
+
+Let
+\[
+        \mathcal E=\mathrm{Set}^{\mathcal C^{\operatorname{op}}}
+\]
+be a presheaf topos.  Since \(\mathcal E\) is locally cartesian closed,
+\[
+        \mathrm{KlEnd}_B(P)
+\]
+exists internally for every internal category \(B\) and carrier \(P\).
+
+The construction is contextual rather than merely pointwise.  At a stage \(c\), generalized
+elements of
+\[
+        \mathrm{KlEnd}_B(P)_1
+\]
+are compatible families of fibrewise transition-output operators over all restrictions into \(c\).
+Thus presheaf and sheaf bases give context-indexed universal operator categories.
+
+The corresponding intensional program category
+\[
+        \mathsf{Prog}_B(P)
+\]
+is the internal free category on the contextual graph of universal instructions.  It records formal
+contextual programs before they are compiled to contextual transition-output operators.
+
+\subsection{Self-coding obstruction}
+
+In the total one-object case,
+\[
+        \mathsf U_1(P)=\operatorname{End}(P)^{\operatorname{op}}.
+\]
+If \(P\) has a fixed-point-free endomap, then
+Theorem~\ref{thm:lawvere-diagonal-obstruction} prevents \(\operatorname{End}(P)\) from being
+represented by \(P\) itself in a total extensional way.
+
+Thus a stored-program universal computer is not obtained by setting
+\[
+        \operatorname{Code}=P
+\]
+and demanding a total enumeration of all extensional endomaps.  One must instead use an
+intensional code object and, for classical computation, partial evaluation.
+
+\section{Non-examples and obstructions}
+\label{sec:nonexamples-obstructions-universal-mealy}
+
+\subsection{Finitely complete bases without operator objects}
+
+Finite limits are sufficient to define spans, internal categories, and ordinary Mealy morphisms.
+They are not sufficient to construct
+\[
+        \mathrm{KlEnd}_B(P)
+\]
+in general.  The latter requires dependent products representing fibrewise operator families.  In
+a finitely complete category where the relevant source-state maps
+\[
+        \pi_{\mathrm{src}}:P_{\mathrm{src}}\to I\times I
+\]
+are not exponentiable in the required slices, the extensional universal Mealy category
+\[
+        \mathsf U_B(P)
+\]
+is not defined by the construction of this chapter.
+
+\subsection{The extensional universal category is not syntax}
+
+The category
+\[
+        \mathsf U_B(P)
+\]
+is not a universal programming language in the intensional sense.  Its arrows are already
+operators.  Formal programs live instead in
+\[
+        \mathsf{Prog}_B(P)
+        =
+        \mathrm{FreeCat}\bigl(\mathsf U_B(P)_{\mathrm{gr}}\bigr),
+\]
+or in a generated language
+\[
+        \mathrm{FreeCat}(G)
+\]
+lying over \(\mathsf U_B(P)\).
+
+Thus the correct reading is:
+\[
+        \mathsf{Prog}_B(P)
+        \longrightarrow
+        \mathsf U_B(P)
+        \longrightarrow
+        B.
+\]
+The first map compiles intensional programs.  The second Mealy morphism evaluates extensional
+operators.
+
+\subsection{The full \(\mathrm{Set}\)-endomorphism object}
+
+The object
+\[
+        \mathrm{KlEnd}_1(\mathbb N)
+        =
+        \mathbb N^{\mathbb N}
+\]
+in \(\mathrm{Set}\) is not an effective computability object.  It is a correct total extensional
+operator object, but it contains noncomputable functions.  Therefore full operator universality is
+not the same as computability.
+
+\subsection{No total self-coding of full extensional universality}
+
+The Lawvere diagonal obstruction shows that, when \(P\) has a fixed-point-free endomap, there is no
+total self-indexed evaluator
+\[
+        P\times P\to P
+\]
+which represents all total endomaps \(P\to P\).  Thus the full extensional universal evaluator
+cannot generally be made into a total stored-program evaluator with codes equal to states.
+
+\subsection{Partiality without coding}
+
+A lift monad or partial-map structure gives partial maps, but does not by itself give classical
+universal computation.  One also needs:
+\[
+\begin{array}{ll}
+1. & \text{an object of intensional codes;}\\
+2. & \text{an evaluator induced by those codes;}\\
+3. & \text{closure of codes under composition;}\\
+4. & \text{parameterization or substitution of data into codes;}\\
+5. & \text{finite path or trace closure for repeated execution;}\\
+6. & \text{partial or fixed-point structure for divergence and unbounded search.}
+\end{array}
+\]
+Partiality is therefore necessary for comparison with classical recursion theory, but it is not
+sufficient by itself.
+
+\section{Chapter summary}
+\label{sec:universal-mealy-summary}
+
+This chapter separated intensional programs from extensional transition-output operators.
+
+The extensional universal Mealy category of a carrier
+\[
+        I\xleftarrow{p}P\xrightarrow{q}B_0
+\]
+is
+\[
+        \mathsf U_B(P)
+        =
+        \mathrm{KlEnd}_B(P)^{\operatorname{op}}.
+\]
+Its associated universal evaluator is
+\[
+        \mathbb U_{B,P}:\mathsf U_B(P)\rightsquigarrow B.
+\]
+It executes transition-output operators by evaluation.
+
+The genericity theorem says that every Mealy morphism
+\[
+        \Phi:A\rightsquigarrow B
+\]
+with carrier \(P\) is obtained by interpreting its input category in the universal operator
+category:
+\[
+        \ulcorner\Phi\urcorner:A\to\mathsf U_B(P),
+        \qquad
+        \Phi=\ulcorner\Phi\urcorner^{\ast}\mathbb U_{B,P}
+\]
+as a fixed-carrier Mealy structure.  Equivalently, \(\mathbb U_{B,P}\) is terminal in the category
+of fixed-carrier evaluators.
+
+The one-step operational full-abstraction theorem says that equality of universal instructions is
+exactly equality of evaluated transition-output effect on \(P\):
+\[
+        \varphi^{\operatorname{op}}=\psi^{\operatorname{op}}
+        \quad\Longleftrightarrow\quad
+        \operatorname{ev}(\varphi,-)=\operatorname{ev}(\psi,-)
+\]
+as represented sections over the relevant source-state fibre.
+
+The extensional-collapse theorem says that any instruction syntax \(A\) maps into
+\(\mathsf U_B(P)\) through its carrier-level operational quotient:
+\[
+        A
+        \twoheadrightarrow
+        \operatorname{CarOp}(\Phi)^{\operatorname{op}}
+        \hookrightarrow
+        \mathsf U_B(P).
+\]
+
+The intensional universal program category is
+\[
+        \mathsf{Prog}_B(P)
+        =
+        \mathrm{FreeCat}\bigl(\mathsf U_B(P)_{\mathrm{gr}}\bigr).
+\]
+Its arrows are formal finite programs in universal primitive instructions.  The canonical decoder
+\[
+        \operatorname{decode}_{B,P}:
+        \mathsf{Prog}_B(P)\to\mathsf U_B(P)
+\]
+compiles such a formal program to its composite transition-output operator.  For a word
+\[
+        [\varphi_1^{\operatorname{op}},\ldots,\varphi_n^{\operatorname{op}}],
+\]
+the compiled operator is
+\[
+        (\varphi_1\diamond\cdots\diamond\varphi_n)^{\operatorname{op}},
+\]
+which executes \(\varphi_n\) first on the carrier, then \(\varphi_{n-1}\), and so on.
+
+The corresponding intensional universal Mealy program machine is
+\[
+        \mathbb P_{B,P}
+        =
+        \operatorname{decode}_{B,P}^{\ast}\mathbb U_{B,P}.
+\]
+
+Thus the central architecture is
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\mathsf{Prog}_B(P)
+\ar[r,"\operatorname{decode}_{B,P}"]
+&
+\mathsf U_B(P)
+\ar[r,"\mathbb U_{B,P}"]
+&
+B .
+\end{tikzcd}
+\]
+The first object is intensional.  The second is extensional.  The first map is compilation.  The
+second Mealy morphism is evaluation.
+
+The finite Mealy--Cayley theorem identifies the one-object finite-state operator category as
+\[
+        \mathrm{KlEnd}_N(Q)
+        \cong
+        N^Q\rtimes\operatorname{End}(Q),
+\]
+showing that the abstract construction recovers the full transformation-output monoid.
+
+Finally, the Lawvere diagonal obstruction shows that full total extensional universality cannot
+generally be self-coded by the same state object.  Classical universal computation therefore
+requires additional intensional and partial structure: codes, partial evaluation, composition
+tracking, parameterization, and iteration.
+
+The resulting conclusion is:
+\[
+\boxed{
+\begin{array}{c}
+\text{Mealy morphisms may be intensional;}\\
+\text{their universal operator semantics is extensional;}\\
+\text{the canonical intensional layer is the free program category over that operator semantics.}
+\end{array}}
+\]

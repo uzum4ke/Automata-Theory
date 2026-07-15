@@ -1,0 +1,3271 @@
+
+\chapter{Dynamic Logic of Relative Responses and Trajectories}
+\label{ch:dynamic-relative-response-trajectories}
+
+\section{Orientation: spans, profiles, and finite trajectories}
+\label{sec:dynamic-response-trajectory-orientation}
+
+The preceding two chapters constructed the same relative Mealy semantics in
+three compatible forms.  A Mealy morphism
+\[
+    \Phi=(P,\delta_P,\omega_P):
+    \mathbb A\rightsquigarrow\mathbb B
+\]
+and a right \(\mathbb B\)-action
+\[
+    Y=(Y\xrightarrow{r}B_0,\sigma)
+\]
+determine the relative state object
+\[
+    S_{\Phi,Y}=P\times_{B_0}Y,
+\]
+the relative execution category
+\[
+    \mathsf{Prog}_{\Phi,Y},
+\]
+the multiplicative response coalgebra
+\[
+    c_{\Phi,Y}:
+    S_{\Phi,Y}\to
+    \mathcal M_{\mathbb A,\mathbb B,Y}(S_{\Phi,Y}),
+\]
+and the finite trajectory object
+\[
+    \mathscr T_{\Phi,Y}
+    :=
+    \operatorname{Path}(\mathsf{Prog}_{\Phi,Y}).
+\]
+The present chapter develops the corresponding logical semantics.
+
+There are three logically distinct levels.
+\[
+\begin{array}{c|c|c}
+\text{level} & \text{semantic object} & \text{quantification}\\
+\hline
+\text{span} &
+X\xleftarrow{\ell}R\xrightarrow{r}Y &
+\text{selected execution witnesses}\\
+\text{profile} &
+c:X\to\mathcal M(X) &
+\text{positions in a total response profile}\\
+\text{trajectory} &
+\mathscr T(n) &
+\text{finite segmented executions}
+\end{array}
+\]
+At the span level, diamonds and boxes quantify over a chosen execution span.
+At the profile level, predicate liftings inspect the positions of a total
+response policy before the coalgebra is flattened.  At the trajectory level,
+the same predicate-transformer calculus is applied to the initial and final
+state maps of finite path objects, or to any of their intermediate boundary
+maps.
+
+The chapter proves two exact comparison results.  First, guarded existential
+profile liftings pull back along \(c_{\Phi,Y}\) to the diamonds of the
+corresponding guarded one-step spans.  Second, weak universal profile boxes
+pull back to the boxes of those restricted spans.  The strong profile box is
+different: it asserts total guarded responsiveness for every input position,
+rather than merely quantifying over witnesses already selected by a
+restriction.
+
+The finite-trajectory layer adds a different distinction.  Endpoint-only
+modalities for unrestricted categorical paths contract to one-step
+modalities, because a single arrow of \(\mathbb A\) may already be composite.
+Boundary-sensitive formulas and generator-restricted path formulas do not
+collapse in this way.  They retain information about the chosen segmentation
+of an execution.
+
+\subsection{Standing hypotheses and levels of logical structure}
+\label{subsec:dynamic-logical-hypotheses}
+
+The constructions are stratified by categorical strength.
+\[
+\begin{array}{c|c}
+\text{construction} & \text{assumption}\\
+\hline
+\text{pullback of predicates and tests} & \text{finite limits}\\
+\text{diamonds} & \text{regularity}\\
+\text{finite guarded joins} & \text{coherence}\\
+\text{boxes and intuitionistic implication} &
+\text{first-order Heyting structure}\\
+\text{all-horizon safety meets} &
+\text{the displayed small meets in subobject lattices}
+\end{array}
+\]
+No dependent products used to construct the response polynomial are repeated
+here.  They enter only through the already constructed coalgebra
+\(c_{\Phi,Y}\) and its position object.  Whenever a theorem uses
+Beck--Chevalley for existential or universal quantification, that hypothesis
+is stated explicitly.
+
+\subsection{Notation for relative execution}
+\label{subsec:dynamic-relative-execution-notation}
+
+Write
+\[
+    S:=S_{\Phi,Y},
+    \qquad
+    M:=M_{\Phi,Y}.
+\]
+The one-step execution span is
+\[
+    \mathbf m_{\Phi,Y}
+    =
+    \left(
+    S\xleftarrow{s_{\Phi,Y}}M
+    \xrightarrow{t_{\Phi,Y}}S
+    \right).
+\]
+Its canonical observations are
+\[
+    \iota_A:M\to A_1,
+    \qquad
+    \iota_B:M\to B_1,
+    \qquad
+    \lambda_{\Phi,Y}:
+    M\to\left(\int_{\mathbb B}Y\right)_1.
+\]
+They record, respectively, the input arrow, the raw output arrow, and the
+downstream transition.  The response coalgebra and its universal position
+object are those of
+Chapter~\ref{ch:relative-mealy-evaluation-polynomial-response}.  The finite
+trajectory objects and their Segal operations are those of
+Chapter~\ref{ch:temporal-trajectories-segal-execution}.
+
+The sequential-composition notation is the dynamic-logic notation:
+\[
+    R;S
+\]
+means that \(R\) is executed first and \(S\) second.
+
+\section{Predicate transformers for spans}
+\label{sec:relative-predicate-transformers}
+
+We now pass from the operational layer to the logical layer. The notation is
+chosen to match the non-iterative dynamic-logic reading of programs as
+predicate transformers: diamonds express existence of a successful execution,
+boxes express universal correctness over all executions, tests restrict
+execution to states satisfying a predicate, and finite choice denotes
+nondeterministic branching \cite{HarelKozenTiurynDynamicLogic}. The
+categorical implementation uses subobjects as predicates, regular images as
+existential quantification, and right adjoints to pullback as universal
+quantification \cite{Jacobs1999CategoricalLogic}. In the regular fragment,
+this agrees with the usual relational reading of programs, where relations can
+be represented categorically by suitable spans
+\cite{FongSpivakRegularRelational}.
+
+\subsection{Regular images and existential quantification}
+\label{subsec:relative-regular-images}
+
+\begin{definition}[Regular category]
+\label{def:relative-regular-category}
+A category \(\mathcal E\) is \textbf{regular} if it has finite limits, every
+morphism factors as a regular epimorphism followed by a monomorphism, and
+regular epimorphisms are stable under pullback.
+\end{definition}
+
+For the rest of this section, assume \(\mathcal E\) is regular. For an object
+\(X\), write
+\[
+\mathrm{Sub}(X)
+\]
+for the poset of subobjects of \(X\). For a morphism \(f:X\to Y\), write
+\[
+f^\ast:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+for pullback.
+
+\begin{definition}[Existential image]
+\label{def:relative-existential-image}
+For a morphism
+\[
+f:X\to Y,
+\]
+define
+\[
+\exists_f:\mathrm{Sub}(X)\to\mathrm{Sub}(Y)
+\]
+by sending a subobject \(U\hookrightarrow X\) to the regular image of
+\[
+U\to X\xrightarrow{f}Y.
+\]
+\end{definition}
+
+\begin{proposition}[Existential adjunction]
+\label{prop:relative-existential-adjunction}
+For every morphism \(f:X\to Y\) in a regular category,
+\[
+\exists_f\dashv f^\ast.
+\]
+Thus, for \(U\in\mathrm{Sub}(X)\) and \(V\in\mathrm{Sub}(Y)\),
+\[
+\exists_f(U)\le V
+\quad\Longleftrightarrow\quad
+U\le f^\ast V.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Translate the left-hand inequality.}
+The statement
+\[
+\exists_f(U)\le V
+\]
+says that the image of the composite
+\[
+U\to X\xrightarrow{f}Y
+\]
+factors through \(V\hookrightarrow Y\).
+
+\item \textbf{Remove the image.}
+This is equivalent to the composite \(U\to Y\) itself factoring through
+\(V\hookrightarrow Y\).
+
+\item \textbf{Use the pullback.}
+Factoring through \(V\) is equivalent to \(U\to X\) factoring through
+\(f^\ast V\hookrightarrow X\).
+\end{enumerate}
+\end{proof}
+
+\begin{proposition}[Beck--Chevalley for regular images]
+\label{prop:relative-regular-beck-chevalley}
+For every pullback square
+\[
+\begin{tikzcd}
+X' \arrow[r,"g'"] \arrow[d,"f'"']
+&
+X \arrow[d,"f"]
+\\
+Y' \arrow[r,"g"']
+&
+Y
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+\]
+in a regular category,
+\[
+g^\ast\exists_f=\exists_{f'}(g')^\ast.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Factor the relevant composite.}
+The regular image of a subobject after applying \(f\) is represented by a
+regular epimorphism followed by a monomorphism.
+
+\item \textbf{Pull the factorization back.}
+Regular epimorphisms are stable under pullback, so pulling this image
+factorization back along \(g\) gives the image factorization of the pulled
+back subobject along \(f'\).
+
+\item \textbf{Compare the two subobjects.}
+The two constructions therefore determine the same subobject of \(Y'\).
+\end{enumerate}
+\end{proof}
+
+When
+\[
+R:X\nrightarrow Y
+\qquad\text{and}\qquad
+S:Y\nrightarrow Z
+\]
+are spans, we write
+\[
+R;S:X\nrightarrow Z
+\]
+for the composite span obtained by performing \(R\) first and \(S\) second.
+Equivalently, in the notation of
+Chapter~\ref{ch:spans-internal-categories-mealy},
+\[
+R;S=S\circ R.
+\]
+This convention is the dynamic-logic convention for sequential composition of
+programs.
+
+\subsection{Diamond modalities}
+\label{subsec:relative-diamond-modalities}
+
+\begin{definition}[Diamond modality of a span]
+\label{def:relative-span-diamond}
+Let
+\[
+R=
+\left(
+X\xleftarrow{\ell}R\xrightarrow{r}Y
+\right)
+\]
+be a span in a regular category. Define
+\[
+\langle R\rangle:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+by
+\[
+\langle R\rangle\varphi
+:=
+\exists_\ell(r^\ast\varphi).
+\]
+The construction is represented by
+\[
+\begin{tikzcd}
+r^\ast\varphi
+\arrow[r]
+\arrow[d]
+&
+\varphi
+\arrow[d,hook]
+\\
+R
+\arrow[r,"r"']
+\arrow[d,"\ell"]
+&
+Y
+\\
+X
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\begin{proposition}[Functoriality of diamonds]
+\label{prop:relative-diamond-functoriality}
+For spans
+\[
+R:X\nrightarrow Y
+\qquad\text{and}\qquad
+S:Y\nrightarrow Z
+\]
+in a regular category,
+\[
+\langle 1_X\rangle=\mathrm{id}_{\mathrm{Sub}(X)}
+\]
+and
+\[
+\langle R;S\rangle
+=
+\langle R\rangle\circ\langle S\rangle.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check the identity span.}
+For the identity span
+\[
+X\xleftarrow{1_X}X\xrightarrow{1_X}X,
+\]
+the formula gives
+\[
+\exists_{1_X}1_X^\ast=\mathrm{id}_{\mathrm{Sub}(X)}.
+\]
+
+\item \textbf{Display the composite span.}
+Write
+\[
+R=(X\xleftarrow{\ell}R\xrightarrow{r}Y),
+\qquad
+S=(Y\xleftarrow{m}S\xrightarrow{n}Z).
+\]
+Their composite has apex \(R\times_Y S\):
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+R\times_Y S
+  \arrow[r,"\pi_S"]
+  \arrow[d,"\pi_R"']
+&
+S
+  \arrow[d,"m"]
+  \arrow[dr,"n",bend left=12]
+&
+\\
+R
+  \arrow[r,"r"']
+  \arrow[d,"\ell"']
+&
+Y
+&
+Z
+\\
+X
+&&
+\end{tikzcd}
+.
+\]
+
+\item \textbf{Compute the diamond of the composite.}
+For \(\varphi\in\mathrm{Sub}(Z)\),
+\[
+\langle R;S\rangle\varphi
+=
+\exists_{\ell\pi_R}\bigl((n\pi_S)^\ast\varphi\bigr).
+\]
+
+\item \textbf{Use Beck--Chevalley.}
+By functoriality of existential images and Beck--Chevalley for the pullback
+defining \(R\times_Y S\), this is
+\[
+\exists_\ell r^\ast\exists_m n^\ast\varphi
+=
+\langle R\rangle(\langle S\rangle\varphi).
+\]
+\end{enumerate}
+\end{proof}
+
+
+\subsection{First-order Heyting structure}
+\label{subsec:relative-first-order-heyting}
+
+\begin{definition}[First-order Heyting category]
+\label{def:relative-first-order-heyting}
+A \textbf{first-order Heyting category} is a coherent category
+\(\mathcal E\) such that, for every morphism
+\[
+f:X\to Y,
+\]
+the pullback functor
+\[
+f^\ast:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+has a right adjoint
+\[
+\forall_f:\mathrm{Sub}(X)\to\mathrm{Sub}(Y),
+\]
+and these right adjoints satisfy Beck--Chevalley for pullback squares.
+\end{definition}
+
+Assume \(\mathcal E\) is a first-order Heyting category.
+
+\subsection{Box modalities}
+\label{subsec:relative-box-modalities}
+
+\begin{definition}[Box modality of a span]
+\label{def:relative-span-box}
+For a span
+\[
+R=
+(X\xleftarrow{\ell}R\xrightarrow{r}Y),
+\]
+define
+\[
+[R]:\mathrm{Sub}(Y)\to\mathrm{Sub}(X)
+\]
+by
+\[
+[R]\varphi:=\forall_\ell(r^\ast\varphi).
+\]
+\end{definition}
+
+\begin{proposition}[Functoriality of boxes]
+\label{prop:relative-box-functoriality}
+For spans
+\[
+R:X\nrightarrow Y
+\qquad\text{and}\qquad
+S:Y\nrightarrow Z,
+\]
+one has
+\[
+[1_X]=\mathrm{id}_{\mathrm{Sub}(X)}
+\]
+and
+\[
+[R;S]=[R]\circ[S].
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Check the identity span.}
+For the identity span, the formula gives
+\[
+\forall_{1_X}1_X^\ast=\mathrm{id}_{\mathrm{Sub}(X)}.
+\]
+
+\item \textbf{Use the composite pullback.}
+For
+\[
+R=(X\xleftarrow{\ell}R\xrightarrow{r}Y),
+\qquad
+S=(Y\xleftarrow{m}S\xrightarrow{n}Z),
+\]
+the composite has apex \(R\times_Y S\).
+
+\item \textbf{Apply Beck--Chevalley for \(\forall\).}
+The Beck--Chevalley law for the pullback square defining \(R\times_Y S\),
+together with functoriality of right adjoints, gives
+\[
+[R;S]\varphi
+=
+\forall_\ell r^\ast\forall_m n^\ast\varphi
+=
+[R]([S]\varphi).
+\]
+\end{enumerate}
+\end{proof}
+
+
+\section{Tests and state restrictions}
+\label{subsec:relative-tests}
+
+\begin{definition}[Tests]
+\label{def:relative-tests}
+For a state predicate
+\[
+\theta:\Theta\hookrightarrow S,
+\]
+define the corresponding test span
+\[
+\theta?
+=
+(S\xleftarrow{\theta}\Theta\xrightarrow{\theta}S).
+\]
+It is displayed as
+\[
+\begin{tikzcd}
+& \Theta \arrow[dl,"\theta"'] \arrow[dr,"\theta"] & \\
+S && S
+\end{tikzcd}
+.
+\]
+\end{definition}
+
+\begin{proposition}[Diamond law for tests]
+\label{prop:relative-test-diamond}
+For every predicate \(\varphi\hookrightarrow S\),
+\[
+\langle\theta?\rangle\varphi
+=
+\theta\wedge\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Expand the diamond.}
+By definition,
+\[
+\langle\theta?\rangle\varphi
+=
+\exists_\theta(\theta^\ast\varphi).
+\]
+
+\item \textbf{Use monicity of the test.}
+Since \(\theta\) is monic, existential image along \(\theta\) identifies
+subobjects of \(\Theta\) with subobjects of \(S\) lying below \(\theta\).
+
+\item \textbf{Identify the image.}
+The image of \(\theta^\ast\varphi\) is therefore the meet
+\[
+\theta\wedge\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+
+\subsection{Boxes for tests}
+\label{subsec:relative-boxes-tests}
+
+\begin{proposition}[Box law for tests]
+\label{prop:relative-test-box}
+For a test
+\[
+\theta?=(S\xleftarrow{\theta}\Theta\xrightarrow{\theta}S),
+\]
+one has
+\[
+[\theta?]\varphi
+=
+\theta\Rightarrow\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Expand the box.}
+By definition,
+\[
+[\theta?]\varphi
+=
+\forall_\theta(\theta^\ast\varphi).
+\]
+
+\item \textbf{Test against an arbitrary predicate.}
+For any predicate \(\psi\hookrightarrow S\),
+\[
+\psi\le \forall_\theta(\theta^\ast\varphi)
+\]
+if and only if
+\[
+\theta^\ast\psi\le \theta^\ast\varphi.
+\]
+
+\item \textbf{Use monicity of \(\theta\).}
+Since \(\theta\) is monic, this is equivalent to
+\[
+\psi\wedge\theta\le\varphi.
+\]
+
+\item \textbf{Use the Heyting implication.}
+The last inequality is equivalent to
+\[
+\psi\le\theta\Rightarrow\varphi.
+\]
+Hence
+\[
+[\theta?]\varphi=\theta\Rightarrow\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+
+\section{Guard loci and guarded one-step programs}
+\label{sec:poly-relative-guard-loci-primitives}
+
+\subsection{Guard loci}
+\label{subsec:poly-relative-guard-loci}
+
+Fix \(\Phi\) and \(Y\), and write
+\[
+S:=S_{\Phi,Y},
+\qquad
+M:=M_{\Phi,Y}.
+\]
+
+A guarded one-step specification may involve the following predicates:
+\[
+\theta\hookrightarrow S
+\qquad
+\text{current coupled-state guard},
+\]
+\[
+R\hookrightarrow A_1
+\qquad
+\text{input-arrow guard},
+\]
+\[
+O\hookrightarrow B_1
+\qquad
+\text{raw output-arrow guard},
+\]
+\[
+T\hookrightarrow\left(\int_{\mathbb B}Y\right)_1
+\qquad
+\text{downstream transition guard},
+\]
+and
+\[
+\varphi\hookrightarrow S
+\qquad
+\text{continuation-state predicate}.
+\]
+
+The one-step execution object has canonical maps
+\[
+\iota_A:M\to A_1,
+\qquad
+\iota_A(a,x,y)=a,
+\]
+\[
+\iota_B:M\to B_1,
+\qquad
+\iota_B(a,x,y)=\omega_P(a,x),
+\]
+and
+\[
+\lambda_{\Phi,Y}:M\to\left(\int_{\mathbb B}Y\right)_1,
+\qquad
+\lambda_{\Phi,Y}(a,x,y)=(\omega_P(a,x),y).
+\]
+They are displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+M
+  \arrow[dl,"\iota_A"']
+  \arrow[d,"\lambda_{\Phi,Y}" description]
+  \arrow[dr,"\iota_B"]
+&
+\\
+A_1
+&
+\left(\int_{\mathbb B}Y\right)_1
+  \arrow[l,phantom,"\mapsto"]
+  \arrow[r,"\pi_{B_1}"']
+&
+B_1 .
+\end{tikzcd}
+\]
+
+In the terminal downstream case,
+\[
+\int_{\mathbb B}\mathbf 1_{\mathbb B}\cong\mathbb B^{\mathrm{op}},
+\]
+so downstream transition guards reduce to predicates on output arrows of
+\(\mathbb B\).
+
+\subsection{Guarded one-step programs}
+\label{subsec:poly-relative-guarded-primitives}
+
+Let
+\[
+\theta\hookrightarrow S,
+\qquad
+R\hookrightarrow A_1,
+\qquad
+O\hookrightarrow B_1,
+\qquad
+T\hookrightarrow\left(\int_{\mathbb B}Y\right)_1
+\]
+be guards.
+
+Pull them back to \(M\):
+\[
+\theta^\sharp:=s_{\Phi,Y}^\ast\theta,
+\]
+\[
+R^\sharp:=\iota_A^\ast R,
+\qquad
+O^\sharp:=\iota_B^\ast O,
+\qquad
+T^\sharp:=\lambda_{\Phi,Y}^\ast T.
+\]
+Their simultaneous restriction is
+\[
+(\theta;R/O/T)^\sharp
+:=
+\theta^\sharp\wedge R^\sharp\wedge O^\sharp\wedge T^\sharp
+\hookrightarrow M.
+\]
+
+\begin{definition}[Guarded one-step relative program]
+\label{def:poly-relative-guarded-primitive}
+The \textbf{guarded one-step relative program}
+\[
+\theta;R/O/T
+\]
+is the restricted span
+\[
+S
+\xleftarrow{s_{\Phi,Y}i}
+(\theta;R/O/T)^\sharp
+\xrightarrow{t_{\Phi,Y}i}
+S,
+\]
+where
+\[
+i:(\theta;R/O/T)^\sharp\hookrightarrow M
+\]
+is the inclusion.  Its diamond is denoted
+\[
+\langle\theta;R/O/T\rangle\varphi.
+\]
+\end{definition}
+
+The restricted span is displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+&
+(\theta;R/O/T)^\sharp
+  \arrow[dl,"s_{\Phi,Y}i"']
+  \arrow[dr,"t_{\Phi,Y}i"]
+  \arrow[d,hook,"i" description]
+&
+\\
+S
+&
+M
+  \arrow[l,"s_{\Phi,Y}"]
+  \arrow[r,"t_{\Phi,Y}"']
+&
+S .
+\end{tikzcd}
+\]
+
+\begin{proposition}[External reading of guarded one-step programs]
+\label{prop:poly-relative-guarded-primitive-external}
+In \(\mathbf{Set}\),
+\[
+(x,y)\models\langle\theta;R/O/T\rangle\varphi
+\]
+holds precisely when
+\[
+\theta(x,y)
+\]
+and there exists an admissible input arrow
+\[
+a:u\to p_P(x)
+\]
+such that
+\[
+R(a),
+\qquad
+O(\omega_P(a,x)),
+\qquad
+T(\omega_P(a,x),y),
+\]
+and
+\[
+\left(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\right)
+\models\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Expand the restricted apex.}
+The restricted one-step span has apex the subobject of \(M\) consisting of
+triples \((a,x,y)\) satisfying the four pulled-back guards.
+
+\item \textbf{Expand the diamond.}
+The diamond says that there exists such a triple with source \((x,y)\) and
+target satisfying \(\varphi\).
+
+\item \textbf{Read the target.}
+The target is
+\[
+\bigl(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\bigr).
+\]
+\end{enumerate}
+\end{proof}
+
+
+\section{Guarded polynomial response liftings}
+\label{sec:poly-relative-guarded-response-liftings}
+
+\subsection{Existential profile liftings}
+\label{subsec:poly-relative-existential-profile-liftings}
+
+Assume \(\mathcal E\) is regular.  Let
+\[
+c_{\Phi,Y}:
+S\to\mathcal M_{\mathbb A,\mathbb B,Y}(S)
+\]
+be the relative response coalgebra, and let
+\[
+\partial_S:\mathrm{Pos}_S\to\mathcal M_{\mathbb A,\mathbb B,Y}(S)
+\]
+be the position projection.
+
+The position object carries evaluation maps
+\[
+\operatorname{in}:\mathrm{Pos}_S\to A_1,
+\]
+\[
+\operatorname{out}:\mathrm{Pos}_S\to B_1,
+\]
+\[
+\operatorname{down}:\mathrm{Pos}_S\to
+\left(\int_{\mathbb B}Y\right)_1,
+\]
+and
+\[
+\operatorname{next}:\mathrm{Pos}_S\to S.
+\]
+
+The following liftings are coalgebraic predicate liftings for the response
+polynomial, later pulled back along the coalgebra to the span modalities of
+the flattened program category.  This is the same general pattern by which
+modal operators for coalgebras are described using predicate liftings
+\cite{Pattinson2003CoalgebraicModalLogic}.
+
+\begin{definition}[Guarded existential profile lifting]
+\label{def:poly-relative-guarded-existential-lifting}
+Let
+\[
+R\hookrightarrow A_1,
+\qquad
+O\hookrightarrow B_1,
+\qquad
+T\hookrightarrow\left(\int_{\mathbb B}Y\right)_1,
+\qquad
+\varphi\hookrightarrow S
+\]
+be predicates.  The \textbf{guarded existential profile lifting} is the
+predicate
+\[
+\lambda_{R/O/T}(\varphi)
+\hookrightarrow
+\mathcal M_{\mathbb A,\mathbb B,Y}(S)
+\]
+defined by
+\[
+\lambda_{R/O/T}(\varphi)
+:=
+\exists_{\partial_S}
+\left(
+\operatorname{in}^{\ast}R
+\wedge
+\operatorname{out}^{\ast}O
+\wedge
+\operatorname{down}^{\ast}T
+\wedge
+\operatorname{next}^{\ast}\varphi
+\right).
+\]
+\end{definition}
+
+Externally, a response profile satisfies
+\[
+\lambda_{R/O/T}(\varphi)
+\]
+when some input position satisfies \(R\), the selected raw output satisfies
+\(O\), the downstream transition satisfies \(T\), and the continuation state
+satisfies \(\varphi\).
+
+\subsection{Agreement with span diamonds}
+\label{subsec:poly-relative-lifting-span-agreement}
+
+\begin{theorem}[Agreement of profile liftings and span diamonds]
+\label{thm:poly-relative-lifting-span-agreement}
+For every state guard
+\[
+\theta\hookrightarrow S,
+\]
+input guard
+\[
+R\hookrightarrow A_1,
+\]
+output guard
+\[
+O\hookrightarrow B_1,
+\]
+downstream transition guard
+\[
+T\hookrightarrow\left(\int_{\mathbb B}Y\right)_1,
+\]
+and postcondition
+\[
+\varphi\hookrightarrow S,
+\]
+one has
+\[
+\theta\wedge c_{\Phi,Y}^{\ast}\lambda_{R/O/T}(\varphi)
+=
+\langle\theta;R/O/T\rangle\varphi.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Pull back the position projection.}
+By Lemma~\ref{lem:poly-relative-mealy-position-pullback}, pulling back the
+position projection
+\[
+\partial_S:\mathrm{Pos}_S\to\mathcal M_{\mathbb A,\mathbb B,Y}(S)
+\]
+along \(c_{\Phi,Y}\) gives the one-step execution object \(M\).
+
+\item \textbf{Identify the evaluation maps.}
+Under this identification,
+\[
+\operatorname{in}=\iota_A,
+\qquad
+\operatorname{out}=\iota_B,
+\qquad
+\operatorname{down}=\lambda_{\Phi,Y},
+\qquad
+\operatorname{next}=t_{\Phi,Y}.
+\]
+
+\item \textbf{Apply Beck--Chevalley.}
+By Beck--Chevalley for regular images,
+\[
+c_{\Phi,Y}^{\ast}\lambda_{R/O/T}(\varphi)
+=
+\exists_{s_{\Phi,Y}}
+\left(
+\iota_A^\ast R
+\wedge
+\iota_B^\ast O
+\wedge
+\lambda_{\Phi,Y}^\ast T
+\wedge
+t_{\Phi,Y}^\ast\varphi
+\right).
+\]
+
+\item \textbf{Pull in the state guard.}
+Using Frobenius reciprocity,
+\[
+\theta\wedge c_{\Phi,Y}^{\ast}\lambda_{R/O/T}(\varphi)
+=
+\exists_{s_{\Phi,Y}}
+\left(
+s_{\Phi,Y}^\ast\theta
+\wedge
+\iota_A^\ast R
+\wedge
+\iota_B^\ast O
+\wedge
+\lambda_{\Phi,Y}^\ast T
+\wedge
+t_{\Phi,Y}^\ast\varphi
+\right).
+\]
+
+\item \textbf{Identify the restricted diamond.}
+The right-hand side is exactly the diamond of the restricted one-step span
+\[
+\theta;R/O/T.
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{remark}
+\label{rem:poly-relative-central-comparison}
+The polynomial lifting is a predicate on total response profiles.  Pulling it
+back along the relative Mealy coalgebra recovers the guarded span diamond on
+the flattened program category.
+\end{remark}
+
+\section{Profile boxes}
+\label{sec:poly-relative-profile-boxes}
+
+\subsection{Weak and strong boxes}
+\label{subsec:poly-relative-weak-strong-boxes}
+
+Assume \(\mathcal E\) is a first-order Heyting category.
+
+Let
+\[
+R\hookrightarrow A_1,
+\qquad
+O\hookrightarrow B_1,
+\qquad
+T\hookrightarrow\left(\int_{\mathbb B}Y\right)_1,
+\qquad
+\varphi\hookrightarrow S
+\]
+be predicates.
+
+\begin{definition}[Weak universal profile box]
+\label{def:poly-relative-weak-profile-box}
+The \textbf{weak universal profile box} is
+\[
+\Box^{\mathrm{prof}}_{R/O/T}(\varphi)
+:=
+\forall_{\partial_S}
+\left(
+(\operatorname{in}^{\ast}R
+\wedge
+\operatorname{out}^{\ast}O
+\wedge
+\operatorname{down}^{\ast}T)
+\Rightarrow
+\operatorname{next}^{\ast}\varphi
+\right).
+\]
+\end{definition}
+
+Externally, this says that every position whose input, output, and downstream
+transition satisfy the guards has a continuation satisfying \(\varphi\).
+
+\begin{definition}[Strong universal profile box]
+\label{def:poly-relative-strong-profile-box}
+The \textbf{strong universal profile box} is
+\[
+\Box^{\mathrm{prof,strong}}_{R/O/T}(\varphi)
+:=
+\forall_{\partial_S}
+\left(
+\operatorname{in}^{\ast}R
+\Rightarrow
+\left(
+\operatorname{out}^{\ast}O
+\wedge
+\operatorname{down}^{\ast}T
+\wedge
+\operatorname{next}^{\ast}\varphi
+\right)
+\right).
+\]
+\end{definition}
+
+Externally, this says that every \(R\)-input position produces an output
+satisfying \(O\), a downstream transition satisfying \(T\), and a continuation
+satisfying \(\varphi\).
+
+\subsection{Agreement with span boxes}
+\label{subsec:poly-relative-profile-box-span-agreement}
+
+\begin{theorem}[Agreement of weak profile boxes and span boxes]
+\label{thm:poly-relative-profile-box-span-agreement}
+One has
+\[
+c_{\Phi,Y}^{\ast}
+\Box^{\mathrm{prof}}_{R/O/T}(\varphi)
+=
+[R/O/T]\varphi,
+\]
+where \([R/O/T]\varphi\) denotes the box modality of the restricted one-step
+span determined by the guards \(R,O,T\).
+
+More generally, for a state guard
+\[
+\theta\hookrightarrow S,
+\]
+one has
+\[
+[\theta;R/O/T]\varphi
+=
+\theta\Rightarrow
+\bigl(
+c_{\Phi,Y}^{\ast}
+\Box^{\mathrm{prof}}_{R/O/T}(\varphi)
+\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Apply Beck--Chevalley for \(\forall\).}
+By Beck--Chevalley for \(\forall\), pulling back
+\(\Box^{\mathrm{prof}}_{R/O/T}(\varphi)\) along \(c_{\Phi,Y}\) gives
+\[
+\forall_{s_{\Phi,Y}}
+\left(
+(\iota_A^\ast R
+\wedge
+\iota_B^\ast O
+\wedge
+\lambda_{\Phi,Y}^\ast T)
+\Rightarrow
+t_{\Phi,Y}^\ast\varphi
+\right).
+\]
+
+\item \textbf{Identify the restricted box.}
+This is exactly the box of the restricted one-step span determined by
+\(R,O,T\).
+
+\item \textbf{Add the state guard.}
+For the guarded version, use the test-prefix box law:
+\[
+[\theta?;U]\varphi
+=
+\theta\Rightarrow[U]\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{remark}[Weak versus strong profile boxes]
+\label{rem:poly-relative-weak-strong-profile-boxes}
+The weak profile box pulls back to the usual span box for the restricted
+one-step span.  The strong profile box is generally stricter: it requires
+every \(R\)-input position to produce an output satisfying \(O\), a downstream
+transition satisfying \(T\), and a continuation satisfying \(\varphi\).
+\end{remark}
+
+
+
+\section{Sequential composition, finite choice, and conditionals}
+\label{sec:poly-relative-tests-choice}
+
+\subsection{Guarded commands}
+\label{subsec:poly-relative-tests-guarded-commands}
+Let
+\[
+U:S\nrightarrow S
+\]
+be an endoprogram.  The guarded command
+\[
+\theta?;U
+\]
+is the sequential composite of the test and \(U\).
+
+\begin{proposition}[Guard-prefix law]
+\label{prop:poly-relative-guard-prefix-law}
+For every endoprogram \(U:S\nrightarrow S\),
+\[
+\langle\theta?;U\rangle\varphi
+=
+\theta\wedge\langle U\rangle\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Use diamond functoriality.}
+By functoriality of diamonds,
+\[
+\langle\theta?;U\rangle\varphi
+=
+\langle\theta?\rangle(\langle U\rangle\varphi).
+\]
+
+\item \textbf{Use the test law.}
+The test law gives
+\[
+\langle\theta?\rangle\psi=\theta\wedge\psi.
+\]
+
+\item \textbf{Substitute.}
+Substituting
+\[
+\psi=\langle U\rangle\varphi
+\]
+gives the claim.
+\end{enumerate}
+\end{proof}
+
+\subsection{Finite guarded choice}
+\label{subsec:poly-relative-finite-guarded-choice}
+
+Assume now that \(\mathcal E\) is coherent.  Let
+\[
+T:S\nrightarrow S
+\]
+be a fixed ambient endospan, and let
+\[
+U,V\hookrightarrow T
+\]
+be subprograms.  If
+\[
+\theta,\epsilon\hookrightarrow S
+\]
+are state guards, then we identify
+\[
+\theta?;U
+\]
+with the subobject
+\[
+s_T^\ast\theta\wedge U\hookrightarrow T,
+\]
+and similarly identify
+\[
+\epsilon?;V
+\]
+with
+\[
+s_T^\ast\epsilon\wedge V\hookrightarrow T.
+\]
+Their guarded choice is the join of these subobjects in \(\mathrm{Sub}(T)\):
+\[
+(\theta?;U)\vee(\epsilon?;V)\hookrightarrow T.
+\]
+
+\begin{proposition}[Diamond law for guarded choice]
+\label{prop:poly-relative-guarded-choice-diamond}
+For guarded branches inside a common ambient endospan,
+\[
+\left\langle
+(\theta?;U)\vee(\epsilon?;V)
+\right\rangle\varphi
+=
+(\theta\wedge\langle U\rangle\varphi)
+\vee
+(\epsilon\wedge\langle V\rangle\varphi).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Apply finite choice.}
+By the finite choice law for subprograms in a coherent category,
+\[
+\left\langle
+(\theta?;U)\vee(\epsilon?;V)
+\right\rangle\varphi
+=
+\langle\theta?;U\rangle\varphi
+\vee
+\langle\epsilon?;V\rangle\varphi.
+\]
+
+\item \textbf{Apply the guard-prefix law.}
+Using Proposition~\ref{prop:poly-relative-guard-prefix-law} on both branches
+gives the displayed formula.
+\end{enumerate}
+\end{proof}
+
+\subsection{Internal conditionals}
+\label{subsec:poly-relative-conditionals}
+
+\begin{definition}[Internal conditional]
+\label{def:poly-relative-conditional}
+Let
+\[
+T:S\nrightarrow S
+\]
+be a fixed ambient endospan, and let
+\[
+U,V\hookrightarrow T
+\]
+be subprograms.  Let
+\[
+\theta,\epsilon\hookrightarrow S
+\]
+be complementary guards, meaning
+\[
+\theta\wedge\epsilon=\bot,
+\qquad
+\theta\vee\epsilon=\top.
+\]
+The \textbf{internal conditional} is
+\[
+\mathbf{if}\ \theta\ \mathbf{then}\ U\ \mathbf{else}\ V
+:=
+(\theta?;U)\vee(\epsilon?;V)
+\hookrightarrow T.
+\]
+In Boolean fibres one may take
+\[
+\epsilon=\neg\theta.
+\]
+\end{definition}
+
+
+\section{Boxes for guarded choice}
+\label{sec:poly-relative-boxes-choice}
+
+\subsection{Boxes of tests and guarded commands}
+\label{subsec:poly-relative-boxes-tests-guarded}
+
+Assume \(\mathcal E\) is a first-order Heyting category.
+
+For a test,
+\[
+[\theta?]\varphi=\theta\Rightarrow\varphi.
+\]
+Therefore
+\[
+[\theta?;U]\varphi
+=
+\theta\Rightarrow[U]\varphi.
+\]
+
+\subsection{Boxes of finite choice}
+\label{subsec:poly-relative-boxes-finite-choice}
+
+\begin{proposition}[Box of finite subprogram choice]
+\label{prop:poly-relative-box-finite-choice}
+For subprograms
+\[
+W,Z\hookrightarrow T
+\]
+inside a fixed ambient endospan \(T:S\nrightarrow S\),
+\[
+[W\vee Z]\varphi
+=
+[W]\varphi\wedge[Z]\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Write the ambient span.}
+Write
+\[
+T=(S\xleftarrow{\ell_T}T\xrightarrow{r_T}S).
+\]
+
+\item \textbf{Rewrite restricted boxes in the ambient fibre.}
+For a restricted subspan \(i_W:W\hookrightarrow T\),
+\[
+[W]\varphi
+=
+\forall_{\ell_T i_W}\bigl((r_T i_W)^\ast\varphi\bigr).
+\]
+Equivalently,
+\[
+[W]\varphi
+=
+\forall_{\ell_T}\bigl(W\Rightarrow r_T^\ast\varphi\bigr),
+\]
+using the adjunction for the monomorphism \(i_W:W\hookrightarrow T\).
+
+\item \textbf{Apply the same formula to the join.}
+Hence
+\[
+[W\vee Z]\varphi
+=
+\forall_{\ell_T}
+\bigl((W\vee Z)\Rightarrow r_T^\ast\varphi\bigr).
+\]
+
+\item \textbf{Use Heyting distributivity.}
+In a Heyting algebra,
+\[
+(W\vee Z)\Rightarrow A
+=
+(W\Rightarrow A)\wedge(Z\Rightarrow A).
+\]
+
+\item \textbf{Use meet preservation by \(\forall\).}
+Since \(\forall_{\ell_T}\) is a right adjoint, it preserves finite meets.
+Therefore
+\[
+[W\vee Z]\varphi
+=
+[W]\varphi\wedge[Z]\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+\subsection{Boxes for conditionals}
+\label{subsec:poly-relative-boxes-conditionals}
+
+\begin{proposition}[Box law for conditionals]
+\label{prop:poly-relative-conditional-box-law}
+For complementary guards \(\theta,\epsilon\) and subprograms
+\[
+U,V\hookrightarrow T
+\]
+inside a common ambient endospan,
+\[
+\left[
+\mathbf{if}\ \theta\ \mathbf{then}\ U\ \mathbf{else}\ V
+\right]\varphi
+=
+(\theta\Rightarrow[U]\varphi)
+\wedge
+(\epsilon\Rightarrow[V]\varphi).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Expand the conditional.}
+The conditional is
+\[
+(\theta?;U)\vee(\epsilon?;V).
+\]
+
+\item \textbf{Apply the box law for finite choice.}
+Proposition~\ref{prop:poly-relative-box-finite-choice} gives
+\[
+[(\theta?;U)\vee(\epsilon?;V)]\varphi
+=
+[\theta?;U]\varphi\wedge[\epsilon?;V]\varphi.
+\]
+
+\item \textbf{Use the test-prefix box law.}
+The test-prefix box law gives
+\[
+[\theta?;U]\varphi=\theta\Rightarrow[U]\varphi
+\]
+and
+\[
+[\epsilon?;V]\varphi=\epsilon\Rightarrow[V]\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+
+\section{Domain and dynamic tests}
+\label{sec:poly-relative-domain-tests}
+
+\subsection{Domain predicates}
+\label{subsec:poly-relative-domain-predicate}
+
+Let
+\[
+U:S\nrightarrow S
+\]
+be an endoprogram.
+
+\begin{definition}[Domain predicate]
+\label{def:poly-relative-domain}
+The \textbf{domain predicate} of \(U\) is
+\[
+\operatorname{dom}(U):=\langle U\rangle\top.
+\]
+\end{definition}
+
+Thus \(\operatorname{dom}(U)\) is the predicate of states from which some
+\(U\)-execution is possible.
+
+\begin{proposition}[Domain-prefix law]
+\label{prop:poly-relative-domain-prefix}
+For every endoprogram \(U\),
+\[
+\langle \operatorname{dom}(U)?;U\rangle\varphi
+=
+\langle U\rangle\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Apply the guard-prefix law.}
+By the guard-prefix law,
+\[
+\langle \operatorname{dom}(U)?;U\rangle\varphi
+=
+\operatorname{dom}(U)\wedge\langle U\rangle\varphi.
+\]
+
+\item \textbf{Use monotonicity.}
+Since
+\[
+\langle U\rangle\varphi\le\langle U\rangle\top
+=
+\operatorname{dom}(U),
+\]
+the meet is
+\[
+\langle U\rangle\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+\subsection{Antidomain predicates}
+\label{subsec:poly-relative-antidomain-predicate}
+
+If the predicate fibres are Boolean, define the antidomain predicate by
+\[
+\operatorname{adom}(U):=\neg\operatorname{dom}(U).
+\]
+
+\begin{proposition}[Antidomain annihilation]
+\label{prop:poly-relative-antidomain-annihilation}
+In Boolean predicate fibres,
+\[
+\langle \operatorname{adom}(U)?;U\rangle\varphi
+=
+\bot.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Apply the guard-prefix law.}
+By the guard-prefix law,
+\[
+\langle \operatorname{adom}(U)?;U\rangle\varphi
+=
+\operatorname{adom}(U)\wedge\langle U\rangle\varphi.
+\]
+
+\item \textbf{Use the domain bound.}
+Since
+\[
+\langle U\rangle\varphi\le\operatorname{dom}(U)
+\]
+and
+\[
+\operatorname{adom}(U)=\neg\operatorname{dom}(U),
+\]
+the meet is bottom.
+\end{enumerate}
+\end{proof}
+
+\section{Relative guarded Mealy automata}
+\label{sec:poly-relative-guarded-automata}
+
+\subsection{Guarded automata}
+\label{subsec:poly-relative-guarded-automata-definition}
+
+Let
+\[
+\Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism and let \(Y\) be a right \(\mathbb B\)-action.
+
+Let
+\[
+(\theta_i)_{i\in I}
+\]
+be a finite family of state guards on \(S_{\Phi,Y}\),
+\[
+(R_i)_{i\in I}
+\]
+a finite family of input-arrow guards on \(A_1\),
+\[
+(O_i)_{i\in I}
+\]
+a finite family of output-arrow guards on \(B_1\), and
+\[
+(T_i)_{i\in I}
+\]
+a finite family of downstream transition guards on
+\[
+\left(\int_{\mathbb B}Y\right)_1.
+\]
+
+Each quadruple determines a guarded one-step subprogram
+\[
+G_i:=(\theta_i;R_i/O_i/T_i)^\sharp\hookrightarrow M_{\Phi,Y}.
+\]
+
+\begin{definition}[Relative guarded Mealy automaton]
+\label{def:poly-relative-guarded-mealy-automaton}
+A \textbf{relative guarded Mealy automaton} over \((\Phi,Y)\) is a finite
+family of guarded one-step subprograms
+\[
+G_i=(\theta_i;R_i/O_i/T_i)^\sharp\hookrightarrow M_{\Phi,Y}.
+\]
+Its one-step program is the finite join
+\[
+G:=\bigvee_{i\in I}G_i\hookrightarrow M_{\Phi,Y}.
+\]
+\end{definition}
+
+\subsection{Modal semantics of guarded automata}
+\label{subsec:poly-relative-guarded-automata-modal-semantics}
+
+\begin{proposition}[Diamond semantics of guarded automata]
+\label{prop:poly-relative-guarded-automaton-diamond}
+For a relative guarded Mealy automaton with one-step program
+\[
+G=\bigvee_{i\in I}G_i,
+\]
+one has
+\[
+\langle G\rangle\varphi
+=
+\bigvee_{i\in I}\langle G_i\rangle\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Use the common ambient object.}
+All branches are subobjects of the common one-step execution object
+\[
+M_{\Phi,Y}.
+\]
+
+\item \textbf{Apply finite choice.}
+The result is the finite choice law for subprograms inside this common ambient
+object.
+\end{enumerate}
+\end{proof}
+
+A relative guarded Mealy automaton is \textbf{witness-disjoint} if
+\[
+G_i\wedge G_j=\bot
+\qquad
+(i\ne j).
+\]
+It is \textbf{branch-disjoint} if
+\[
+\operatorname{dom}(G_i)\wedge\operatorname{dom}(G_j)=\bot
+\qquad
+(i\ne j).
+\]
+It is \textbf{guard-total} if
+\[
+\bigvee_{i\in I}\operatorname{dom}(G_i)=\top.
+\]
+When branch-disjointness and guard-totality hold, the branch domains form a
+finite disjoint cover of the state object.  The enabled branch is unique at
+the level of branch domains, though a branch may still contain multiple
+execution witnesses.
+
+\section{Output, downstream, and interface guards}
+\label{sec:poly-relative-output-downstream-interface-guards}
+
+\subsection{Output and downstream guards}
+\label{subsec:poly-relative-output-downstream-guards}
+
+The relative Mealy setting allows guards to inspect emitted output arrows and
+the downstream transitions caused by those outputs.
+
+Let
+\[
+U\hookrightarrow M_{\Phi,Y}
+\]
+be a one-step subprogram.
+
+For an output guard
+\[
+O\hookrightarrow B_1,
+\]
+define
+\[
+U_O:=U\wedge\iota_B^\ast O\hookrightarrow M_{\Phi,Y}.
+\]
+
+For a downstream transition guard
+\[
+T\hookrightarrow\left(\int_{\mathbb B}Y\right)_1,
+\]
+define
+\[
+U_T:=U\wedge\lambda_{\Phi,Y}^\ast T\hookrightarrow M_{\Phi,Y}.
+\]
+
+\subsection{Interface guards}
+\label{subsec:poly-relative-interface-guards}
+
+Guards may also be placed directly on response interfaces.  Let
+\[
+\Gamma\hookrightarrow J_Y=A_0\times Y
+\]
+be an interface guard.  Pulling it back along
+\[
+j_{\Phi,Y}:S_{\Phi,Y}\to J_Y
+\]
+gives a state guard
+\[
+j_{\Phi,Y}^\ast\Gamma\hookrightarrow S_{\Phi,Y}.
+\]
+The pullback is displayed by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+j_{\Phi,Y}^\ast\Gamma
+  \arrow[r]
+  \arrow[d,hook]
+&
+\Gamma
+  \arrow[d,hook]
+\\
+S_{\Phi,Y}
+  \arrow[r,"j_{\Phi,Y}"']
+&
+J_Y
+\arrow[ul,phantom,very near start,"\lrcorner"] .
+\end{tikzcd}
+\]
+
+Thus one may form interface-guarded one-step programs such as
+\[
+(j_{\Phi,Y}^\ast\Gamma;R/O/T)^\sharp
+\hookrightarrow M_{\Phi,Y}.
+\]
+
+\begin{proposition}[External reading of interface guards]
+\label{prop:poly-relative-interface-guard-external}
+In \(\mathbf{Set}\),
+\[
+(x,y)\models
+\langle j_{\Phi,Y}^\ast\Gamma;R/O/T\rangle\varphi
+\]
+holds precisely when
+\[
+\Gamma(p_Px,y)
+\]
+and there exists an admissible input arrow
+\[
+a:u\to p_Px
+\]
+such that
+\[
+R(a),
+\qquad
+O(\omega_P(a,x)),
+\qquad
+T(\omega_P(a,x),y),
+\]
+and
+\[
+\left(
+\delta_P(a,x),
+\sigma(\omega_P(a,x),y)
+\right)
+\models\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Identify the pulled-back state guard.}
+The predicate
+\[
+j_{\Phi,Y}^\ast\Gamma
+\]
+holds at \((x,y)\) exactly when
+\[
+\Gamma(p_Px,y)
+\]
+holds.
+
+\item \textbf{Apply the guarded one-step reading.}
+The rest is Proposition~\ref{prop:poly-relative-guarded-primitive-external}
+with
+\[
+\theta=j_{\Phi,Y}^\ast\Gamma.
+\]
+\end{enumerate}
+\end{proof}
+
+
+\section{The generated guarded program algebra}
+\label{sec:poly-relative-generated-program-algebra}
+
+\subsection{Generated programs}
+\label{subsec:poly-relative-generated-programs}
+
+\begin{definition}[Relative guarded Mealy program algebra]
+\label{def:poly-relative-guarded-program-algebra}
+The \textbf{relative guarded Mealy program algebra} generated by
+\[
+(\Phi,Y)
+\]
+is the class of endoprograms on
+\[
+S_{\Phi,Y}
+\]
+generated from:
+\begin{enumerate}
+\item tests \(\theta?\) for predicates
+\[
+\theta\hookrightarrow S_{\Phi,Y};
+\]
+\item guarded one-step programs
+\[
+\theta;R/O/T;
+\]
+\item sequential composition of spans;
+\item finite guarded joins of subprograms inside a specified common ambient
+span.
+\end{enumerate}
+\end{definition}
+
+\subsection{Common ambient spans}
+\label{subsec:poly-relative-common-ambient-spans}
+
+\begin{remark}[Common ambient spans]
+\label{rem:poly-relative-common-ambient-spans}
+Finite guarded joins here are joins of subobjects inside a fixed ambient
+execution span.  Choice between arbitrary generated spans requires coproducts
+of span apexes and is a different, witnessful operation.
+\end{remark}
+
+\begin{remark}
+\label{rem:poly-relative-program-algebra-from-polynomial}
+The polynomial response profile supplies the curried one-step account of
+guarded one-step programs.  Flattening returns the span calculus, where tests,
+sequential composition, finite subprogram choice, diamonds, and boxes are
+interpreted.
+\end{remark}
+
+
+\section{Stability under downstream change}
+\label{subsec:relative-modal-stability-downstream}
+
+Let
+\[
+f:Y\to Z
+\]
+be a morphism of right \(\mathbb B\)-actions. It induces
+\[
+h_f:S_{\Phi,Y}\to S_{\Phi,Z},
+\qquad
+h_f(x,y)=(x,f(y)),
+\]
+and
+\[
+k_f:M_{\Phi,Y}\to M_{\Phi,Z},
+\qquad
+k_f(a,x,y)=(a,x,f(y)).
+\]
+The source square is a pullback:
+\[
+\begin{tikzcd}
+M_{\Phi,Y} \arrow[r,"k_f"] \arrow[d,"s_Y"']
+&
+M_{\Phi,Z} \arrow[d,"s_Z"]
+\\
+S_{\Phi,Y} \arrow[r,"h_f"']
+&
+S_{\Phi,Z}
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+Indeed, both \(M_{\Phi,Y}\) and \(M_{\Phi,Z}\) are obtained by pulling back
+\(t_A:A_1\to A_0\) along the respective structure maps to \(A_0\), and
+\(h_f\) preserves those structure maps.
+
+\begin{proposition}[Diamond stability under downstream change]
+\label{prop:relative-diamond-stability-downstream}
+Let \(\mathcal E\) be regular. For every subprogram
+\[
+V\hookrightarrow M_{\Phi,Z}
+\]
+and every predicate
+\[
+\psi\hookrightarrow S_{\Phi,Z},
+\]
+one has
+\[
+h_f^\ast\langle V\rangle\psi
+=
+\langle k_f^\ast V\rangle h_f^\ast\psi.
+\]
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+i:V\hookrightarrow M_{\Phi,Z}
+\]
+be the subprogram inclusion, and form the pullback
+\[
+\begin{tikzcd}
+k_f^\ast V \arrow[r,"\bar k_f"] \arrow[d,"\bar i"']
+&
+V \arrow[d,"i"]
+\\
+M_{\Phi,Y} \arrow[r,"k_f"']
+&
+M_{\Phi,Z}
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+.
+\]
+Because the source square
+\[
+\begin{tikzcd}
+M_{\Phi,Y} \arrow[r,"k_f"] \arrow[d,"s_Y"']
+&
+M_{\Phi,Z} \arrow[d,"s_Z"]
+\\
+S_{\Phi,Y} \arrow[r,"h_f"']
+&
+S_{\Phi,Z}
+\end{tikzcd}
+\]
+is a pullback, the induced square
+\[
+\begin{tikzcd}
+k_f^\ast V \arrow[r,"\bar k_f"] \arrow[d,"s_Y\bar i"']
+&
+V \arrow[d,"s_Z i"]
+\\
+S_{\Phi,Y} \arrow[r,"h_f"']
+&
+S_{\Phi,Z}
+\end{tikzcd}
+\]
+is also a pullback. Moreover target compatibility gives
+\[
+t_Z i\bar k_f=h_f t_Y\bar i.
+\]
+Therefore Beck--Chevalley for regular images gives
+\[
+h_f^\ast\exists_{s_Z i}\bigl((t_Z i)^\ast\psi\bigr)
+=
+\exists_{s_Y\bar i}\bar k_f^\ast\bigl((t_Z i)^\ast\psi\bigr).
+\]
+Using target compatibility, the right-hand side becomes
+\[
+\exists_{s_Y\bar i}\bigl((t_Y\bar i)^\ast h_f^\ast\psi\bigr)
+=
+\langle k_f^\ast V\rangle h_f^\ast\psi.
+\]
+\end{proof}
+
+\begin{proposition}[Box stability under downstream change]
+\label{prop:relative-box-stability-downstream}
+Let \(\mathcal E\) be first-order Heyting. For every subprogram
+\[
+V\hookrightarrow M_{\Phi,Z}
+\]
+and every predicate
+\[
+\psi\hookrightarrow S_{\Phi,Z},
+\]
+one has
+\[
+h_f^\ast[V]\psi
+=
+[k_f^\ast V]h_f^\ast\psi.
+\]
+\end{proposition}
+
+\begin{proof}
+With notation as in the proof of
+Proposition~\ref{prop:relative-diamond-stability-downstream}, the square
+\[
+\begin{tikzcd}
+k_f^\ast V \arrow[r,"\bar k_f"] \arrow[d,"s_Y\bar i"']
+&
+V \arrow[d,"s_Z i"]
+\\
+S_{\Phi,Y} \arrow[r,"h_f"']
+&
+S_{\Phi,Z}
+\end{tikzcd}
+\]
+is a pullback, and target compatibility gives
+\[
+t_Z i\bar k_f=h_f t_Y\bar i.
+\]
+Hence Beck--Chevalley for the right adjoints \(\forall\) gives
+\[
+h_f^\ast\forall_{s_Z i}\bigl((t_Z i)^\ast\psi\bigr)
+=
+\forall_{s_Y\bar i}\bar k_f^\ast\bigl((t_Z i)^\ast\psi\bigr).
+\]
+Using target compatibility, this is
+\[
+\forall_{s_Y\bar i}\bigl((t_Y\bar i)^\ast h_f^\ast\psi\bigr)
+=
+[k_f^\ast V]h_f^\ast\psi.
+\]
+\end{proof}
+
+
+\section{Simulation stability after flattening}
+\label{sec:poly-relative-simulation-stability}
+
+\subsection{Guard transport along simulations}
+\label{subsec:poly-relative-guard-transport-simulation}
+
+Let
+\[
+\Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation, and let \(Y\) be a right \(\mathbb B\)-action.  The
+induced functor
+\[
+H_{\Theta,Y}:
+\mathsf{Prog}_{\Psi,Y}\to\mathsf{Prog}_{\Phi,Y}
+\]
+has object map
+\[
+h_{\Theta,Y}:S_{\Psi,Y}\to S_{\Phi,Y}
+\]
+and arrow map
+\[
+k_{\Theta,Y}:M_{\Psi,Y}\to M_{\Phi,Y},
+\]
+given by
+\[
+k_{\Theta,Y}(a,y,z)
+=
+\bigl(a,\theta y,\sigma(\alpha_y,z)\bigr).
+\]
+
+The source square is a pullback:
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+M_{\Psi,Y}
+  \arrow[r,"k_{\Theta,Y}"]
+  \arrow[d,"s_\Psi"']
+&
+M_{\Phi,Y}
+  \arrow[d,"s_\Phi"]
+\\
+S_{\Psi,Y}
+  \arrow[r,"h_{\Theta,Y}"']
+&
+S_{\Phi,Y}
+\arrow[ul,phantom,very near start,"\lrcorner"] .
+\end{tikzcd}
+\]
+
+\begin{proposition}[Guard transport along simulations]
+\label{prop:poly-relative-guard-transport-simulation}
+Let
+\[
+U\hookrightarrow M_{\Phi,Y}
+\]
+be a one-step subprogram for \(\Phi\).  Its pullback along the simulation is
+\[
+k_{\Theta,Y}^\ast U\hookrightarrow M_{\Psi,Y}.
+\]
+If \(U\) is presented by guards \(R,O,T\) on the target side, then
+\(k_{\Theta,Y}^\ast U\) is the source-side predicate requiring
+\[
+R(a),
+\]
+\[
+O(\omega_P(a,\theta y)),
+\]
+and
+\[
+T(\omega_P(a,\theta y),\sigma(\alpha_y,z)).
+\]
+If the target-side subprogram also has a state guard
+\[
+\theta_0\hookrightarrow S_{\Phi,Y},
+\]
+then its pullback additionally requires
+\[
+\theta_0(\theta y,\sigma(\alpha_y,z)).
+\]
+Equivalently, the state guard is pulled back as
+\[
+h_{\Theta,Y}^{\ast}\theta_0.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Track the input component.}
+The map \(k_{\Theta,Y}\) preserves the input component \(a\).  Hence input
+guards pull back by direct substitution:
+\[
+R(a).
+\]
+
+\item \textbf{Track the target output component.}
+The output and downstream transition components are those of the
+\(\Phi\)-profile at the evaluated state
+\[
+(\theta y,\sigma(\alpha_y,z)).
+\]
+Thus the output guard becomes
+\[
+O(\omega_P(a,\theta y)).
+\]
+
+\item \textbf{Track the downstream transition.}
+The downstream transition guard becomes
+\[
+T(\omega_P(a,\theta y),\sigma(\alpha_y,z)).
+\]
+
+\item \textbf{Track state guards.}
+A state guard is pulled back along the object map \(h_{\Theta,Y}\), hence
+becomes
+\[
+h_{\Theta,Y}^{\ast}\theta_0.
+\]
+\end{enumerate}
+\end{proof}
+
+\subsection{Modal stability under simulations}
+\label{subsec:poly-relative-modal-stability-simulation}
+
+\begin{proposition}[Diamond stability under simulations]
+\label{prop:poly-relative-diamond-stability-simulation}
+Assume \(\mathcal E\) is regular.  For every one-step subprogram
+\[
+U\hookrightarrow M_{\Phi,Y}
+\]
+and every predicate
+\[
+\varphi\hookrightarrow S_{\Phi,Y},
+\]
+one has
+\[
+h_{\Theta,Y}^\ast\langle U\rangle\varphi
+=
+\langle k_{\Theta,Y}^\ast U\rangle h_{\Theta,Y}^\ast\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Pull back the subprogram.}
+Let
+\[
+i:U\hookrightarrow M_{\Phi,Y}
+\]
+be the subprogram inclusion, and form the pullback
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+k_{\Theta,Y}^\ast U
+  \arrow[r,"\bar k_{\Theta,Y}"]
+  \arrow[d,"\bar i"']
+&
+U
+  \arrow[d,"i"]
+\\
+M_{\Psi,Y}
+  \arrow[r,"k_{\Theta,Y}"']
+&
+M_{\Phi,Y}
+\arrow[ul,phantom,very near start,"\lrcorner"] .
+\end{tikzcd}
+\]
+
+\item \textbf{Use the source pullback square.}
+Since the square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+M_{\Psi,Y} \arrow[r,"k_{\Theta,Y}"] \arrow[d,"s_\Psi"']
+&
+M_{\Phi,Y} \arrow[d,"s_\Phi"]
+\\
+S_{\Psi,Y} \arrow[r,"h_{\Theta,Y}"']
+&
+S_{\Phi,Y}
+\end{tikzcd}
+\]
+is a pullback, the induced square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+k_{\Theta,Y}^\ast U
+  \arrow[r,"\bar k_{\Theta,Y}"]
+  \arrow[d,"s_\Psi\bar i"']
+&
+U
+  \arrow[d,"s_\Phi i"]
+\\
+S_{\Psi,Y}
+  \arrow[r,"h_{\Theta,Y}"']
+&
+S_{\Phi,Y}
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+\]
+is also a pullback.
+
+\item \textbf{Use target compatibility.}
+Since \(H_{\Theta,Y}\) is an internal functor,
+\[
+t_\Phi i\bar k_{\Theta,Y}=h_{\Theta,Y}t_\Psi\bar i.
+\]
+
+\item \textbf{Apply Beck--Chevalley.}
+Beck--Chevalley for regular images gives
+\[
+h_{\Theta,Y}^\ast
+\exists_{s_\Phi i}\bigl((t_\Phi i)^\ast\varphi\bigr)
+=
+\exists_{s_\Psi\bar i}
+\bigl((t_\Psi\bar i)^\ast h_{\Theta,Y}^\ast\varphi\bigr).
+\]
+
+\item \textbf{Identify the two diamonds.}
+The left-hand side is
+\[
+h_{\Theta,Y}^\ast\langle U\rangle\varphi,
+\]
+and the right-hand side is
+\[
+\langle k_{\Theta,Y}^\ast U\rangle h_{\Theta,Y}^\ast\varphi.
+\]
+\end{enumerate}
+\end{proof}
+
+\begin{proposition}[Box stability under simulations]
+\label{prop:poly-relative-box-stability-simulation}
+Assume \(\mathcal E\) is first-order Heyting.  For every one-step subprogram
+\[
+U\hookrightarrow M_{\Phi,Y}
+\]
+and every predicate
+\[
+\varphi\hookrightarrow S_{\Phi,Y},
+\]
+one has
+\[
+h_{\Theta,Y}^\ast[U]\varphi
+=
+[k_{\Theta,Y}^\ast U]h_{\Theta,Y}^\ast\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+\item \textbf{Use the same pullback square.}
+Use the pullback square for
+\[
+k_{\Theta,Y}^\ast U
+\]
+constructed in the proof of
+Proposition~\ref{prop:poly-relative-diamond-stability-simulation}.
+
+\item \textbf{Use target compatibility.}
+Again,
+\[
+t_\Phi i\bar k_{\Theta,Y}=h_{\Theta,Y}t_\Psi\bar i.
+\]
+
+\item \textbf{Apply Beck--Chevalley for \(\forall\).}
+Beck--Chevalley for the right adjoints \(\forall\) gives the displayed
+equality.
+\end{enumerate}
+\end{proof}
+
+\begin{remark}
+\label{rem:poly-relative-simulation-stability-meaning}
+Because simulations are output-lax, guard transport is not obtained by
+substituting the source output \(\omega_Q\) for the target output
+\(\omega_P\).  It is obtained by pulling the target subprogram back along the
+actual flattened functor \(H_{\Theta,Y}\).
+\end{remark}
+
+
+
+\section{Finite-trajectory modalities}
+\label{sec:dynamic-finite-trajectory-modalities}
+
+The one-step program category is an internal category, so its finite paths
+supply a family of execution spans.  This section applies the span
+predicate-transformer calculus to those path objects.
+
+\subsection{Trajectory spans and endpoint modalities}
+\label{subsec:dynamic-trajectory-endpoint-modalities}
+
+For \(n\geq0\), write
+\[
+    \mathscr T_{\Phi,Y}(n)
+    :=
+    \operatorname{Path}(\mathsf{Prog}_{\Phi,Y})(n).
+\]
+Let
+\[
+    \nu_i^{(n)}:
+    \mathscr T_{\Phi,Y}(n)\to S_{\Phi,Y},
+    \qquad
+    0\leq i\leq n,
+\]
+be the \(i\)-th boundary-state map.  In particular,
+\[
+    s_n:=\nu_0^{(n)},
+    \qquad
+    t_n:=\nu_n^{(n)}.
+\]
+The length-\(n\) trajectory span is
+\[
+    \mathbf t_{\Phi,Y}^{(n)}
+    :=
+    \left(
+    S_{\Phi,Y}
+    \xleftarrow{s_n}
+    \mathscr T_{\Phi,Y}(n)
+    \xrightarrow{t_n}
+    S_{\Phi,Y}
+    \right).
+\]
+
+\begin{definition}[Finite-horizon endpoint modalities]
+\label{def:dynamic-finite-horizon-endpoint-modalities}
+Assume \(\mathcal E\) is regular.  For a predicate
+\[
+    \varphi\hookrightarrow S_{\Phi,Y},
+\]
+define
+\[
+    \langle n\rangle_{\Phi,Y}\varphi
+    :=
+    \exists_{s_n}(t_n^\ast\varphi).
+\]
+If \(\mathcal E\) is first-order Heyting, define
+\[
+    [n]_{\Phi,Y}\varphi
+    :=
+    \forall_{s_n}(t_n^\ast\varphi).
+\]
+\end{definition}
+
+Externally,
+\[
+    x\models\langle n\rangle_{\Phi,Y}\varphi
+\]
+means that some \(n\)-segment relative execution begins at \(x\) and ends in
+\(\varphi\).  The formula
+\[
+    x\models[n]_{\Phi,Y}\varphi
+\]
+means that every such \(n\)-segment execution ends in \(\varphi\).
+
+At \(n=0\), the only trajectory is the identity trajectory, so
+\[
+    \langle0\rangle_{\Phi,Y}\varphi=\varphi,
+    \qquad
+    [0]_{\Phi,Y}\varphi=\varphi.
+\]
+
+\subsection{Concatenation laws}
+\label{subsec:dynamic-trajectory-concatenation-laws}
+
+The Segal isomorphism identifies a path of length \(m+n\) with a path of
+length \(m\) followed by a path of length \(n\):
+\[
+    \mathscr T_{\Phi,Y}(m+n)
+    \cong
+    \mathscr T_{\Phi,Y}(m)
+    \times_{S_{\Phi,Y}}
+    \mathscr T_{\Phi,Y}(n),
+\]
+where the pullback matches the final state of the first path with the initial
+state of the second.
+
+\begin{proposition}[Composition of finite-horizon modalities]
+\label{prop:dynamic-finite-horizon-composition}
+For \(m,n\geq0\), one has
+\[
+    \langle m+n\rangle_{\Phi,Y}
+    =
+    \langle m\rangle_{\Phi,Y}
+    \circ
+    \langle n\rangle_{\Phi,Y}.
+\]
+If \(\mathcal E\) is first-order Heyting, then
+\[
+    [m+n]_{\Phi,Y}
+    =
+    [m]_{\Phi,Y}
+    \circ
+    [n]_{\Phi,Y}.
+\]
+\end{proposition}
+
+\begin{proof}
+Under the displayed Segal isomorphism, the length-\((m+n)\) trajectory span
+is the composite of the length-\(m\) and length-\(n\) trajectory spans.
+The diamond identity is therefore
+Proposition~\ref{prop:relative-diamond-functoriality}, and the box identity is
+Proposition~\ref{prop:relative-box-functoriality}.
+\end{proof}
+
+\subsection{Boundary modalities}
+\label{subsec:dynamic-trajectory-boundary-modalities}
+
+Endpoint modalities see only the last boundary.  To express invariants and
+safety conditions, one must also inspect intermediate boundaries.
+
+\begin{definition}[Boundary modalities]
+\label{def:dynamic-trajectory-boundary-modalities}
+For \(0\leq i\leq n\), define
+\[
+    \langle n,i\rangle_{\Phi,Y}\varphi
+    :=
+    \exists_{s_n}
+    \left(
+        \bigl(\nu_i^{(n)}\bigr)^\ast\varphi
+    \right).
+\]
+When \(\forall_{s_n}\) exists, define
+\[
+    [n,i]_{\Phi,Y}\varphi
+    :=
+    \forall_{s_n}
+    \left(
+        \bigl(\nu_i^{(n)}\bigr)^\ast\varphi
+    \right).
+\]
+\end{definition}
+
+Thus \(\langle n,i\rangle\varphi\) asserts that some length-\(n\) execution
+reaches \(\varphi\) at boundary \(i\), while \([n,i]\varphi\) asserts that all
+length-\(n\) executions lie in \(\varphi\) at that boundary.
+
+For \(i=n\),
+\[
+    \langle n,n\rangle_{\Phi,Y}
+    =
+    \langle n\rangle_{\Phi,Y},
+    \qquad
+    [n,n]_{\Phi,Y}
+    =
+    [n]_{\Phi,Y}.
+\]
+For \(i=0\), the boundary is the initial state.  Since every state has an
+all-identity path of every finite length, the source map \(s_n\) has a section,
+and hence
+\[
+    \langle n,0\rangle_{\Phi,Y}\varphi=\varphi,
+    \qquad
+    [n,0]_{\Phi,Y}\varphi=\varphi.
+\]
+
+\begin{definition}[Finite-horizon safety transformer]
+\label{def:dynamic-finite-horizon-safety}
+For a predicate \(C\hookrightarrow S_{\Phi,Y}\), define
+\[
+    \operatorname{Safe}_n(C)
+    :=
+    \bigwedge_{0\leq i\leq n}
+    [n,i]_{\Phi,Y}C.
+\]
+When the required small meets exist, define
+\[
+    \operatorname{Safe}_{\mathrm{fin}}(C)
+    :=
+    \bigwedge_{n\in\mathbb N}
+    \operatorname{Safe}_n(C).
+\]
+\end{definition}
+
+\subsection{Guards on complete trajectories}
+\label{subsec:dynamic-guarded-trajectory-modalities}
+
+A trajectory may be restricted before applying a modality.  Let
+\[
+    G\hookrightarrow\mathscr T_{\Phi,Y}(n)
+\]
+be any trajectory guard, with inclusion \(i_G\).  Define
+\[
+    \langle G\rangle\varphi
+    :=
+    \exists_{s_ni_G}
+    \left(
+        (t_ni_G)^\ast\varphi
+    \right),
+\]
+and, when available,
+\[
+    [G]\varphi
+    :=
+    \forall_{s_ni_G}
+    \left(
+        (t_ni_G)^\ast\varphi
+    \right).
+\]
+The guard \(G\) may be obtained by pulling back predicates along:
+
+\begin{enumerate}
+\item the complete input-path label;
+\item the complete output-path label;
+\item the downstream trajectory label;
+\item any boundary-state map \(\nu_i^{(n)}\);
+\item any segment projection to the one-step execution object.
+\end{enumerate}
+
+Consequently, trajectory formulas can constrain both the endpoint and the
+internal segmentation of an execution.
+
+\subsection{Contraction and the limits of horizon counting}
+\label{subsec:dynamic-trajectory-contraction-collapse}
+
+For every \(n\geq1\), categorical composition gives a contraction map
+\[
+    \mu_n:
+    \mathscr T_{\Phi,Y}(n)\to M_{\Phi,Y}
+\]
+satisfying
+\[
+    s_{\Phi,Y}\mu_n=s_n,
+    \qquad
+    t_{\Phi,Y}\mu_n=t_n.
+\]
+Conversely, insertion of identities gives a segmentation map
+\[
+    \eta_n:
+    M_{\Phi,Y}\to\mathscr T_{\Phi,Y}(n)
+\]
+with the same source and target and
+\[
+    \mu_n\eta_n=1_{M_{\Phi,Y}}.
+\]
+
+\begin{proposition}[Collapse of unrestricted endpoint horizons]
+\label{prop:dynamic-unrestricted-endpoint-collapse}
+For every \(n\geq1\) and every predicate
+\[
+    \varphi\hookrightarrow S_{\Phi,Y},
+\]
+one has
+\[
+    \langle n\rangle_{\Phi,Y}\varphi
+    =
+    \langle\mathbf m_{\Phi,Y}\rangle\varphi.
+\]
+If \(\mathcal E\) is first-order Heyting, then
+\[
+    [n]_{\Phi,Y}\varphi
+    =
+    [\mathbf m_{\Phi,Y}]\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+The contraction map sends every length-\(n\) trajectory to a one-step
+categorical execution with the same source and target.  This gives one
+inclusion for both modalities.  The identity-segmentation map sends every
+one-step execution to a length-\(n\) trajectory with the same source and
+target, giving the reverse inclusion.  Equivalently, the two spans have the
+same induced endpoint relation, and the maps \(\mu_n\) and \(\eta_n\) witness
+both comparisons.
+\end{proof}
+
+\begin{remark}[Segmentation-sensitive formulas]
+\label{rem:dynamic-segmentation-sensitive-formulas}
+The preceding collapse applies only to unrestricted endpoint properties.
+It does not identify:
+
+\begin{enumerate}
+\item boundary modalities \([n,i]\) for \(0<i<n\);
+\item trajectory guards that inspect individual segments;
+\item paths restricted to a chosen generating graph;
+\item letterwise paths inside a free word category.
+\end{enumerate}
+
+Thus categorical path length measures a chosen segmentation.  A genuinely
+atomic temporal semantics requires a specified class of generators.
+\end{remark}
+
+
+\section{Residual reachability and universal finite-path safety}
+\label{sec:dynamic-residual-reachability-safety}
+
+Chapter~\ref{ch:temporal-trajectories-segal-execution} proved that generated
+derivative closure is endpoint reachability along finite canonical residual
+executions.  We now express the right adjoint of derivative invariance as a
+trajectory box.  Write
+\[
+    \mathbf{Beh}
+    =
+    \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+\]
+for the canonical behaviour machine, and let
+\[
+    \mathscr T_{\mathbf{Beh}}(n)
+\]
+be its length-\(n\) trajectory object.  The notation \(s_n,t_n\) and
+\(\nu_i^{(n)}\) is as in
+Section~\ref{sec:dynamic-finite-trajectory-modalities}.
+\subsection{The derivative safety core as universal path safety}
+\label{subsec:temporal-interpretation-safety-core}
+
+For a behavioural predicate
+\[
+    C\hookrightarrow\mathbf{Beh}_0,
+\]
+define
+\[
+    \operatorname{Safe}_{\mathrm{path}}(C)
+    :=
+    \bigwedge_{n\in\mathbb N}
+    \;
+    \bigwedge_{0\leq i\leq n}
+    \forall_{s_n}
+    \left(
+        \bigl(\nu_i^{(n)}\bigr)^\ast C
+    \right)
+    \hookrightarrow
+    \mathbf{Beh}_0.
+\]
+Here
+\[
+    \forall_{s_n}:
+    \operatorname{Sub}
+    \bigl(
+        \mathscr T_{\mathbf{Beh}}(n)
+    \bigr)
+    \to
+    \operatorname{Sub}(\mathbf{Beh}_0)
+\]
+is the dependent-product right adjoint to pullback along \(s_n\).
+
+By adjunction, a subobject
+\[
+    S\hookrightarrow\mathbf{Beh}_0
+\]
+satisfies
+\[
+    S\leq\operatorname{Safe}_{\mathrm{path}}(C)
+\]
+if and only if
+\[
+    s_n^\ast S
+    \leq
+    \bigl(\nu_i^{(n)}\bigr)^\ast C
+\]
+for every \(n\) and every boundary \(i\). Equivalently, every finite
+canonical execution beginning in \(S\) remains in \(C\) at every boundary.
+Since each intermediate boundary is the endpoint of a prefix, one may also
+write
+\[
+    \operatorname{Safe}_{\mathrm{path}}(C)
+    =
+    \bigwedge_{n\in\mathbb N}
+    \forall_{s_n}(t_n^\ast C).
+\]
+
+For \(n\geq0\) and \(0\leq i\leq n\), let
+\[
+    \kappa_{n,i}:
+    \mathscr T_{\mathbf{Beh}}(n)
+    \to
+    \mathscr T_{\mathbf{Beh}}(1)
+\]
+be contraction of the prefix from boundary \(0\) to boundary \(i\). It is
+induced by
+\[
+    [1]\to[n],
+    \qquad
+    0\mapsto0,
+    \quad
+    1\mapsto i.
+\]
+When \(i=0\), the map inserts the identity at the initial boundary. It
+satisfies
+\[
+    s_1\kappa_{n,i}=s_n,
+    \qquad
+    t_1\kappa_{n,i}=\nu_i^{(n)}.
+\]
+
+\begin{theorem}[Safety core as universal finite-path safety]
+\label{thm:safety-core-universal-temporal-safety}
+For every behavioural predicate \(C\),
+\[
+    \operatorname{Safe}_{\mathrm{path}}(C)
+    =
+    \operatorname{Safe}_{\partial}(C).
+\]
+Consequently, \(\operatorname{Safe}_{\partial}(C)\) is the largest subobject
+\(S\hookrightarrow\mathbf{Beh}_0\) from which every finite canonical
+residual execution remains in \(C\) at every boundary.
+\end{theorem}
+
+\begin{proof}
+Put
+\[
+    Q_C
+    :=
+    \forall_{s_1}(t_1^\ast C).
+\]
+By definition,
+\[
+    s_1^\ast Q_C
+    \leq
+    t_1^\ast C.
+\]
+Pulling this inequality back along \(\kappa_{n,i}\) gives
+\[
+    s_n^\ast Q_C
+    \leq
+    \bigl(\nu_i^{(n)}\bigr)^\ast C.
+\]
+By adjunction,
+\[
+    Q_C
+    \leq
+    \forall_{s_n}
+    \left(
+        \bigl(\nu_i^{(n)}\bigr)^\ast C
+    \right)
+\]
+for every \(n\) and \(i\). Hence
+\[
+    Q_C
+    \leq
+    \operatorname{Safe}_{\mathrm{path}}(C).
+\]
+Conversely, the defining meet for
+\(\operatorname{Safe}_{\mathrm{path}}(C)\) contains the factor corresponding
+to \(n=1\) and \(i=1\), so
+\[
+    \operatorname{Safe}_{\mathrm{path}}(C)
+    \leq
+    Q_C.
+\]
+Therefore
+\[
+    \operatorname{Safe}_{\mathrm{path}}(C)=Q_C.
+\]
+
+The predicate \(Q_C\) is contained in \(C\), because identity executions are
+among the one-step executions. It is derivative invariant. Indeed, suppose
+\(H\in Q_C\), let \(a\) be applicable to \(H\), and let \(b\) be applicable
+to \(\partial_aH\). The state
+\[
+    \partial_b(\partial_aH)
+\]
+is the endpoint of the one-step execution from \(H\) labelled by the
+composite input arrow. Since \(H\in Q_C\), this endpoint lies in \(C\).
+Thus every derivative of \(\partial_aH\) lies in \(C\), so
+\(\partial_aH\in Q_C\).
+
+Hence \(Q_C\) is derivative invariant and lies below \(C\). Conversely, any
+derivative-invariant subobject below \(C\) satisfies the one-step condition
+and therefore lies below \(Q_C\). By the universal property of the derivative
+safety core,
+\[
+    Q_C=\operatorname{Safe}_{\partial}(C).
+\]
+Combining the two equalities proves the theorem.
+\end{proof}
+
+\begin{corollary}[Finite-path meaning of the derivative adjoint triple]
+\label{cor:temporal-meaning-derivative-adjoint-triple}
+The adjoint triple
+\[
+    \operatorname{Gen}_{\partial}
+    \dashv
+    I_{\partial}
+    \dashv
+    \operatorname{Safe}_{\partial}
+\]
+has the following execution-theoretic interpretation:
+\begin{enumerate}
+    \item \(\operatorname{Gen}_{\partial}(C)\) consists of residual states
+    reachable as endpoints of finite canonical executions beginning in \(C\);
+    \item \(I_{\partial}\) forgets derivative invariance and retains the
+    underlying behavioural predicate;
+    \item \(\operatorname{Safe}_{\partial}(C)\) consists of residual states
+    from which every finite canonical execution remains in \(C\).
+\end{enumerate}
+\end{corollary}
+
+
+
+\section{Modal invariance under quotients and minimization}
+\label{sec:dynamic-modal-invariance-quotients}
+
+The quotient theorems of
+Chapter~\ref{ch:temporal-trajectories-segal-execution} are structural: they
+produce regular epimorphisms on states, one-step executions, and every finite
+trajectory object.  Logical invariance requires one further condition: the
+predicates and guards under discussion must descend to the quotient.
+
+\subsection{Cartesian comparison of execution spans}
+\label{subsec:dynamic-cartesian-span-comparison}
+
+Consider spans
+\[
+    R=
+    \left(
+    X\xleftarrow{\ell_R}R\xrightarrow{r_R}X
+    \right),
+    \qquad
+    \overline R=
+    \left(
+    Q\xleftarrow{\ell_{\overline R}}\overline R
+    \xrightarrow{r_{\overline R}}Q
+    \right),
+\]
+and maps
+\[
+    e:X\to Q,
+    \qquad
+    k:R\to\overline R
+\]
+such that
+\[
+    e\ell_R=\ell_{\overline R}k,
+    \qquad
+    er_R=r_{\overline R}k.
+\]
+
+\begin{definition}[Source-cartesian span comparison]
+\label{def:dynamic-source-cartesian-span-comparison}
+The pair \((e,k)\) is \textbf{source-cartesian} if
+\[
+\begin{tikzcd}
+R \arrow[r,"k"] \arrow[d,"\ell_R"']
+&
+\overline R \arrow[d,"\ell_{\overline R}"]
+\\
+X \arrow[r,"e"']
+&
+Q
+\arrow[ul,phantom,very near start,"\lrcorner"]
+\end{tikzcd}
+\]
+is a pullback.
+\end{definition}
+
+\begin{proposition}[Modal Beck--Chevalley for span comparisons]
+\label{prop:dynamic-modal-beck-chevalley-span-comparison}
+If \((e,k)\) is source-cartesian and \(\mathcal E\) is regular, then
+\[
+    e^\ast\langle\overline R\rangle\varphi
+    =
+    \langle R\rangle e^\ast\varphi.
+\]
+If \(\mathcal E\) is first-order Heyting, then
+\[
+    e^\ast[\overline R]\varphi
+    =
+    [R]e^\ast\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+For diamonds, apply Beck--Chevalley for regular images to the source
+pullback square and use target compatibility:
+\[
+\begin{aligned}
+e^\ast\exists_{\ell_{\overline R}}
+    (r_{\overline R}^\ast\varphi)
+&=
+\exists_{\ell_R}
+    k^\ast(r_{\overline R}^\ast\varphi)\\
+&=
+\exists_{\ell_R}
+    (r_R^\ast e^\ast\varphi).
+\end{aligned}
+\]
+The proof for boxes is identical with \(\forall\) in place of \(\exists\).
+\end{proof}
+
+\subsection{Strict regular quotients}
+\label{subsec:dynamic-modal-strict-regular-quotients}
+
+Let
+\[
+    e:\Phi\twoheadrightarrow\Psi
+\]
+be a strict regular quotient over fixed input and output interfaces.  In every
+finite degree, deterministic path lifting identifies
+\[
+    \mathscr T_\Phi(n)
+    \cong
+    P\times_{A_0}\operatorname{Path}(\mathbb A^{\mathrm{op}})(n)
+\]
+and similarly for \(\Psi\).  Therefore the square formed by the initial-state
+maps and
+\[
+    \mathscr T_e(n):
+    \mathscr T_\Phi(n)\to\mathscr T_\Psi(n)
+\]
+is a pullback.
+
+\begin{theorem}[Modal invariance of descended trajectory predicates]
+\label{thm:dynamic-modal-invariance-trajectory-quotients}
+Let
+\[
+    \overline\varphi\hookrightarrow Q
+\]
+be a predicate on the quotient state object and put
+\[
+    \varphi:=e^\ast\overline\varphi.
+\]
+Then, for every \(n\geq0\),
+\[
+    e^\ast
+    \langle n\rangle_{\Psi}\overline\varphi
+    =
+    \langle n\rangle_{\Phi}\varphi.
+\]
+If \(\mathcal E\) is first-order Heyting, then
+\[
+    e^\ast
+    [n]_{\Psi}\overline\varphi
+    =
+    [n]_{\Phi}\varphi.
+\]
+The same statements hold for boundary modalities after replacing the target
+map by the corresponding boundary-state map.
+\end{theorem}
+
+\begin{proof}
+The source square is a pullback by deterministic path lifting, and every
+boundary-state map commutes with \(\mathscr T_e(n)\).  Apply
+Proposition~\ref{prop:dynamic-modal-beck-chevalley-span-comparison}.
+\end{proof}
+
+\subsection{Guards and behavioural minimization}
+\label{subsec:dynamic-guards-behavioural-minimization}
+
+A state predicate, input guard, output guard, downstream guard, or trajectory
+guard is \textbf{quotient-saturated} when it is the inverse image of a
+predicate on the corresponding quotient object.  For quotient-saturated
+guards, the restricted execution squares remain pullbacks, so the same
+Beck--Chevalley argument applies.
+
+\begin{corollary}[Behavioural invariance of descended formulas]
+\label{cor:dynamic-behavioural-invariance-descended-formulas}
+Let
+\[
+    e:P\twoheadrightarrow\operatorname{Beh}(P)
+\]
+be the behavioural quotient, under the hypotheses of the behavioural
+minimization theorem.  Every formula built from quotient-saturated atomic
+predicates and guards using:
+
+\begin{enumerate}
+\item finite meets, finite joins, and Heyting implication when available;
+\item tests;
+\item guarded one-step diamonds and boxes;
+\item finite guarded choice;
+\item finite-trajectory endpoint and boundary modalities;
+\end{enumerate}
+
+is invariant under \(e\): its interpretation on \(P\) is the inverse image of
+its interpretation on \(\operatorname{Beh}(P)\).
+\end{corollary}
+
+\begin{proof}
+Proceed by induction on formulas and generated programs.  Pullback preserves
+finite meets and, in the coherent setting, the finite joins in question.
+Heyting operations are preserved by inverse image in the first-order Heyting
+fibration.  The modal steps are
+Proposition~\ref{prop:dynamic-modal-beck-chevalley-span-comparison} and
+Theorem~\ref{thm:dynamic-modal-invariance-trajectory-quotients}.  Tests and
+guard restrictions are pullbacks, and quotient saturation ensures that their
+comparison squares are cartesian.
+\end{proof}
+
+\begin{remark}[No automatic descent of arbitrary predicates]
+\label{rem:dynamic-no-automatic-predicate-descent}
+The result does not claim that every predicate on the original state object
+descends through behavioural minimization.  Modal invariance is asserted for
+predicates and guards already saturated with respect to the quotient.  This
+qualification is necessary: a predicate that distinguishes states inside one
+behavioural class cannot be represented on the quotient.
+\end{remark}
+
+
+\section{Specializations and examples}
+\label{sec:dynamic-specializations-examples}
+
+\subsection{One-object relative response logic}
+\label{subsec:dynamic-one-object-response-logic}
+
+Let \(M\) and \(N\) be monoid objects and let
+\[
+    \Phi:M\rightsquigarrow N
+\]
+have state object \(P\), right \(M\)-action \(x\cdot m\), and output cocycle
+\[
+    \omega_P:M\times P\to N.
+\]
+For a right \(N\)-object \(Y\), the relative state object is \(P\times Y\),
+and the one-step transition is
+\[
+    (x,y)\xrightarrow{m}
+    \left(
+        x\cdot m,
+        y\cdot\omega_P(m,x)
+    \right).
+\]
+For predicates
+\[
+    \theta,\varphi\hookrightarrow P\times Y,
+    \qquad
+    R\hookrightarrow M,
+    \qquad
+    O\hookrightarrow N,
+\]
+the guarded diamond has the external reading
+\[
+\begin{aligned}
+(x,y)\models\langle\theta;R/O\rangle\varphi
+\quad\Longleftrightarrow\quad&
+\theta(x,y)\ \text{and there exists }m\in M\text{ such that}\\
+&
+R(m),\quad O(\omega_P(m,x)),\\
+&
+\varphi\!\left(
+x\cdot m,
+y\cdot\omega_P(m,x)
+\right).
+\end{aligned}
+\]
+The corresponding strong profile box requires every \(R\)-input \(m\) to
+produce an \(O\)-output and a continuation satisfying \(\varphi\).
+
+\subsection{Stateless functors}
+\label{subsec:dynamic-stateless-response-logic}
+
+Let
+\[
+    F:\mathbb A\to\mathbb B
+\]
+be an internal functor, regarded as a stateless Mealy morphism.  The relative
+state object is
+\[
+    A_0\times_{F_0,B_0,r}Y,
+\]
+and an admissible arrow \(a:u\to v\) produces
+\[
+    (v,y)\longmapsto
+    \left(
+        u,
+        \sigma(F_1(a),y)
+    \right).
+\]
+Thus every guarded modality is obtained from the general formulas by replacing
+the state-dependent output \(\omega_P(a,x)\) with \(F_1(a)\).  In the terminal
+downstream case the program category is
+\(\mathbb A^{\mathrm{op}}\), and the output labelling is
+\(F^{\mathrm{op}}\).
+
+\subsection{Relational semantics in \(\mathbf{Set}\)}
+\label{subsec:dynamic-relational-set-semantics}
+
+A span
+\[
+    S\xleftarrow{\ell}R\xrightarrow{r}S
+\]
+determines the relation
+\[
+    x\,\overline R\,y
+\]
+when some \(\rho\in R\) satisfies
+\[
+    \ell(\rho)=x,
+    \qquad
+    r(\rho)=y.
+\]
+Then
+\[
+    x\models\langle R\rangle\varphi
+\]
+holds exactly when some \(\overline R\)-successor of \(x\) satisfies
+\(\varphi\), and
+\[
+    x\models[R]\varphi
+\]
+holds exactly when every \(\overline R\)-successor of \(x\) satisfies
+\(\varphi\).  In the relative Mealy case this relation lives on
+\[
+    S_{\Phi,Y}=P\times_{B_0}Y.
+\]
+
+At the profile level, the polynomial fibre
+\[
+    \mathcal M_{\mathbb A,\mathbb B,Y}(X)_{(v,y)}
+    \cong
+    \prod_{a:u\to v}
+    \sum_{\beta:b'\to r(y)}
+    X_{(u,\sigma(\beta,y))}
+\]
+is a total family of possible responses.  The existential lifting selects one
+input position; the strong box constrains every guarded input position.
+
+\subsection{Word inputs and generator-level paths}
+\label{subsec:dynamic-word-generator-level-logic}
+
+Let
+\[
+    \mathbb A=I^\ast
+\]
+be the one-object category of input words.  The response profile at a state is
+total over all words:
+\[
+    w\longmapsto
+    \left(
+        \omega_P(w,x),
+        \delta_P(w,x)
+    \right).
+\]
+An unrestricted one-step modality may therefore quantify over an arbitrary
+word, not only a letter.  Likewise, an unrestricted \(n\)-segment endpoint
+modality collapses to the one-step modality by contraction.
+
+Letter-sensitive logic is obtained in either of two ways:
+
+\begin{enumerate}
+\item restrict the one-step input guard to the length-one subobject
+\(I\hookrightarrow I^\ast\);
+\item begin with the generator-level execution graph and form its finite
+trajectory objects before taking the free categorical completion.
+\end{enumerate}
+
+With either choice, a length-\(n\) trajectory records \(n\) letter steps and
+does not collapse to a single letter transition.  This is the appropriate
+setting for ordinary finite-word safety and reachability formulas.
+
+
+\section{Chapter synthesis}
+\label{sec:dynamic-response-trajectory-synthesis}
+
+The three semantic presentations now fit into one logical comparison.
+
+\begin{theorem}[Dynamic logic of relative responses and trajectories]
+\label{thm:dynamic-response-trajectory-main-summary}
+Let
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism and \(Y\) a right \(\mathbb B\)-action.
+
+\begin{enumerate}
+\item The relative execution category supplies the one-step span
+\[
+    \mathbf m_{\Phi,Y}:
+    S_{\Phi,Y}\nrightarrow S_{\Phi,Y}
+\]
+and hence span diamonds and, when available, span boxes.
+
+\item Input, output, downstream, state, and interface predicates determine
+guarded one-step subprograms
+\[
+    \theta;R/O/T.
+\]
+
+\item The response coalgebra supplies existential and universal profile
+liftings.  Pullback along \(c_{\Phi,Y}\) identifies the existential lifting
+with the guarded span diamond:
+\[
+    \theta\wedge
+    c_{\Phi,Y}^\ast\lambda_{R/O/T}(\varphi)
+    =
+    \langle\theta;R/O/T\rangle\varphi.
+\]
+
+\item The weak profile box pulls back to the box of the restricted one-step
+span:
+\[
+    c_{\Phi,Y}^\ast
+    \Box^{\mathrm{prof}}_{R/O/T}(\varphi)
+    =
+    [R/O/T]\varphi.
+\]
+The strong profile box additionally requires every \(R\)-input position to
+produce an \(O/T\)-guarded response.
+
+\item Tests, sequential composition, finite guarded joins, conditionals,
+domain predicates, and guarded Mealy automata form a generated span-program
+calculus on \(S_{\Phi,Y}\).
+
+\item Downstream action maps and evaluated Mealy simulations preserve the
+modal semantics by Beck--Chevalley along their source-cartesian execution
+squares.
+
+\item The finite trajectory objects supply endpoint and boundary modalities.
+Unrestricted endpoint horizons contract to one-step modalities, while
+boundary-sensitive and generator-restricted formulas retain temporal
+segmentation.
+
+\item On the canonical behavioural machine, derivative generation is finite
+endpoint reachability and the derivative safety core is universal
+finite-path safety.
+
+\item Strict regular quotients preserve the interpretation of predicates and
+guards that descend to the quotient; in particular, quotient-saturated
+formulas are invariant under behavioural minimization.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Items (1)--(2) are the span and guarded one-step constructions of
+Sections~\ref{sec:relative-predicate-transformers} and
+\ref{sec:poly-relative-guard-loci-primitives}.  Items (3)--(4) are
+Theorems~\ref{thm:poly-relative-lifting-span-agreement} and
+\ref{thm:poly-relative-profile-box-span-agreement}.  Item (5) is developed in
+Sections~\ref{sec:poly-relative-tests-choice}--
+\ref{sec:poly-relative-generated-program-algebra}.  Item (6) is
+Propositions~\ref{prop:relative-diamond-stability-downstream},
+\ref{prop:relative-box-stability-downstream},
+\ref{prop:poly-relative-diamond-stability-simulation}, and
+\ref{prop:poly-relative-box-stability-simulation}.  Item (7) is
+Propositions~\ref{prop:dynamic-finite-horizon-composition} and
+\ref{prop:dynamic-unrestricted-endpoint-collapse}.  Item (8) combines
+Theorem~\ref{thm:generated-closure-temporal-reachability} of the temporal
+chapter with Theorem~\ref{thm:safety-core-universal-temporal-safety}.  Item
+(9) is Theorem~\ref{thm:dynamic-modal-invariance-trajectory-quotients} and
+Corollary~\ref{cor:dynamic-behavioural-invariance-descended-formulas}.
+\end{proof}
+
+\begin{remark}[Final conceptual summary]
+\label{rem:dynamic-response-trajectory-final-summary}
+The span, polynomial, and trajectory logics are not three unrelated modal
+systems.  They inspect three presentations of the same relative Mealy
+semantics:
+\[
+\begin{array}{ccl}
+\text{total response profile}
+&\xrightarrow{\ \text{flatten}\ }&
+\text{one-step execution span}\\
+&&\xrightarrow{\ \operatorname{Path}\ }
+\text{finite trajectories}.
+\end{array}
+\]
+Profile liftings express properties of a complete response policy.  Span
+modalities express properties of selected executions.  Trajectory modalities
+express properties of finite segmented executions.  Currying, flattening, and
+the path construction explain exactly how these logical levels are related.
+\end{remark}

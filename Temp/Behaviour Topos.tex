@@ -1,0 +1,1565 @@
+\section{Residual context topology and sheaf-local Birkhoff}
+\label{sec:residual-context-topology}
+
+The global coequational theorem can be sharpened by separating two levels of
+globality. The first is stability under residual restriction. The second is
+descent along covers of residual contexts. This section constructs the
+canonical residual-context topology and records the corresponding sheaf-local
+refinement of the global Birkhoff theorem.
+
+Throughout this section the output internal category \(\mathbb B\) is fixed.
+The category of allowed input categories and input functors is denoted
+\[
+    \mathsf{Inp}.
+\]
+We work in full Grothendieck-topos generality by using generalized residual
+contexts. Thus we do not assume that objects have enough global points. All
+indexing categories used below are understood to be small relative to the fixed
+ambient universe. If the collection of all generalized residual contexts is
+large, one restricts to a chosen small full site of contexts, closed under the
+pullbacks and restrictions used below, or to a small set of representatives.
+
+\subsection{Generalized residual context shape}
+\label{subsec:generalized-residual-context-shape}
+
+\begin{definition}[Generalized residual context category]
+\label{def:generalized-residual-context-category}
+    The \textbf{generalized residual context category}
+    \[
+        \mathsf{RCtx}(\mathsf{Inp})
+    \]
+    is defined as follows.
+
+    An object is a generalized pointed input context
+    \[
+        (\mathbb A,U,\nu),
+        \qquad
+        \mathbb A\in\mathsf{Inp},
+        \qquad
+        \nu:U\to A_0.
+    \]
+    Thus \(U\) is a parameter object and \(\nu\) is a \(U\)-indexed family of
+    input objects.
+
+    A morphism
+    \[
+        (F,h,r):
+        (\mathbb A',U',\nu')
+        \longrightarrow
+        (\mathbb A,U,\nu)
+    \]
+    consists of an input functor
+    \[
+        F:\mathbb A'\to\mathbb A,
+    \]
+    a parameter map
+    \[
+        h:U'\to U,
+    \]
+    and a \(U'\)-indexed arrow of \(\mathbb A\)
+    \[
+        r:U'\to A_1
+    \]
+    satisfying
+    \[
+        s_A r=F_0\nu',
+        \qquad
+        t_A r=\nu h.
+    \]
+    In generalized-element notation, \(r\) is a family of arrows
+    \[
+        r_{u'}:F_0(\nu'(u'))\to \nu(h(u')).
+    \]
+\end{definition}
+
+The typing of \(r\) is displayed by
+\[
+\begin{tikzcd}[column sep=large, row sep=large]
+    &
+    A_1
+        \arrow[d, "{(s_A,t_A)}"]
+    \\
+    U'
+        \arrow[ur, "r"]
+        \arrow[r, "{(F_0\nu',\,\nu h)}"']
+    &
+    A_0\times A_0 .
+\end{tikzcd}
+\]
+
+The identity on
+\[
+    (\mathbb A,U,\nu)
+\]
+is
+\[
+    (1_{\mathbb A},1_U,e_A\nu).
+\]
+If
+\[
+    (G,k,s):
+    (\mathbb A'',U'',\nu'')
+    \to
+    (\mathbb A',U',\nu')
+\]
+and
+\[
+    (F,h,r):
+    (\mathbb A',U',\nu')
+    \to
+    (\mathbb A,U,\nu),
+\]
+their composite is
+\[
+    (F,h,r)\circ(G,k,s)
+    :=
+    \bigl(FG,\;hk,\;m_A(F_1s,rk)\bigr).
+\]
+Here
+\[
+    rk:=r\circ k:U''\to A_1,
+\]
+and
+\[
+    F_1s:U''\to A_1
+\]
+is the image under \(F\) of the \(U''\)-indexed arrow \(s\). In
+generalized-element notation, the composite arrow is
+\[
+    F_0G_0(\nu''(u''))
+        \xrightarrow{F_1(s_{u''})}
+    F_0(\nu'(k u''))
+        \xrightarrow{r_{k u''}}
+    \nu(hk u'').
+\]
+Thus
+\[
+    m_A(F_1s,rk)=rk\circ F_1s.
+\]
+
+The composite-arrow typing is displayed by
+\[
+\begin{tikzcd}[column sep=large, row sep=large]
+    F_0G_0\nu''
+        \arrow[r, "{F_1s}"]
+        \arrow[dr, swap, "{m_A(F_1s,rk)}"]
+    &
+    F_0\nu'k
+        \arrow[d, "rk"]
+    \\
+    &
+    \nu hk .
+\end{tikzcd}
+\]
+
+\begin{lemma}[Residual context category]
+\label{lem:residual-context-category}
+    The data above define a category
+    \[
+        \mathsf{RCtx}(\mathsf{Inp}).
+    \]
+\end{lemma}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Check identities.}
+        Let
+        \[
+            (F,h,r):
+            (\mathbb A',U',\nu')
+            \to
+            (\mathbb A,U,\nu)
+        \]
+        be a residual context morphism. Composing on the source side with
+        \[
+            (1_{\mathbb A'},1_{U'},e_{A'}\nu')
+        \]
+        gives the arrow component
+        \[
+            m_A(F_1(e_{A'}\nu'),r)
+            =
+            m_A(e_A F_0\nu',r)
+            =
+            r.
+        \]
+        Composing on the target side with
+        \[
+            (1_{\mathbb A},1_U,e_A\nu)
+        \]
+        gives the arrow component
+        \[
+            m_A(r,e_A\nu h)=r.
+        \]
+        These are precisely the identity laws in \(\mathbb A\).
+
+        \item \textbf{Check associativity.}
+        Given three composable residual context morphisms, the parameter-map
+        part is associative because composition in \(\mathcal E\) is
+        associative, and the input-functor part is associative because
+        composition in \(\mathsf{Inp}\) is associative.
+
+        For the arrow component, associativity reduces to associativity of
+        composition in \(\mathbb A\). If the three displayed arrow components
+        are
+        \[
+            t,\qquad s,\qquad r,
+        \]
+        then the two possible composites have arrow components
+        \[
+            (rk)\circ F_1(s\ell)\circ F_1G_1(t)
+        \]
+        and
+        \[
+            rk\circ F_1(s\ell\circ G_1(t)).
+        \]
+        These agree by functoriality of \(F\) and associativity in
+        \(\mathbb A\).
+
+        \item \textbf{Display the associativity calculation.}
+        The relevant pasting diagram is
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            F_0G_0H_0\nu'''
+                \arrow[r, "{F_1G_1(t)}"]
+                \arrow[rr, bend left=14, "{F_1(G_1(t)\circ s\ell)}"]
+                \arrow[rrr, bend left=26]
+            &
+            F_0G_0\nu''\ell
+                \arrow[r, "{F_1(s\ell)}"]
+            &
+            F_0\nu'k\ell
+                \arrow[r, "{rk\ell}"]
+            &
+            \nu hk\ell .
+        \end{tikzcd}
+        \]
+        Pasting either the first two arrows and then the third, or the last two
+        arrows and then the first, gives the same composite.
+    \end{enumerate}
+\end{proof}
+
+For a generalized context
+\[
+    (\mathbb A,U,\nu),
+\]
+write
+\[
+    \mathbb A/\nu
+\]
+for the residual slice internal category in the slice
+\[
+    \mathcal E/U.
+\]
+Its object object is
+\[
+    U\times_{\nu,A_0,t_A}A_1\to U,
+\]
+and its arrow object is
+\[
+    U\times_{\nu,A_0,t_A\pi_2}T_A\to U,
+    \qquad
+    T_A:=A_1\times_{t_A,A_0,s_A}A_1.
+\]
+A generalized object is a pair
+\[
+    (u,a:x\to\nu(u)),
+\]
+and a generalized residual arrow is a triangle
+\[
+\begin{tikzcd}[column sep=large, row sep=large]
+    y
+        \arrow[r, "c"]
+        \arrow[rr, "a\circ c", bend left=15]
+    &
+    x
+        \arrow[r, "a"']
+    &
+    \nu(u).
+\end{tikzcd}
+\]
+
+A residual context morphism
+\[
+    (F,h,r):
+    (\mathbb A',U',\nu')
+    \to
+    (\mathbb A,U,\nu)
+\]
+induces an internal functor in \(\mathcal E/U'\)
+\[
+    (F,h,r)_{/}:
+    \mathbb A'/\nu'
+    \longrightarrow
+    h^*(\mathbb A/\nu).
+\]
+On residual objects it is given by
+\[
+    a':x'\to\nu'(u')
+    \quad\longmapsto\quad
+    r_{u'}\circ F_1(a'):F_0(x')\to\nu(h u').
+\]
+On residual arrows it sends the triangle
+\[
+\begin{tikzcd}[column sep=large, row sep=large]
+    y'
+        \arrow[r, "c'"]
+        \arrow[rr, "a'\circ c'", bend left=15]
+    &
+    x'
+        \arrow[r, "a'"']
+    &
+    \nu'(u')
+\end{tikzcd}
+\]
+to the triangle
+\[
+\begin{tikzcd}[column sep=large, row sep=large]
+    F_0(y')
+        \arrow[r, "F_1(c')"]
+        \arrow[rr, "{r_{u'}\circ F_1(a'\circ c')}"', bend right=15]
+    &
+    F_0(x')
+        \arrow[r, "{r_{u'}\circ F_1(a')}"']
+    &
+    \nu(h u').
+\end{tikzcd}
+\]
+
+\begin{lemma}[Residual slice functoriality]
+\label{lem:residual-slice-functoriality}
+    The assignment
+    \[
+        (\mathbb A,U,\nu)\longmapsto \mathbb A/\nu
+    \]
+    and
+    \[
+        (F,h,r)\longmapsto (F,h,r)_{/}
+    \]
+    is functorial in the indexed sense: identities induce identity residual
+    slice functors, and composites induce the corresponding composite residual
+    slice functors.
+\end{lemma}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Check identities.}
+        The identity residual context morphism
+        \[
+            (1_{\mathbb A},1_U,e_A\nu)
+        \]
+        sends a residual object
+        \[
+            a:x\to\nu(u)
+        \]
+        to
+        \[
+            e_A\nu(u)\circ a=a.
+        \]
+        It also sends each residual triangle to itself. Hence it induces the
+        identity functor on
+        \[
+            \mathbb A/\nu.
+        \]
+
+        \item \textbf{Check composition on residual objects.}
+        Let
+        \[
+            (G,k,s):
+            (\mathbb A'',U'',\nu'')
+            \to
+            (\mathbb A',U',\nu')
+        \]
+        and
+        \[
+            (F,h,r):
+            (\mathbb A',U',\nu')
+            \to
+            (\mathbb A,U,\nu)
+        \]
+        be composable. For a residual object
+        \[
+            a'':x''\to\nu''(u''),
+        \]
+        the two-step residual restriction sends \(a''\) to
+        \[
+            r_{k u''}\circ F_1(s_{u''})\circ F_1G_1(a'').
+        \]
+        The composite residual context morphism has arrow component
+        \[
+            r_{k u''}\circ F_1(s_{u''}),
+        \]
+        and therefore sends \(a''\) to the same arrow
+        \[
+            \bigl(r_{k u''}\circ F_1(s_{u''})\bigr)
+            \circ F_1G_1(a'').
+        \]
+
+        \item \textbf{Check composition on residual arrows.}
+        The same calculation applied to a residual triangle
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            y''
+                \arrow[r, "c''"]
+                \arrow[rr, "a''\circ c''", bend left=15]
+            &
+            x''
+                \arrow[r, "a''"']
+            &
+            \nu''(u'')
+        \end{tikzcd}
+        \]
+        shows that both composite functors send it to the triangle
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            F_0G_0(y'')
+                \arrow[r, "{F_1G_1(c'')}"]
+                \arrow[rr,
+                    "{r_{k u''}\circ F_1(s_{u''})\circ F_1G_1(a''\circ c'')}"',
+                    bend right=15]
+            &
+            F_0G_0(x'')
+                \arrow[r,
+                    "{r_{k u''}\circ F_1(s_{u''})\circ F_1G_1(a'')}"']
+            &
+            \nu(hk u'').
+        \end{tikzcd}
+        \]
+        Therefore the residual slice assignment is functorial.
+    \end{enumerate}
+\end{proof}
+
+The two restriction operations used earlier are special cases of residual
+context restriction.
+
+\begin{lemma}[Derivatives and input reindexing as residual restrictions]
+\label{lem:derivatives-and-reindexing-as-residual-restrictions}
+    Let
+    \[
+        H:U\to\mathbf{Beh}_{\mathbb A,\mathbb B,0}
+    \]
+    be a \(U\)-indexed residual behaviour over
+    \[
+        \nu:U\to A_0,
+    \]
+    so that
+    \[
+        p_{\mathbf{Beh}}H=\nu.
+    \]
+
+    \begin{enumerate}
+        \item If
+        \[
+            a:U\to A_1
+        \]
+        is a \(U\)-indexed arrow of \(\mathbb A\) with
+        \[
+            s_Aa=\mu,
+            \qquad
+            t_Aa=\nu,
+        \]
+        then restriction along
+        \[
+            (1_{\mathbb A},1_U,a):
+            (\mathbb A,U,\mu)\to(\mathbb A,U,\nu)
+        \]
+        is the \(U\)-indexed derivative
+        \[
+            H\longmapsto\partial_aH.
+        \]
+
+        \item If
+        \[
+            F:\mathbb A'\to\mathbb A
+        \]
+        is an input functor and
+        \[
+            \nu':U'\to A'_0
+        \]
+        is a generalized input object, then restriction along
+        \[
+            (F,1_{U'},e_AF_0\nu'):
+            (\mathbb A',U',\nu')
+            \to
+            (\mathbb A,U',F_0\nu')
+        \]
+        is the input reindexing operation
+        \[
+            H\longmapsto F^\sharp(\nu',H).
+        \]
+    \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Derivatives.}
+        The residual slice functor associated to
+        \[
+            (1_{\mathbb A},1_U,a)
+        \]
+        sends
+        \[
+            r:x\to\mu(u)
+        \]
+        to
+        \[
+            a_u\circ r:x\to\nu(u).
+        \]
+        This is precisely residual transport by the arrow \(a_u\). Therefore
+        restriction of \(H\) along
+        \[
+            (1_{\mathbb A},1_U,a)
+        \]
+        is
+        \[
+            H\circ a_*=\partial_aH.
+        \]
+
+        \item \textbf{Input reindexing.}
+        The residual slice functor associated to
+        \[
+            (F,1_{U'},e_AF_0\nu')
+        \]
+        sends
+        \[
+            r':x'\to\nu'(u')
+        \]
+        to
+        \[
+            F_1(r'):F_0(x')\to F_0(\nu'(u')).
+        \]
+        This is exactly the residual slice functor
+        \[
+            F_{/\nu'}:
+            \mathbb A'/\nu'
+            \to
+            \mathbb A/F_0\nu'.
+        \]
+        Therefore restriction of \(H\) is
+        \[
+            H\circ F_{/\nu'}=F^\sharp(\nu',H).
+        \]
+
+        \item \textbf{Display the two special restrictions.}
+        The derivative case is displayed by
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            x
+                \arrow[r, "r"]
+                \arrow[rr, "a_u\circ r", bend left=15]
+            &
+            \mu(u)
+                \arrow[r, "a_u"']
+            &
+            \nu(u),
+        \end{tikzcd}
+        \]
+        while the input-reindexing case is displayed by
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            x'
+                \arrow[r, "r'"]
+                \arrow[d, maps to]
+            &
+            \nu'(u')
+                \arrow[d, maps to]
+            \\
+            F_0(x')
+                \arrow[r, "F_1(r')"']
+            &
+            F_0(\nu'(u')).
+        \end{tikzcd}
+        \]
+    \end{enumerate}
+\end{proof}
+
+Every residual context morphism factors as an input reindexing morphism
+followed by a derivative-restriction morphism:
+\[
+\begin{tikzcd}[column sep=huge, row sep=large]
+    (\mathbb A',U',\nu')
+        \arrow[r, "{(F,1_{U'},e_AF_0\nu')}"]
+        \arrow[rr, bend left=18, "{(F,h,r)}"]
+    &
+    (\mathbb A,U',F_0\nu')
+        \arrow[r, "{(1_{\mathbb A},h,r)}"]
+    &
+    (\mathbb A,U,\nu).
+\end{tikzcd}
+\]
+Thus
+\[
+    (F,h,r)
+    =
+    (1_{\mathbb A},h,r)\circ(F,1_{U'},e_AF_0\nu').
+\]
+Contravariantly, restriction along \((F,h,r)\) is derivative restriction
+followed by input reindexing.
+
+\subsection{The residual behaviour presheaf}
+\label{subsec:residual-behaviour-presheaf}
+
+\begin{definition}[Residual behaviour presheaf]
+\label{def:residual-behaviour-presheaf}
+    The \textbf{residual behaviour presheaf} with output \(\mathbb B\) is
+    \[
+        \mathcal B_{\mathbb B}:
+        \mathsf{RCtx}(\mathsf{Inp})^{op}\to\mathbf{Set}
+    \]
+    defined by
+    \[
+        \mathcal B_{\mathbb B}(\mathbb A,U,\nu)
+        :=
+        \mathcal E/A_0
+        \bigl((U,\nu),(\mathbf{Beh}_{\mathbb A,\mathbb B,0},
+        p_{\mathbf{Beh}})\bigr).
+    \]
+    Equivalently, an element is a \(U\)-indexed residual behaviour
+    \[
+        H:U\to\mathbf{Beh}_{\mathbb A,\mathbb B,0}
+    \]
+    satisfying
+    \[
+        p_{\mathbf{Beh}}H=\nu.
+    \]
+    This is equivalently a \(U\)-indexed internal functor
+    \[
+        \mathbb A/\nu\to U^*\mathbb B
+    \]
+    in the slice \(\mathcal E/U\).
+
+    For a residual context morphism
+    \[
+        (F,h,r):
+        (\mathbb A',U',\nu')
+        \to
+        (\mathbb A,U,\nu),
+    \]
+    the restriction map
+    \[
+        (F,h,r)^*:
+        \mathcal B_{\mathbb B}(\mathbb A,U,\nu)
+        \to
+        \mathcal B_{\mathbb B}(\mathbb A',U',\nu')
+    \]
+    sends \(H\) to the \(U'\)-indexed residual behaviour obtained by
+    precomposition with
+    \[
+        (F,h,r)_{/}.
+    \]
+    In generalized-element notation,
+    \[
+        \bigl((F,h,r)^*H\bigr)(u')
+        =
+        H(h u')\circ(F,r_{u'})_{/}.
+    \]
+\end{definition}
+
+The restriction operation is summarized by
+\[
+\begin{tikzcd}[column sep=huge, row sep=large]
+    \mathbb A'/\nu'
+        \arrow[r, "{(F,h,r)_{/}}"]
+        \arrow[dr, "{(F,h,r)^*H}"']
+    &
+    h^*(\mathbb A/\nu)
+        \arrow[d, "h^*H"]
+    \\
+    &
+    U'^*\mathbb B .
+\end{tikzcd}
+\]
+
+\begin{proposition}[Global theories as residual-context subpresheaves]
+\label{prop:global-theories-as-residual-context-subpresheaves}
+    Let
+    \[
+        V=(V_{\mathbb A})_{\mathbb A\in\mathsf{Inp}}
+    \]
+    be a family assigning to each input category \(\mathbb A\) a local
+    coequational theory
+    \[
+        V_{\mathbb A}\hookrightarrow
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}.
+    \]
+    Then \(V\) is a global coequational theory precisely when the assignment
+    \[
+        (\mathbb A,U,\nu)
+        \longmapsto
+        \mathcal V(\mathbb A,U,\nu)
+    \]
+    defined by
+    \[
+        \mathcal V(\mathbb A,U,\nu)
+        :=
+        \mathcal E/A_0
+        \bigl((U,\nu),(V_{\mathbb A},p_{V_{\mathbb A}})\bigr)
+    \]
+    is stable under all residual-context restrictions. Equivalently, it defines
+    a subpresheaf
+    \[
+        \mathcal V\hookrightarrow\mathcal B_{\mathbb B}
+    \]
+    on
+    \[
+        \mathsf{RCtx}(\mathsf{Inp}).
+    \]
+\end{proposition}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{From global coequational theories to subpresheaves.}
+        Suppose \(V\) is a global coequational theory. Local coequationality of
+        each
+        \[
+            V_{\mathbb A}
+        \]
+        says that \(V_{\mathbb A}\) is closed under canonical derivatives.
+        Since derivative-closedness is an internal factorization condition in
+        the relevant carrier slice, it is stable under arbitrary parameter
+        pullback. Therefore \(V_{\mathbb A}\) is stable under restrictions of
+        the form
+        \[
+            (1_{\mathbb A},h,r)^*.
+        \]
+
+        The global input-reindexing condition says that \(V\) is stable under
+        restrictions of the form
+        \[
+            (F,1_{U'},e_AF_0\nu')^*.
+        \]
+
+        Every residual context morphism factors as
+        \[
+            (F,h,r)
+            =
+            (1_{\mathbb A},h,r)
+            \circ
+            (F,1_{U'},e_AF_0\nu').
+        \]
+        Hence the family \(V\) is stable under restriction along every residual
+        context morphism. Thus it defines a subpresheaf of
+        \[
+            \mathcal B_{\mathbb B}.
+        \]
+
+        \item \textbf{From subpresheaves to global coequational theories.}
+        Conversely, suppose the fibrewise assignment defines a subpresheaf of
+        \[
+            \mathcal B_{\mathbb B}.
+        \]
+        Stability under restrictions along
+        \[
+            (1_{\mathbb A},1_U,a)
+        \]
+        gives derivative closure of each local theory
+        \[
+            V_{\mathbb A}.
+        \]
+        Stability under restrictions along
+        \[
+            (F,1_{U'},e_AF_0\nu')
+        \]
+        gives the global input-reindexing condition. Therefore \(V\) is a
+        global coequational theory.
+
+        \item \textbf{Display the restriction square.}
+        The defining stability condition is the factorization
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            \mathcal V(\mathbb A,U,\nu)
+                \arrow[r, hook]
+                \arrow[d, dashed, "{(F,h,r)^*}"']
+            &
+            \mathcal B_{\mathbb B}(\mathbb A,U,\nu)
+                \arrow[d, "{(F,h,r)^*}"]
+            \\
+            \mathcal V(\mathbb A',U',\nu')
+                \arrow[r, hook]
+            &
+            \mathcal B_{\mathbb B}(\mathbb A',U',\nu')
+        \end{tikzcd}
+        \]
+        for every residual context morphism
+        \[
+            (F,h,r):
+            (\mathbb A',U',\nu')
+            \to
+            (\mathbb A,U,\nu).
+        \]
+    \end{enumerate}
+\end{proof}
+
+\subsection{The canonical residual behaviour topology}
+\label{subsec:canonical-residual-behaviour-topology}
+
+The residual behaviour presheaf determines a canonical topology on the
+residual context category. This topology is canonical relative to the presheaf
+\[
+    \mathcal B_{\mathbb B};
+\]
+it is not asserted to be the canonical subcanonical topology on
+\[
+    \mathsf{RCtx}(\mathsf{Inp}).
+\]
+It is the largest topology for which residual behaviours satisfy descent.
+
+Let
+\[
+    X:\mathcal C^{op}\to\mathbf{Set}
+\]
+be a presheaf on a small category \(\mathcal C\). For a sieve
+\[
+    S\hookrightarrow y(c)
+\]
+on \(c\), write
+\[
+    \operatorname{Match}(S,X)
+    :=
+    \operatorname{Nat}(S,X)
+\]
+for the set of matching families of \(X\)-sections along \(S\). The canonical
+restriction map is
+\[
+    X(c)\to\operatorname{Match}(S,X).
+\]
+A sieve \(S\) is called \textbf{\(X\)-effective} if this map is a bijection.
+It is called \textbf{universally \(X\)-effective} if, for every morphism
+\[
+    f:d\to c,
+\]
+the pullback sieve
+\[
+    f^*S
+\]
+is \(X\)-effective on \(d\).
+
+\begin{lemma}[Topology generated by a presheaf]
+\label{lem:topology-generated-by-a-presheaf}
+    Let
+    \[
+        X:\mathcal C^{op}\to\mathbf{Set}
+    \]
+    be a presheaf. The universally \(X\)-effective sieves form a Grothendieck
+    topology
+    \[
+        J_X
+    \]
+    on \(\mathcal C\). Moreover, \(J_X\) is the largest Grothendieck topology
+    on \(\mathcal C\) for which \(X\) is a sheaf.
+\end{lemma}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Maximal sieves cover.}
+        For every object \(c\), the maximal sieve is the representable
+        presheaf
+        \[
+            y(c).
+        \]
+        By the Yoneda lemma,
+        \[
+            \operatorname{Nat}(y(c),X)\cong X(c),
+        \]
+        so the maximal sieve is \(X\)-effective. The same argument applies
+        after arbitrary pullback. Hence maximal sieves are universally
+        \(X\)-effective.
+
+        \item \textbf{Pullback stability.}
+        Pullback stability is built into universal \(X\)-effectivity. If \(S\)
+        is universally \(X\)-effective on \(c\) and
+        \[
+            f:d\to c
+        \]
+        is any morphism, then \(f^*S\) is universally \(X\)-effective on \(d\).
+
+        \item \textbf{Upward closure.}
+        Let
+        \[
+            S\subseteq T
+        \]
+        be sieves on \(c\), and suppose \(S\) is universally \(X\)-effective.
+        Let
+        \[
+            (x_t)_{t\in T}
+        \]
+        be a matching family over \(T\). Restricting to \(S\), there is a
+        unique
+        \[
+            x\in X(c)
+        \]
+        whose restrictions along arrows of \(S\) are the given \(x_s\).
+
+        For an arrow
+        \[
+            t:d\to c
+        \]
+        in \(T\), compare
+        \[
+            X(t)(x)
+            \qquad\text{and}\qquad
+            x_t
+        \]
+        in \(X(d)\). These two elements agree after restriction along every
+        arrow of the pullback sieve
+        \[
+            t^*S.
+        \]
+        Since \(t^*S\) is \(X\)-effective, they agree in \(X(d)\). Thus \(x\)
+        amalgamates the matching family over \(T\). Uniqueness follows because
+        \(S\subseteq T\). The same argument after arbitrary pullback shows that
+        \(T\) is universally \(X\)-effective.
+
+        The comparison is displayed by
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            t^*S
+                \arrow[r, hook]
+                \arrow[d, hook]
+            &
+            y(d)
+                \arrow[d, "y(t)"]
+            \\
+            S
+                \arrow[r, hook]
+            &
+            y(c).
+        \end{tikzcd}
+        \]
+
+        \item \textbf{Transitivity.}
+        Let \(S\) be universally \(X\)-effective on \(c\). Let \(R\) be a
+        sieve on \(c\) such that
+        \[
+            f^*R
+        \]
+        is universally \(X\)-effective for every arrow
+        \[
+            f:d\to c
+        \]
+        in \(S\). We prove that \(R\) is universally \(X\)-effective.
+
+        First take a matching family
+        \[
+            (y_g)_{g\in R}
+        \]
+        over \(R\). For each arrow
+        \[
+            f:d\to c
+        \]
+        in \(S\), the restriction of this matching family to \(f^*R\) has a
+        unique amalgamation
+        \[
+            x_f\in X(d),
+        \]
+        since \(f^*R\) is \(X\)-effective. The family
+        \[
+            (x_f)_{f\in S}
+        \]
+        is a matching family over \(S\). Since \(S\) is \(X\)-effective, it has
+        a unique amalgamation
+        \[
+            x\in X(c).
+        \]
+
+        For any arrow
+        \[
+            g:e\to c
+        \]
+        in \(R\), compare
+        \[
+            X(g)(x)
+            \qquad\text{and}\qquad
+            y_g
+        \]
+        in \(X(e)\). They agree after restriction along the pullback sieve
+        \[
+            g^*S.
+        \]
+        Indeed, for an arrow
+        \[
+            \ell:d\to e
+        \]
+        with
+        \[
+            g\ell\in S,
+        \]
+        the section \(x_{g\ell}\) is the unique amalgamation of the restricted
+        matching family over
+        \[
+            (g\ell)^*R.
+        \]
+        Since \(g\in R\), the element \(y_g\) restricts to the same matching
+        family. Hence
+        \[
+            X(\ell)X(g)(x)=X(\ell)(y_g).
+        \]
+        Because \(g^*S\) is \(X\)-effective, this implies
+        \[
+            X(g)(x)=y_g.
+        \]
+        Hence \(x\) amalgamates the matching family over \(R\).
+
+        For uniqueness, let
+        \[
+            x,x'\in X(c)
+        \]
+        be two amalgamations over \(R\). For each
+        \[
+            f:d\to c
+        \]
+        in \(S\), the two restrictions
+        \[
+            X(f)(x),\quad X(f)(x')
+        \]
+        agree after restriction along
+        \[
+            f^*R.
+        \]
+        Since \(f^*R\) is \(X\)-effective, they agree in \(X(d)\). Since \(S\)
+        is \(X\)-effective, \(x=x'\). Therefore \(R\) is \(X\)-effective.
+        The same argument after arbitrary pullback proves universal
+        \(X\)-effectivity.
+
+        The transitivity pasting is summarized by
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            f^*R
+                \arrow[r, hook]
+                \arrow[d, hook]
+            &
+            y(d)
+                \arrow[d, "y(f)"]
+            \\
+            R
+                \arrow[r, hook]
+            &
+            y(c)
+            &
+            S
+                \arrow[l, hook']
+        \end{tikzcd}
+        \]
+        for each \(f\in S\).
+
+        \item \textbf{Largest topology for which \(X\) is a sheaf.}
+        By construction, every \(J_X\)-covering sieve is universally
+        \(X\)-effective, so \(X\) is a sheaf for \(J_X\).
+
+        Conversely, let \(J\) be any Grothendieck topology for which \(X\) is a
+        sheaf. If
+        \[
+            S\in J(c),
+        \]
+        then \(S\) is \(X\)-effective. Since pullbacks of \(J\)-covering
+        sieves are again \(J\)-covering, every pullback of \(S\) is
+        \(X\)-effective. Thus every \(J\)-covering sieve is universally
+        \(X\)-effective. Therefore
+        \[
+            J\subseteq J_X.
+        \]
+        Hence \(J_X\) is the largest topology for which \(X\) is a sheaf.
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Canonical residual behaviour topology]
+\label{def:canonical-residual-behaviour-topology}
+    The \textbf{canonical residual behaviour topology} associated to the output
+    category \(\mathbb B\) is the Grothendieck topology
+    \[
+        J_{\mathbb B}^{\mathrm{res}}
+        :=
+        J_{\mathcal B_{\mathbb B}}
+    \]
+    on
+    \[
+        \mathsf{RCtx}(\mathsf{Inp})
+    \]
+    whose covering sieves are the universally
+    \(\mathcal B_{\mathbb B}\)-effective sieves.
+\end{definition}
+
+Thus a sieve
+\[
+    S
+\]
+on a residual context
+\[
+    (\mathbb A,U,\nu)
+\]
+is \(J_{\mathbb B}^{\mathrm{res}}\)-covering precisely when, after arbitrary
+residual-context pullback, residual behaviours over the target context are
+uniquely recoverable from compatible families of their restrictions along the
+arrows of the pulled-back sieve.
+
+\begin{corollary}[Residual behaviours form a sheaf]
+\label{cor:residual-behaviours-form-sheaf}
+    The residual behaviour presheaf
+    \[
+        \mathcal B_{\mathbb B}
+    \]
+    is a sheaf on
+    \[
+        \bigl(\mathsf{RCtx}(\mathsf{Inp}),J_{\mathbb B}^{\mathrm{res}}\bigr).
+    \]
+    Moreover,
+    \[
+        J_{\mathbb B}^{\mathrm{res}}
+    \]
+    is the largest Grothendieck topology on
+    \[
+        \mathsf{RCtx}(\mathsf{Inp})
+    \]
+    with this property.
+\end{corollary}
+
+\begin{proof}
+    This is Lemma~\ref{lem:topology-generated-by-a-presheaf} applied to
+    \[
+        X=\mathcal B_{\mathbb B}.
+    \]
+\end{proof}
+
+\subsection{Sheaf-local global coequational theories}
+\label{subsec:sheaf-local-global-coequational-theories}
+
+\begin{definition}[Sheaf-local global coequational theory]
+\label{def:sheaf-local-global-coequational-theory}
+    A global coequational theory
+    \[
+        V=(V_{\mathbb A})_{\mathbb A\in\mathsf{Inp}}
+    \]
+    is \textbf{sheaf-local} if the corresponding residual-context subpresheaf
+    \[
+        \mathcal V\hookrightarrow\mathcal B_{\mathbb B}
+    \]
+    is a subsheaf for the canonical residual behaviour topology
+    \[
+        J_{\mathbb B}^{\mathrm{res}}.
+    \]
+\end{definition}
+
+\begin{lemma}[Membership criterion for sheaf-local theories]
+\label{lem:membership-criterion-sheaf-local-theories}
+    Let
+    \[
+        V=(V_{\mathbb A})_{\mathbb A\in\mathsf{Inp}}
+    \]
+    be a global coequational theory. Then \(V\) is sheaf-local if and only if
+    the following condition holds.
+
+    For every residual context
+    \[
+        (\mathbb A,U,\nu),
+    \]
+    every residual behaviour
+    \[
+        H\in\mathcal B_{\mathbb B}(\mathbb A,U,\nu),
+    \]
+    and every covering sieve
+    \[
+        S\in J_{\mathbb B}^{\mathrm{res}}(\mathbb A,U,\nu),
+    \]
+    if
+    \[
+        (F,h,r)^*H
+        \in
+        \mathcal V(\mathbb A',U',\nu')
+    \]
+    for every arrow
+    \[
+        (F,h,r):
+        (\mathbb A',U',\nu')
+        \to
+        (\mathbb A,U,\nu)
+    \]
+    in \(S\), then
+    \[
+        H\in\mathcal V(\mathbb A,U,\nu).
+    \]
+\end{lemma}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use the subpresheaf condition.}
+        Since \(V\) is already a global coequational theory, the associated
+        assignment
+        \[
+            \mathcal V\hookrightarrow\mathcal B_{\mathbb B}
+        \]
+        is a subpresheaf by
+        Proposition~\ref{prop:global-theories-as-residual-context-subpresheaves}.
+        Hence if
+        \[
+            H\in\mathcal V(\mathbb A,U,\nu),
+        \]
+        then every restriction
+        \[
+            (F,h,r)^*H
+        \]
+        lies in the corresponding fibre of \(\mathcal V\).
+
+        \item \textbf{Unpack the subsheaf condition.}
+        Since
+        \[
+            \mathcal B_{\mathbb B}
+        \]
+        is a sheaf for
+        \[
+            J_{\mathbb B}^{\mathrm{res}},
+        \]
+        a subpresheaf
+        \[
+            \mathcal V\hookrightarrow\mathcal B_{\mathbb B}
+        \]
+        is a subsheaf precisely when membership in \(\mathcal V\) is local on
+        covering sieves. That is, whenever a section
+        \[
+            H\in\mathcal B_{\mathbb B}(\mathbb A,U,\nu)
+        \]
+        restricts to sections of \(\mathcal V\) along every arrow of a
+        covering sieve, the section \(H\) itself lies in
+        \[
+            \mathcal V(\mathbb A,U,\nu).
+        \]
+
+        \item \textbf{Display the local membership test.}
+        The membership test is the sheaf-local square
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            S
+                \arrow[r, hook]
+                \arrow[d, dashed, "{H|_S}"']
+            &
+            y(\mathbb A,U,\nu)
+                \arrow[d, "H"]
+            \\
+            \mathcal V
+                \arrow[r, hook]
+            &
+            \mathcal B_{\mathbb B}.
+        \end{tikzcd}
+        \]
+        The dashed map exists if and only if all restrictions of \(H\) along
+        arrows of \(S\) lie in \(\mathcal V\). Since
+        \(\mathcal B_{\mathbb B}\) is a sheaf, this dashed local membership
+        data comes from a section of \(\mathcal V\) exactly when \(H\) itself
+        lies in \(\mathcal V\).
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}[Residual semantic descent]
+\label{def:residual-semantic-descent}
+    Let
+    \[
+        \mathcal C=(\mathcal C_{\mathbb A})_{\mathbb A\in\mathsf{Inp}}
+    \]
+    be a replete global family of full subcategories
+    \[
+        \mathcal C_{\mathbb A}
+        \subseteq
+        \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}.
+    \]
+    Suppose the generated local family
+    \[
+        V_{\mathcal C,\mathbb A}
+        =
+        \bigvee_{P\in\mathcal C_{\mathbb A}}
+        \operatorname{Beh}(P)
+        \hookrightarrow
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+    \]
+    has been formed for each \(\mathbb A\), using a small representative set of
+    distinct semantic-image subobjects.
+
+    We say that \(\mathcal C\) satisfies \textbf{residual semantic descent} if
+    the generated family
+    \[
+        V_{\mathcal C}
+        =
+        (V_{\mathcal C,\mathbb A})_{\mathbb A\in\mathsf{Inp}}
+    \]
+    is a sheaf-local global coequational theory.
+\end{definition}
+
+Equivalently, residual semantic descent says that membership in the
+coequational theory generated by \(\mathcal C\) can be checked after
+restriction along canonical residual behaviour covers. This is not an
+additional algebraic closure operation on machines; it is the descent condition
+saying that the generated residual coequational theory is already a subsheaf
+for the canonical residual behaviour topology.
+
+\subsection{Sheaf-local Birkhoff theorem}
+\label{subsec:sheaf-local-birkhoff-theorem}
+
+\begin{theorem}[Sheaf-local global coequational Birkhoff theorem]
+\label{thm:sheaf-local-global-coequational-birkhoff}
+    Let
+    \[
+        \mathcal C=(\mathcal C_{\mathbb A})_{\mathbb A\in\mathsf{Inp}}
+    \]
+    be a replete global family of full subcategories
+    \[
+        \mathcal C_{\mathbb A}
+        \subseteq
+        \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}.
+    \]
+    Then \(\mathcal C\) is of the form
+    \[
+        \mathcal C_{\mathbb A}
+        =
+        \mathsf{Mod}^{g}(V)_{\mathbb A}
+    \]
+    for a sheaf-local global coequational theory
+    \[
+        V=(V_{\mathbb A})_{\mathbb A\in\mathsf{Inp}}
+    \]
+    if and only if the following conditions hold:
+    \begin{enumerate}
+        \item each \(\mathcal C_{\mathbb A}\) is closed under strict
+        homomorphic preimages;
+        \item each \(\mathcal C_{\mathbb A}\) is closed under
+        regular-epimorphic quotients;
+        \item each \(\mathcal C_{\mathbb A}\) is closed under small
+        coproducts;
+        \item the global family \(\mathcal C\) is closed under input pullback
+        along functors in \(\mathsf{Inp}\);
+        \item \(\mathcal C\) satisfies residual semantic descent.
+    \end{enumerate}
+    When these conditions hold, the defining sheaf-local theory is
+    \[
+        V_{\mathcal C,\mathbb A}
+        =
+        \bigvee_{P\in\mathcal C_{\mathbb A}}
+        \operatorname{Beh}(P).
+    \]
+\end{theorem}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Prove necessity of the ordinary closure conditions.}
+        Suppose
+        \[
+            \mathcal C=\mathsf{Mod}^{g}(V)
+        \]
+        for a sheaf-local global coequational theory
+        \[
+            V=(V_{\mathbb A})_{\mathbb A\in\mathsf{Inp}}.
+        \]
+        Conditions \((1)\)--\((4)\) are exactly the closure properties proved
+        in Theorem~\ref{thm:global-coequational-closure}.
+
+        \item \textbf{Identify the generated theory.}
+        For every
+        \[
+            P\in\mathcal C_{\mathbb A},
+        \]
+        the semantic map of \(P\) factors through \(V_{\mathbb A}\). Hence
+        \[
+            \operatorname{Beh}(P)\leq V_{\mathbb A}.
+        \]
+        Taking the join over all such \(P\), one obtains
+        \[
+            V_{\mathcal C,\mathbb A}\leq V_{\mathbb A}.
+        \]
+
+        Conversely,
+        \[
+            V_{\mathbb A}
+        \]
+        is itself a model of \(V_{\mathbb A}\), regarded as the restricted
+        canonical object. By
+        Lemma~\ref{lem:semantic-map-of-a-restricted-canonical-subobject},
+        \[
+            \operatorname{Beh}(V_{\mathbb A})=V_{\mathbb A}.
+        \]
+        Since
+        \[
+            V_{\mathbb A}\in\mathcal C_{\mathbb A},
+        \]
+        it follows that
+        \[
+            V_{\mathbb A}\leq V_{\mathcal C,\mathbb A}.
+        \]
+        Therefore
+        \[
+            V_{\mathcal C,\mathbb A}=V_{\mathbb A}
+        \]
+        for every \(\mathbb A\).
+
+        The comparison is
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            V_{\mathbb A}
+                \arrow[r, equal]
+                \arrow[dr, hook, "j_{V_{\mathbb A}}"']
+            &
+            \operatorname{Beh}(V_{\mathbb A})
+                \arrow[d, hook]
+            \\
+            &
+            \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}.
+        \end{tikzcd}
+        \]
+
+        \item \textbf{Prove residual semantic descent.}
+        Since
+        \[
+            V_{\mathcal C}=V
+        \]
+        and \(V\) is sheaf-local, the generated family
+        \[
+            V_{\mathcal C}
+        \]
+        is a sheaf-local global coequational theory. Hence \(\mathcal C\)
+        satisfies residual semantic descent.
+
+        \item \textbf{Prove sufficiency.}
+        Conversely, assume conditions \((1)\)--\((5)\). By
+        Theorem~\ref{thm:global-coequational-birkhoff}, conditions
+        \((1)\)--\((4)\) imply that the generated family
+        \[
+            V_{\mathcal C}
+        \]
+        is a global coequational theory and that
+        \[
+            \mathcal C
+            =
+            \mathsf{Mod}^{g}(V_{\mathcal C}).
+        \]
+        By condition \((5)\), \(V_{\mathcal C}\) is sheaf-local. Therefore
+        \[
+            \mathcal C
+        \]
+        is definable by a sheaf-local global coequational theory.
+
+        \item \textbf{Identify the defining theory.}
+        The defining theory is the generated theory
+        \[
+            V_{\mathcal C,\mathbb A}
+            =
+            \bigvee_{P\in\mathcal C_{\mathbb A}}
+            \operatorname{Beh}(P),
+        \]
+        by construction.
+    \end{enumerate}
+\end{proof}
+
+\begin{corollary}[Structured sheaf-local Birkhoff theorem]
+\label{cor:structured-sheaf-local-birkhoff}
+    Suppose \(\mathbb B\) is a \(\mathbb T\)-structured output category. A
+    replete global family
+    \[
+        \mathcal C=(\mathcal C_{\mathbb A})_{\mathbb A\in\mathsf{Inp}}
+    \]
+    is of the form
+    \[
+        \mathcal C_{\mathbb A}
+        =
+        \mathsf{Mod}^{g}(V)_{\mathbb A}
+    \]
+    for a sheaf-local global \(\mathbb T\)-coequational theory \(V\) if and
+    only if:
+    \begin{enumerate}
+        \item each \(\mathcal C_{\mathbb A}\) is closed under strict
+        homomorphic preimages;
+        \item each \(\mathcal C_{\mathbb A}\) is closed under
+        regular-epimorphic quotients;
+        \item each \(\mathcal C_{\mathbb A}\) is closed under small
+        coproducts;
+        \item the global family is closed under input pullback along functors
+        in \(\mathsf{Inp}\);
+        \item the global family is closed under the operations induced by
+        \(\mathbb T\), pointwise at each input category \(\mathbb A\);
+        \item the generated global \(\mathbb T\)-coequational theory satisfies
+        residual semantic descent.
+    \end{enumerate}
+\end{corollary}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Use the structured global Birkhoff theorem.}
+        Conditions \((1)\)--\((5)\), without the descent condition, are
+        precisely the closure conditions of the structured global Birkhoff
+        theorem. Hence they imply that the generated global theory
+        \[
+            V_{\mathcal C}
+        \]
+        is a global \(\mathbb T\)-coequational theory and that
+        \[
+            \mathcal C=\mathsf{Mod}^{g}(V_{\mathcal C}).
+        \]
+
+        \item \textbf{Add sheaf-locality.}
+        Condition \((6)\) says exactly that
+        \[
+            V_{\mathcal C}
+        \]
+        is sheaf-local. Therefore \(\mathcal C\) is definable by a
+        sheaf-local global \(\mathbb T\)-coequational theory.
+
+        \item \textbf{Prove necessity.}
+        Conversely, if
+        \[
+            \mathcal C=\mathsf{Mod}^{g}(V)
+        \]
+        for a sheaf-local global \(\mathbb T\)-coequational theory \(V\), then
+        the ordinary structured closure conditions follow from
+        Theorem~\ref{thm:global-coequational-closure} and
+        Theorem~\ref{thm:T-coequational-closure}, applied pointwise. The same
+        argument as in
+        Theorem~\ref{thm:sheaf-local-global-coequational-birkhoff} gives
+        \[
+            V_{\mathcal C}=V,
+        \]
+        so the generated theory satisfies residual semantic descent.
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}[Presheaf-level and sheaf-level globality]
+\label{rem:presheaf-level-and-sheaf-level-globality}
+    The global coequational Birkhoff theorem is a presheaf-level statement over
+    the residual context category. Its globality condition is stability under
+    residual-context restriction.
+
+    The sheaf-local theorem adds a descent condition. A sheaf-local theory is
+    not merely closed under restriction; it also satisfies the converse
+    locality principle that membership in the theory is detected after
+    restriction along canonical residual behaviour covers.
+\end{remark}
+
+\begin{remark}[Recovery of the pointwise presentation]
+\label{rem:recovery-of-pointwise-presentation}
+    When \(\mathcal E=\mathbf{Set}\), or in a well-pointed situation where
+    global elements are sufficient for the intended applications, the
+    generalized context
+    \[
+        (\mathbb A,U,\nu)
+    \]
+    may be specialized to
+    \[
+        U=1,
+        \qquad
+        \nu:1\to A_0.
+    \]
+    Then one recovers the simpler pointed notation
+    \[
+        (\mathbb A,v),
+    \]
+    and a residual context morphism becomes a pair
+    \[
+        (F,r):(\mathbb A',v')\to(\mathbb A,v),
+        \qquad
+        r:F_0(v')\to v.
+    \]
+    The generalized formulation above is the version that remains correct in
+    arbitrary Grothendieck toposes.
+\end{remark}
+

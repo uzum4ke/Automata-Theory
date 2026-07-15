@@ -1,7 +1,3 @@
-% TODO: construct parametrized precomposition over A_1
-% TODO: derive anchor/output from the internal evaluation functor
-% TODO: state the internal cartesian-arrow universal property
-
 \chapter{Behaviour, Fibrations, and the Categorical Myhill--Nerode Theorem}
 \label{ch:behaviour-categories-myhill-nerode}
 
@@ -202,60 +198,132 @@ The residual syntax of an input category is the indexed-category presentation of
 
 \begin{definition}[Residual syntax]
 \label{def:residual-syntax}
-    The \textbf{residual syntax} of \(\mathbb A\) is the split internally indexed category
+    The \textbf{vertical residual category} of \(\mathbb A\) is the internal
+    category
     \[
-        \operatorname{Res}_{\mathbb A}:\mathbb A\to
-        \mathbf{Cat}_{\mathrm{int}}(\mathcal E)
+        \mathbb R_{\mathbb A}
     \]
-    whose fibre over \(v\in A_0\) is the slice internal category
+    in the slice \(\mathcal E/A_0\) defined as follows.
+
+    Its object object is
     \[
-        \operatorname{Res}_{\mathbb A}(v):=\mathbb A/v.
+        (\mathbb R_{\mathbb A})_0
+        :=
+        \left(
+            A_1\xrightarrow{t_A}A_0
+        \right).
     \]
-    For an arrow
+    Its arrow object is
     \[
-        a:u\to v
+        (\mathbb R_{\mathbb A})_1
+        :=
+        \left(
+            T_A\xrightarrow{t_A\pi_2}A_0
+        \right),
     \]
-    of \(\mathbb A\), the transition functor
+    where
     \[
-        a_*:\mathbb A/u\to\mathbb A/v
+        T_A
+        :=
+        A_1\times_{t_A,A_0,s_A}A_1.
     \]
-    is postcomposition by \(a\).
+    Thus a generalized element of \(T_A\) is a composable pair
+    \[
+        z\xrightarrow{c}w\xrightarrow{r}v.
+    \]
+
+    The source and target maps are
+    \[
+        s_{\mathbb R}
+        :=
+        m_A:T_A\to A_1,
+        \qquad
+        t_{\mathbb R}
+        :=
+        \pi_2:T_A\to A_1.
+    \]
+    In generalized-element notation,
+    \[
+        s_{\mathbb R}(c,r)=r\circ c,
+        \qquad
+        t_{\mathbb R}(c,r)=r.
+    \]
+    Hence \((c,r)\) represents the residual arrow
+    \[
+        r\circ c\longrightarrow r.
+    \]
+
+    The identity map is
+    \[
+        e_{\mathbb R}
+        :=
+        \left\langle
+            e_As_A,
+            1_{A_1}
+        \right\rangle:
+        A_1\to T_A,
+    \]
+    so that
+    \[
+        e_{\mathbb R}(r)=(1_{s_A(r)},r).
+    \]
+
+    Composition is induced by composition in \(\mathbb A\). On a residual
+    triple
+    \[
+        y\xrightarrow{d}z\xrightarrow{c}w\xrightarrow{r}v,
+    \]
+    it is
+    \[
+        (c,r)\circ(d,r\circ c)
+        =
+        (c\circ d,r).
+    \]
+
+    Residual postcomposition is represented internally as follows. Pull back
+    \(\mathbb R_{\mathbb A}\) along
+    \[
+        s_A,t_A:A_1\to A_0.
+    \]
+    There is an internal functor in \(\mathcal E/A_1\)
+    \[
+        \mathsf{post}:
+        s_A^*\mathbb R_{\mathbb A}
+        \longrightarrow
+        t_A^*\mathbb R_{\mathbb A}.
+    \]
+    Its object map is
+    \[
+        (a,r)\longmapsto(a,a\circ r),
+    \]
+    where
+    \[
+        r:w\to s_A(a),
+    \]
+    and its arrow map is
+    \[
+        (a,c,r)\longmapsto(a,c,a\circ r).
+    \]
+    Fibrewise, over an arrow
+    \[
+        a:u\to v,
+    \]
+    this internal functor is the postcomposition functor
+    \[
+        a_*:\mathbb A/u\to\mathbb A/v.
+    \]
+
+    The pair
+    \[
+        \bigl(
+            \mathbb R_{\mathbb A},
+            \mathsf{post}
+        \bigr)
+    \]
+    is called the \textbf{residual syntax} of \(\mathbb A\).
 \end{definition}
 
-The notation in Definition~\ref{def:residual-syntax} records a split internal indexed category, equivalently a chosen cleavage of the codomain opfibration. It is not intended as an external functor from the internal category \(\mathbb A\) to an ordinary category of internal categories.
-
-Thus an object of the fibre \(\mathbb A/v\) is an arrow
-\[
-    r:w\to v.
-\]
-A residual morphism in \(\mathbb A/v\)
-\[
-    r\circ c\to r
-\]
-is represented by a triangle
-\[
-    \begin{tikzcd}[column sep=large, row sep=large]
-            z
-                \arrow[rr, "r\circ c", bend left=15]
-                \arrow[r, "c"']
-        &
-            w
-                \arrow[r, "r"']
-        &
-            v.
-\end{tikzcd}
-\]
-The source of this residual morphism is the longer residual history \(r\circ c\), and its target is the shorter residual history \(r\).
-
-Internally, the object of residual objects is
-\[
-    A_1\xrightarrow{t_A}A_0.
-\]
-The object of residual arrows is the triangle object
-\[
-    T_A:=A_1\times_{t_A,A_0,s_A}A_1.
-\]
-Its defining pullback is
+The defining pullback for the residual arrow object is
 \[
     \begin{tikzcd}[column sep=large, row sep=large]
             T_A
@@ -272,7 +340,7 @@ Its defining pullback is
             A_0.
     \end{tikzcd}
 \]
-A generalized element of \(T_A\) is a pair
+A generalized element is a pair
 \[
     (c,r)
 \]
@@ -280,40 +348,28 @@ with
 \[
     z\xrightarrow{c}w\xrightarrow{r}v.
 \]
-The projection to the base is
+It represents the residual triangle
 \[
-    t_A\pi_2:T_A\to A_0.
-\]
-The source and target maps in the fibre over \(v\) are
-\[
-    d_0(c,r)=r\circ c=m_A(c,r),
-    \qquad
-    d_1(c,r)=r.
-\]
-The identity at \(r:w\to v\) is represented by
-\[
-    r\longmapsto (1_w,r)=(e_As_A(r),r).
-\]
-For a residual triple
-\[
-    y\xrightarrow{d}z\xrightarrow{c}w\xrightarrow{r}v,
-\]
-composition is represented by
-\[
-    (c,r)\circ(d,r\circ c)=(c\circ d,r),
-\]
-where
-\[
-    c\circ d=m_A(d,c).
+    \begin{tikzcd}[column sep=large, row sep=large]
+            z
+                \arrow[rr, "r\circ c", bend left=15]
+                \arrow[r, "c"']
+        &
+            w
+                \arrow[r, "r"']
+        &
+            v.
+    \end{tikzcd}
 \]
 
 \begin{proposition}[Residual fibres]
 \label{prop:residual-fibres-in-slice}
-    The data above define an internal category in the slice
+    The data defining \(\mathbb R_{\mathbb A}\) form an internal category in
     \[
         \mathcal E/A_0.
     \]
-    Its fibre over \(v\in A_0\) is the slice category
+    Its fibre over an object \(v\) of \(\mathbb A\) is the slice internal
+    category
     \[
         \mathbb A/v.
     \]
@@ -321,86 +377,102 @@ where
 \begin{proof}
     \leavevmode
     \begin{enumerate}
-        \item \textbf{Specify the objects and arrows.} The object object in \(\mathcal E/A_0\) is
+        \item \textbf{Verify the structure maps lie over \(A_0\).}
+
+        Since
         \[
-            A_1\xrightarrow{t_A}A_0.
+            t_Am_A=t_A\pi_2
         \]
-        The arrow object in \(\mathcal E/A_0\) is
+        on \(T_A\), the source map
         \[
-            T_A=A_1\times_{t_A,A_0,s_A}A_1
-            \xrightarrow{t_A\pi_2}A_0.
+            s_{\mathbb R}=m_A
+        \]
+        is a morphism in \(\mathcal E/A_0\). The target map
+        \[
+            t_{\mathbb R}=\pi_2
+        \]
+        is also a morphism over \(A_0\).
+
+        The identity map lies over \(A_0\) because
+        \[
+            t_Ae_As_A=s_A
+        \]
+        and
+        \[
+            t_A\pi_2e_{\mathbb R}
+            =
+            t_A.
         \]
 
-        \item \textbf{Define source and target.} For a generalized element
+        \item \textbf{Verify source and target of identities.}
+
+        For \(r:w\to v\),
         \[
-            z\xrightarrow{c}w\xrightarrow{r}v,
+            s_{\mathbb R}e_{\mathbb R}(r)
+            =
+            r\circ1_w
+            =
+            r,
         \]
-        the source and target maps in \(\mathcal E/A_0\) are
+        and
         \[
-            d_0(c,r)=r\circ c=m_A(c,r),
-            \qquad
-            d_1(c,r)=r.
-        \]
-        Both lie over \(v\), because
-        \[
-            t_A m_A(c,r)=t_A(r).
+            t_{\mathbb R}e_{\mathbb R}(r)=r.
         \]
 
-        \item \textbf{Define identities.} The identity map sends
-        \[
-            r:w\to v
-            \quad\longmapsto\quad
-            (1_w,r)=(e_As_A(r),r).
-        \]
-        This is well-defined because
-        \[
-            t_A e_A s_A(r)=s_A(r).
-        \]
-        Its source and target are both \(r\), by the identity laws in \(\mathbb A\).
+        \item \textbf{Verify composition.}
 
-        \item \textbf{Define composition.} The object of composable residual arrows is the object of triples
+        A composable pair of residual arrows is represented by a diagram
         \[
             y\xrightarrow{d}z\xrightarrow{c}w\xrightarrow{r}v.
         \]
-        The composition map sends
+        The two residual arrows are
         \[
-            (d,r\circ c),(c,r)
-            \longmapsto
-            (c\circ d,r),
+            r\circ c\circ d\longrightarrow r\circ c
         \]
-        where
+        and
         \[
-            c\circ d=m_A(d,c).
+            r\circ c\longrightarrow r.
         \]
-        Its source is
+        Their composite is represented by
         \[
-            r\circ(c\circ d),
+            (c\circ d,r):
+            r\circ(c\circ d)\longrightarrow r.
         \]
-        and its target is \(r\). By associativity in \(\mathbb A\),
+        Associativity in \(\mathbb A\) identifies
         \[
-            r\circ(c\circ d)=(r\circ c)\circ d.
+            r\circ(c\circ d)
+            =
+            (r\circ c)\circ d,
         \]
-        Thus this is the composite of the two residual arrows.
+        so this has the required source.
 
-        \item \textbf{Verify the internal-category laws.} The unit and associativity diagrams for the residual category are the identity and associativity diagrams for \(\mathbb A\), restricted to the relevant pullback objects. Therefore the data form an internal category in \(\mathcal E/A_0\). The fibre over \(v\) has objects arrows into \(v\) and arrows commuting triangles over \(v\), hence is precisely \(\mathbb A/v\).
+        \item \textbf{Verify the category laws.}
 
-        \item \textbf{Display triangle pasting.} Pasting of residual triangles is displayed by
+        The two unit equations reduce to the unit equations in \(\mathbb A\).
+        The associativity equation reduces to associativity in \(\mathbb A\)
+        on a string
         \[
-            \begin{tikzcd}[column sep=large, row sep=large]
-                    y
-                        \arrow[r, "d"']
-                        \arrow[rr, "c\circ d", swap, bend right=20]
-                        \arrow[rrr, "r\circ c\circ d", bend left=25]
-                &
-                    z
-                        \arrow[r, "c"']
-                        \arrow[rr, "r\circ c", swap, bend right=20]
-                &
-                    w
-                        \arrow[r, "r"']
-                &
-                    v.
-            \end{tikzcd}
+            x\longrightarrow y\longrightarrow z
+            \longrightarrow w\longrightarrow v.
+        \]
+        Therefore \(\mathbb R_{\mathbb A}\) is an internal category in
+        \(\mathcal E/A_0\).
+
+        \item \textbf{Identify the fibres.}
+
+        Pulling \(\mathbb R_{\mathbb A}\) back to an object \(v\) gives
+        objects
+        \[
+            r:w\to v
+        \]
+        and arrows
+        \[
+            r\circ c\to r
+        \]
+        represented by commuting triangles over \(v\). These are exactly the
+        objects and arrows of
+        \[
+            \mathbb A/v.
         \]
     \end{enumerate}
 \end{proof}
@@ -415,27 +487,30 @@ where
     \[
         a_*:\mathbb A/u\to\mathbb A/v
     \]
-    is defined by postcomposition:
+    is the fibre of
     \[
-        r:w\to u
-        \quad\longmapsto\quad
-        a\circ r:w\to v.
+        \mathsf{post}:
+        s_A^*\mathbb R_{\mathbb A}
+        \longrightarrow
+        t_A^*\mathbb R_{\mathbb A}
     \]
-    On a residual triangle
+    over \(a\).
+
+    Explicitly,
     \[
-        z\xrightarrow{c}w\xrightarrow{r}u,
+        a_*(r)=a\circ r
     \]
-    it sends the residual arrow
+    for \(r:w\to u\), and
     \[
-        r\circ c\to r
+        a_*(c,r)=(c,a\circ r)
     \]
-    to
+    for a residual arrow
     \[
-        a\circ r\circ c\to a\circ r.
+        r\circ c\to r.
     \]
 \end{definition}
 
-The transport square on residual objects is the cocartesian square
+The chosen cocartesian residual square is
 \[
     \begin{tikzcd}[column sep=large, row sep=large]
             w
@@ -456,7 +531,9 @@ The transport square on residual objects is the cocartesian square
 \label{prop:residual-transport-laws}
     Residual transport satisfies
     \[
-        (1_v)_*=\mathrm{id}_{\mathbb A/v},
+        (1_v)_*
+        =
+        1_{\mathbb A/v},
     \]
     and, for composable arrows
     \[
@@ -465,54 +542,614 @@ The transport square on residual objects is the cocartesian square
         b:v\to w,
     \]
     \[
-        (b\circ a)_*=b_*\circ a_*.
+        (b\circ a)_*
+        =
+        b_*\circ a_*.
     \]
+    These equations hold on both residual objects and residual arrows.
 \end{proposition}
+\begin{proof}
+    On a residual object \(r:z\to u\),
+    \[
+        (1_u)_*(r)
+        =
+        1_u\circ r
+        =
+        r.
+    \]
+    For composable \(a\) and \(b\),
+    \[
+        (b\circ a)_*(r)
+        =
+        (b\circ a)\circ r
+        =
+        b\circ(a\circ r)
+        =
+        b_*(a_*(r)).
+    \]
+    The corresponding equations on residual arrows follow from the same
+    associativity equation in \(\mathbb A\), with the residual triangle map
+    left unchanged. Hence the equations hold as equations of internal
+    functors.
+\end{proof}
+
+\begin{theorem}[Total residual syntax and the codomain opfibration]
+\label{thm:total-residual-opfibration}
+    Let
+    \[
+        T_A
+        =
+        A_1\times_{t_A,A_0,s_A}A_1
+    \]
+    be the object of composable pairs in \(\mathbb A\), and define
+    \[
+        \operatorname{Sq}_A
+        :=
+        T_A\times_{m_A,A_1,m_A}T_A.
+    \]
+    Write
+    \[
+        \lambda,\rho:
+        \operatorname{Sq}_A\rightrightarrows T_A
+    \]
+    for the two pullback projections, and put
+    \[
+        \lambda_i:=\pi_i\lambda,
+        \qquad
+        \rho_i:=\pi_i\rho
+        \qquad
+        (i=1,2).
+    \]
+
+    A generalized element of \(\operatorname{Sq}_A\) is written
+    \[
+        \bigl((c,r'),(r,a)\bigr),
+    \]
+    where
+    \[
+        r:w\to u,
+        \qquad
+        r':w'\to v,
+        \qquad
+        c:w\to w',
+        \qquad
+        a:u\to v,
+    \]
+    and the defining pullback equation is
+    \[
+        r'\circ c=a\circ r.
+    \]
+
+    There is an internal category
+    \[
+        \operatorname{Res}_{\mathbb A}
+        :=
+        \mathbb A^\to
+    \]
+    whose object object is \(A_1\), whose arrow object is
+    \(\operatorname{Sq}_A\), and whose source and target maps are
+    \[
+        s_{\operatorname{Res}}
+        :=
+        \rho_1:
+        \operatorname{Sq}_A\to A_1,
+    \]
+    \[
+        t_{\operatorname{Res}}
+        :=
+        \lambda_2:
+        \operatorname{Sq}_A\to A_1.
+    \]
+    Thus the commutative square
+    \[
+        \bigl((c,r'),(r,a)\bigr)
+    \]
+    is an arrow
+    \[
+        r\longrightarrow r'
+    \]
+    in \(\operatorname{Res}_{\mathbb A}\).
+
+    The identity at \(r:w\to u\) is the square
+    \[
+        e_{\operatorname{Res}}(r)
+        =
+        \bigl(
+            (1_w,r),
+            (r,1_u)
+        \bigr).
+    \]
+    In morphism notation,
+    \[
+        e_{\operatorname{Res}}
+        =
+        \left\langle
+            \left\langle
+                e_As_A,
+                1_{A_1}
+            \right\rangle,
+            \left\langle
+                1_{A_1},
+                e_At_A
+            \right\rangle
+        \right\rangle.
+    \]
+
+    Composition is induced by horizontal and vertical composition in
+    \(\mathbb A\). Explicitly, for composable squares
+    \[
+        \bigl((c,r'),(r,a)\bigr):
+        r\to r',
+    \]
+    and
+    \[
+        \bigl((d,r''),(r',b)\bigr):
+        r'\to r'',
+    \]
+    their composite is
+    \[
+        \bigl(
+            (d\circ c,r''),
+            (r,b\circ a)
+        \bigr).
+    \]
+
+    The maps
+    \[
+        \operatorname{cod}_0
+        :=
+        t_A:A_1\to A_0
+    \]
+    and
+    \[
+        \operatorname{cod}_1
+        :=
+        \rho_2:
+        \operatorname{Sq}_A\to A_1
+    \]
+    define an internal functor
+    \[
+        \operatorname{cod}:
+        \operatorname{Res}_{\mathbb A}
+        \longrightarrow
+        \mathbb A.
+    \]
+
+    This internal functor is a split internal opfibration. Its chosen
+    cocartesian lift of
+    \[
+        a:u\to v
+    \]
+    at an object
+    \[
+        r:w\to u
+    \]
+    is the commutative square
+    \[
+        \chi(r,a)
+        :=
+        \bigl(
+            (1_w,a\circ r),
+            (r,a)
+        \bigr):
+        r\longrightarrow a\circ r,
+    \]
+    lying over \(a\).
+
+    The vertical internal category of
+    \[
+        \operatorname{cod}:
+        \operatorname{Res}_{\mathbb A}\to\mathbb A
+    \]
+    is canonically isomorphic, as an internal category in
+    \(\mathcal E/A_0\), to
+    \[
+        \mathbb R_{\mathbb A}.
+    \]
+    Under this identification, the transport induced by the chosen
+    cocartesian lifts is exactly the residual postcomposition functor
+    \[
+        \mathsf{post}:
+        s_A^*\mathbb R_{\mathbb A}
+        \longrightarrow
+        t_A^*\mathbb R_{\mathbb A}.
+    \]
+    Fibrewise, the induced transport along
+    \[
+        a:u\to v
+    \]
+    is
+    \[
+        a_*:\mathbb A/u\to\mathbb A/v.
+    \]
+\end{theorem}
 \begin{proof}
     \leavevmode
     \begin{enumerate}
-        \item \textbf{Reduce to composition in \(\mathbb A\).} These equations are the identity and associativity laws for composition in \(\mathbb A\), applied to postcomposition in the codomain opfibration.
+        \item \textbf{Construct the internal arrow category.}
 
-        \item \textbf{Display associativity of transport.} The associativity law is displayed by the equality of the two routes in
+        By definition,
         \[
-            \begin{tikzcd}[column sep=large, row sep=large]
-                    \mathbb A/u
-                        \arrow[r, "a_*"]
-                        \arrow[rr, "{(b\circ a)_*}"', bend right=18]
-                &
-                    \mathbb A/v
-                        \arrow[r, "b_*"]
-                &
-                    \mathbb A/w.
-            \end{tikzcd}
+            \operatorname{Sq}_A
+            =
+            T_A\times_{m_A,A_1,m_A}T_A.
+        \]
+        Hence a generalized element
+        \[
+            \bigl((c,r'),(r,a)\bigr)
+        \]
+        consists of two composable pairs satisfying
+        \[
+            m_A(c,r')=m_A(r,a).
+        \]
+        In categorical notation this is
+        \[
+            r'\circ c=a\circ r,
+        \]
+        so the data are precisely a commutative square in
+        \(\mathbb A\).
+
+        The identity assignment is well-defined because
+        \[
+            r\circ1_{s_A(r)}=r
+        \]
+        and
+        \[
+            1_{t_A(r)}\circ r=r.
+        \]
+
+        To check that composition is well-defined, suppose
+        \[
+            r'\circ c=a\circ r
+        \]
+        and
+        \[
+            r''\circ d=b\circ r'.
+        \]
+        Then
+        \[
+            \begin{aligned}
+                r''\circ(d\circ c)
+                &=
+                (r''\circ d)\circ c
+                \\
+                &=
+                (b\circ r')\circ c
+                \\
+                &=
+                b\circ(r'\circ c)
+                \\
+                &=
+                b\circ(a\circ r)
+                \\
+                &=
+                (b\circ a)\circ r.
+            \end{aligned}
+        \]
+        Thus
+        \[
+            \bigl(
+                (d\circ c,r''),
+                (r,b\circ a)
+            \bigr)
+        \]
+        is again an element of \(\operatorname{Sq}_A\).
+
+        The source and target of the composite are \(r\) and \(r''\).
+        The unit and associativity equations follow componentwise from the
+        unit and associativity equations in \(\mathbb A\). Therefore
+        \[
+            \operatorname{Res}_{\mathbb A}
+        \]
+        is an internal category.
+
+        \item \textbf{Construct the codomain functor.}
+
+        For a commutative square
+        \[
+            \bigl((c,r'),(r,a)\bigr),
+        \]
+        the pair \((r,a)\in T_A\) gives
+        \[
+            t_A(r)=s_A(a).
+        \]
+        Moreover,
+        \[
+            t_A(r')
+            =
+            t_A(r'\circ c)
+            =
+            t_A(a\circ r)
+            =
+            t_A(a).
+        \]
+        Hence
+        \[
+            s_A\operatorname{cod}_1
+            =
+            \operatorname{cod}_0s_{\operatorname{Res}},
+        \]
+        and
+        \[
+            t_A\operatorname{cod}_1
+            =
+            \operatorname{cod}_0t_{\operatorname{Res}}.
+        \]
+
+        The bottom edge of the identity square at \(r\) is
+        \(1_{t_A(r)}\), and the bottom edge of the composite of squares over
+        \(a\) and \(b\) is \(b\circ a\). Therefore
+        \[
+            \operatorname{cod}
+        \]
+        preserves identities and composition.
+
+        \item \textbf{Define the chosen cocartesian lifts.}
+
+        Let
+        \[
+            r:w\to u,
+            \qquad
+            a:u\to v.
+        \]
+        Define
+        \[
+            \chi(r,a)
+            =
+            \bigl(
+                (1_w,a\circ r),
+                (r,a)
+            \bigr).
+        \]
+        This lies in \(\operatorname{Sq}_A\) because
+        \[
+            (a\circ r)\circ1_w
+            =
+            a\circ r.
+        \]
+        Its source is \(r\), its target is \(a\circ r\), and its image under
+        \(\operatorname{cod}\) is \(a\).
+
+        Internally, the chosen-lift map is
+        \[
+            \chi:
+            T_A\to\operatorname{Sq}_A
+        \]
+        given by
+        \[
+            \chi
+            =
+            \left\langle
+                \left\langle
+                    e_As_A\pi_1,
+                    m_A
+                \right\rangle,
+                1_{T_A}
+            \right\rangle,
+        \]
+        where a generalized element of \(T_A\) is written \((r,a)\).
+
+        \item \textbf{Verify the cocartesian universal property.}
+
+        Let
+        \[
+            a:u\to v,
+            \qquad
+            b:v\to z,
+        \]
+        and suppose that
+        \[
+            g:r\to s
+        \]
+        is a square lying over \(b\circ a\). Write
+        \[
+            g
+            =
+            \bigl(
+                (d,s),
+                (r,b\circ a)
+            \bigr).
+        \]
+        Its commutativity equation is
+        \[
+            s\circ d=(b\circ a)\circ r.
+        \]
+
+        Define
+        \[
+            h
+            :=
+            \bigl(
+                (d,s),
+                (a\circ r,b)
+            \bigr).
+        \]
+        This is a commutative square because
+        \[
+            \begin{aligned}
+                s\circ d
+                &=
+                (b\circ a)\circ r
+                \\
+                &=
+                b\circ(a\circ r).
+            \end{aligned}
+        \]
+        It is an arrow
+        \[
+            h:a\circ r\to s
+        \]
+        lying over \(b\).
+
+        By the composition formula in
+        \(\operatorname{Res}_{\mathbb A}\),
+        \[
+            h\circ\chi(r,a)
+            =
+            g.
+        \]
+
+        This factorization is unique. Indeed, composition with
+        \(\chi(r,a)\) leaves the top edge and the target vertical edge
+        unchanged. Thus any square over \(b\) whose composite with
+        \(\chi(r,a)\) is \(g\) must have top edge \(d\), target edge \(s\),
+        source edge \(a\circ r\), and bottom edge \(b\), and is therefore
+        equal to \(h\).
+
+        By Notation~\ref{not:behaviour-generalized-elements}, this
+        generalized-element calculation is the equality of the corresponding
+        internal morphisms from the pullback object classifying such
+        factorization problems. Hence \(\chi(r,a)\) is internally
+        cocartesian.
+
+        \item \textbf{Verify splitness.}
+
+        For an identity arrow,
+        \[
+            \chi(r,1_u)
+            =
+            \bigl(
+                (1_w,r),
+                (r,1_u)
+            \bigr)
+            =
+            1_r.
+        \]
+
+        For composable arrows
+        \[
+            a:u\to v,
+            \qquad
+            b:v\to z,
+        \]
+        one has
+        \[
+            \chi(a\circ r,b)\circ\chi(r,a)
+            =
+            \chi(r,b\circ a).
+        \]
+        Both sides are the square with top edge \(1_w\), source edge \(r\),
+        target edge
+        \[
+            b\circ(a\circ r)
+            =
+            (b\circ a)\circ r,
+        \]
+        and bottom edge \(b\circ a\).
+
+        Therefore the chosen cocartesian lifts preserve identities and
+        composition strictly.
+
+        \item \textbf{Identify the vertical category.}
+
+        A vertical arrow is a commutative square whose bottom edge is an
+        identity. Given a composable pair
+        \[
+            (c,r)\in T_A,
+        \]
+        define the vertical square
+        \[
+            \Phi(c,r)
+            :=
+            \bigl(
+                (c,r),
+                (r\circ c,1_{t_A(r)})
+            \bigr).
+        \]
+        Its source object is \(r\circ c\), its target object is \(r\), and it
+        lies over \(1_{t_A(r)}\).
+
+        Conversely, let
+        \[
+            \bigl(
+                (c,r'),
+                (r,1_v)
+            \bigr)
+        \]
+        be a vertical square. Its commutativity equation gives
+        \[
+            r'\circ c=1_v\circ r=r.
+        \]
+        It is therefore uniquely determined by the composable pair
+        \[
+            (c,r').
+        \]
+
+        These two assignments are mutually inverse. Under this
+        identification, a vertical arrow is precisely
+        \[
+            r\circ c\longrightarrow r,
+        \]
+        its identity is
+        \[
+            (1_{s_A(r)},r),
+        \]
+        and its composition is
+        \[
+            (c,r)\circ(d,r\circ c)
+            =
+            (c\circ d,r).
+        \]
+        These are exactly the structure maps of
+        \[
+            \mathbb R_{\mathbb A}.
+        \]
+
+        Hence the vertical category of \(\operatorname{cod}\) is canonically
+        isomorphic to \(\mathbb R_{\mathbb A}\) in \(\mathcal E/A_0\).
+
+        \item \textbf{Identify the induced transport.}
+
+        Let
+        \[
+            a:u\to v.
+        \]
+        The chosen cocartesian lift sends a residual object
+        \[
+            r:w\to u
+        \]
+        to
+        \[
+            a\circ r:w\to v.
+        \]
+
+        A vertical residual arrow represented by
+        \[
+            (c,r):
+            r\circ c\longrightarrow r
+        \]
+        is transported to the vertical square represented by
+        \[
+            (c,a\circ r):
+            (a\circ r)\circ c
+            \longrightarrow
+            a\circ r.
+        \]
+        By associativity,
+        \[
+            (a\circ r)\circ c
+            =
+            a\circ(r\circ c).
+        \]
+        Thus the induced transport is exactly
+        \[
+            r\longmapsto a\circ r,
+            \qquad
+            (c,r)\longmapsto(c,a\circ r),
+        \]
+        which is the internal functor
+        \[
+            \mathsf{post}:
+            s_A^*\mathbb R_{\mathbb A}
+            \longrightarrow
+            t_A^*\mathbb R_{\mathbb A}.
+        \]
+        Fibrewise, this is
+        \[
+            a_*:\mathbb A/u\to\mathbb A/v.
         \]
     \end{enumerate}
 \end{proof}
-
-\begin{remark}[Codomain opfibration]
-\label{rem:codomain-opfibration}
-    Externally, this is the opfibred part of the codomain functor
-    \[
-        \operatorname{cod}:\mathbb A^\to\to\mathbb A.
-    \]
-    The chosen cocartesian lift of \(a:u\to v\) at \(r:w\to u\) is the square
-    \[
-        \begin{tikzcd}[column sep=large, row sep=large]
-                w
-                    \arrow[r, equal]
-                    \arrow[d, "r"']
-            &
-                w
-                    \arrow[d, "a\circ r"]
-            \\
-                u
-                    \arrow[r, "a"']
-            &
-                v.
-        \end{tikzcd}
-    \]
-    Proposition~\ref{prop:residual-fibres-in-slice}, together with the split transports \(a_*\), gives the internally indexed presentation of this codomain opfibration.
-\end{remark}
 
 \subsection{The behaviour fibration}
 \label{subsec:behaviour-fibration}
@@ -569,23 +1206,88 @@ category \(\mathbb B\), both regarded as internal categories in the slice
     \]
 \end{definition}
 
-\begin{theorem}[Object of residual behaviours]
+\begin{lemma}[Base change for internal functor categories]
+\label{lem:base-change-internal-functor-categories}
+    Let
+    \[
+        f:X\to Y
+    \]
+    be a morphism in a locally cartesian closed category \(\mathcal E\), and
+    let \(\mathbb C,\mathbb D\) be internal categories in
+    \[
+        \mathcal E/Y.
+    \]
+    There is a canonical isomorphism of internal categories in
+    \(\mathcal E/X\)
+    \[
+        f^*
+        [\mathbb C,\mathbb D]_{\mathcal E/Y}
+        \cong
+        [f^*\mathbb C,f^*\mathbb D]_{\mathcal E/X}.
+    \]
+    Under this isomorphism, the pullback of the evaluation functor agrees
+    with the evaluation functor of the pulled-back internal categories.
+\end{lemma}
+\begin{proof}
+    The strict internal functor category
+    \[
+        [\mathbb C,\mathbb D]_{\mathcal E/Y}
+    \]
+    is constructed from finite limits and exponentials in the slice
+    \(\mathcal E/Y\).
+
+    Reindexing
+    \[
+        f^*:\mathcal E/Y\to\mathcal E/X
+    \]
+    preserves finite limits. Since \(\mathcal E\) is locally cartesian
+    closed, reindexing also preserves slice exponentials. Concretely, this
+    follows by expressing an exponential as a dependent product along a
+    projection and applying the Beck--Chevalley isomorphism for the
+    corresponding pullback square.
+
+    Applying \(f^*\) to the finite-limit and exponential presentation of the
+    object of internal functors therefore gives the corresponding
+    presentation of
+    \[
+        [f^*\mathbb C,f^*\mathbb D]_{\mathcal E/X}.
+    \]
+    The same argument applies to the object of internal natural
+    transformations and to the source, target, identity, and composition
+    maps.
+
+    The evaluation functor is induced by the evaluation maps of the
+    exponentials used in the construction. These evaluation maps are
+    preserved by the same base-change isomorphisms. Hence the stated
+    isomorphism is compatible with evaluation.
+\end{proof}
+
+\begin{theorem}[Internal category of residual behaviours]
 \label{thm:object-of-residual-behaviours}
     The strict internal functor category
     \[
         \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
         :=
-        [\mathbb R_{\mathbb A},\Delta_{A_0}\mathbb B]_{\mathcal E/A_0}
+        [\mathbb R_{\mathbb A},
+          \Delta_{A_0}\mathbb B]_{\mathcal E/A_0}
     \]
-    exists as an internal category in \(\mathcal E/A_0\).
+    exists as an internal category in
+    \[
+        \mathcal E/A_0.
+    \]
 
-    Write its object object as
+    Write its object and arrow objects as
     \[
         p_{\mathbf{Beh}}:
-        \mathbf{Beh}_0\to A_0.
+        \mathbf{Beh}_0\to A_0,
     \]
-    Its fibre over \(v\in A_0\) represents the strict internal functor
-    category
+    and
+    \[
+        p_{\mathbf{Beh},1}:
+        \mathbf{Beh}_1\to A_0.
+    \]
+    Its fibre over an object \(v\) of \(\mathbb A\) is canonically the strict
+    internal functor category
     \[
         [\mathbb A/v,\mathbb B].
     \]
@@ -595,15 +1297,16 @@ category \(\mathbb B\), both regarded as internal categories in the slice
     \[
         \mathcal E/A_0
     \]
-    is cartesian closed and has finite limits. The strict internal functor
-    category between two internal categories in \(\mathcal E/A_0\) can
-    therefore be constructed from exponentials and equalizers.
+    is cartesian closed and finitely complete.
 
-    Concretely, an object of
+    In any finitely complete cartesian closed category, the strict internal
+    functor category between two internal categories can be constructed from
+    exponentials and equalizers. Its object object is the subobject of the
+    object of pairs
     \[
-        [\mathbb R_{\mathbb A},\Delta_{A_0}\mathbb B]_{\mathcal E/A_0}
+        (H_0,H_1)
     \]
-    consists of a pair of maps in \(\mathcal E/A_0\)
+    of maps
     \[
         H_0:
         (\mathbb R_{\mathbb A})_0
@@ -614,20 +1317,49 @@ category \(\mathbb B\), both regarded as internal categories in the slice
         H_1:
         (\mathbb R_{\mathbb A})_1
         \to
-        (\Delta_{A_0}\mathbb B)_1,
+        (\Delta_{A_0}\mathbb B)_1
     \]
     satisfying the source, target, identity, and composition equations.
-    The object of all pairs \((H_0,H_1)\) is represented by exponentials in
-    \(\mathcal E/A_0\), and the functoriality equations are imposed by a
-    finite family of equalizers.
 
-    The resulting object is denoted by \(\mathbf{Beh}_0\). Its projection
+    Its arrow object is the object of triples
     \[
-        p_{\mathbf{Beh}}:\mathbf{Beh}_0\to A_0
+        (H,K,\eta)
     \]
-    records the common base object \(v\). Pulling the construction back along
-    a generalized element \(v\to A_0\) gives precisely the strict internal
-    functor category
+    in which \(H\) and \(K\) are such internal functors and
+    \[
+        \eta:H\Rightarrow K
+    \]
+    is an internal natural transformation. The component-typing and
+    naturality equations are again imposed by finite limits.
+
+    This constructs
+    \[
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+    \]
+    in \(\mathcal E/A_0\).
+
+    To identify its fibres, pull the construction back along an object
+    \[
+        v:1\to A_0
+    \]
+    or, more generally, along a generalized element of \(A_0\). By
+    Lemma~\ref{lem:base-change-internal-functor-categories},
+    \[
+        v^*
+        [\mathbb R_{\mathbb A},
+          \Delta_{A_0}\mathbb B]_{\mathcal E/A_0}
+        \cong
+        [v^*\mathbb R_{\mathbb A},
+          v^*\Delta_{A_0}\mathbb B].
+    \]
+    The pulled-back residual category is
+    \[
+        v^*\mathbb R_{\mathbb A}
+        =
+        \mathbb A/v,
+    \]
+    and the pulled-back constant target category is \(\mathbb B\).
+    Therefore the fibre is
     \[
         [\mathbb A/v,\mathbb B].
     \]
@@ -769,79 +1501,228 @@ The naturality square is
     \(\mathbb B\), and hence hold internally in \(\mathcal E/A_0\).
 \end{proof}
 
-\begin{definition}[Behaviour indexed category]
-\label{def:behaviour-indexed-category}
-    For an arrow
+\begin{theorem}[Parametrized precomposition]
+\label{thm:parametrized-precomposition}
+    Residual postcomposition induces an internal functor in
+    \(\mathcal E/A_1\)
     \[
-        a:u\to v
-    \]
-    of \(\mathbb A\), define the reindexing functor
-    \[
-        a^*:
-        [\mathbb A/v,\mathbb B]
-        \to
-        [\mathbb A/u,\mathbb B]
-    \]
-    by precomposition with residual transport:
-    \[
-        a^*H:=H\circ a_*.
-    \]
-    On behaviour comparisons,
-    \[
-        a^*\eta:=\eta\ast a_*.
+        \mathsf{pre}_A:
+        t_A^*
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+        \longrightarrow
+        s_A^*
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}.
     \]
 
-    Internally, these operations are represented by maps
+    Fibrewise, over an arrow
     \[
-        \partial_0:
-        A_1\times_{t_A,A_0,p_{\mathbf{Beh}}}\mathbf{Beh}_0
-        \to
-        \mathbf{Beh}_0,
+        a:u\to v,
+    \]
+    this functor is precomposition with
+    \[
+        a_*:\mathbb A/u\to\mathbb A/v.
+    \]
+    Thus it sends
+    \[
+        H:\mathbb A/v\to\mathbb B
+    \]
+    to
+    \[
+        H\circ a_*:\mathbb A/u\to\mathbb B,
+    \]
+    and sends a natural transformation
+    \[
+        \eta:H\Rightarrow K
+    \]
+    to
+    \[
+        \eta\ast a_*:
+        H\circ a_*
+        \Rightarrow
+        K\circ a_*.
+    \]
+\end{theorem}
+\begin{proof}
+    By Lemma~\ref{lem:base-change-internal-functor-categories}, there are
+    canonical isomorphisms of internal categories in \(\mathcal E/A_1\)
+    \[
+        t_A^*
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+        \cong
+        [t_A^*\mathbb R_{\mathbb A},
+         \Delta_{A_1}\mathbb B]_{\mathcal E/A_1},
     \]
     and
     \[
+        s_A^*
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+        \cong
+        [s_A^*\mathbb R_{\mathbb A},
+         \Delta_{A_1}\mathbb B]_{\mathcal E/A_1}.
+    \]
+
+    Residual syntax supplies an internal functor
+    \[
+        \mathsf{post}:
+        s_A^*\mathbb R_{\mathbb A}
+        \longrightarrow
+        t_A^*\mathbb R_{\mathbb A}.
+    \]
+    Precomposition with \(\mathsf{post}\) defines an internal functor
+    \[
+        \mathsf{post}^*:
+        [t_A^*\mathbb R_{\mathbb A},
+         \Delta_{A_1}\mathbb B]_{\mathcal E/A_1}
+        \longrightarrow
+        [s_A^*\mathbb R_{\mathbb A},
+         \Delta_{A_1}\mathbb B]_{\mathcal E/A_1}.
+    \]
+    On objects it sends an internal functor \(H\) to
+    \[
+        H\circ\mathsf{post},
+    \]
+    and on arrows it sends an internal natural transformation \(\eta\) to
+    its whiskering
+    \[
+        \eta\ast\mathsf{post}.
+    \]
+
+    Transporting this internal functor across the two canonical
+    base-change isomorphisms defines
+    \[
+        \mathsf{pre}_A.
+    \]
+    Equivalently, \(\mathsf{pre}_A\) is the unique internal functor whose
+    pullback along any generalized arrow of \(\mathbb A\) classifies
+    precomposition by the corresponding residual postcomposition functor.
+
+    Over a generalized arrow
+    \[
+        a:u\to v,
+    \]
+    the pullback of \(\mathsf{post}\) is
+    \[
+        a_*:\mathbb A/u\to\mathbb A/v.
+    \]
+    Consequently, the pullback of \(\mathsf{pre}_A\) sends
+    \[
+        H\longmapsto H\circ a_*,
+    \]
+    and
+    \[
+        \eta\longmapsto\eta\ast a_*,
+    \]
+    as claimed.
+
+    Since internal precomposition is defined by the representing property
+    of the strict internal functor category, equal residual transport
+    functors induce equal maps on both the object and arrow objects of the
+    behaviour category. This observation will be used in
+    Proposition~\ref{prop:derivative-laws-behaviour-category}.
+\end{proof}
+
+\begin{definition}[Behaviour indexed category]
+\label{def:behaviour-indexed-category}
+    The \textbf{behaviour indexed category} is the vertical behaviour
+    category
+    \[
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+        \longrightarrow A_0
+    \]
+    together with the parametrized reindexing functor
+    \[
+        \mathsf{pre}_A:
+        t_A^*
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+        \longrightarrow
+        s_A^*
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}.
+    \]
+
+    The object map of \(\mathsf{pre}_A\), followed by projection from the
+    pullback over \(s_A\), is denoted
+    \[
+        \partial_0:
+        A_1
+        \times_{t_A,A_0,p_{\mathbf{Beh}}}
+        \mathbf{Beh}_0
+        \longrightarrow
+        \mathbf{Beh}_0.
+    \]
+    The arrow map is denoted
+    \[
         \partial_1:
-        A_1\times_{t_A,A_0,p_{\mathbf{Beh}}s_{\mathbf{Beh}}}
+        A_1
+        \times_{t_A,A_0,p_{\mathbf{Beh}}s_{\mathbf{Beh}}}
         \mathbf{Beh}_1
-        \to
+        \longrightarrow
         \mathbf{Beh}_1.
     \]
     We also write
     \[
         \partial:=\partial_0.
     \]
+
+    These maps satisfy
+    \[
+        p_{\mathbf{Beh}}\partial_0
+        =
+        s_A\pi_{A_1},
+    \]
+    and
+    \[
+        s_{\mathbf{Beh}}\partial_1
+        =
+        \partial_0
+        (1_{A_1}\times s_{\mathbf{Beh}}),
+    \]
+    \[
+        t_{\mathbf{Beh}}\partial_1
+        =
+        \partial_0
+        (1_{A_1}\times t_{\mathbf{Beh}}).
+    \]
 \end{definition}
 
 \begin{definition}[Derivative]
 \label{def:derivative-behaviour}
-    The \textbf{derivative} of a residual behaviour
-    \[
-        H:\mathbb A/v\to\mathbb B
-    \]
-    by an arrow
+    Let
     \[
         a:u\to v
     \]
-    is
+    and let
     \[
-        \partial_aH:=a^*H=H\circ a_*.
+        H:\mathbb A/v\to\mathbb B
     \]
-    Thus, for \(r:w\to u\),
+    be a residual behaviour. The \textbf{derivative} of \(H\) by \(a\) is
     \[
-        (\partial_aH)(r)=H(a\circ r).
+        \partial_aH
+        :=
+        H\circ a_*.
+    \]
+    Thus, for a residual object
+    \[
+        r:w\to u,
+    \]
+    \[
+        (\partial_aH)(r)
+        =
+        H(a\circ r).
     \]
 \end{definition}
 
 \begin{definition}[Derivative of a comparison]
 \label{def:derivative-comparison}
-    If
+    Let
     \[
         \eta:H\Rightarrow K
     \]
-    is a behaviour comparison over \(v\), its derivative by
+    be a behaviour comparison over \(v\). Its \textbf{derivative} by
     \(a:u\to v\) is
     \[
-        \partial_a\eta:=a^*\eta:
+        \partial_a\eta
+        :=
+        \eta\ast a_*:
         \partial_aH\Rightarrow\partial_aK.
     \]
 \end{definition}
@@ -863,9 +1744,14 @@ The naturality square is
         =
         \partial_a(\partial_bH).
     \]
-    The same equations hold for behaviour comparisons. Moreover,
+    The same equations hold for behaviour comparisons.
+
+    Derivative reindexing also preserves vertical identities and vertical
+    composition:
     \[
-        \partial_a(1_H)=1_{\partial_aH},
+        \partial_a(1_H)
+        =
+        1_{\partial_aH},
     \]
     and
     \[
@@ -875,14 +1761,33 @@ The naturality square is
     \]
 \end{proposition}
 \begin{proof}
-    The equations follow from functoriality of precomposition and the split
-    residual-transport equations
+    Residual transport satisfies the strict internal-functor equations
     \[
-        (1_v)_*=\mathrm{id}_{\mathbb A/v},
-        \qquad
-        (b\circ a)_*=b_*\circ a_*.
+        (1_v)_*
+        =
+        1_{\mathbb A/v},
     \]
-    In particular,
+    and
+    \[
+        (b\circ a)_*
+        =
+        b_*\circ a_*.
+    \]
+    Therefore, on residual behaviours,
+    \[
+        \begin{aligned}
+            \partial_{1_v}H
+            &=
+            H\circ(1_v)_*
+            \\
+            &=
+            H\circ1_{\mathbb A/v}
+            \\
+            &=
+            H,
+        \end{aligned}
+    \]
+    and
     \[
         \begin{aligned}
             \partial_{b\circ a}H
@@ -890,38 +1795,183 @@ The naturality square is
             H\circ(b\circ a)_*
             \\
             &=
-            H\circ b_*\circ a_*
+            H\circ(b_*\circ a_*)
+            \\
+            &=
+            (H\circ b_*)\circ a_*
             \\
             &=
             \partial_a(\partial_bH).
         \end{aligned}
     \]
-    The comparison equations are the corresponding whiskering identities.
+
+    These are equalities of internal morphisms, rather than merely
+    fibrewise canonical isomorphisms. Indeed, the two sides classify the
+    same parametrized internal functor on residual objects and residual
+    arrows. Since the object of residual behaviours represents such
+    parametrized internal functors, equality of the classified functors
+    gives equality of the corresponding maps into
+    \(\mathbf{Beh}_0\).
+
+    The same argument applies to behaviour comparisons. Explicitly,
+    \[
+        \partial_{1_v}\eta
+        =
+        \eta\ast(1_v)_*
+        =
+        \eta,
+    \]
+    and
+    \[
+        \begin{aligned}
+            \partial_{b\circ a}\eta
+            &=
+            \eta\ast(b\circ a)_*
+            \\
+            &=
+            \eta\ast(b_*\circ a_*)
+            \\
+            &=
+            (\eta\ast b_*)\ast a_*
+            \\
+            &=
+            \partial_a(\partial_b\eta).
+        \end{aligned}
+    \]
+    Representability of the object of internal natural transformations
+    makes these equalities of maps into \(\mathbf{Beh}_1\).
+
+    Finally, \(\mathsf{pre}_A\) is an internal functor. It therefore
+    preserves identity arrows and vertical composition:
+    \[
+        \partial_a(1_H)
+        =
+        1_{\partial_aH},
+    \]
+    and
+    \[
+        \partial_a(\mu\circ\eta)
+        =
+        \partial_a\mu\circ\partial_a\eta.
+    \]
+\end{proof}
+
+\begin{theorem}[Internal evaluation of residual behaviours]
+\label{thm:internal-evaluation-residual-behaviours}
+    The internal functor category
+    \[
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+        =
+        [\mathbb R_{\mathbb A},
+         \Delta_{A_0}\mathbb B]_{\mathcal E/A_0}
+    \]
+    carries a canonical internal evaluation functor
+    \[
+        \operatorname{ev}:
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+        \times_{A_0}
+        \mathbb R_{\mathbb A}
+        \longrightarrow
+        \Delta_{A_0}\mathbb B.
+    \]
+
+    Write its object and arrow maps, after suppressing the evident
+    \(A_0\)-coordinates, as
+    \[
+        \operatorname{ev}_0:
+        \mathbf{Beh}_0
+        \times_{A_0}
+        A_1
+        \longrightarrow
+        B_0,
+    \]
+    and
+    \[
+        \operatorname{ev}_1:
+        \mathbf{Beh}_1
+        \times_{A_0}
+        T_A
+        \longrightarrow
+        B_1.
+    \]
+
+    In generalized-element notation,
+    \[
+        \operatorname{ev}_0(H,r)=H(r).
+    \]
+    If
+    \[
+        \eta:H\Rightarrow K
+    \]
+    and
+    \[
+        \xi:r\to r'
+    \]
+    are arrows in the two factors, then
+    \[
+        \operatorname{ev}_1(\eta,\xi):
+        H(r)\to K(r')
+    \]
+    is the common composite
+    \[
+        K(\xi)\circ\eta_r
+        =
+        \eta_{r'}\circ H(\xi).
+    \]
+\end{theorem}
+\begin{proof}
+    This is the evaluation functor associated to the internal hom
+    \[
+        [\mathbb R_{\mathbb A},
+         \Delta_{A_0}\mathbb B]_{\mathcal E/A_0}.
+    \]
+    Its object map is exponential evaluation. Its arrow map is induced by
+    evaluation of the component of an internal natural transformation
+    followed by evaluation of the relevant residual arrow.
+
+    The equality
+    \[
+        K(\xi)\circ\eta_r
+        =
+        \eta_{r'}\circ H(\xi)
+    \]
+    is precisely the internal naturality equation for \(\eta\). Preservation
+    of identities and composition is the standard evaluation-functor
+    calculation in the internal functor category.
 \end{proof}
 
 \begin{definition}[Anchor evaluation]
 \label{def:anchor-evaluation}
-    The identity residual section
+    The identity residual section is
     \[
-        e_A:A_0\to A_1
+        e_A:A_0\to A_1.
     \]
-    selects the residual object
+    It selects
     \[
         1_v:v\to v
     \]
-    in each fibre.
+    in the residual fibre over \(v\).
 
-    The \textbf{anchor} of a behaviour
+    The \textbf{anchor map} is
     \[
-        H:\mathbb A/v\to\mathbb B
+        q_{\mathbf{Beh}}
+        :=
+        \operatorname{ev}_0
+        \circ
+        \left\langle
+            1_{\mathbf{Beh}_0},
+            e_Ap_{\mathbf{Beh}}
+        \right\rangle:
+        \mathbf{Beh}_0\to B_0.
     \]
-    is
+    Thus, for
     \[
-        \operatorname{anch}(H):=H(1_v).
+        H:\mathbb A/v\to\mathbb B,
     \]
-    Evaluation at the identity residual defines the anchor map
     \[
-        q_{\mathbf{Beh}}:\mathbf{Beh}_0\to B_0.
+        q_{\mathbf{Beh}}(H)
+        =
+        H(1_v).
     \]
 \end{definition}
 
@@ -991,18 +2041,31 @@ Thus the object of residual behaviours carries the anchor span
 
 \begin{theorem}[The total behaviour fibration]
 \label{thm:total-behaviour-fibration}
-    The object \(\mathbf{Beh}_0\), together with the arrow object
-    \(\mathbf{Beh}^{\mathrm{tot}}_1\), forms an internal category
+    The object
+    \[
+        \mathbf{Beh}_0
+    \]
+    and the arrow object
+    \[
+        \mathbf{Beh}^{\mathrm{tot}}_1
+    \]
+    of Definition~\ref{def:total-behaviour-category} form an internal
+    category
     \[
         \mathbf{Beh}^{\mathrm{tot}}_{\mathbb A,\mathbb B}.
     \]
+
     The maps
     \[
-        p_{\mathbf{Beh}}:\mathbf{Beh}_0\to A_0
+        p_{\mathbf{Beh}}:
+        \mathbf{Beh}_0\to A_0
     \]
     and
     \[
-        (a,H,\eta)\longmapsto a
+        p_{\mathbf{Beh},1}^{\mathrm{tot}}:
+        \mathbf{Beh}^{\mathrm{tot}}_1\to A_1,
+        \qquad
+        (a,H,\eta)\longmapsto a,
     \]
     define an internal functor
     \[
@@ -1011,102 +2074,378 @@ Thus the object of residual behaviours carries the anchor span
         \to
         \mathbb A.
     \]
-    This functor is a split internal fibration.
 
-    The chosen cartesian lift of
+    This internal functor is a split internal fibration. Its chosen
+    cartesian lift of
     \[
         a:u\to v
     \]
     at a behaviour \(H\) over \(v\) is
     \[
+        \chi(a,H)
+        :=
         (a,H,1_{\partial_aH}):
         \partial_aH\longrightarrow H.
     \]
 \end{theorem}
 \begin{proof}
-    The identity total arrow at a behaviour \(H\) over \(v\) is
-    \[
-        (1_v,H,1_H).
-    \]
-    This is well-defined because
-    \[
-        \partial_{1_v}H=H.
-    \]
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Define identities.}
 
-    Suppose
-    \[
-        (a,H,\eta):K\to H
-    \]
-    lies over \(a:u\to v\), so
-    \[
-        \eta:K\Rightarrow\partial_aH,
-    \]
-    and
-    \[
-        (b,L,\mu):H\to L
-    \]
-    lies over \(b:v\to w\), so
-    \[
-        \mu:H\Rightarrow\partial_bL.
-    \]
-    Define their composite by
-    \[
-        (b,L,\mu)\circ(a,H,\eta)
-        :=
-        \left(
-            b\circ a,
-            L,
-            (\partial_a\mu)\circ\eta
-        \right).
-    \]
-    Indeed,
-    \[
-        \partial_a\mu:
-        \partial_aH
-        \Rightarrow
-        \partial_a\partial_bL
-        =
-        \partial_{b\circ a}L.
-    \]
-    Therefore
-    \[
-        (\partial_a\mu)\circ\eta:
-        K\Rightarrow\partial_{b\circ a}L
-    \]
-    has the required type.
+        Let \(H\) lie over \(v\). Define
+        \[
+            1_H^{\mathrm{tot}}
+            :=
+            (1_v,H,1_H).
+        \]
+        This is well-defined because
+        \[
+            \partial_{1_v}H=H.
+        \]
 
-    The identity and associativity laws follow from the split derivative
-    equations, functoriality of derivative reindexing on comparisons, and
-    associativity of vertical composition in
-    \(\mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}\).
+        \item \textbf{Define composition.}
 
-    The projection to \(\mathbb A\) preserves identities and composition by
-    construction.
+        Suppose
+        \[
+            (a,H,\eta):K\to H
+        \]
+        lies over
+        \[
+            a:u\to v,
+        \]
+        so that
+        \[
+            \eta:K\Rightarrow\partial_aH,
+        \]
+        and suppose
+        \[
+            (b,L,\mu):H\to L
+        \]
+        lies over
+        \[
+            b:v\to w,
+        \]
+        so that
+        \[
+            \mu:H\Rightarrow\partial_bL.
+        \]
+        Define
+        \[
+            (b,L,\mu)\circ(a,H,\eta)
+            :=
+            \left(
+                b\circ a,
+                L,
+                (\partial_a\mu)\circ\eta
+            \right).
+        \]
+        This is well-typed because
+        \[
+            \partial_a\mu:
+            \partial_aH
+            \Rightarrow
+            \partial_a\partial_bL
+            =
+            \partial_{b\circ a}L.
+        \]
 
-    For the cartesian property, let
-    \[
-        (a,H,1_{\partial_aH}):
-        \partial_aH\to H
-    \]
-    be the displayed lift. If a total arrow into \(H\) lies over a composite
-    \[
-        a\circ c,
-    \]
-    then its comparison component has the form
-    \[
-        \nu:K\Rightarrow\partial_{a\circ c}H
-        =
-        \partial_c(\partial_aH).
-    \]
-    It therefore factors uniquely through the cartesian lift by the total
-    arrow
-    \[
-        (c,\partial_aH,\nu):
-        K\to\partial_aH.
-    \]
-    The chosen lifts are strictly compatible with identities and composition
-    because the derivative equations hold on the nose. Hence
-    \(\pi_{\mathbf{Beh}}\) is a split internal fibration.
+        \item \textbf{Verify the category laws.}
+
+        The left and right unit equations follow from
+        \[
+            \partial_{1_v}=1
+        \]
+        and preservation of identity comparisons by derivative
+        reindexing.
+
+        For associativity, let a third total arrow be given. Expanding both
+        parenthesizations reduces their comparison components to the same
+        composite by:
+        \[
+            \partial_a(\nu\circ\mu)
+            =
+            \partial_a\nu\circ\partial_a\mu,
+        \]
+        \[
+            \partial_a\partial_b
+            =
+            \partial_{b\circ a},
+        \]
+        and associativity of vertical composition in
+        \(\mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}\).
+
+        Hence the displayed data form an internal category.
+
+        \item \textbf{Verify that the projection is an internal functor.}
+
+        The identity total arrow at \(H\) lies over \(1_{p_{\mathbf{Beh}}H}\).
+        The composite of arrows over \(a\) and \(b\) lies over \(b\circ a\).
+        Therefore
+        \[
+            \pi_{\mathbf{Beh}}
+        \]
+        preserves identities and composition.
+
+        \item \textbf{Define the cleavage.}
+
+        Put
+        \[
+            X_{\mathbf{Beh}}
+            :=
+            A_1
+            \times_{t_A,A_0,p_{\mathbf{Beh}}}
+            \mathbf{Beh}_0.
+        \]
+        Define
+        \[
+            \chi:
+            X_{\mathbf{Beh}}
+            \to
+            \mathbf{Beh}^{\mathrm{tot}}_1
+        \]
+        by
+        \[
+            \chi(a,H)
+            =
+            (a,H,1_{\partial_aH}).
+        \]
+        Its target is \(H\), its source is \(\partial_aH\), and its image
+        under the projection functor is \(a\).
+
+        \item \textbf{Form the internal object of composite-factorization
+        problems.}
+
+        Let
+        \[
+            A_2
+            :=
+            A_1\times_{t_A,A_0,s_A}A_1.
+        \]
+        We write a generalized element as
+        \[
+            (c,a),
+        \]
+        where
+        \[
+            c:w\to u,
+            \qquad
+            a:u\to v.
+        \]
+        Thus
+        \[
+            m_A(c,a)=a\circ c.
+        \]
+
+        Let \(\mathcal L\) be the pullback
+        \[
+            \mathcal L
+            :=
+            A_2
+            \times_{m_A,A_1,p_{\mathbf{Beh},1}^{\mathrm{tot}}}
+            \mathbf{Beh}^{\mathrm{tot}}_1.
+        \]
+        A generalized element of \(\mathcal L\) is a triple
+        \[
+            (c,a,g),
+        \]
+        where \(g:K\to H\) is a total arrow lying over
+        \[
+            a\circ c.
+        \]
+
+        Next put
+        \[
+            Y
+            :=
+            A_2
+            \times_{t_A\pi_2,A_0,p_{\mathbf{Beh}}}
+            \mathbf{Beh}_0.
+        \]
+        A generalized element of \(Y\) is
+        \[
+            (c,a,H)
+        \]
+        with \(H\) lying over \(t_A(a)\).
+
+        There is a map
+        \[
+            \vartheta:
+            Y
+            \to
+            \mathbf{Beh}_0
+            \times_{p_{\mathbf{Beh}},A_0,t_A}
+            A_1
+        \]
+        defined by
+        \[
+            \vartheta(c,a,H)
+            =
+            (\partial_aH,c).
+        \]
+        This is well-defined because
+        \[
+            p_{\mathbf{Beh}}(\partial_aH)
+            =
+            s_A(a)
+            =
+            t_A(c).
+        \]
+
+        Define
+        \[
+            \mathcal R
+            :=
+            Y
+            \times_{\vartheta,\,
+                    \mathbf{Beh}_0
+                    \times_{A_0}A_1,\,
+                    (t_{\mathrm{tot}},
+                     p_{\mathbf{Beh},1}^{\mathrm{tot}})}
+            \mathbf{Beh}^{\mathrm{tot}}_1.
+        \]
+        A generalized element of \(\mathcal R\) is a quadruple
+        \[
+            (c,a,H,h),
+        \]
+        where
+        \[
+            h:K\to\partial_aH
+        \]
+        is a total arrow lying over \(c\).
+
+        \item \textbf{Construct the cartesian-factorization isomorphism.}
+
+        Composition with the chosen lift defines a map
+        \[
+            \Gamma:
+            \mathcal R\to\mathcal L
+        \]
+        by
+        \[
+            \Gamma(c,a,H,h)
+            =
+            \bigl(
+                c,a,
+                \chi(a,H)\circ h
+            \bigr).
+        \]
+
+        To compute this map, write
+        \[
+            h=(c,\partial_aH,\nu),
+        \]
+        where
+        \[
+            \nu:
+            K\Rightarrow
+            \partial_c\partial_aH
+            =
+            \partial_{a\circ c}H.
+        \]
+        Since
+        \[
+            \chi(a,H)
+            =
+            (a,H,1_{\partial_aH}),
+        \]
+        the composition formula gives
+        \[
+            \chi(a,H)\circ h
+            =
+            (a\circ c,H,\nu).
+        \]
+
+        Conversely, let
+        \[
+            g=(a\circ c,H,\nu)
+        \]
+        represent an element of \(\mathcal L\). Define
+        \[
+            \Gamma^{-1}(c,a,g)
+            :=
+            \left(
+                c,a,H,
+                (c,\partial_aH,\nu)
+            \right).
+        \]
+        This is well-defined because
+        \[
+            \partial_c\partial_aH
+            =
+            \partial_{a\circ c}H.
+        \]
+
+        The two constructions leave the vertical comparison \(\nu\)
+        unchanged. Therefore
+        \[
+            \Gamma^{-1}\Gamma=1_{\mathcal R},
+            \qquad
+            \Gamma\Gamma^{-1}=1_{\mathcal L}.
+        \]
+        Hence
+        \[
+            \Gamma:\mathcal R\overset{\cong}{\longrightarrow}\mathcal L
+        \]
+        is an isomorphism.
+
+        This is the internal cartesian universal property: every total arrow
+        \[
+            g:K\to H
+        \]
+        lying over \(a\circ c\) factors uniquely as
+        \[
+            K
+            \xrightarrow{h}
+            \partial_aH
+            \xrightarrow{\chi(a,H)}
+            H,
+        \]
+        where \(h\) lies over \(c\).
+
+        \item \textbf{Verify splitness.}
+
+        For an identity arrow,
+        \[
+            \chi(1_v,H)
+            =
+            (1_v,H,1_H)
+            =
+            1_H^{\mathrm{tot}}.
+        \]
+
+        For composable
+        \[
+            c:w\to u,
+            \qquad
+            a:u\to v,
+        \]
+        one has
+        \[
+            \chi(a\circ c,H)
+            =
+            \chi(a,H)
+            \circ
+            \chi(c,\partial_aH).
+        \]
+        Indeed, both sides are the total arrow
+        \[
+            \partial_{a\circ c}H\to H
+        \]
+        over \(a\circ c\) with identity vertical comparison, using
+        \[
+            \partial_c\partial_aH
+            =
+            \partial_{a\circ c}H.
+        \]
+
+        Thus the chosen cartesian lifts are strictly compatible with
+        identities and composition, and
+        \[
+            \pi_{\mathbf{Beh}}
+        \]
+        is a split internal fibration.
+    \end{enumerate}
 \end{proof}
 
 \begin{remark}
@@ -1148,93 +2487,189 @@ The behaviour indexed category has a split cleavage given by derivative reindexi
 \subsection{Internal derivative and anchor-output maps}
 \label{subsec:internal-derivative-anchor-output}
 
-\begin{lemma}[Internal derivative and output maps]
+\begin{lemma}[Internal derivative and anchor-output maps]
 \label{lem:internal-derivative-output-maps}
-    The derivative reindexing of \(\mathbf{Beh}_{\mathbb A,\mathbb B}\) is represented by a morphism
+    Put
+    \[
+        X_{\mathbf{Beh}}
+        :=
+        A_1
+        \times_{t_A,A_0,p_{\mathbf{Beh}}}
+        \mathbf{Beh}_0,
+    \]
+    and write its projections as
+    \[
+        \pi_A:X_{\mathbf{Beh}}\to A_1,
+        \qquad
+        \pi_H:X_{\mathbf{Beh}}\to\mathbf{Beh}_0.
+    \]
+
+    The derivative map
     \[
         \partial:
-        A_1\times_{t_A,A_0,p_{\mathbf{Beh}}}\mathbf{Beh}_0
-        \longrightarrow
-        \mathbf{Beh}_0
+        X_{\mathbf{Beh}}\to\mathbf{Beh}_0
     \]
-    satisfying
+    satisfies
     \[
-        p_{\mathbf{Beh}}\partial=s_A\pi_{A_1}.
+        p_{\mathbf{Beh}}\partial
+        =
+        s_A\pi_A.
     \]
-    The anchor comparison induced by the residual morphism
+
+    Define
     \[
-        a_*1_u=a\longrightarrow 1_v
+        \sigma:
+        A_1\to T_A
     \]
-    is represented by a morphism
+    by
     \[
-        \mathrm{out}_{\mathbf{Beh}}:
-        A_1\times_{t_A,A_0,p_{\mathbf{Beh}}}\mathbf{Beh}_0
-        \longrightarrow
-        B_1
+        \sigma
+        :=
+        \left\langle
+            1_{A_1},
+            e_At_A
+        \right\rangle.
     \]
-    satisfying
+    Then \(\sigma(a)\) represents the residual arrow
+    \[
+        a\longrightarrow1_{t_Aa}.
+    \]
+
+    The anchor-output map is
+    \[
+        \mathrm{out}_{\mathbf{Beh}}
+        :=
+        \operatorname{ev}_1
+        \circ
+        \left\langle
+            e_{\mathbf{Beh}}\pi_H,
+            \sigma\pi_A
+        \right\rangle:
+        X_{\mathbf{Beh}}\to B_1.
+    \]
+    It satisfies
     \[
         s_B\mathrm{out}_{\mathbf{Beh}}
         =
         q_{\mathbf{Beh}}\partial,
-        \qquad
+    \]
+    and
+    \[
         t_B\mathrm{out}_{\mathbf{Beh}}
         =
-        q_{\mathbf{Beh}}\pi_{\mathbf{Beh}}.
+        q_{\mathbf{Beh}}\pi_H.
     \]
 \end{lemma}
 \begin{proof}
-    \leavevmode
-    \begin{enumerate}
-        \item \textbf{Represent derivative reindexing.} The derivative map is the representing morphism for the fibrewise reindexing operation
-        \[
-            (a,H)\longmapsto a^*H=H\circ a_*.
-        \]
-        Its base equation is the statement that \(a^*H\) lies over \(s_A(a)\).
+    The derivative equation
+    \[
+        p_{\mathbf{Beh}}\partial
+        =
+        s_A\pi_A
+    \]
+    is the base equation for parametrized precomposition.
 
-        \item \textbf{Construct the anchor comparison.} For the output map, let
-        \[
-            a:u\to v,
-            \qquad
-            H:\mathbb A/v\to\mathbb B.
-        \]
-        In the slice \(\mathbb A/v\), the chosen cocartesian transport of \(1_u\) along \(a\) gives the residual object \(a:u\to v\), and there is the residual morphism
-        \[
-            a\to 1_v.
-        \]
-        Applying \(H\) gives
-        \[
-            H(a)\to H(1_v).
-        \]
+    To define \(\sigma\), observe that
+    \[
+        t_A
+        =
+        s_Ae_At_A.
+    \]
+    Hence the pair
+    \[
+        \left(
+            1_{A_1},
+            e_At_A
+        \right)
+    \]
+    induces a map into
+    \[
+        T_A
+        =
+        A_1\times_{t_A,A_0,s_A}A_1.
+    \]
+    For an arrow \(a:u\to v\),
+    \[
+        \sigma(a)=(a,1_v).
+    \]
+    Its source and target in the residual category are
+    \[
+        1_v\circ a=a,
+        \qquad
+        1_v,
+    \]
+    so it represents
+    \[
+        a\to1_v.
+    \]
 
-        \item \textbf{Check source and target.} Since
-        \[
-            H(a)=(a^*H)(1_u)=q_{\mathbf{Beh}}(\partial(a,H)),
-            \qquad
-            H(1_v)=q_{\mathbf{Beh}}(H),
-        \]
-        this arrow has the displayed source and target.
+    The pair
+    \[
+        \left(
+            e_{\mathbf{Beh}}\pi_H,
+            \sigma\pi_A
+        \right)
+    \]
+    is a map into the arrow object of
+    \[
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+        \times_{A_0}
+        \mathbb R_{\mathbb A}.
+    \]
+    Its first component is the identity natural transformation on \(H\),
+    while its second component is the residual arrow
+    \[
+        a\to1_v.
+    \]
+    Applying the arrow part of evaluation gives
+    \[
+        \mathrm{out}_{\mathbf{Beh}}(a,H)
+        =
+        H(a\to1_v):
+        H(a)\to H(1_v).
+    \]
 
-        \item \textbf{Display the typing diagram.} The source-target typing is encoded by
-        \[
-            \begin{tikzcd}[column sep=large, row sep=large]
-                &
-                    A_1\times_{A_0}\mathbf{Beh}_0
-                        \arrow[dl, "q_{\mathbf{Beh}}\partial"']
-                        \arrow[dr, "q_{\mathbf{Beh}}\pi_{\mathbf{Beh}}"]
-                        \arrow[d, "\mathrm{out}_{\mathbf{Beh}}" description]
-                &
-                \\
-                    B_0
-                &
-                    B_1
-                        \arrow[l, "s_B"]
-                        \arrow[r, "t_B"']
-                &
-                    B_0.
-            \end{tikzcd}
-        \]
-    \end{enumerate}
+    The target is therefore
+    \[
+        H(1_v)
+        =
+        q_{\mathbf{Beh}}(H),
+    \]
+    proving
+    \[
+        t_B\mathrm{out}_{\mathbf{Beh}}
+        =
+        q_{\mathbf{Beh}}\pi_H.
+    \]
+
+    For the source, let \(a:u\to v\). By definition of derivative,
+    \[
+        (\partial_aH)(1_u)
+        =
+        H(a_*1_u).
+    \]
+    Residual postcomposition gives
+    \[
+        a_*1_u
+        =
+        a\circ1_u
+        =
+        a.
+    \]
+    Consequently,
+    \[
+        H(a)
+        =
+        (\partial_aH)(1_u)
+        =
+        q_{\mathbf{Beh}}(\partial_aH).
+    \]
+    Hence
+    \[
+        s_B\mathrm{out}_{\mathbf{Beh}}
+        =
+        q_{\mathbf{Beh}}\partial.
+    \]
 \end{proof}
 
 \subsection{The canonical behaviour carrier}
@@ -1489,33 +2924,184 @@ The factorization condition is displayed by
     \[
         i:S\hookrightarrow\mathbf{Beh}_0
     \]
-    be derivative-closed. Then the canonical behaviour Mealy morphism restricts to a Mealy morphism carried by
+    be derivative-closed. Then the canonical behaviour Mealy morphism
+    restricts to a Mealy morphism carried by
     \[
         A_0\xleftarrow{p_{\mathbf{Beh}}i}S
         \xrightarrow{q_{\mathbf{Beh}}i}B_0.
     \]
 \end{lemma}
 \begin{proof}
-    \leavevmode
-    \begin{enumerate}
-        \item \textbf{Restrict the transition.} Derivative-closedness supplies the transition
-        \[
-            \bar\partial_S:\mathsf D(S)\to S.
-        \]
+    Write
+    \[
+        p_S:=p_{\mathbf{Beh}}i,
+        \qquad
+        q_S:=q_{\mathbf{Beh}}i.
+    \]
+    Derivative-closedness supplies a unique map
+    \[
+        \bar\partial_S:
+        A_1\times_{t_A,A_0,p_S}S
+        \to
+        S
+    \]
+    satisfying
+    \[
+        i\bar\partial_S
+        =
+        \partial(1_{A_1}\times i).
+    \]
+    Define the restricted transition by
+    \[
+        \delta_S:=\bar\partial_S.
+    \]
 
-        \item \textbf{Restrict the output.} The output is the restriction of
-        \[
+    Define the restricted output by
+    \[
+        \omega_S
+        :=
+        \omega_{\mathbf{Beh}}
+        \circ
+        (1_{A_1}\times i).
+    \]
+    Thus, in generalized-element notation,
+    \[
+        \delta_S(a,s)=\bar\partial_S(a,s),
+    \]
+    and
+    \[
+        \omega_S(a,s)
+        =
+        \omega_{\mathbf{Beh}}(a,i(s)).
+    \]
+
+    We first verify the typing equations. Since
+    \(\bar\partial_S\) is a morphism over the derivative-induced
+    \(Z\)-structure,
+    \[
+        p_S(\delta_S(a,s))=s_A(a).
+    \]
+    Moreover,
+    \[
+        \begin{aligned}
+            s_B\omega_S(a,s)
+            &=
+            s_B\omega_{\mathbf{Beh}}(a,i(s))
+            \\
+            &=
+            q_{\mathbf{Beh}}(\partial_a i(s))
+            \\
+            &=
+            q_{\mathbf{Beh}}(i(\delta_S(a,s)))
+            \\
+            &=
+            q_S(\delta_S(a,s)),
+        \end{aligned}
+    \]
+    while
+    \[
+        \begin{aligned}
+            t_B\omega_S(a,s)
+            &=
+            t_B\omega_{\mathbf{Beh}}(a,i(s))
+            \\
+            &=
+            q_{\mathbf{Beh}}(i(s))
+            \\
+            &=
+            q_S(s).
+        \end{aligned}
+    \]
+
+    For the transition unit law, compose with the monomorphism \(i\):
+    \[
+        \begin{aligned}
+            i(\delta_S(1_{p_S(s)},s))
+            &=
+            \partial_{1_{p_S(s)}}i(s)
+            \\
+            &=
+            i(s).
+        \end{aligned}
+    \]
+    Hence
+    \[
+        \delta_S(1_{p_S(s)},s)=s.
+    \]
+
+    For the transition multiplication law, let
+    \[
+        a:u\to v,
+        \qquad
+        b:v\to w,
+        \qquad
+        p_S(s)=w.
+    \]
+    After composing with \(i\), one has
+    \[
+        \begin{aligned}
+            i(\delta_S(b\circ a,s))
+            &=
+            \partial_{b\circ a}i(s)
+            \\
+            &=
+            \partial_a(\partial_bi(s))
+            \\
+            &=
+            \partial_a(i(\delta_S(b,s)))
+            \\
+            &=
+            i(\delta_S(a,\delta_S(b,s))).
+        \end{aligned}
+    \]
+    Since \(i\) is monic,
+    \[
+        \delta_S(b\circ a,s)
+        =
+        \delta_S(a,\delta_S(b,s)).
+    \]
+
+    The output unit law follows directly by restricting the ambient output
+    unit law:
+    \[
+        \begin{aligned}
+            \omega_S(1_{p_S(s)},s)
+            &=
+            \omega_{\mathbf{Beh}}(1_{p_S(s)},i(s))
+            \\
+            &=
+            1_{q_{\mathbf{Beh}}(i(s))}
+            \\
+            &=
+            1_{q_S(s)}.
+        \end{aligned}
+    \]
+
+    For the output multiplication law,
+    \[
+        \begin{aligned}
+            \omega_S(b\circ a,s)
+            &=
+            \omega_{\mathbf{Beh}}(b\circ a,i(s))
+            \\
+            &=
+            \omega_{\mathbf{Beh}}(b,i(s))
+            \circ
+            \omega_{\mathbf{Beh}}(a,\partial_bi(s))
+            \\
+            &=
+            \omega_{\mathbf{Beh}}(b,i(s))
+            \circ
             \omega_{\mathbf{Beh}}
-        \]
-        along
-        \[
-            1_{A_1}\times i:
-            A_1\times_{A_0}S\to
-            A_1\times_{A_0}\mathbf{Beh}_0.
-        \]
-
-        \item \textbf{Verify the laws by monicity.} The typing equations follow from the fact that \(\bar\partial_S\) is a map over the derivative-induced \(Z\)-structure. The unit and multiplication laws hold after composing with the monomorphism \(i\), hence hold in \(S\).
-    \end{enumerate}
+            (a,i(\delta_S(b,s)))
+            \\
+            &=
+            \omega_S(b,s)
+            \circ
+            \omega_S(a,\delta_S(b,s)).
+        \end{aligned}
+    \]
+    Thus the restricted transition and output satisfy all the Mealy laws.
 \end{proof}
 
 \section{Mealy actions and residual semantics}
@@ -1901,22 +3487,257 @@ The residual behaviour is the composite of the orbit and output functor:
     \]
 \end{lemma}
 \begin{proof}
-    \leavevmode
-    \begin{enumerate}
-        \item \textbf{Define the object assignment.} The object-assignment part of the family \(H_x\) is the map
-        \[
-            A_1\times_{t_A,A_0,p}P\to B_0,
-            \qquad
-            (r,x)\longmapsto q(\delta(r,x)).
-        \]
+    Pull back the vertical residual category along
+    \[
+        p:P\to A_0.
+    \]
+    This gives an internal category
+    \[
+        p^*\mathbb R_{\mathbb A}
+    \]
+    in the slice
+    \[
+        \mathcal E/P.
+    \]
 
-        \item \textbf{Define the arrow assignment.} The arrow-assignment part, indexed by residual triangles, is
-        \[
-            (a,r,x)\longmapsto\omega(a,\delta(r,x)).
-        \]
+    Its object object is
+    \[
+        P\times_{p,A_0,t_A}A_1
+        \longrightarrow
+        P,
+    \]
+    whose generalized elements are pairs
+    \[
+        (x,r),
+        \qquad
+        r:u\to p(x).
+    \]
 
-        \item \textbf{Invoke the representing property.} The Mealy laws imply the functoriality equations for this assignment. Hence the representing property of \(\mathbf{Beh}_0\) gives the desired morphism.
-    \end{enumerate}
+    Its arrow object is
+    \[
+        P\times_{p,A_0,t_A\pi_2}T_A
+        \longrightarrow
+        P,
+    \]
+    whose generalized elements are triples
+    \[
+        (x,a,r),
+        \qquad
+        w\xrightarrow{a}u\xrightarrow{r}p(x).
+    \]
+    Such a triple represents the residual arrow
+    \[
+        r\circ a\longrightarrow r.
+    \]
+
+    Put
+    \[
+        \Delta_P\mathbb B
+        :=
+        p^*\Delta_{A_0}\mathbb B.
+    \]
+    This is the constant internal category \(\mathbb B\) in
+    \(\mathcal E/P\). Its object and arrow objects are
+    \[
+        P\times B_0\longrightarrow P,
+        \qquad
+        P\times B_1\longrightarrow P.
+    \]
+
+    Define an object map in \(\mathcal E/P\)
+    \[
+        \widetilde H_{P,0}:
+        P\times_{p,A_0,t_A}A_1
+        \longrightarrow
+        P\times B_0
+    \]
+    by
+    \[
+        \widetilde H_{P,0}(x,r)
+        :=
+        \bigl(
+            x,
+            q(\delta(r,x))
+        \bigr).
+    \]
+
+    Define an arrow map in \(\mathcal E/P\)
+    \[
+        \widetilde H_{P,1}:
+        P\times_{p,A_0,t_A\pi_2}T_A
+        \longrightarrow
+        P\times B_1
+    \]
+    by
+    \[
+        \widetilde H_{P,1}(x,a,r)
+        :=
+        \bigl(
+            x,
+            \omega(a,\delta(r,x))
+        \bigr).
+    \]
+
+    Both maps preserve the displayed \(P\)-coordinate and are therefore
+    morphisms in \(\mathcal E/P\).
+
+    We verify that they define an internal functor
+    \[
+        \widetilde H_P:
+        p^*\mathbb R_{\mathbb A}
+        \longrightarrow
+        \Delta_P\mathbb B.
+    \]
+
+    First, the source of the arrow
+    \[
+        \omega(a,\delta(r,x))
+    \]
+    is
+    \[
+        \begin{aligned}
+            s_B\omega(a,\delta(r,x))
+            &=
+            q(\delta(a,\delta(r,x)))
+            \\
+            &=
+            q(\delta(r\circ a,x)),
+        \end{aligned}
+    \]
+    using the Mealy multiplication law for \(\delta\). This is the
+    \(B_0\)-coordinate of
+    \[
+        \widetilde H_{P,0}(x,r\circ a).
+    \]
+
+    Its target is
+    \[
+        t_B\omega(a,\delta(r,x))
+        =
+        q(\delta(r,x)),
+    \]
+    which is the \(B_0\)-coordinate of
+    \[
+        \widetilde H_{P,0}(x,r).
+    \]
+
+    Hence the source and target equations hold in \(\mathcal E/P\).
+
+    Preservation of identities follows from the Mealy output unit law. The
+    identity residual arrow at
+    \[
+        r:u\to p(x)
+    \]
+    is represented by
+    \[
+        (1_u,r).
+    \]
+    Therefore
+    \[
+        \begin{aligned}
+            \widetilde H_{P,1}(x,1_u,r)
+            &=
+            \bigl(
+                x,
+                \omega(1_u,\delta(r,x))
+            \bigr)
+            \\
+            &=
+            \bigl(
+                x,
+                1_{q(\delta(r,x))}
+            \bigr),
+        \end{aligned}
+    \]
+    which is the identity at
+    \[
+        \widetilde H_{P,0}(x,r).
+    \]
+
+    To verify preservation of composition, consider a residual string
+    \[
+        z\xrightarrow{b}w\xrightarrow{a}u
+        \xrightarrow{r}p(x).
+    \]
+    The two residual arrows are
+    \[
+        r\circ a\circ b\longrightarrow r\circ a
+    \]
+    and
+    \[
+        r\circ a\longrightarrow r,
+    \]
+    and their composite is represented by
+    \[
+        (a\circ b,r):
+        r\circ(a\circ b)\longrightarrow r.
+    \]
+
+    The Mealy output multiplication law gives
+    \[
+        \begin{aligned}
+            \omega(a\circ b,\delta(r,x))
+            &=
+            \omega(a,\delta(r,x))
+            \circ
+            \omega(b,\delta(a,\delta(r,x)))
+            \\
+            &=
+            \omega(a,\delta(r,x))
+            \circ
+            \omega(b,\delta(r\circ a,x)).
+        \end{aligned}
+    \]
+    Hence
+    \[
+        \widetilde H_{P,1}(x,a\circ b,r)
+        =
+        \widetilde H_{P,1}(x,a,r)
+        \circ
+        \widetilde H_{P,1}(x,b,r\circ a).
+    \]
+
+    Thus
+    \[
+        \widetilde H_P:
+        p^*\mathbb R_{\mathbb A}
+        \longrightarrow
+        \Delta_P\mathbb B
+    \]
+    is an internal functor in \(\mathcal E/P\).
+
+    By Lemma~\ref{lem:base-change-internal-functor-categories}, there is a
+    canonical isomorphism of internal categories in \(\mathcal E/P\)
+    \[
+        p^*
+        \mathbf{Beh}^{\mathrm{vert}}_{\mathbb A,\mathbb B}
+        \cong
+        [p^*\mathbb R_{\mathbb A},
+         \Delta_P\mathbb B]_{\mathcal E/P}.
+    \]
+    The internal functor \(\widetilde H_P\) therefore determines a section of
+    the object object
+    \[
+        p^*\mathbf{Beh}_0\to P.
+    \]
+    Equivalently, it determines a unique morphism
+    \[
+        \beta_P:P\to\mathbf{Beh}_0
+    \]
+    over \(A_0\).
+
+    Fibrewise, this morphism sends a state \(x\) to the residual behaviour
+    \[
+        H_x:\mathbb A/p(x)\to\mathbb B
+    \]
+    whose object and arrow assignments are
+    \[
+        H_x(r)=q(\delta(r,x)),
+    \]
+    and
+    \[
+        H_x(a,r)=\omega(a,\delta(r,x)).
+    \]
 \end{proof}
 
 \begin{proposition}[Semantic homomorphism]
@@ -3179,12 +5000,179 @@ The factorization condition is
     \]
 \end{lemma}
 \begin{proof}
-    \leavevmode
-    \begin{enumerate}
-        \item \textbf{Restrict the transition and output.} The transition is supplied by transition-closedness, and the output is the restriction of the output map of \(P\).
+    Write
+    \[
+        p_S:=p_Pm,
+        \qquad
+        q_S:=q_Pm.
+    \]
+    Transition-closedness supplies a unique map
+    \[
+        \bar\delta_S:
+        A_1\times_{t_A,A_0,p_S}S
+        \to
+        S
+    \]
+    satisfying
+    \[
+        m\bar\delta_S
+        =
+        \delta_P(1_{A_1}\times m).
+    \]
+    Define
+    \[
+        \delta_S:=\bar\delta_S.
+    \]
 
-        \item \textbf{Verify the laws by monicity.} The typing equations follow because \(\bar\delta_S\) is a map over the transition-induced \(Z\)-structure and because the output map is the restriction of the output map of \(P\). The unit and multiplication laws hold after composing with the monomorphism \(m\), hence hold in \(S\).
-    \end{enumerate}
+    Define the restricted output by
+    \[
+        \omega_S
+        :=
+        \omega_P\circ(1_{A_1}\times m).
+    \]
+    In generalized-element notation,
+    \[
+        \delta_S(a,s)=\bar\delta_S(a,s),
+    \]
+    and
+    \[
+        \omega_S(a,s)=\omega_P(a,m(s)).
+    \]
+
+    Since \(\bar\delta_S\) is a morphism over the transition-induced
+    \(Z\)-structure,
+    \[
+        p_S(\delta_S(a,s))=s_A(a).
+    \]
+    The output source equation is
+    \[
+        \begin{aligned}
+            s_B\omega_S(a,s)
+            &=
+            s_B\omega_P(a,m(s))
+            \\
+            &=
+            q_P(\delta_P(a,m(s)))
+            \\
+            &=
+            q_P(m(\delta_S(a,s)))
+            \\
+            &=
+            q_S(\delta_S(a,s)).
+        \end{aligned}
+    \]
+    The output target equation is
+    \[
+        \begin{aligned}
+            t_B\omega_S(a,s)
+            &=
+            t_B\omega_P(a,m(s))
+            \\
+            &=
+            q_P(m(s))
+            \\
+            &=
+            q_S(s).
+        \end{aligned}
+    \]
+
+    For the transition unit law, compose with \(m\):
+    \[
+        \begin{aligned}
+            m(\delta_S(1_{p_S(s)},s))
+            &=
+            \delta_P(1_{p_P(m(s))},m(s))
+            \\
+            &=
+            m(s).
+        \end{aligned}
+    \]
+    Since \(m\) is monic,
+    \[
+        \delta_S(1_{p_S(s)},s)=s.
+    \]
+
+    For the transition multiplication law, let
+    \[
+        a:u\to v,
+        \qquad
+        b:v\to w,
+        \qquad
+        p_S(s)=w.
+    \]
+    After composing with \(m\),
+    \[
+        \begin{aligned}
+            m(\delta_S(b\circ a,s))
+            &=
+            \delta_P(b\circ a,m(s))
+            \\
+            &=
+            \delta_P(a,\delta_P(b,m(s)))
+            \\
+            &=
+            \delta_P(a,m(\delta_S(b,s)))
+            \\
+            &=
+            m(\delta_S(a,\delta_S(b,s))).
+        \end{aligned}
+    \]
+    Hence, by monicity,
+    \[
+        \delta_S(b\circ a,s)
+        =
+        \delta_S(a,\delta_S(b,s)).
+    \]
+
+    The output unit law is the restriction of the output unit law of \(P\):
+    \[
+        \begin{aligned}
+            \omega_S(1_{p_S(s)},s)
+            &=
+            \omega_P(1_{p_P(m(s))},m(s))
+            \\
+            &=
+            1_{q_P(m(s))}
+            \\
+            &=
+            1_{q_S(s)}.
+        \end{aligned}
+    \]
+
+    For the output multiplication law,
+    \[
+        \begin{aligned}
+            \omega_S(b\circ a,s)
+            &=
+            \omega_P(b\circ a,m(s))
+            \\
+            &=
+            \omega_P(b,m(s))
+            \circ
+            \omega_P(a,\delta_P(b,m(s)))
+            \\
+            &=
+            \omega_P(b,m(s))
+            \circ
+            \omega_P(a,m(\delta_S(b,s)))
+            \\
+            &=
+            \omega_S(b,s)
+            \circ
+            \omega_S(a,\delta_S(b,s)).
+        \end{aligned}
+    \]
+
+    Therefore the restricted carrier, transition, and output define a
+    Mealy morphism
+    \[
+        \mathbb A\rightsquigarrow\mathbb B.
+    \]
+    By construction, the inclusion
+    \[
+        m:S\to P
+    \]
+    preserves transition and output strictly.
 \end{proof}
 
 \begin{definition}[Reachable part]
@@ -4785,48 +6773,147 @@ one has the factorization
     J_Fs_A\pi_{A_1}.
 \]
 
-Let
+Put
+\[
+    Z:=A_0\times B_0.
+\]
+Regard \(A_0\) as an object of \(\mathcal E/Z\) through
+\[
+    \bar F
+    :=
+    (1_{A_0},F_0):
+    A_0\to Z.
+\]
+The map
+\[
+    J_F:A_0\to\mathbf{Beh}_0
+\]
+is a morphism in \(\mathcal E/Z\), because
+\[
+    p_{\mathbf{Beh}}J_F=1_{A_0},
+\]
+and
+\[
+    q_{\mathbf{Beh}}J_F=F_0.
+\]
+Moreover, \(J_F\) is monic, since \(p_{\mathbf{Beh}}\) is a left inverse:
+\[
+    p_{\mathbf{Beh}}J_F=1_{A_0}.
+\]
+
+The object \(D_K\) is regarded as an object of \(\mathcal E/Z\) through
+\[
+    (p_{\mathbf{Beh}},q_{\mathbf{Beh}})d_K.
+\]
+The map
+\[
+    s_A\pi_{A_1}:D_K\to A_0
+\]
+is a morphism in \(\mathcal E/Z\). Indeed,
+\[
+    \begin{aligned}
+        (1_{A_0},F_0)s_A\pi_{A_1}
+        &=
+        (p_{\mathbf{Beh}},q_{\mathbf{Beh}})
+        J_Fs_A\pi_{A_1}
+        \\
+        &=
+        (p_{\mathbf{Beh}},q_{\mathbf{Beh}})d_K.
+    \end{aligned}
+\]
+
+Take the regular epi--mono factorization of
+\[
+    s_A\pi_{A_1}:D_K\to A_0
+\]
+in the slice \(\mathcal E/Z\):
 \[
     D_K
         \xrightarrow{e_S}
     S
         \xrightarrow{m_S}
-    A_0
+    A_0.
 \]
-be the regular epi--mono factorization of
+Thus \(e_S\) is a regular epimorphism and \(m_S\) is monic in
+\(\mathcal E/Z\), and
 \[
-    s_A\pi_{A_1}:D_K\to A_0.
+    m_Se_S=s_A\pi_{A_1}.
 \]
-Thus \(S\hookrightarrow A_0\) is the subobject of objects \(u\) for which,
-locally and regularly epimorphically, there exists an arrow
-\[
-    u\to i(\kappa)
-\]
-into one of the specified objects.
 
-Since
+The composite
 \[
-    p_{\mathbf{Beh}}J_F=1_{A_0},
+    J_Fm_S:S\to\mathbf{Beh}_0
 \]
-the map \(J_F\) is monic. Hence
+is monic. Moreover,
 \[
-    J_Fm_S:S\hookrightarrow\mathbf{Beh}_0
+    \begin{aligned}
+        d_K
+        &=
+        J_Fs_A\pi_{A_1}
+        \\
+        &=
+        J_Fm_Se_S.
+    \end{aligned}
 \]
-is the regular image of \(d_K\). Consequently there is a canonical
-identification
+Hence
 \[
-    \operatorname{Der}_0(K)\cong S
+    D_K
+        \xrightarrow{e_S}
+    S
+        \xrightarrow{J_Fm_S}
+    \mathbf{Beh}_0
 \]
-under which
+is a regular epi--mono factorization of \(d_K\) in \(\mathcal E/Z\).
+
+Let
 \[
+    D_K
+        \xrightarrow{e_K}
+    \operatorname{Der}_0(K)
+        \xrightarrow{j_K}
+    \mathbf{Beh}_0
+\]
+be the regular epi--mono factorization used in
+Definition~\ref{def:derivative-image}. By uniqueness of regular images, there
+is a unique isomorphism
+\[
+    \varphi_K:
+    S\overset{\cong}{\longrightarrow}\operatorname{Der}_0(K)
+\]
+in \(\mathcal E/Z\) satisfying
+\[
+    \varphi_Ke_S=e_K,
+\]
+and
+\[
+    j_K\varphi_K=J_Fm_S.
+\]
+We henceforth use this canonical isomorphism to identify
+\[
+    \operatorname{Der}_0(K)\cong S.
+\]
+Under this identification,
+\[
+    e_K=e_S,
+    \qquad
     j_K=J_Fm_S.
 \]
 
-The Nerode relation is therefore the kernel pair of
+The Nerode relation is the kernel pair of \(d_K\). Since
 \[
-    e_S:D_K\twoheadrightarrow S.
+    d_K=J_Fs_A\pi_{A_1}
 \]
-Equivalently,
+and \(J_F\) is monic, the kernel pair of \(d_K\) is the kernel pair of
+\[
+    s_A\pi_{A_1}.
+\]
+Since
+\[
+    s_A\pi_{A_1}=m_Se_S
+\]
+and \(m_S\) is monic, this is in turn the kernel pair of \(e_S\).
+
+Consequently,
 \[
     (a,\kappa)\equiv_K(a',\kappa')
 \]
@@ -4834,12 +6921,15 @@ if and only if
 \[
     s_Aa=s_Aa'.
 \]
-Hence
+Since \(e_S\) is the effective quotient of its kernel pair,
 \[
     D_K/{\equiv_K}
     \cong
-    S.
+    S
+    \cong
+    \operatorname{Der}_0(K)
 \]
+in \(\mathcal E/Z\).
 
 The subobject
 \[
@@ -4857,14 +6947,47 @@ such that
 \[
     m_S\bar s=s_A\pi_{A_1}.
 \]
-Indeed, under the identification
+
+To construct this map, transport the derivative-closure transition
 \[
-    \operatorname{Der}_0(K)\cong S,
+    \bar\partial_K:
+    A_1
+    \times_{t_A,A_0,p_{\operatorname{Der}}}
+    \operatorname{Der}_0(K)
+    \to
+    \operatorname{Der}_0(K)
 \]
-this is precisely the derivative-closure transition of
-\(\operatorname{Der}_0(K)\), since
+of Theorem~\ref{thm:derivative-closure} across the canonical isomorphism
 \[
-    \partial_aJ_F(v)=J_F(s_Aa).
+    \varphi_K:S\cong\operatorname{Der}_0(K).
+\]
+For
+\[
+    a:u\to v,
+    \qquad
+    m_S(s)=v,
+\]
+derivative closure gives
+\[
+    J_Fm_S(\bar s(a,s))
+    =
+    \partial_aJ_F(m_Ss).
+\]
+But
+\[
+    \partial_aJ_F(m_Ss)
+    =
+    J_F(s_Aa).
+\]
+Since \(J_F\) is monic,
+\[
+    m_S(\bar s(a,s))
+    =
+    s_Aa.
+\]
+Thus
+\[
+    m_S\bar s=s_A\pi_{A_1}.
 \]
 
 The minimal residual realization generated by the stateless specification has
@@ -4880,19 +7003,23 @@ For an arrow
 \[
     a:u\to v
 \]
-with \(v\in S\), its transition is
+with \(v\) represented by a state \(s\in S\), its transition is
 \[
-    v\longmapsto u,
+    s\longmapsto\bar s(a,s),
 \]
-represented internally by \(\bar s\), and its emitted output is
+whose image in \(A_0\) is \(u\), and its emitted output is
 \[
     F_1(a):F_0u\to F_0v.
 \]
 
-Thus this minimal residual realization is the restriction of the
+Thus the minimal residual realization is the restriction of the
 map-representable machine associated to \(F\) to the generated
-downward-closed object subobject \(S\). Its carrier is map-representable in the
-sense of Chapter~\ref{ch:spans-internal-categories-mealy} if and only if
+downward-closed object subobject
+\[
+    m_S:S\hookrightarrow A_0.
+\]
+Its carrier is map-representable in the sense of
+Chapter~\ref{ch:spans-internal-categories-mealy} if and only if
 \[
     m_S:S\to A_0
 \]
@@ -4911,8 +7038,12 @@ object is \(S\), and its arrow object is
     \times_{t_A,A_0,m_S}
     S.
 \]
-Downward closure means that every arrow of \(\mathbb A\) whose target lies in
-\(S\) also has its source in \(S\).
+The downward-closure equation
+\[
+    m_S\bar s=s_A\pi_{A_1}
+\]
+means that every arrow of \(\mathbb A\) whose target lies in \(S\) also has
+its source in \(S\).
 
 The execution category of the minimal residual realization is canonically
 \[
@@ -4925,17 +7056,48 @@ and its output functor is the restriction of
 \]
 
 The subobject \(S\) is the smallest downward-closed subobject of \(A_0\)
-containing the image of \(i\). Indeed, identities show that the image of \(i\)
-is contained in \(S\), and closure under taking domains follows by composing
-arrows into the specified objects. Conversely, every downward-closed
-subobject containing the image of \(i\) contains the source of every arrow
-into a specified object, and therefore contains \(S\).
+containing the image of \(i\).
+
+First, identities show that the image of \(i\) is contained in \(S\). Indeed,
+the unit inclusion
+\[
+    \iota_K:K\to D_K
+\]
+satisfies
+\[
+    s_A\pi_{A_1}\iota_K=i,
+\]
+and therefore
+\[
+    i=m_Se_S\iota_K.
+\]
+
+Now let
+\[
+    n:T\hookrightarrow A_0
+\]
+be any downward-closed subobject through which \(i\) factors. For every
+generalized element
+\[
+    (a,\kappa)\in D_K,
+\]
+the target \(t_A(a)=i(\kappa)\) lies in \(T\). Downward closure therefore
+implies that the source \(s_A(a)\) also lies in \(T\). Consequently the map
+\[
+    s_A\pi_{A_1}:D_K\to A_0
+\]
+factors through \(n\). Since \(m_S\) is its regular image, \(m_S\) factors
+through \(n\). Thus \(S\) is the smallest such subobject.
 
 For the full specification
 \[
     i=1_{A_0}:A_0\to A_0,
 \]
-the map defining \(S\) is
+there is a canonical isomorphism
+\[
+    D_K\cong A_1,
+\]
+under which the map defining \(S\) is
 \[
     s_A:A_1\to A_0.
 \]
@@ -4943,121 +7105,13 @@ Since
 \[
     s_Ae_A=1_{A_0},
 \]
-this map is a split epimorphism, and its image is all of \(A_0\). Therefore
+the map \(s_A\) is a split epimorphism, and its regular image is all of
+\(A_0\). Therefore
 \[
     S\cong A_0,
 \]
 and the minimal residual realization is the original map-representable
 machine associated to \(F\).
-
-\subsection{Generated residual behaviour categories in the stateless case}
-\label{subsec:stateless-generated-residual-category}
-
-Let
-\[
-    m_S:S\hookrightarrow A_0
-\]
-be the generated downward-closed object subobject of the preceding subsection.
-Under the canonical identification
-\[
-    \operatorname{Der}_0(K)\cong S,
-\]
-the object inclusion of the generated residual behaviour category is
-\[
-    J_Fm_S:
-    S\hookrightarrow\mathbf{Beh}_0.
-\]
-
-The generated residual behaviour category
-\[
-    \mathbf{Der}(K)
-\]
-is the full internal subcategory of the vertical behaviour category on these
-objects.
-
-A vertical behaviour comparison has source and target in the same fibre over
-\(A_0\). Therefore, if there is an arrow in \(\mathbf{Der}(K)\)
-\[
-    J_F(m_Ss)\longrightarrow J_F(m_Ss'),
-\]
-then
-\[
-    m_Ss=m_Ss'.
-\]
-Since \(m_S\) is monic,
-\[
-    s=s'.
-\]
-
-Consequently, there are no vertical behaviour comparisons between the
-slice-restricted behaviours associated to distinct generated input objects.
-For a generated object \(u\in S\), the endomorphisms of the corresponding
-object
-\[
-    J_F(u)
-    =
-    F\circ\operatorname{dom}_u
-\]
-are precisely the internal natural transformations
-\[
-    F\circ\operatorname{dom}_u
-    \Longrightarrow
-    F\circ\operatorname{dom}_u.
-\]
-
-Thus \(\mathbf{Der}(K)\) is an internal category over \(S\) with one object in
-each generated residual fibre, whose arrow fibre over \(u\) is the internal
-endomorphism object
-\[
-    \operatorname{End}
-    \bigl(
-        F\circ\operatorname{dom}_u
-    \bigr).
-\]
-
-Cross-base behaviour arrows belong instead to the total behaviour fibration.
-For an arrow
-\[
-    a:u\to v
-\]
-of \(\mathbb A\), a total behaviour arrow from \(J_F(u)\) to \(J_F(v)\) over
-\(a\) is a vertical comparison
-\[
-    J_F(u)
-    \Longrightarrow
-    \partial_aJ_F(v).
-\]
-Since
-\[
-    \partial_aJ_F(v)=J_F(u),
-\]
-the chosen cartesian arrow is represented by the identity comparison
-\[
-    1_{J_F(u)}.
-\]
-
-The object-level minimal execution machine remains
-\[
-    (\mathbb A|_S)^{\mathrm{op}}
-        \longrightarrow
-    \mathbb B^{\mathrm{op}},
-\]
-with output functor given by the restriction of \(F^{\mathrm{op}}\). The
-vertical category \(\mathbf{Der}(K)\) records, separately, the fibrewise
-endomorphism structure of the generated slice restrictions.
-
-For the full specification \(i=1_{A_0}\), one has \(S=A_0\). Hence the minimal
-execution semantics recovers
-\[
-    \mathbb A^{\mathrm{op}}
-        \xrightarrow{F^{\mathrm{op}}}
-    \mathbb B^{\mathrm{op}},
-\]
-while the vertical generated behaviour category has, over each
-\(v\in A_0\), the endomorphism category of
-\[
-    F\circ\operatorname{dom}_v.
-\]
 
 \section{Examples}
 \label{sec:behaviour-myhill-nerode-examples}

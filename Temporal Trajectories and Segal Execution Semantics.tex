@@ -1,0 +1,4212 @@
+\chapter{Temporal Trajectories and Segal Execution Semantics}
+\label{ch:temporal-trajectories-segal-execution}
+
+\section{Orientation: from transitions to finite executions}
+\label{sec:temporal-from-mealy-executions}
+
+The preceding chapters developed the state semantics of categorical automata.
+A state of a Mealy morphism determines a residual behaviour, behavioural
+equivalence identifies states with the same residual behaviour, and semantic
+factorization produces canonical separated realizations. Those constructions
+answer a state-oriented question:
+\[
+    \text{what behaviour is represented by the present state?}
+\]
+
+This chapter begins from the complementary execution-oriented question:
+\[
+    \text{what finite run is forced by a state and a finite input path?}
+\]
+
+For a Mealy morphism
+\[
+    \Phi=(P,\delta_P,\omega_P):
+    \mathbb A\rightsquigarrow\mathbb B,
+\]
+the transition operation sends an applicable input arrow and a current state
+to the next state, while the output operation assigns the corresponding
+output-comparison arrow. Repeating the one-step operation produces a finite
+labelled execution
+\[
+\begin{tikzcd}[column sep=large]
+    x_0
+        \arrow[r, "{a_1}"]
+    &
+    x_1
+        \arrow[r, "{a_2}"]
+    &
+    \cdots
+        \arrow[r]
+    &
+    x_n,
+\end{tikzcd}
+\]
+together with an input path in \(\mathbb A^{\mathrm{op}}\) and an
+output-comparison path in \(\mathbb B^{\mathrm{op}}\).
+
+The constructions are organized into three successive presentations:
+\[
+\begin{tikzcd}[column sep=huge]
+    \text{transition-output data}
+        \arrow[r]
+    &
+    \operatorname{Exec}(\Phi)
+        \arrow[r]
+    &
+    \mathscr T_\Phi.
+\end{tikzcd}
+\]
+The execution category \(\operatorname{Exec}(\Phi)\) is the operational
+presentation.  Its path object \(\mathscr T_\Phi\) is the finite-trajectory
+presentation.  The following chapters will evaluate output-comparison labels
+in downstream actions, transpose the resulting labelled actions into
+polynomial total-response coalgebras, and then develop span, profile, and
+trajectory predicate transformers.  The present chapter supplies the
+execution geometry on which those later constructions depend.
+
+Finite executions already exhibit the structures isolated below:
+\begin{enumerate}
+    \item a run restricts to every contiguous temporal window;
+    \item adjacent runs glue uniquely when their common boundary states agree;
+    \item an identity execution may be inserted at any boundary;
+    \item adjacent execution steps may be contracted using composition in the
+    input category;
+    \item the Mealy multiplication laws ensure that state transition and
+    output comparison are compatible with that contraction.
+\end{enumerate}
+
+The restriction and gluing operations belong to the path-sheaf structure.
+Identity insertion and contraction use the internal category operations and
+form the additional Segal execution structure.  This distinction will later
+reappear, after dependent-product transposition, as the distinction between
+an arbitrary one-step response coalgebra and a multiplicative response
+coalgebra.
+
+The principal results are organized in the order in which these structures
+are derived:
+\begin{enumerate}
+    \item every Mealy morphism determines an execution category labelled over
+    \(\mathbb A^{\mathrm{op}}\) and \(\mathbb B^{\mathrm{op}}\);
+    \item finite executions are uniquely determined by an initial state and a
+    finite input path;
+    \item execution categories compose by pullback over their common labelled
+    interface, naturally and coherently;
+    \item the finite path objects of any internal graph form a sheaf on the
+    discrete interval site, and internal graphs are equivalent to trajectory
+    sheaves;
+    \item internal category structures are exactly Segal composition
+    structures on the corresponding trajectory sheaves;
+    \item strict regular semantic quotients induce regular epimorphisms in
+    every finite path length, so behavioural minimization induces
+    finite-trajectory minimization;
+    \item in canonical residual execution, derivative generation is finite-path
+    endpoint reachability;
+    \item in the Boolean specialization, the full word-labelled execution
+    category is the free categorical completion of the letterwise derivative
+    graph.
+\end{enumerate}
+
+The ambient hypotheses are used locally.  The execution category, finite-path
+objects, interval site, trajectory-sheaf equivalence, and Segal constructions
+require only finite limits.  The quotient and minimization results use the
+regular or exact structure stated in their sections.  The canonical residual
+application additionally uses the coproducts and regular images required to
+form finite-path endpoint reachability.  Universal trajectory boxes and
+safety cores require further dependent products and complete subobject
+lattices; those logical constructions are deferred to the later dynamic-logic
+chapter.
+
+Unless a section states otherwise, \(\mathcal E\) is finitely complete and
+chosen pullbacks are used throughout.  All external indexing categories lie
+in a fixed universe.  Internal categories, Mealy morphisms, strict semantic
+homomorphisms, semantic images, derivative closure, and the canonical
+behaviour machine use the conventions established in the preceding chapters.
+
+Write
+\[
+    \mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A),
+    \qquad
+    \mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B).
+\]
+The carrier of \(\Phi\) has anchors
+\[
+    p_P:P\to A_0,
+    \qquad
+    q_P:P\to B_0.
+\]
+The transition domain is
+\[
+    D_P
+    :=
+    A_1\times_{t_A,A_0,p_P}P,
+\]
+and the structure maps are written
+\[
+    \delta_P:D_P\to P,
+    \qquad
+    \omega_P:D_P\to B_1.
+\]
+For an arrow
+\[
+    a:u\to v
+\]
+and a state \(x\) with \(p_P(x)=v\), the transition and output comparison
+have types
+\[
+    \delta_P(a,x)\in P_u,
+\]
+\[
+    \omega_P(a,x):
+    q_P\bigl(\delta_P(a,x)\bigr)
+    \longrightarrow
+    q_P(x).
+\]
+For composable arrows
+\[
+    a:u\to v,
+    \qquad
+    b:v\to w,
+\]
+and a state \(x\) over \(w\), the Mealy multiplication laws are
+\[
+    \delta_P(b\circ a,x)
+    =
+    \delta_P\bigl(a,\delta_P(b,x)\bigr),
+\]
+\[
+    \omega_P(b\circ a,x)
+    =
+    \omega_P(b,x)
+    \circ
+    \omega_P\bigl(a,\delta_P(b,x)\bigr).
+\]
+These equations determine the orientation of every execution construction
+below.
+
+\section{The execution category of a Mealy morphism}
+\label{subsec:mealy-action-category}
+
+A one-step execution is not merely an input arrow. It consists of an input
+arrow together with the state at which that arrow is processed. The next state
+is then determined by the transition operation.
+
+\begin{definition}[Execution category]
+\label{def:execution-category}
+The \textbf{execution category} of \(\Phi\) is the internal category
+\[
+    \operatorname{Exec}(\Phi)
+\]
+whose object object is
+\[
+    \operatorname{Exec}(\Phi)_0:=P
+\]
+and whose arrow object is
+\[
+    \operatorname{Exec}(\Phi)_1:=D_P.
+\]
+Its source and target maps are
+\[
+    s_{\operatorname{Exec}}(a,x):=x,
+    \qquad
+    t_{\operatorname{Exec}}(a,x):=\delta_P(a,x).
+\]
+\end{definition}
+
+Thus a one-step execution has the form
+\[
+\begin{tikzcd}[column sep=huge]
+    x
+        \arrow[r, "{(a,x)}"]
+    &
+    \delta_P(a,x).
+\end{tikzcd}
+\]
+The identity execution at \(x\) is
+\[
+    \bigl(e_A(p_Px),x\bigr).
+\]
+If
+\[
+    a:u\to v,
+    \qquad
+    b:v\to w,
+\]
+and \(x\) lies over \(w\), then the two execution arrows
+\[
+\begin{tikzcd}[column sep=large]
+    x
+        \arrow[r, "{(b,x)}"]
+    &
+    \delta_P(b,x)
+        \arrow[r, "{(a,\delta_P(b,x))}"]
+    &
+    \delta_P\bigl(a,\delta_P(b,x)\bigr)
+\end{tikzcd}
+\]
+are composable. Their composite is defined to be
+\[
+\begin{tikzcd}[column sep=huge]
+    x
+        \arrow[r, "{(b\circ a,x)}"]
+    &
+    \delta_P(b\circ a,x).
+\end{tikzcd}
+\]
+The transition multiplication law identifies the two displayed terminal
+states.
+
+\begin{proposition}[Internal category structure of execution]
+\label{prop:internal-category-structure-execution}
+The displayed source, target, identity, and composition maps make
+\(\operatorname{Exec}(\Phi)\) an internal category.
+\end{proposition}
+
+\begin{proof}
+The source and target typing equations follow from the anchor equations of the
+Mealy transition. The transition unit law gives
+\[
+    \delta_P(e_A(p_Px),x)=x,
+\]
+so the displayed execution arrow is an identity at \(x\).
+
+For a composable pair, the transition multiplication equation
+\[
+    \delta_P(b\circ a,x)
+    =
+    \delta_P\bigl(a,\delta_P(b,x)\bigr)
+\]
+shows that the proposed composite has the same target as the successive
+execution of \(b\) and then \(a\). The two unit laws for the execution
+category are inherited from the unit laws of \(\mathbb A\) together with the
+Mealy transition unit law.
+
+For a composable triple of input arrows, both parenthesized execution
+composites have input label equal to the composite arrow in \(\mathbb A\),
+and their terminal states agree by repeated application of the transition
+multiplication law. Associativity in \(\mathbb A\) therefore gives
+associativity in \(\operatorname{Exec}(\Phi)\).
+\end{proof}
+
+The execution category is the action category of the contravariant input
+action. With that notation one may write
+\[
+    \operatorname{Exec}(\Phi)
+    \cong
+    P\rtimes\mathbb A^{\mathrm{op}}.
+\]
+This identification is useful conceptually, but the explicit transition
+presentation will be retained because it keeps the Mealy orientation visible.
+
+\section{Input and output labels}
+\label{subsec:execution-labels}
+
+Each execution arrow carries two categorical labels. The input label records
+which arrow of \(\mathbb A\) is processed. The output label records the
+comparison arrow produced by the Mealy output operation.
+
+\begin{definition}[Input labelling functor]
+\label{def:input-labelling-functor}
+The \textbf{input labelling functor}
+\[
+    I_\Phi:
+    \operatorname{Exec}(\Phi)
+    \longrightarrow
+    \mathbb A^{\mathrm{op}}
+\]
+has object part
+\[
+    p_P:P\to A_0
+\]
+and arrow part
+\[
+    (a,x)\longmapsto a^{\mathrm{op}}.
+\]
+\end{definition}
+
+For \(a:u\to v\), the execution arrow
+\[
+    (a,x):x\to\delta_P(a,x)
+\]
+lies over
+\[
+    a^{\mathrm{op}}:v\to u.
+\]
+The reversal is forced by the target-to-source processing convention.
+
+\begin{definition}[Output-comparison labelling functor]
+\label{def:output-labelling-functor}
+The \textbf{output-comparison labelling functor}
+\[
+    O_\Phi:
+    \operatorname{Exec}(\Phi)
+    \longrightarrow
+    \mathbb B^{\mathrm{op}}
+\]
+has object part
+\[
+    q_P:P\to B_0
+\]
+and arrow part
+\[
+    (a,x)
+    \longmapsto
+    \omega_P(a,x)^{\mathrm{op}}.
+\]
+\end{definition}
+
+The execution category therefore sits in a span
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbb A^{\mathrm{op}}
+    &
+    \operatorname{Exec}(\Phi)
+        \arrow[l, "I_\Phi"']
+        \arrow[r, "O_\Phi"]
+    &
+    \mathbb B^{\mathrm{op}}.
+\end{tikzcd}
+\]
+This is the one-step labelled execution semantics of \(\Phi\).
+
+\begin{proposition}[Functoriality of the execution labels]
+\label{prop:functoriality-execution-labels}
+The displayed maps define internal functors
+\[
+    I_\Phi:
+    \operatorname{Exec}(\Phi)\to\mathbb A^{\mathrm{op}},
+\]
+\[
+    O_\Phi:
+    \operatorname{Exec}(\Phi)\to\mathbb B^{\mathrm{op}}.
+\]
+\end{proposition}
+
+\begin{proof}
+The input labelling preserves identity arrows because the input label of the
+identity execution at \(x\) is
+\[
+    e_A(p_Px)^{\mathrm{op}}.
+\]
+For composable execution arrows labelled by \(b^{\mathrm{op}}\) and
+\(a^{\mathrm{op}}\), one has
+\[
+    (b\circ a)^{\mathrm{op}}
+    =
+    a^{\mathrm{op}}\circ b^{\mathrm{op}},
+\]
+which is exactly the composite in \(\mathbb A^{\mathrm{op}}\) in execution
+order.
+
+For output labels, the Mealy output unit equation gives
+\[
+    \omega_P(e_A(p_Px),x)
+    =
+    e_B(q_Px),
+\]
+so identities are preserved. For a composable pair, the output multiplication
+law is
+\[
+    \omega_P(b\circ a,x)
+    =
+    \omega_P(b,x)
+    \circ
+    \omega_P\bigl(a,\delta_P(b,x)\bigr).
+\]
+Passing to \(\mathbb B^{\mathrm{op}}\) gives
+\[
+    \omega_P(b\circ a,x)^{\mathrm{op}}
+    =
+    \omega_P\bigl(a,\delta_P(b,x)\bigr)^{\mathrm{op}}
+    \circ
+    \omega_P(b,x)^{\mathrm{op}},
+\]
+which is preservation of execution composition.
+\end{proof}
+
+\begin{theorem}[Labelled execution category]
+\label{thm:labelled-execution-category}
+Every Mealy morphism
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+determines a span of internal categories
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbb A^{\mathrm{op}}
+    &
+    \operatorname{Exec}(\Phi)
+        \arrow[l, "I_\Phi"']
+        \arrow[r, "O_\Phi"]
+    &
+    \mathbb B^{\mathrm{op}}.
+\end{tikzcd}
+\]
+Its object map records the input and output anchors of a state, and its arrow
+map records the input and output-comparison labels of a one-step execution.
+\end{theorem}
+
+\section{Finite execution objects}
+\label{subsec:finite-execution-objects}
+
+The execution category determines finite runs before any abstract path site is
+introduced. For \(n\geq1\), define
+\[
+    \mathscr T_\Phi(n)
+    :=
+    \underbrace{
+    \operatorname{Exec}(\Phi)_1
+    \times_P
+    \cdots
+    \times_P
+    \operatorname{Exec}(\Phi)_1
+    }_{n\text{ factors}},
+\]
+where the pullbacks identify the target of one execution step with the source
+of the next. Put
+\[
+    \mathscr T_\Phi(0):=P,
+    \qquad
+    \mathscr T_\Phi(-1):=1.
+\]
+
+A generalized element of \(\mathscr T_\Phi(n)\) is written
+\[
+\begin{tikzcd}[column sep=large]
+    x_0
+        \arrow[r, "{(a_1,x_0)}"]
+    &
+    x_1
+        \arrow[r, "{(a_2,x_1)}"]
+    &
+    \cdots
+        \arrow[r]
+    &
+    x_n,
+\end{tikzcd}
+\]
+where
+\[
+    x_i=\delta_P(a_i,x_{i-1})
+\]
+and
+\[
+    a_i:p_P(x_i)\to p_P(x_{i-1})
+\]
+in \(\mathbb A\). The corresponding input path is
+\[
+\begin{tikzcd}[column sep=large]
+    p_P(x_0)
+        \arrow[r, "a_1^{\mathrm{op}}"]
+    &
+    p_P(x_1)
+        \arrow[r, "a_2^{\mathrm{op}}"]
+    &
+    \cdots
+        \arrow[r]
+    &
+    p_P(x_n)
+\end{tikzcd}
+\]
+in \(\mathbb A^{\mathrm{op}}\), while the output-comparison path is
+\[
+\begin{tikzcd}[column sep=large]
+    q_P(x_0)
+        \arrow[r, "{\omega_P(a_1,x_0)^{\mathrm{op}}}"]
+    &
+    q_P(x_1)
+        \arrow[r, "{\omega_P(a_2,x_1)^{\mathrm{op}}}"]
+    &
+    \cdots
+        \arrow[r]
+    &
+    q_P(x_n)
+\end{tikzcd}
+\]
+in \(\mathbb B^{\mathrm{op}}\).
+
+For \(0\leq i\leq n\), write
+\[
+    \nu_i^{\Phi,n}:
+    \mathscr T_\Phi(n)\to P
+\]
+for the \(i\)-th state map. In particular,
+\[
+    s_n^\Phi:=\nu_0^{\Phi,n},
+    \qquad
+    t_n^\Phi:=\nu_n^{\Phi,n}.
+\]
+
+For \(0\leq i\leq j\leq n\), projection to the factors between boundaries
+\(i\) and \(j\) gives a restriction map
+\[
+    \operatorname{res}_{i,j}:
+    \mathscr T_\Phi(n)
+    \longrightarrow
+    \mathscr T_\Phi(j-i).
+\]
+When \(i=j\), this is the vertex map \(\nu_i^{\Phi,n}\). Restriction to the
+empty interval is the unique map to \(1\). Nested restrictions compose as
+expected because both sides select the same consecutive execution factors.
+
+Adjacent finite executions glue along their common boundary state. For
+\(m,n\geq0\), the iterated-pullback definitions give a canonical isomorphism
+\[
+\begin{tikzcd}[column sep=large]
+    \mathscr T_\Phi(m+n)
+        \arrow[r, "\cong"]
+    &
+    \mathscr T_\Phi(m)
+        \times_{P}
+    \mathscr T_\Phi(n),
+\end{tikzcd}
+\]
+where the pullback uses the terminal boundary of the first execution and the
+initial boundary of the second. This is the first appearance of temporal
+gluing: compatible adjacent runs determine a unique longer run.
+
+\subsection{Deterministic lifting of finite input paths}
+\label{subsec:deterministic-path-lifting}
+
+For \(n\geq1\), let
+\[
+    \mathbb A^{\mathrm{op}}[n]
+    :=
+    \underbrace{
+    A_1\times_{A_0}\cdots\times_{A_0}A_1
+    }_{n\text{ factors}}
+\]
+denote the object of \(n\)-step paths in \(\mathbb A^{\mathrm{op}}\). Put
+\[
+    \mathbb A^{\mathrm{op}}[0]:=A_0,
+    \qquad
+    \mathbb A^{\mathrm{op}}[-1]:=1.
+\]
+Write
+\[
+    \lambda_0^{A,n}:
+    \mathbb A^{\mathrm{op}}[n]\to A_0
+\]
+for the initial-boundary map.
+
+The input labelling functor induces
+\[
+    I_{\Phi,n}:
+    \mathscr T_\Phi(n)
+    \longrightarrow
+    \mathbb A^{\mathrm{op}}[n].
+\]
+Together with the initial-state map, this gives
+\[
+\begin{tikzcd}[column sep=large]
+    \mathscr T_\Phi(n)
+        \arrow[r, "{(s_n^\Phi,I_{\Phi,n})}"]
+    &
+    P\times_{A_0}\mathbb A^{\mathrm{op}}[n].
+\end{tikzcd}
+\]
+
+\begin{proposition}[Deterministic path lifting]
+\label{prop:deterministic-path-lifting}
+For every \(n\geq0\), the canonical map
+\[
+    \left(
+        s_n^\Phi,
+        I_{\Phi,n}
+    \right):
+    \mathscr T_\Phi(n)
+    \longrightarrow
+    P\times_{A_0}\mathbb A^{\mathrm{op}}[n]
+\]
+is an isomorphism. The pullback uses
+\[
+    p_P:P\to A_0
+\]
+and
+\[
+    \lambda_0^{A,n}:
+    \mathbb A^{\mathrm{op}}[n]\to A_0.
+\]
+\end{proposition}
+
+\begin{proof}
+A finite execution determines its initial state and its input path, so the
+displayed map is canonical.
+
+Conversely, suppose internally that one is given an initial state \(x_0\)
+and an input path
+\[
+\begin{tikzcd}[column sep=large]
+    p_P(x_0)
+        \arrow[r, "a_1^{\mathrm{op}}"]
+    &
+    u_1
+        \arrow[r, "a_2^{\mathrm{op}}"]
+    &
+    \cdots
+        \arrow[r]
+    &
+    u_n
+\end{tikzcd}
+\]
+in \(\mathbb A^{\mathrm{op}}\). Equivalently, one has composable arrows
+\[
+    a_i:u_i\to u_{i-1}
+\]
+in \(\mathbb A\), with \(u_0=p_P(x_0)\). Define recursively
+\[
+    x_i:=\delta_P(a_i,x_{i-1}).
+\]
+The typing equations for \(\delta_P\) give
+\[
+    p_P(x_i)=u_i,
+\]
+so every successive transition is defined. This produces a finite execution
+over the prescribed input path.
+
+Internally, the recursive construction is a morphism in \(\mathcal E\): it is
+obtained by repeated use of \(\delta_P\) and the pullback projections of the
+input-path object. The construction is unique because the transition is a
+map, rather than a relation. It is inverse to the canonical map above.
+\end{proof}
+
+\begin{corollary}[Finite executions from states and input paths]
+\label{cor:executions-input-paths-initial-states}
+At every finite path length, an execution is uniquely determined by
+\begin{enumerate}
+    \item its initial state;
+    \item its input path.
+\end{enumerate}
+The complete state path and output-comparison path are then forced by the
+Mealy transition and output operations.
+\end{corollary}
+
+The output path is not additional nondeterministic data. Under the isomorphism
+of Proposition~\ref{prop:deterministic-path-lifting}, it is the morphism
+obtained by evaluating \(\omega_P\) successively at the recursively generated
+states.
+
+\section{Restriction, identity insertion, contraction, and segmentation}
+\label{subsec:execution-identity-contraction}
+
+Finite execution objects have restriction and gluing because they are path
+objects of the underlying execution graph. The category structure of
+\(\operatorname{Exec}(\Phi)\) supplies additional operations.
+
+First, an identity execution may be inserted at any temporal boundary. At a
+state \(x_i\), the inserted step is
+\[
+\begin{tikzcd}[column sep=huge]
+    x_i
+        \arrow[r, "{(e_A(p_Px_i),x_i)}"]
+    &
+    x_i.
+\end{tikzcd}
+\]
+Second, adjacent steps may be contracted. For a two-step execution
+\[
+\begin{tikzcd}[column sep=large]
+    x
+        \arrow[r, "{(b,x)}"]
+    &
+    \delta_P(b,x)
+        \arrow[r, "{(a,\delta_P(b,x))}"]
+    &
+    \delta_P\bigl(a,\delta_P(b,x)\bigr),
+\end{tikzcd}
+\]
+contraction produces
+\[
+\begin{tikzcd}[column sep=huge]
+    x
+        \arrow[r, "{(b\circ a,x)}"]
+    &
+    \delta_P(b\circ a,x).
+\end{tikzcd}
+\]
+The transition multiplication law identifies the terminal states, and the
+output multiplication law identifies the output label of the contracted step
+with the composite of the two original output labels.
+
+More generally, any consecutive block of an \(n\)-step execution may be
+contracted to a single step. Total contraction gives a map
+\[
+    \kappa_n^\Phi:
+    \mathscr T_\Phi(n)
+    \longrightarrow
+    \mathscr T_\Phi(1)
+\]
+with
+\[
+    s_1^\Phi\kappa_n^\Phi=s_n^\Phi,
+    \qquad
+    t_1^\Phi\kappa_n^\Phi=t_n^\Phi.
+\]
+For \(n=0\), total contraction means insertion of the identity execution.
+Associativity says that repeated contractions are independent of
+parenthesization, and the unit laws say that inserted identity steps do not
+change the contracted execution.
+
+\begin{remark}[Path length records a chosen segmentation]
+\label{rem:temporal-extent-segmentation}
+The integer \(n\) records a chosen decomposition of an execution into
+\(n\) categorical arrows. It does not, in general, measure an irreducible
+duration or a number of primitive computational steps.
+
+Indeed, every composable string
+\[
+    x_0\to x_1\to\cdots\to x_n
+\]
+contracts to a one-step execution with the same initial and terminal states.
+The finite-path objects retain the chosen segmentation, while the contraction
+maps record the corresponding categorical composite.
+
+Consequently, endpoint reachability for the full categorical execution
+system is already detected by one-step executions: a one-step input label may
+itself be an arbitrary composite arrow of \(\mathbb A\).  The later
+dynamic-logic chapter will formulate the corresponding universal
+finite-trajectory conditions.  To make path length count primitive steps, one
+must choose a generating graph or another class of atomic transitions.  The
+letterwise Boolean execution graph later in the chapter is the basic example.
+\end{remark}
+
+\section{Functoriality under strict semantic homomorphisms}
+\label{subsec:temporal-functoriality-strict}
+
+Let
+\[
+    f:\Phi\to\Psi
+\]
+be a strict semantic homomorphism between
+\[
+    \Phi=(P,\delta_P,\omega_P),
+    \qquad
+    \Psi=(Q,\delta_Q,\omega_Q),
+\]
+over the same input and output interfaces. Thus the carrier map
+\[
+    f:P\to Q
+\]
+preserves both anchors, transitions, and output comparisons.
+
+Define
+\[
+    \operatorname{Exec}(f):
+    \operatorname{Exec}(\Phi)
+    \longrightarrow
+    \operatorname{Exec}(\Psi)
+\]
+by
+\[
+    x\longmapsto f(x)
+\]
+on objects and
+\[
+    (a,x)\longmapsto(a,f(x))
+\]
+on arrows.
+
+\begin{proposition}[Functoriality of execution categories]
+\label{prop:functoriality-execution-categories}
+The displayed maps define an internal functor
+\[
+    \operatorname{Exec}(f):
+    \operatorname{Exec}(\Phi)
+    \to
+    \operatorname{Exec}(\Psi).
+\]
+Moreover,
+\[
+    I_\Psi\operatorname{Exec}(f)=I_\Phi,
+    \qquad
+    O_\Psi\operatorname{Exec}(f)=O_\Phi.
+\]
+\end{proposition}
+
+\begin{proof}
+Strict transition preservation gives
+\[
+    f\bigl(\delta_P(a,x)\bigr)
+    =
+    \delta_Q(a,f(x)),
+\]
+so the arrow map preserves targets. It plainly preserves sources. Identity
+and composition preservation follow from the formula and the fact that the
+input arrow is unchanged.
+
+Input labels are therefore unchanged. Strict output preservation gives
+\[
+    \omega_Q(a,f(x))
+    =
+    \omega_P(a,x),
+\]
+so the output-comparison labels are unchanged as well.
+\end{proof}
+
+The induced maps on path objects are
+\[
+    \mathscr T_f(n):
+    \mathscr T_\Phi(n)
+    \longrightarrow
+    \mathscr T_\Psi(n),
+\]
+obtained by applying \(f\) at every state boundary and leaving the input and
+output labels fixed. These maps commute with contiguous restriction, gluing,
+identity insertion, and contraction.
+
+\begin{remark}[Strict homomorphisms and displayed simulations]
+\label{rem:temporal-strict-versus-simulation}
+The comparison notion in this section is deliberately strict.  A strict
+semantic homomorphism has a covariant state map
+\[
+    f:P\to Q
+\]
+that preserves transitions and output comparisons on the nose, and therefore
+induces a covariant execution functor
+\[
+    \operatorname{Exec}(\Phi)\to\operatorname{Exec}(\Psi).
+\]
+
+A displayed Mealy simulation has different variance.  Its displayed state
+component is directed from the target carrier to the source carrier and its
+output component is a comparison arrow rather than a strict equality of
+outputs.  Such a simulation does not directly define a labelled functor
+between the unevaluated execution categories considered here.  In the next
+chapter, the output-comparison arrow is evaluated in a downstream
+\(\mathbb B\)-action.  That evaluation produces the contravariant relative
+execution functor associated to the simulation.  Thus the covariant
+functoriality of the present section and the contravariant functoriality of
+evaluated simulations are complementary results for two genuinely different
+comparison notions.
+\end{remark}
+
+\section{Composition of execution categories}
+\label{sec:composition-temporal-execution}
+
+The temporal semantics of a composite Mealy morphism is obtained by matching
+the output-comparison execution of the first component with the input
+execution of the second component.  This section makes that matching precise
+as a pullback over the intermediate labelled category.
+
+\subsection{Composite Mealy morphisms}
+\label{subsec:composite-mealy-morphisms}
+
+Let
+\[
+    \Phi=(P,\delta_P,\omega_P):
+    \mathbb A\rightsquigarrow\mathbb B
+\]
+and
+\[
+    \Psi=(Q,\delta_Q,\omega_Q):
+    \mathbb B\rightsquigarrow\mathbb C
+\]
+be composable Mealy morphisms. Write
+\[
+    p_Q:Q\to B_0
+\]
+for the input anchor of \(Q\). The carrier of the composite is
+\[
+    P\odot Q
+    :=
+    P\times_{q_P,B_0,p_Q}Q.
+\]
+
+For a state pair \((x,y)\) and an input arrow \(a\) applicable to \(x\), put
+\[
+    b:=\omega_P(a,x).
+\]
+Since
+\[
+    t_B(b)=q_P(x)=p_Q(y),
+\]
+the arrow \(b\) is applicable to \(y\). The transition and output comparison
+of the composite are
+\[
+    \delta_{\Psi\circ\Phi}(a,(x,y))
+    =
+    \left(
+        \delta_P(a,x),
+        \delta_Q(b,y)
+    \right),
+\]
+\[
+    \omega_{\Psi\circ\Phi}(a,(x,y))
+    =
+    \omega_Q(b,y).
+\]
+Thus one step of the composite consists of one step of \(\Phi\), whose output
+comparison is immediately processed as the input arrow for one step of
+\(\Psi\).
+
+\subsection{Execution categories compose by pullback}
+\label{subsec:execution-category-pullback}
+
+The shared interface is represented by the functors
+\[
+    O_\Phi:
+    \operatorname{Exec}(\Phi)\to\mathbb B^{\mathrm{op}},
+\]
+\[
+    I_\Psi:
+    \operatorname{Exec}(\Psi)\to\mathbb B^{\mathrm{op}}.
+\]
+Their pullback pairs executions whose intermediate labels agree.
+
+\begin{theorem}[Execution-category composition]
+\label{thm:execution-category-composition}
+There is a canonical isomorphism of internal categories
+\[
+\begin{tikzcd}[column sep=large]
+    \operatorname{Exec}(\Psi\circ\Phi)
+        \arrow[r, "\cong"]
+    &
+    \operatorname{Exec}(\Phi)
+        \times_{\mathbb B^{\mathrm{op}}}
+    \operatorname{Exec}(\Psi).
+\end{tikzcd}
+\]
+Under this isomorphism, the input labelling is induced by \(I_\Phi\), and the
+output-comparison labelling is induced by \(O_\Psi\).
+\end{theorem}
+
+\begin{proof}
+On objects, the pullback is
+\[
+    P\times_{B_0}Q,
+\]
+which is the carrier of \(\Psi\circ\Phi\).
+
+Define the arrow component of the comparison by
+\[
+    (a,x,y)
+    \longmapsto
+    \left(
+        (a,x),
+        (\omega_P(a,x),y)
+    \right).
+\]
+The second execution arrow is defined because
+\[
+    t_B(\omega_P(a,x))
+    =
+    q_P(x)
+    =
+    p_Q(y).
+\]
+Moreover, the two arrows have the same label in
+\(\mathbb B^{\mathrm{op}}\):
+\[
+\begin{tikzcd}[column sep=large]
+    (a,x)
+        \arrow[d, mapsto, "O_\Phi"']
+    &
+    (\omega_P(a,x),y)
+        \arrow[d, mapsto, "I_\Psi"]
+    \\
+    \omega_P(a,x)^{\mathrm{op}}
+        \arrow[r, equal]
+    &
+    \omega_P(a,x)^{\mathrm{op}}.
+\end{tikzcd}
+\]
+
+Conversely, an arrow of the pullback consists of an execution arrow
+\((a,x)\) of \(\Phi\), an execution arrow \((b,y)\) of \(\Psi\), and an
+equality
+\[
+    b^{\mathrm{op}}
+    =
+    \omega_P(a,x)^{\mathrm{op}}
+\]
+in \(\mathbb B^{\mathrm{op}}\). Equivalently,
+\[
+    b=\omega_P(a,x).
+\]
+Hence the pullback arrow is uniquely determined by \((a,x,y)\), exactly the
+data of a one-step execution of the composite.
+
+Its target is
+\[
+    \left(
+        \delta_P(a,x),
+        \delta_Q(\omega_P(a,x),y)
+    \right),
+\]
+which is the composite transition. Identities agree because
+\[
+    \omega_P(e_A(p_Px),x)=e_B(q_Px).
+\]
+
+For composition, let
+\[
+    a:u\to v,
+    \qquad
+    b:v\to w,
+\]
+and let \(x\) lie over \(w\). Put
+\[
+    x_1:=\delta_P(b,x),
+\]
+\[
+    \beta_1:=\omega_P(b,x),
+    \qquad
+    \beta_2:=\omega_P(a,x_1).
+\]
+The output multiplication law gives
+\[
+    \omega_P(b\circ a,x)
+    =
+    \beta_1\circ\beta_2.
+\]
+The transition multiplication law for \(\Psi\) gives
+\[
+    \delta_Q(\beta_1\circ\beta_2,y)
+    =
+    \delta_Q\bigl(\beta_2,\delta_Q(\beta_1,y)\bigr).
+\]
+Therefore composition in the pullback agrees with composition in
+\(\operatorname{Exec}(\Psi\circ\Phi)\). The objectwise and arrowwise
+comparisons are mutually inverse internal functors.
+\end{proof}
+
+\subsection{Naturality, units, and coherence}
+\label{subsec:naturality-units-coherence}
+
+Let
+\[
+    f:\Phi\to\Phi',
+    \qquad
+    g:\Psi\to\Psi'
+\]
+be strict semantic homomorphisms. Their horizontal composite has carrier map
+\[
+    f\odot g:
+    P\times_{B_0}Q
+    \longrightarrow
+    P'\times_{B_0}Q',
+    \qquad
+    (x,y)\longmapsto(f(x),g(y)).
+\]
+
+\begin{proposition}[Naturality of execution-category composition]
+\label{prop:naturality-execution-composition}
+The isomorphism of
+Theorem~\ref{thm:execution-category-composition}
+is natural in strict semantic homomorphisms of both Mealy factors.
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+    \kappa_{\Phi,\Psi}:
+    \operatorname{Exec}(\Psi\circ\Phi)
+    \xrightarrow{\cong}
+    \operatorname{Exec}(\Phi)
+    \times_{\mathbb B^{\mathrm{op}}}
+    \operatorname{Exec}(\Psi)
+\]
+denote the comparison. On a one-step composite execution,
+\[
+    \kappa_{\Phi,\Psi}(a,x,y)
+    =
+    \left(
+        (a,x),
+        (\omega_\Phi(a,x),y)
+    \right).
+\]
+Applying
+\(\operatorname{Exec}(f)\times\operatorname{Exec}(g)\) gives
+\[
+    \left(
+        (a,f(x)),
+        (\omega_\Phi(a,x),g(y))
+    \right).
+\]
+Strict output preservation gives
+\[
+    \omega_{\Phi'}(a,f(x))
+    =
+    \omega_\Phi(a,x),
+\]
+so this is exactly
+\[
+    \kappa_{\Phi',\Psi'}(a,f(x),g(y)).
+\]
+The comparison square therefore commutes on objects and arrows.
+\end{proof}
+
+Let
+\[
+    1_{\mathbb A}:
+    \mathbb A\rightsquigarrow\mathbb A
+\]
+be the identity Mealy morphism. Its carrier is \(A_0\), and its structure is
+\[
+    \delta(a,t_Aa)=s_Aa,
+    \qquad
+    \omega(a,t_Aa)=a.
+\]
+
+\begin{proposition}[Execution unit]
+\label{prop:temporal-unit}
+There is a canonical isomorphism
+\[
+    \operatorname{Exec}(1_{\mathbb A})
+    \cong
+    \mathbb A^{\mathrm{op}},
+\]
+compatible with both input and output-comparison labelling.
+\end{proposition}
+
+\begin{proof}
+The object object is \(A_0\), and
+\[
+    A_1\times_{t_A,A_0}A_0
+    \cong
+    A_1.
+\]
+Under this identification, the source and target maps of the execution
+category are \(t_A\) and \(s_A\), respectively, so the execution category is
+\(\mathbb A^{\mathrm{op}}\). Both labels send the execution represented by
+\(a\) to \(a^{\mathrm{op}}\), and the identity and composition structures
+agree.
+\end{proof}
+
+\begin{proposition}[Associative coherence]
+\label{prop:temporal-associative-coherence}
+The execution-category composition isomorphisms are compatible with the
+associativity and unit isomorphisms for Mealy composition.
+\end{proposition}
+
+\begin{proof}
+For three composable Mealy morphisms, both parenthesized pullbacks of execution
+categories are obtained from the same iterated pullback over the two shared
+interfaces. Every route around the associativity pentagon has the same
+projections to the three execution-category factors, and every route around a
+unit triangle has the same projection to the remaining factor. Equality
+follows from the uniqueness clause of the pullback universal property.
+\end{proof}
+
+\begin{remark}[Execution spans form a pseudofunctor]
+\label{rem:execution-pseudofunctor}
+The assignments
+\[
+    \mathbb A\longmapsto\mathbb A^{\mathrm{op}},
+\]
+\[
+    \Phi\longmapsto
+    \left(
+        \mathbb A^{\mathrm{op}}
+        \xleftarrow{I_\Phi}
+        \operatorname{Exec}(\Phi)
+        \xrightarrow{O_\Phi}
+        \mathbb B^{\mathrm{op}}
+    \right),
+\]
+and
+\[
+    f\longmapsto\operatorname{Exec}(f)
+\]
+define a pseudofunctor, equivalently a homomorphism of bicategories, from the
+bicategory of Mealy morphisms and strict semantic homomorphisms to the
+bicategory of spans of internal categories in \(\mathcal E\).
+\end{remark}
+
+\begin{remark}[Forward specialization to downstream evaluation]
+\label{rem:temporal-downstream-specialization}
+Let \(Y\to B_0\) be a right \(\mathbb B\)-action.  The next chapter packages
+\(Y\) as a terminal-output Mealy morphism
+\[
+    \widehat Y:\mathbb B\rightsquigarrow\mathbf 1
+\]
+whose execution category is the action category
+\[
+    \operatorname{Exec}(\widehat Y)
+    \cong
+    \int_{\mathbb B}Y.
+\]
+The pullback theorem of this section then specializes to
+\[
+    \operatorname{Exec}(\widehat Y\circ\Phi)
+    \cong
+    \operatorname{Exec}(\Phi)
+    \times_{\mathbb B^{\mathrm{op}}}
+    \int_{\mathbb B}Y.
+\]
+The left-hand side will be identified there with the relative program
+category of \(\Phi\) evaluated in \(Y\).  No new execution-category laws are
+required: they are inherited from Mealy composition and the pullback
+description proved above.
+\end{remark}
+
+\section{The finite-path site and trajectory sheaves}
+\label{sec:internal-graphs-trajectory-sheaves}
+
+The construction of \(\mathscr T_\Phi(n)\) used only the underlying graph of
+\(\operatorname{Exec}(\Phi)\): its state object, its one-step execution
+object, and the source and target maps. Contiguous restriction and gluing were
+already present before identity insertion and contraction were considered.
+This section isolates that graph-level structure.
+
+\subsection{The augmented discrete interval category}
+\label{subsec:augmented-discrete-interval-category}
+
+Let
+\[
+    [-1]:=\varnothing
+\]
+denote the empty finite ordinal. For \(n\geq0\), write
+\[
+    [n]:=\{0<1<\cdots<n\}.
+\]
+The object \([n]\) represents a finite interval with \(n\) one-step segments
+and \(n+1\) boundary instants.
+
+\begin{definition}[Discrete interval category]
+\label{def:discrete-interval-category}
+The \textbf{augmented discrete interval category}
+\[
+    \mathbf{Int}_{\mathrm{disc}}
+\]
+has the finite ordinals
+\[
+    [-1],[0],[1],[2],\ldots
+\]
+as objects. A morphism
+\[
+    \iota:[k]\longrightarrow[n]
+\]
+is an injective order-preserving map whose image is a contiguous subinterval
+of \([n]\). Equivalently, for \(k\geq0\), it is determined by a starting
+position \(i\) with
+\[
+    0\leq i\leq n-k
+\]
+and has the form
+\[
+    \iota(r)=i+r.
+\]
+There is a unique morphism
+\[
+    [-1]\to[n]
+\]
+for every \(n\geq-1\).
+\end{definition}
+
+In starting-position notation,
+\[
+    (i,k):[k]\to[n]
+\]
+and
+\[
+    (j,\ell):[\ell]\to[k]
+\]
+compose to
+\[
+    (i+j,\ell):[\ell]\to[n].
+\]
+The two maps
+\[
+    \epsilon_0,\epsilon_1:[0]\rightrightarrows[1]
+\]
+select the initial and terminal boundaries. For \(n\geq1\) and
+\(0\leq i<n\), write
+\[
+    e_i:[1]\to[n]
+\]
+for the elementary edge inclusion with image \(\{i,i+1\}\).
+
+Intersections of contiguous subintervals are contiguous, possibly empty.
+Consequently, pullbacks of interval inclusions exist in
+\(\mathbf{Int}_{\mathrm{disc}}\). For example, adjacent elementary edges
+intersect in a point,
+\[
+\begin{tikzcd}
+    {[0]}
+        \arrow[r]
+        \arrow[d]
+    &
+    {[1]}
+        \arrow[d, "e_{i+1}"]
+    \\
+    {[1]}
+        \arrow[r, "e_i"']
+    &
+    {[n]},
+\end{tikzcd}
+\]
+whereas nonadjacent elementary edges intersect in \([-1]\).
+
+\subsection{The elementary-edge topology}
+\label{subsec:path-topology}
+
+\begin{definition}[Elementary path covers]
+\label{def:elementary-path-covers}
+For \(n\geq1\), the \textbf{elementary path cover} of \([n]\) is the family
+\[
+    \{e_i:[1]\to[n]\}_{0\leq i<n}.
+\]
+The identity family covers \([0]\), and the empty family covers \([-1]\).
+\end{definition}
+
+\begin{definition}[Finite-path topology]
+\label{def:discrete-path-topology}
+The \textbf{finite-path topology}
+\[
+    J_{\mathrm{path}}
+\]
+is the Grothendieck topology on \(\mathbf{Int}_{\mathrm{disc}}\) generated by
+the elementary path covers, the identity cover of \([0]\), and the empty
+cover of \([-1]\).
+\end{definition}
+
+We verify that the displayed covering families form a basis. Let
+\[
+    \iota:[k]\to[n]
+\]
+be a contiguous interval inclusion. The pullback of an elementary edge
+inclusion along \(\iota\) is an elementary edge, a boundary point, or the
+empty interval.
+
+Suppose first that \(k\geq1\) and that the image of \(\iota\) is
+\[
+    \{i,i+1,\ldots,i+k\}.
+\]
+For every \(0\leq r<k\), the pullback of
+\[
+    e_{i+r}:[1]\to[n]
+\]
+along \(\iota\) is the elementary edge
+\[
+    e_r:[1]\to[k].
+\]
+Hence the pullback family contains the full elementary-edge cover of
+\([k]\), possibly together with boundary-point and empty intersections. If
+\(k=0\), the pullback family contains the identity of \([0]\). If
+\(k=-1\), every pullback intersection is \([-1]\), and the resulting family
+is refined by the specified empty covering family of \([-1]\).
+
+Transitivity is equally direct. Every member of an elementary-edge cover is a
+copy of \([1]\), whose elementary cover is its identity family. Refining
+each edge by that family reproduces the original cover. The identity and
+empty covers are similarly stable. Thus the displayed families form a basis
+for \(J_{\mathrm{path}}\).
+
+\subsection{Trajectory presheaves and their gluing condition}
+\label{subsec:concrete-path-sheaf-condition}
+
+\begin{definition}[Trajectory presheaf]
+\label{def:internal-trajectory-presheaf}
+An \(\mathcal E\)-valued \textbf{trajectory presheaf} is a functor
+\[
+    X:
+    \mathbf{Int}_{\mathrm{disc}}^{\mathrm{op}}
+    \to
+    \mathcal E.
+\]
+For a contiguous inclusion
+\[
+    \iota:[k]\to[n],
+\]
+the induced map
+\[
+    X(\iota):X(n)\to X(k)
+\]
+is called contiguous path restriction.
+\end{definition}
+
+\begin{definition}[Trajectory sheaf]
+\label{def:discrete-trajectory-sheaf}
+A trajectory presheaf is a \textbf{trajectory sheaf} if it is a sheaf for
+\(J_{\mathrm{path}}\).
+\end{definition}
+
+Write
+\[
+    \mathbf{TrajSh}_{\mathcal E}
+    :=
+    \mathbf{Sh}_{\mathcal E}
+    \left(
+        \mathbf{Int}_{\mathrm{disc}},
+        J_{\mathrm{path}}
+    \right)
+\]
+for the category of trajectory sheaves and their morphisms.
+
+For the elementary cover of \([n]\), a matching family consists of one
+section of \(X(1)\) for each elementary edge. Adjacent sections must agree on
+their common boundary point, and nonadjacent sections must agree on their
+empty intersection. The latter conditions become automatic once
+\(X(-1)\cong1\).
+
+\begin{proposition}[Concrete trajectory-sheaf condition]
+\label{prop:concrete-trajectory-sheaf-condition}
+A trajectory presheaf \(X\) is a trajectory sheaf if and only if:
+\begin{enumerate}
+    \item the canonical map
+    \[
+        X(-1)\longrightarrow1
+    \]
+    is an isomorphism;
+    \item for every \(n\geq1\), the canonical edge-restriction map
+    \[
+        X(n)
+        \longrightarrow
+        \underbrace{
+        X(1)\times_{X(0)}
+        X(1)\times_{X(0)}
+        \cdots\times_{X(0)}X(1)
+        }_{n\text{ factors}}
+    \]
+    is an isomorphism.
+\end{enumerate}
+The pullbacks use terminal restriction on one edge and initial restriction on
+the next.
+\end{proposition}
+
+\begin{proof}
+The empty covering family of \([-1]\) has terminal matching object. Hence the
+sheaf condition at \([-1]\) is precisely
+\[
+    X(-1)\cong1.
+\]
+
+For \(n\geq1\), a matching family for the elementary-edge cover consists
+internally of sections
+\[
+    x_i\in X(1),
+    \qquad
+    0\leq i<n,
+\]
+satisfying
+\[
+    X(\epsilon_1)(x_i)
+    =
+    X(\epsilon_0)(x_{i+1})
+\]
+for every adjacent pair. These are exactly the equations defining the
+iterated pullback
+\[
+    X(1)\times_{X(0)}\cdots\times_{X(0)}X(1).
+\]
+Intersections of nonadjacent edges are empty, and compatibility over them is
+automatic because \(X(-1)\cong1\). The sheaf comparison for the basis cover
+is therefore the displayed edge-restriction map. Since the specified covers
+form a basis, the basis sheaf condition is equivalent to the full sheaf
+condition.
+\end{proof}
+
+\begin{corollary}[Adjacent path gluing]
+\label{cor:adjacent-temporal-gluing}
+For every trajectory sheaf \(X\) and every \(m,n\in\mathbb N\), there is a
+canonical isomorphism
+\[
+\begin{tikzcd}[column sep=large]
+    X(m+n)
+        \arrow[r, "\cong"]
+    &
+    X(m)\times_{X(0)}X(n),
+\end{tikzcd}
+\]
+where the first map to \(X(0)\) is restriction to the terminal boundary of
+\([m]\), and the second is restriction to the initial boundary of \([n]\).
+\end{corollary}
+
+\begin{proof}
+Both sides are canonically isomorphic to the iterated pullback of \(m+n\)
+copies of \(X(1)\) over \(X(0)\). The first \(m\) factors form the initial
+path, the final \(n\) factors form the terminal path, and the middle pullback
+equation identifies their shared boundary. The cases \(m=0\) or \(n=0\)
+reduce to pullback along an identity map.
+\end{proof}
+
+\subsection{Path objects of an internal graph}
+\label{subsec:path-objects-internal-graph}
+
+Let
+\[
+    G=
+    \left(
+    G_1
+    \mathrel{\substack{\xrightarrow{t_G}\\[-0.4em]\xrightarrow[s_G]{}}}
+    G_0
+    \right)
+\]
+be an internal graph in \(\mathcal E\).
+
+\begin{definition}[Graph path objects]
+\label{def:graph-path-objects}
+Define
+\[
+    G^{[-1]}:=1,
+    \qquad
+    G^{[0]}:=G_0,
+    \qquad
+    G^{[1]}:=G_1.
+\]
+For \(n\geq2\), define
+\[
+    G^{[n]}
+    :=
+    \underbrace{
+    G_1\times_{G_0}G_1
+    \times_{G_0}\cdots
+    \times_{G_0}G_1
+    }_{n\text{ factors}},
+\]
+where the target of one edge is identified with the source of the next.
+\end{definition}
+
+A generalized element of \(G^{[n]}\) is a graph path
+\[
+\begin{tikzcd}[column sep=large]
+    x_0
+        \arrow[r, "g_1"]
+    &
+    x_1
+        \arrow[r, "g_2"]
+    &
+    \cdots
+        \arrow[r, "g_n"]
+    &
+    x_n.
+\end{tikzcd}
+\]
+For \(0\leq i\leq n\), write
+\[
+    \nu_i^{(n)}:G^{[n]}\to G_0
+\]
+for the \(i\)-th vertex map.
+
+A contiguous inclusion
+\[
+    \iota:[k]\to[n]
+\]
+with image \(\{i,i+1,\ldots,i+k\}\) selects the corresponding subpath. If
+\(k=0\), it selects the vertex \(x_i\); restriction to \([-1]\) is the
+unique map to \(1\).
+
+\begin{definition}[Graph trajectory sheaf]
+\label{def:graph-trajectory-presheaf}
+The \textbf{graph trajectory presheaf} of \(G\) is
+\[
+    \operatorname{Path}(G):
+    \mathbf{Int}_{\mathrm{disc}}^{\mathrm{op}}
+    \to
+    \mathcal E
+\]
+defined by
+\[
+    \operatorname{Path}(G)(n):=G^{[n]}.
+\]
+Contiguous restriction is subpath selection.
+\end{definition}
+
+\begin{lemma}[Functoriality of graph paths]
+\label{lem:functoriality-graph-trajectories}
+The displayed path objects and restriction maps define a functor
+\[
+    \operatorname{Path}(G):
+    \mathbf{Int}_{\mathrm{disc}}^{\mathrm{op}}
+    \to
+    \mathcal E.
+\]
+\end{lemma}
+
+\begin{proof}
+Restriction along an identity inclusion is the identity map. Restricting to a
+contiguous interval and then to a contiguous interval inside it selects the
+same edge and vertex factors as restriction along the composite inclusion.
+The unique restriction to \([-1]\) is compatible with every composite because
+its codomain is terminal.
+\end{proof}
+
+\begin{theorem}[Temporal gluing of graph paths]
+\label{thm:temporal-gluing-graph-trajectories}
+For every internal graph \(G\), the presheaf
+\[
+    \operatorname{Path}(G)
+\]
+is a trajectory sheaf.
+\end{theorem}
+
+\begin{proof}
+The value at the empty interval is
+\[
+    \operatorname{Path}(G)(-1)=1.
+\]
+For \(n\geq1\), the elementary-edge comparison is
+\[
+    G^{[n]}
+    \longrightarrow
+    \underbrace{
+    G_1\times_{G_0}\cdots\times_{G_0}G_1
+    }_{n\text{ factors}}.
+\]
+By definition, the domain is precisely the displayed iterated pullback and
+the comparison is its canonical identity comparison. Proposition
+\ref{prop:concrete-trajectory-sheaf-condition} therefore applies.
+\end{proof}
+
+\subsection{Reconstruction of the graph from its path sheaf}
+\label{subsec:reconstruction-underlying-graph}
+
+Let \(X\) be a trajectory sheaf. Define an internal graph \(G_X\) by
+\[
+    (G_X)_0:=X(0),
+    \qquad
+    (G_X)_1:=X(1),
+\]
+with source and target
+\[
+    s_X:=X(\epsilon_0):X(1)\to X(0),
+\]
+\[
+    t_X:=X(\epsilon_1):X(1)\to X(0).
+\]
+
+\begin{proposition}[Reconstruction from lengths zero and one]
+\label{prop:reconstruction-length-zero-one}
+For every trajectory sheaf \(X\), there are canonical isomorphisms
+\[
+    \theta_{X,n}:
+    X(n)
+    \xrightarrow{\cong}
+    (G_X)^{[n]}
+\]
+for all \(n\geq-1\). These isomorphisms are natural in contiguous interval
+inclusions.
+\end{proposition}
+
+\begin{proof}
+For \(n=-1\), the claim is the sheaf isomorphism \(X(-1)\cong1\). For
+\(n=0,1\), it follows from the definition of \(G_X\). For \(n\geq2\), the
+concrete sheaf condition gives
+\[
+    X(n)
+    \cong
+    \underbrace{
+    X(1)\times_{X(0)}\cdots\times_{X(0)}X(1)
+    }_{n\text{ factors}},
+\]
+which is exactly \((G_X)^{[n]}\).
+
+The comparison is induced by elementary-edge restriction. A positive-length
+subinterval selects the same consecutive edge factors on both sides. A point
+subinterval selects the corresponding vertex. At an interior vertex, this
+may be computed either as the target of the preceding edge or as the source
+of the following edge, and the two maps agree by the defining pullback
+equations. Restriction to \([-1]\) is the unique map to \(1\). Hence the
+family \(\theta_{X,n}\) is natural in every contiguous inclusion.
+\end{proof}
+
+A morphism of trajectory sheaves
+\[
+    \alpha:X\to Y
+\]
+has components
+\[
+    \alpha_0:X(0)\to Y(0),
+    \qquad
+    \alpha_1:X(1)\to Y(1).
+\]
+Naturality at \(\epsilon_0\) and \(\epsilon_1\) gives
+\[
+    s_Y\alpha_1=\alpha_0s_X,
+    \qquad
+    t_Y\alpha_1=\alpha_0t_X,
+\]
+so \((\alpha_0,\alpha_1)\) is a graph morphism. Conversely, a graph morphism
+induces maps between every iterated pullback of composable edges, and those
+maps commute with contiguous restriction.
+
+\begin{theorem}[Graph--trajectory-sheaf equivalence]
+\label{thm:graph-trajectory-sheaf-equivalence}
+The graph path construction defines an equivalence
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbf{Graph}_{\mathrm{int}}(\mathcal E)
+        \arrow[r, shift left=0.7ex, "{\operatorname{Path}}"]
+    &
+    \mathbf{TrajSh}_{\mathcal E}
+        \arrow[l, shift left=0.7ex, "{X\mapsto G_X}"] .
+\end{tikzcd}
+\]
+\end{theorem}
+
+\begin{proof}
+For an internal graph \(G\), reconstruction from
+\[
+    \operatorname{Path}(G)(0)=G_0,
+    \qquad
+    \operatorname{Path}(G)(1)=G_1
+\]
+returns \(G\) strictly. For a trajectory sheaf \(X\), Proposition
+\ref{prop:reconstruction-length-zero-one} gives a natural isomorphism
+\[
+    X\cong\operatorname{Path}(G_X).
+\]
+The preceding discussion shows that the two constructions are mutually
+inverse on morphisms. These comparisons supply the unit and counit of an
+equivalence.
+\end{proof}
+
+\begin{corollary}[Path data of an internal graph]
+\label{cor:temporal-data-of-graph}
+A trajectory sheaf contains no independent graph-level data in lengths greater
+than one. Every finite path object is reconstructed from
+\begin{enumerate}
+    \item the boundary-state object \(X(0)\);
+    \item the one-step object \(X(1)\);
+    \item the two endpoint maps
+    \[
+        X(1)\rightrightarrows X(0).
+    \]
+\end{enumerate}
+\end{corollary}
+
+Applied to the underlying graph of \(\operatorname{Exec}(\Phi)\), the
+construction recovers exactly the finite execution objects already defined:
+\[
+\begin{tikzcd}[column sep=large]
+    \operatorname{Path}
+    \bigl(U\operatorname{Exec}(\Phi)\bigr)(n)
+        \arrow[r, "\cong"]
+    &
+    \mathscr T_\Phi(n).
+\end{tikzcd}
+\]
+Thus the path site has been extracted from the automata-theoretic execution
+construction rather than imposed on it in advance.
+
+\section{Segal composition and internal categories}
+\label{sec:segal-enhancement-categorical-execution}
+
+The graph-level path sheaf remembers a string of one-step executions and its
+contiguous restrictions. It does not, by itself, specify which arrows are
+identities or how adjacent arrows compose. Those operations arise from the
+category structure and are encoded by the full simplex category.
+
+\subsection{The augmented simplex category}
+\label{subsec:augmented-simplex-category}
+
+Let
+\[
+    \Delta_+
+\]
+denote the augmented simplex category with objects
+\[
+    [-1],[0],[1],[2],\ldots
+\]
+and all order-preserving maps as morphisms. There is a canonical inclusion
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbf{Int}_{\mathrm{disc}}
+        \arrow[r, hook, "j"]
+    &
+    \Delta_+
+\end{tikzcd}
+\]
+which is the identity on objects and includes the contiguous interval
+injections.
+
+The image of \(j\) is the augmented inert subcategory: its nonempty maps are
+the distance-preserving injections
+\[
+    \iota(r)=\iota(0)+r.
+\]
+In particular, the two outer coface maps
+\[
+    \delta^0,\delta^n:[n-1]\to[n]
+\]
+belong to the image of \(j\). Under a contravariant nerve, they give initial
+and terminal truncation of paths.
+
+The additional simplicial maps provide the category operations:
+\begin{enumerate}
+    \item a codegeneracy duplicates a vertex and therefore inserts an
+    identity arrow;
+    \item an inner coface omits an interior vertex and therefore contracts the
+    two adjacent arrows by composition.
+\end{enumerate}
+The simplicial identities encode the unit and associativity equations among
+these operations.
+
+\subsection{The augmented internal nerve}
+\label{subsec:augmented-nerve}
+
+Let
+\[
+    \mathbb C=(C_0,C_1,s_C,t_C,e_C,m_C)
+\]
+be an internal category.
+
+\begin{definition}[Augmented internal nerve]
+\label{def:augmented-internal-nerve}
+The \textbf{augmented nerve} of \(\mathbb C\) is the functor
+\[
+    N_+\mathbb C:
+    \Delta_+^{\mathrm{op}}
+    \to
+    \mathcal E
+\]
+defined by
+\[
+    N_+\mathbb C_{-1}:=1,
+    \qquad
+    N_+\mathbb C_0:=C_0,
+\]
+and, for \(n\geq1\),
+\[
+    N_+\mathbb C_n
+    :=
+    \underbrace{
+    C_1\times_{C_0}\cdots\times_{C_0}C_1
+    }_{n\text{ factors}}.
+\]
+Outer face maps truncate a path, inner face maps compose adjacent arrows, and
+degeneracy maps insert identities. Every map to degree \(-1\) is the unique
+map to \(1\).
+\end{definition}
+
+The restriction of \(N_+\mathbb C\) to the ordinary simplex category is the
+usual internal nerve.
+
+\begin{definition}[Augmented strict Segal object]
+\label{def:augmented-strict-segal-object}
+An \textbf{augmented strict Segal object} in \(\mathcal E\) is a functor
+\[
+    Y:\Delta_+^{\mathrm{op}}\to\mathcal E
+\]
+such that
+\begin{enumerate}
+    \item the canonical map \(Y_{-1}\to1\) is an isomorphism;
+    \item for every \(n\geq2\), the canonical Segal map
+    \[
+        Y_n
+        \longrightarrow
+        \underbrace{
+        Y_1\times_{Y_0}\cdots\times_{Y_0}Y_1
+        }_{n\text{ factors}}
+    \]
+    is an isomorphism.
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[Strict Segal isomorphisms]
+\label{prop:strict-segal-isomorphisms}
+For every internal category \(\mathbb C\), the augmented nerve
+\(N_+\mathbb C\) is an augmented strict Segal object.
+\end{proposition}
+
+\begin{proof}
+The degree \(-1\) object is \(1\). In every degree \(n\geq2\), both sides of
+the Segal comparison are the same iterated pullback of \(C_1\) over \(C_0\).
+The comparison is induced by the elementary-edge inclusions and is the
+canonical identity comparison under these pullback descriptions.
+\end{proof}
+
+\subsection{The internal nerve equivalence}
+\label{subsec:internal-nerve-equivalence}
+
+Write
+\[
+    \mathsf{Seg}^{\mathrm{str}}_+(\mathcal E)
+\]
+for the full subcategory of
+\([
+    \Delta_+^{\mathrm{op}},\mathcal E
+]\)
+spanned by augmented strict Segal objects.
+
+\begin{theorem}[Internal nerve equivalence]
+\label{thm:internal-nerve-equivalence}
+The augmented nerve defines an equivalence
+\[
+\begin{tikzcd}[column sep=large]
+    \mathsf{IntCat}(\mathcal E)
+        \arrow[r, shift left=0.7ex, "N_+"]
+    &
+    \mathsf{Seg}^{\mathrm{str}}_+(\mathcal E)
+        \arrow[l, shift left=0.7ex, "R"] .
+\end{tikzcd}
+\]
+\end{theorem}
+
+\begin{proof}
+Let
+\[
+    Y:\Delta_+^{\mathrm{op}}\to\mathcal E
+\]
+be augmented strict Segal. Define \(R(Y)\) by
+\[
+    R(Y)_0:=Y_0,
+    \qquad
+    R(Y)_1:=Y_1.
+\]
+The source and target maps are induced by the two endpoint inclusions,
+\[
+    s_Y:=Y(\epsilon_0),
+    \qquad
+    t_Y:=Y(\epsilon_1).
+\]
+The unique codegeneracy
+\[
+    \sigma^0:[1]\to[0]
+\]
+gives the identity map
+\[
+    e_Y:=Y(\sigma^0):Y_0\to Y_1.
+\]
+The inner coface
+\[
+    \delta^1:[1]\to[2],
+    \qquad
+    0\mapsto0,
+    \quad
+    1\mapsto2,
+\]
+gives
+\[
+    Y(\delta^1):Y_2\to Y_1.
+\]
+Transporting across the Segal isomorphism defines composition:
+\[
+\begin{tikzcd}[column sep=large]
+    Y_1\times_{Y_0}Y_1
+        \arrow[r, "\cong"']
+    &
+    Y_2
+        \arrow[r, "{Y(\delta^1)}"]
+    &
+    Y_1.
+\end{tikzcd}
+\]
+The simplicial identities involving \(\sigma^0\), the outer cofaces, and
+\(\delta^1\) give the source, target, left-unit, right-unit, and associativity
+axioms. Hence \(R(Y)\) is an internal category.
+
+A natural transformation of augmented strict Segal objects is determined in
+degrees zero and one by the Segal isomorphisms. Naturality at \(\sigma^0\)
+and \(\delta^1\) says precisely that these two maps preserve identities and
+composition. Therefore \(R\) acts on morphisms by internal functors.
+
+For an internal category \(\mathbb C\), reconstruction from \(N_+\mathbb C\)
+returns \(\mathbb C\), up to the canonical identifications of the chosen
+pullbacks. Conversely, the Segal maps give degreewise isomorphisms
+\[
+    Y_n\xrightarrow{\cong}N_+R(Y)_n
+\]
+for \(n\geq0\), and the augmentation gives
+\[
+    Y_{-1}\cong1=N_+R(Y)_{-1}.
+\]
+
+It remains to check naturality in all simplicial maps. Let
+\[
+    \varphi:[m]\to[n]
+\]
+be order preserving. An \(n\)-path is sent to the \(m\)-path whose
+\(j\)-th arrow is the composite of the consecutive block lying between the
+vertices \(\varphi(j-1)\) and \(\varphi(j)\), with an identity inserted when
+those vertices coincide. Every morphism in \(\Delta\) is generated by
+cofaces and codegeneracies. Outer cofaces truncate, inner cofaces compose, and
+codegeneracies insert identities. The simplicial identities are exactly the
+unit and associativity equations showing that the block formula is independent
+of a chosen expression in generators. Hence the degreewise Segal
+isomorphisms are natural. Maps involving \([-1]\) are automatic because the
+degree \(-1\) object is terminal. Thus
+\[
+    Y\cong N_+R(Y)
+\]
+as augmented simplicial objects.
+\end{proof}
+
+\subsection{The underlying trajectory sheaf of an internal category}
+\label{subsec:underlying-trajectory-sheaf}
+
+\begin{definition}[Underlying trajectory sheaf]
+\label{def:underlying-trajectory-sheaf}
+The \textbf{underlying trajectory sheaf} of an internal category \(\mathbb C\)
+is
+\[
+    \operatorname{Path}(\mathbb C)
+    :=
+    j^\ast N_+\mathbb C.
+\]
+\end{definition}
+
+This name emphasizes what the restriction retains: the objects, arrows,
+finite composable strings, and contiguous restrictions. It avoids suggesting
+that the construction forgets execution data in any semantic sense; it forgets
+only the active simplicial operations of identity insertion and composition.
+
+Let \(U\mathbb C\) be the underlying internal graph.
+
+\begin{proposition}[Category paths are graph paths]
+\label{prop:category-paths-underlying-graph}
+There is a canonical natural isomorphism
+\[
+\begin{tikzcd}[column sep=large]
+    \operatorname{Path}(\mathbb C)
+        \arrow[r, "\cong"]
+    &
+    \operatorname{Path}(U\mathbb C).
+\end{tikzcd}
+\]
+\end{proposition}
+
+\begin{proof}
+Both functors take \([n]\) to the object of \(n\) composable arrows of
+\(\mathbb C\). A contiguous inclusion restricts such a string to the same
+contiguous substring in both constructions. The comparison is therefore the
+canonical identity comparison in every degree.
+\end{proof}
+
+The underlying trajectory sheaf remembers
+\begin{enumerate}
+    \item objects and one-step arrows;
+    \item finite composable strings;
+    \item contiguous subpath restriction;
+    \item initial and terminal truncation;
+    \item unique gluing along matching boundaries.
+\end{enumerate}
+The augmented nerve additionally remembers
+\begin{enumerate}
+    \item which one-step arrows are identities;
+    \item how adjacent arrows contract by composition;
+    \item the unit and associativity equations governing contraction.
+\end{enumerate}
+
+\subsection{Segal composition structures on trajectory sheaves}
+\label{subsec:classification-segal-enhancements}
+
+Let \(X\) be a trajectory sheaf. By
+Theorem~\ref{thm:graph-trajectory-sheaf-equivalence}, it determines the graph
+\[
+    G_X=
+    \left(
+    X(1)
+    \mathrel{\substack{\xrightarrow{t_X}\\[-0.4em]\xrightarrow[s_X]{}}}
+    X(0)
+    \right).
+\]
+For \(n\geq1\), write
+\[
+    \pi_i^{(n)}:X(n)\to X(1),
+    \qquad
+    1\leq i\leq n,
+\]
+for restriction to the \(i\)-th elementary edge. Write
+\[
+    \operatorname{seg}_{X,n}:
+    X(n)
+    \xrightarrow{\cong}
+    \underbrace{
+    X(1)\times_{X(0)}\cdots\times_{X(0)}X(1)
+    }_{n\text{ factors}}
+\]
+for the edge-restriction isomorphism, and
+\[
+    \operatorname{gl}_{X,n}:=\operatorname{seg}_{X,n}^{-1}
+\]
+for its inverse.
+
+For \(X(2)\), abbreviate
+\[
+    \pi_1:=\pi_1^{(2)},
+    \qquad
+    \pi_2:=\pi_2^{(2)}.
+\]
+Let
+\[
+    \pi_{12}:X(3)\to X(2),
+    \qquad
+    \pi_{23}:X(3)\to X(2)
+\]
+be restriction to the first two and last two edges.
+
+\begin{definition}[Segal composition structure]
+\label{def:segal-enhancement}
+A \textbf{Segal composition structure} on a trajectory sheaf \(X\) consists
+of maps
+\[
+    e_X:X(0)\to X(1),
+    \qquad
+    c_X:X(2)\to X(1)
+\]
+satisfying the following equations.
+
+Identities have the correct endpoints:
+\[
+    s_Xe_X=1_{X(0)},
+    \qquad
+    t_Xe_X=1_{X(0)}.
+\]
+Contraction has the endpoints of the composite path:
+\[
+    s_Xc_X=s_X\pi_1,
+    \qquad
+    t_Xc_X=t_X\pi_2.
+\]
+Define
+\[
+    \ell_X
+    :=
+    \operatorname{gl}_{X,2}
+    \left\langle
+        e_Xs_X,
+        1_{X(1)}
+    \right\rangle,
+\]
+\[
+    r_X
+    :=
+    \operatorname{gl}_{X,2}
+    \left\langle
+        1_{X(1)},
+        e_Xt_X
+    \right\rangle.
+\]
+The unit equations are
+\[
+    c_X\ell_X=1_{X(1)},
+    \qquad
+    c_Xr_X=1_{X(1)}.
+\]
+Finally, the associativity equation is
+\[
+    c_X\operatorname{gl}_{X,2}
+    \left\langle
+        c_X\pi_{12},
+        \pi_3^{(3)}
+    \right\rangle
+    =
+    c_X\operatorname{gl}_{X,2}
+    \left\langle
+        \pi_1^{(3)},
+        c_X\pi_{23}
+    \right\rangle.
+\]
+\end{definition}
+
+The endpoint equations ensure that every displayed pairing lands in the
+required pullback. The unit equations contract an identity followed by an
+arrow and an arrow followed by an identity. The associativity equation says
+that the two ways of contracting a three-edge path agree.
+
+\begin{theorem}[Classification of Segal composition structures]
+\label{thm:classification-segal-enhancements}
+For a trajectory sheaf \(X\), the following data are canonically equivalent:
+\begin{enumerate}
+    \item Segal composition structures on \(X\);
+    \item internal category structures on the reconstructed graph \(G_X\);
+    \item isomorphism classes of pairs \((Y,\theta)\), where \(Y\) is an
+    augmented strict Segal object and
+    \[
+        \theta:j^\ast Y\xrightarrow{\cong}X
+    \]
+    is a specified isomorphism, with isomorphisms taken over \(X\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Under the canonical sheaf isomorphism
+\[
+    \operatorname{seg}_{X,2}:
+    X(2)
+    \xrightarrow{\cong}
+    X(1)\times_{X(0)}X(1),
+\]
+define
+\[
+    m_X
+    :=
+    c_X\operatorname{gl}_{X,2}:
+    X(1)\times_{X(0)}X(1)
+    \to X(1).
+\]
+The endpoint equations for \(c_X\) are exactly the source and target axioms
+for \(m_X\). The maps \(\ell_X\) and \(r_X\) are the composable pairs formed
+by an identity followed by an arrow and by an arrow followed by an identity.
+Their contraction equations are the left- and right-unit axioms. The
+associativity equation states equality of the two parenthesized composites of
+a three-arrow path. Hence a Segal composition structure is precisely an
+internal category structure on \(G_X\).
+
+We next construct the corresponding augmented simplicial object explicitly.
+Set
+\[
+    Y_n:=X(n)
+\]
+for \(n\geq0\), and set
+\[
+    Y_{-1}:=1.
+\]
+Define iterated contraction maps
+\[
+    c_0:=e_X:X(0)\to X(1),
+    \qquad
+    c_1:=1_{X(1)}.
+\]
+For \(r\geq1\), let
+\[
+    \rho_{0,r}:X(r+1)\to X(r)
+\]
+be restriction to the first \(r\) edges, and define recursively
+\[
+    c_{r+1}
+    :=
+    c_X\operatorname{gl}_{X,2}
+    \left\langle
+        c_r\rho_{0,r},
+        \pi_{r+1}^{(r+1)}
+    \right\rangle.
+\]
+The pairing is well typed because the target of the contracted initial block
+is the source of the final edge. Associativity shows that \(c_r\) is
+independent of parenthesization, and the unit equations handle blocks of
+length zero.
+
+Let
+\[
+    \varphi:[m]\to[n]
+\]
+be order preserving, with \(m,n\geq0\). An \(n\)-path has vertices
+\[
+    x_0,x_1,\ldots,x_n.
+\]
+Define its image under \(Y(\varphi)\) to have vertices
+\[
+    x_{\varphi(0)},
+    x_{\varphi(1)},
+    \ldots,
+    x_{\varphi(m)}.
+\]
+For \(1\leq j\leq m\), the \(j\)-th arrow is obtained as follows. If
+\[
+    \varphi(j-1)<\varphi(j),
+\]
+restrict to the contiguous block of edges between these two vertices and
+apply the contraction
+\[
+    c_{\varphi(j)-\varphi(j-1)}.
+\]
+If
+\[
+    \varphi(j-1)=\varphi(j),
+\]
+restrict to the repeated vertex and apply \(c_0=e_X\), thereby inserting an
+identity. The endpoint equations make the resulting arrows composable, and
+the inverse Segal isomorphism
+\[
+    \operatorname{gl}_{X,m}
+\]
+assembles them into a morphism
+\[
+    Y(\varphi):X(n)\to X(m).
+\]
+
+For the unique map
+\[
+    u_n:[-1]\to[n]
+\]
+in \(\Delta_+\), define
+\[
+    Y(u_n):Y_n\to Y_{-1}
+\]
+to be the unique map to \(1\). The identity of \([-1]\) is sent to
+\(1_1\).
+
+Suppose
+\[
+    [\ell]\xrightarrow{\beta}[m]
+    \xrightarrow{\varphi}[n].
+\]
+The blocks determined by \(\varphi\beta\) are obtained by grouping together
+consecutive blocks determined first by \(\varphi\) and then by \(\beta\).
+Associativity says that contracting the smaller blocks and then contracting
+the resulting larger block agrees with contracting the full block directly.
+The unit equations remove all zero-length blocks. Therefore
+\[
+    Y(\varphi\beta)
+    =
+    Y(\beta)Y(\varphi),
+\]
+and the construction defines a functor
+\[
+    Y:\Delta_+^{\mathrm{op}}\to\mathcal E.
+\]
+
+If \(\varphi\) is a contiguous interval inclusion of positive length, every
+selected block has length one, so \(Y(\varphi)\) is exactly the original
+contiguous restriction map of \(X\). Point inclusions select the corresponding
+vertex, and maps involving \([-1]\) are uniquely determined. Hence
+\[
+    j^\ast Y\cong X.
+\]
+The Segal maps of \(Y\) are precisely the sheaf isomorphisms
+\[
+    X(n)
+    \cong
+    X(1)\times_{X(0)}\cdots\times_{X(0)}X(1),
+\]
+and \(Y_{-1}=1\), so \(Y\) is augmented strict Segal.
+
+Conversely, let \(Y\) be augmented strict Segal and let
+\[
+    \theta:j^\ast Y\xrightarrow{\cong}X.
+\]
+Transport the codegeneracy
+\[
+    Y(\sigma^0):Y_0\to Y_1
+\]
+and the inner-face map
+\[
+    Y(\delta^1):Y_2\to Y_1
+\]
+across \(\theta\). These give \(e_X\) and \(c_X\). The simplicial identities
+give the endpoint, unit, and associativity equations. The two constructions
+are inverse by Theorem~\ref{thm:internal-nerve-equivalence}.
+
+Finally, an isomorphism of pairs over \(X\) is determined in degrees zero and
+one. The Segal isomorphisms determine it in every nonnegative degree, while
+the degree \(-1\) component is unique because that object is terminal. Thus
+passing to isomorphism classes loses no additional structure.
+\end{proof}
+
+\begin{corollary}[Canonical Segal composition of executions]
+\label{cor:segal-enhancement-internal-category}
+Every internal category \(\mathbb C\), and in particular every execution
+category \(\operatorname{Exec}(\Phi)\), determines
+\begin{enumerate}
+    \item an underlying trajectory sheaf \(\operatorname{Path}(\mathbb C)\);
+    \item a canonical Segal composition structure supplied by
+    \(N_+\mathbb C\).
+\end{enumerate}
+\end{corollary}
+
+\subsection{Finite-limit preservation}
+\label{subsec:path-nerve-finite-limits}
+
+An internal functor
+\[
+    F:\mathbb C\to\mathbb D
+\]
+induces a simplicial map
+\[
+    N_+F:N_+\mathbb C\to N_+\mathbb D
+\]
+and, after restriction along \(j\), a morphism of trajectory sheaves
+\[
+    \operatorname{Path}(F):
+    \operatorname{Path}(\mathbb C)
+    \to
+    \operatorname{Path}(\mathbb D).
+\]
+
+\begin{proposition}[Finite-limit preservation]
+\label{prop:temp-finite-limit-preservation}
+The functors
+\[
+    N_+:
+    \mathsf{IntCat}(\mathcal E)
+    \to
+    [\Delta_+^{\mathrm{op}},\mathcal E]
+\]
+and
+\[
+    \operatorname{Path}:
+    \mathsf{IntCat}(\mathcal E)
+    \to
+    \mathbf{TrajSh}_{\mathcal E}
+\]
+preserve finite limits.
+\end{proposition}
+
+\begin{proof}
+Finite limits of internal categories are computed on object and arrow objects,
+with identities and composition induced by the relevant universal properties.
+Every nerve degree is obtained from those objects by a finite iterated
+pullback. Therefore the nerve preserves finite limits degreewise.
+
+Limits of \(\mathcal E\)-valued sheaves are computed pointwise in the
+presheaf category. Restriction along \(j\) preserves all pointwise limits.
+Hence the underlying trajectory-sheaf functor preserves finite limits.
+\end{proof}
+
+\begin{remark}[Segal contraction and polynomial multiplicativity]
+\label{rem:segal-to-polynomial-multiplicativity}
+The following chapter curries labelled one-step execution data by dependent
+product.  Under that transposition, the categorical laws isolated here become
+the multiplicativity laws of the resulting response coalgebra:
+\[
+\begin{array}{c|c}
+    \text{Segal execution structure}
+    &
+    \text{curried response structure}
+    \\
+    \hline
+    \text{identity insertion}
+    &
+    \text{unit response law}
+    \\
+    \text{contraction of adjacent executions}
+    &
+    \text{multiplicative response law}
+    \\
+    \text{unit and associativity of contraction}
+    &
+    \text{multiplicativity coherence}.
+\end{array}
+\]
+This is a change of presentation rather than a second execution semantics.
+The polynomial coalgebra records total one-step responses in curried form;
+flattening it recovers the execution category whose Segal structure is
+described in this section.
+\end{remark}
+
+\section{Labelled finite trajectories}
+\label{sec:temporal-execution-semantics}
+
+The finite execution objects constructed in the opening sections are now
+recognized as the underlying trajectory sheaf of the execution category. The
+abstract equivalences therefore return directly to the automata-theoretic
+setting.
+
+\subsection{The execution trajectory sheaf}
+\label{subsec:temporal-execution-sheaf}
+
+\begin{definition}[Execution trajectory sheaf]
+\label{def:temporal-execution-sheaf}
+The \textbf{execution trajectory sheaf} of
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+is
+\[
+    \mathscr T_\Phi
+    :=
+    \operatorname{Path}
+    \bigl(
+        \operatorname{Exec}(\Phi)
+    \bigr).
+\]
+\end{definition}
+
+Thus
+\[
+    \mathscr T_\Phi(-1)=1,
+    \qquad
+    \mathscr T_\Phi(0)=P,
+\]
+\[
+    \mathscr T_\Phi(1)
+    =
+    A_1\times_{t_A,A_0,p_P}P,
+\]
+and for \(n\geq2\),
+\[
+    \mathscr T_\Phi(n)
+    =
+    \underbrace{
+    \mathscr T_\Phi(1)
+    \times_P\cdots\times_P
+    \mathscr T_\Phi(1)
+    }_{n\text{ factors}}.
+\]
+These are exactly the finite execution objects already derived from the Mealy
+transition. The sheaf structure says that an execution is recovered uniquely
+from its one-step segments and their common state boundaries.
+
+The input and output-comparison labelling functors induce morphisms of
+trajectory sheaves
+\[
+    \operatorname{Path}(I_\Phi):
+    \mathscr T_\Phi
+    \to
+    \operatorname{Path}(\mathbb A^{\mathrm{op}}),
+\]
+\[
+    \operatorname{Path}(O_\Phi):
+    \mathscr T_\Phi
+    \to
+    \operatorname{Path}(\mathbb B^{\mathrm{op}}).
+\]
+
+\begin{definition}[Labelled finite-trajectory semantics]
+\label{def:labelled-temporal-execution-semantics}
+The \textbf{labelled finite-trajectory semantics} of \(\Phi\) is the span
+\[
+\begin{tikzcd}[column sep=large]
+    \operatorname{Path}(\mathbb A^{\mathrm{op}})
+    &
+    \mathscr T_\Phi
+        \arrow[l, "{\operatorname{Path}(I_\Phi)}"']
+        \arrow[r, "{\operatorname{Path}(O_\Phi)}"]
+    &
+    \operatorname{Path}(\mathbb B^{\mathrm{op}}).
+\end{tikzcd}
+\]
+\end{definition}
+
+At path length \(n\), the left map records the \(n\)-step input path, the
+right map records the \(n\)-step output-comparison path, and the middle object
+records the intervening state trajectory.
+
+\subsection{Deterministic path lifting in sheaf form}
+\label{subsec:deterministic-path-lifting-sheaf-form}
+
+For \(n\geq0\), let
+\[
+    \lambda_0^{A,n}:
+    \operatorname{Path}(\mathbb A^{\mathrm{op}})(n)
+    \to A_0
+\]
+denote restriction to the initial boundary of the input path.
+Proposition~\ref{prop:deterministic-path-lifting} may now be written
+canonically as the pullback isomorphism
+\[
+\begin{tikzcd}[column sep=large]
+    \mathscr T_\Phi(n)
+        \arrow[r, "\cong"]
+    &
+    P\times_{A_0}
+    \operatorname{Path}(\mathbb A^{\mathrm{op}})(n).
+\end{tikzcd}
+\]
+Equivalently, the square
+\[
+\begin{tikzcd}
+    \mathscr T_\Phi(n)
+        \arrow[r, "{\operatorname{Path}(I_\Phi)_n}"]
+        \arrow[d, "s_n^\Phi"']
+    &
+    \operatorname{Path}(\mathbb A^{\mathrm{op}})(n)
+        \arrow[d, "{\lambda_0^{A,n}}"]
+    \\
+    P
+        \arrow[r, "p_P"']
+    &
+    A_0
+\end{tikzcd}
+\]
+is a pullback.
+
+This square is the finite-run determinism property of the trajectory
+semantics. It says that the middle object of the labelled span contains no
+choice beyond the initial state once the input path is fixed.
+
+\subsection{Segal-complete labelled execution}
+\label{subsec:segal-enhanced-execution-semantics}
+
+The trajectory span forgets no finite runs, but it retains only contiguous
+restriction. The execution categories also provide identity insertion and
+contraction. These operations are recorded by the augmented nerves.
+
+\begin{definition}[Segal-complete labelled execution]
+\label{def:segal-enhanced-execution-semantics}
+The \textbf{Segal-complete labelled execution semantics} of \(\Phi\) is the
+span of augmented strict Segal objects
+\[
+\begin{tikzcd}[column sep=large]
+    N_+(\mathbb A^{\mathrm{op}})
+    &
+    N_+\operatorname{Exec}(\Phi)
+        \arrow[l, "N_+I_\Phi"']
+        \arrow[r, "N_+O_\Phi"]
+    &
+    N_+(\mathbb B^{\mathrm{op}}).
+\end{tikzcd}
+\]
+\end{definition}
+
+Restriction along
+\[
+    j:\mathbf{Int}_{\mathrm{disc}}\hookrightarrow\Delta_+
+\]
+recovers the labelled finite-trajectory span. The trajectory span records
+finite runs, contiguous restriction, truncation, and gluing. The
+Segal-complete span additionally records identity executions, contraction of
+adjacent steps, and coherence of iterated contraction.
+
+\subsection{Functoriality in strict semantic homomorphisms}
+\label{subsec:trajectory-functoriality-strict}
+
+For a strict semantic homomorphism
+\[
+    f:\Phi\to\Psi,
+\]
+the internal functor \(\operatorname{Exec}(f)\) induces
+\[
+    \mathscr T_f:
+    \mathscr T_\Phi\to\mathscr T_\Psi
+\]
+and
+\[
+    N_+\operatorname{Exec}(f):
+    N_+\operatorname{Exec}(\Phi)
+    \to
+    N_+\operatorname{Exec}(\Psi).
+\]
+Both commute with input and output-comparison labels.
+
+At length \(n\), the map \(\mathscr T_f(n)\) sends
+\[
+\begin{tikzcd}[column sep=large]
+    x_0
+        \arrow[r]
+    &
+    x_1
+        \arrow[r]
+    &
+    \cdots
+        \arrow[r]
+    &
+    x_n
+\end{tikzcd}
+\]
+to
+\[
+\begin{tikzcd}[column sep=large]
+    f(x_0)
+        \arrow[r]
+    &
+    f(x_1)
+        \arrow[r]
+    &
+    \cdots
+        \arrow[r]
+    &
+    f(x_n),
+\end{tikzcd}
+\]
+with exactly the same input and output-comparison paths.
+
+\subsection{Composition of trajectory spans}
+\label{subsec:temporal-composition}
+
+Applying the finite-limit-preserving functor \(\operatorname{Path}\) to
+Theorem~\ref{thm:execution-category-composition} gives the composition law for
+finite trajectories.
+
+\begin{theorem}[Composition of labelled finite trajectories]
+\label{thm:temporal-composition}
+For composable Mealy morphisms
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B,
+    \qquad
+    \Psi:\mathbb B\rightsquigarrow\mathbb C,
+\]
+there is a canonical isomorphism of trajectory sheaves
+\[
+\begin{tikzcd}[column sep=large]
+    \mathscr T_{\Psi\circ\Phi}
+        \arrow[r, "\cong"]
+    &
+    \mathscr T_\Phi
+        \times_{\operatorname{Path}(\mathbb B^{\mathrm{op}})}
+    \mathscr T_\Psi.
+\end{tikzcd}
+\]
+Equivalently, for every \(n\geq-1\),
+\[
+    \mathscr T_{\Psi\circ\Phi}(n)
+    \cong
+    \mathscr T_\Phi(n)
+    \times_{\operatorname{Path}(\mathbb B^{\mathrm{op}})(n)}
+    \mathscr T_\Psi(n).
+\]
+\end{theorem}
+
+\begin{proof}
+The execution category of the composite is the pullback of the two execution
+categories over \(\mathbb B^{\mathrm{op}}\). The functor
+\(\operatorname{Path}\) preserves finite limits, so it sends this pullback
+to the displayed pullback of trajectory sheaves. Limits of sheaves are
+computed pointwise, giving the levelwise formula.
+\end{proof}
+
+Thus an \(n\)-step execution of the composite consists precisely of
+\begin{enumerate}
+    \item an \(n\)-step execution of \(\Phi\);
+    \item an \(n\)-step execution of \(\Psi\);
+    \item equality between the output-comparison path of \(\Phi\) and the
+    input path of \(\Psi\).
+\end{enumerate}
+The equality is pathwise, not merely equality of the composites of those
+paths. The chosen segmentations of the two runs must agree at every step.
+
+\begin{proposition}[Naturality of trajectory composition]
+\label{prop:naturality-temporal-composition}
+The isomorphism of
+Theorem~\ref{thm:temporal-composition}
+is natural in strict semantic homomorphisms of both Mealy factors.
+\end{proposition}
+
+\begin{proof}
+Naturality was established at the level of execution categories in
+Proposition~\ref{prop:naturality-execution-composition}. Applying the functor
+\(\operatorname{Path}\) to the commuting comparison square gives the
+required square of trajectory sheaves.
+\end{proof}
+
+The identity Mealy morphism has trajectory semantics equal to the identity
+span on \(\operatorname{Path}(\mathbb A^{\mathrm{op}})\). The associativity
+and unit comparisons are inherited from the canonical pullback comparisons.
+Consequently, labelled finite-trajectory semantics defines a pseudofunctor to
+the bicategory of spans in \(\mathbf{TrajSh}_{\mathcal E}\).
+
+\section{Quotients and trajectory minimization}
+\label{sec:temporal-quotients-minimization}
+
+\subsection{Strict regular quotients}
+\label{subsec:strict-regular-quotients-temporal}
+
+Let
+\[
+    e:\Phi\to\Psi
+\]
+be a strict semantic homomorphism between Mealy morphisms over the same input
+and output interfaces.
+
+\begin{definition}[Strict regular quotient]
+\label{def:strict-regular-quotient-temporal}
+The homomorphism \(e\) is a \textbf{strict regular quotient} if its carrier
+map
+\[
+    e:P\twoheadrightarrow Q
+\]
+is a regular epimorphism in
+\[
+    \mathcal E/(A_0\times B_0).
+\]
+Equivalently, its underlying map in \(\mathcal E\) is a regular epimorphism.
+\end{definition}
+
+\begin{proposition}[Execution preserves strict regular quotients]
+\label{prop:execution-preserves-regular-quotients}
+If
+\[
+    e:\Phi\twoheadrightarrow\Psi
+\]
+is a strict regular quotient, then
+\[
+    \operatorname{Exec}(e):
+    \operatorname{Exec}(\Phi)
+    \to
+    \operatorname{Exec}(\Psi)
+\]
+is regular epic on both object and arrow objects.
+\end{proposition}
+
+\begin{proof}
+On objects, the map is \(e:P\twoheadrightarrow Q\). On arrows, it is
+\[
+\begin{tikzcd}[column sep=large]
+    A_1\times_{A_0}P
+        \arrow[r, "{1_{A_1}\times e}"]
+    &
+    A_1\times_{A_0}Q.
+\end{tikzcd}
+\]
+Because \(e\) is a map over \(A_0\), this arrow map is a pullback of \(e\).
+Regular epimorphisms are stable under pullback in a Grothendieck topos, so the
+arrow map is regular epic.
+\end{proof}
+
+\subsection{Regular quotients in every finite path length}
+\label{subsec:levelwise-trajectory-quotients}
+
+\begin{theorem}[Trajectory preservation of regular quotients]
+\label{thm:temporal-preservation-regular-quotients}
+Let
+\[
+    e:\Phi\twoheadrightarrow\Psi
+\]
+be a strict regular quotient. Then, for every \(n\geq-1\),
+\[
+    \mathscr T_e(n):
+    \mathscr T_\Phi(n)
+    \twoheadrightarrow
+    \mathscr T_\Psi(n)
+\]
+is a regular epimorphism.
+\end{theorem}
+
+\begin{proof}
+At length \(-1\), the map is the identity of \(1\). For \(n\geq0\),
+deterministic path lifting gives the two pullback descriptions
+\[
+    \mathscr T_\Phi(n)
+    \cong
+    P\times_{A_0}\operatorname{Path}(\mathbb A^{\mathrm{op}})(n),
+\]
+\[
+    \mathscr T_\Psi(n)
+    \cong
+    Q\times_{A_0}\operatorname{Path}(\mathbb A^{\mathrm{op}})(n).
+\]
+Under these isomorphisms, \(\mathscr T_e(n)\) is
+\[
+\begin{tikzcd}[column sep=large]
+    P\times_{A_0}\operatorname{Path}(\mathbb A^{\mathrm{op}})(n)
+        \arrow[r, "{e\times_{A_0}1}"]
+    &
+    Q\times_{A_0}\operatorname{Path}(\mathbb A^{\mathrm{op}})(n).
+\end{tikzcd}
+\]
+This map is a pullback of \(e\), hence is a regular epimorphism.
+\end{proof}
+
+\begin{corollary}[Levelwise quotient of trajectory sheaves]
+\label{cor:levelwise-quotient-trajectory-sheaves}
+A strict regular quotient of Mealy systems induces a levelwise regular
+epimorphism of trajectory sheaves
+\[
+    \mathscr T_\Phi
+    \twoheadrightarrow
+    \mathscr T_\Psi.
+\]
+\end{corollary}
+
+\subsection{Behavioural minimization of finite trajectories}
+\label{subsec:temporal-semantic-minimization}
+
+Recall the semantic image factorization
+\[
+\begin{tikzcd}[column sep=large]
+    P
+        \arrow[r, two heads, "\eta_\Phi"]
+    &
+    \operatorname{Beh}(\Phi)
+        \arrow[r, tail]
+    &
+    \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B,0}.
+\end{tikzcd}
+\]
+The carrier \(\operatorname{Beh}(\Phi)\) inherits a canonical strict Mealy
+structure, and
+\[
+    \eta_\Phi:
+    \Phi\twoheadrightarrow\operatorname{Beh}(\Phi)
+\]
+is a strict regular quotient.
+
+\begin{theorem}[Behavioural quotient of finite trajectories]
+\label{thm:temporal-semantic-quotient}
+Every Mealy morphism \(\Phi\) admits a canonical levelwise regular quotient
+\[
+\begin{tikzcd}[column sep=large]
+    \mathscr T_\Phi
+        \arrow[r, two heads]
+    &
+    \mathscr T_{\operatorname{Beh}(\Phi)}.
+\end{tikzcd}
+\]
+At path length \(n\geq0\), two executions have the same image precisely when
+they lie over the same input path and their initial states have the same
+residual semantic image. Equivalently, along a common input path, their state
+images agree at every boundary.
+\end{theorem}
+
+\begin{proof}
+Apply
+Theorem~\ref{thm:temporal-preservation-regular-quotients}
+to \(\eta_\Phi\).
+
+For the kernel description, deterministic path lifting identifies the
+length-\(n\) quotient with
+\[
+    \eta_\Phi\times_{A_0}1.
+\]
+Its kernel pair therefore requires equality of the input-path component and
+equality of the semantic images of the initial states. Strict transition
+preservation forces equality of the semantic images of every subsequent state
+along that common input path. Conversely, equality at every boundary includes
+equality at the initial boundary and therefore implies equality under the
+quotient map.
+\end{proof}
+
+\begin{corollary}[Separated trajectory semantics]
+\label{cor:separated-temporal-semantics}
+If \(\Phi\) is behaviourally separated, then
+\[
+    \mathscr T_\Phi
+    \cong
+    \mathscr T_{\operatorname{Beh}(\Phi)}.
+\]
+\end{corollary}
+
+\begin{proof}
+For a behaviourally separated system, the semantic quotient \(\eta_\Phi\) is
+an isomorphism. The execution-category and trajectory constructions preserve
+isomorphisms.
+\end{proof}
+
+Thus behavioural separatedness removes duplicate labelled trajectories that
+arise from behaviourally indistinguishable initial states over the same input
+path. It does not quotient different segmentations of a path; those remain
+related by Segal contraction rather than identified in the trajectory sheaf.
+
+\subsection{Finite-trajectory Myhill--Nerode theorem}
+\label{subsec:temporal-myhill-nerode}
+
+Let \(K\) be a specification, and let
+\[
+    \operatorname{Der}_0(K)
+    \hookrightarrow
+    \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B,0}
+\]
+be its derivative-generated residual theory. Since
+\(\operatorname{Der}_0(K)\) is derivative invariant, the canonical
+transition and output-comparison operations restrict to it. Write
+\[
+    \iota\bigl(\operatorname{Der}_0(K)\bigr)
+\]
+for the resulting canonical Mealy realization.
+
+Suppose \(\Phi\) realizes \(K\) and is reachable in the sense that there is a
+canonical isomorphism
+\[
+    \operatorname{Beh}(\Phi)
+    \cong
+    \iota\bigl(\operatorname{Der}_0(K)\bigr).
+\]
+
+\begin{corollary}[Finite-trajectory Myhill--Nerode theorem]
+\label{cor:temporal-reachable-quotient}
+Every reachable realization of \(K\) admits a canonical levelwise regular
+quotient
+\[
+\begin{tikzcd}[column sep=large]
+    \mathscr T_\Phi
+        \arrow[r, two heads]
+    &
+    \mathscr T_{\iota(\operatorname{Der}_0(K))}.
+\end{tikzcd}
+\]
+If \(\Phi\) is also behaviourally separated, then this map is an
+isomorphism.
+\end{corollary}
+
+\begin{proof}
+Substitute the reachable identification into
+Theorem~\ref{thm:temporal-semantic-quotient}. In the separated case, apply
+Corollary~\ref{cor:separated-temporal-semantics}.
+\end{proof}
+
+This is the finite-trajectory form of categorical Myhill--Nerode theory:
+reachable and separated realizations have exactly the labelled trajectories of
+the canonical derivative realization.
+
+\section{Residual trajectories and endpoint reachability}
+\label{sec:residual-contracts-temporal-safety}
+
+The preceding section applied state minimization to arbitrary Mealy
+morphisms.  We now specialize to the canonical behaviour machine and
+interpret derivative invariance and generated derivative closure directly in
+terms of finite residual executions.  The universal predicate-transformer
+form of finite-path safety is postponed to the later dynamic-logic chapter,
+where it can be compared with span boxes and polynomial profile boxes.
+
+\subsection{Canonical residual trajectories}
+\label{subsec:canonical-residual-trajectories}
+
+Fix input and output categories
+\[
+    \mathbb A,
+    \qquad
+    \mathbb B.
+\]
+Let
+\[
+    \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+\]
+be the canonical behaviour Mealy morphism, with carrier
+\[
+    \mathbf{Beh}_0
+    :=
+    \mathbf{Beh}_{\mathbb A,\mathbb B,0}.
+\]
+Its execution trajectory sheaf is
+\[
+    \mathscr T_{\mathbf{Beh}}
+    :=
+    \mathscr T_{\mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}}.
+\]
+
+For \(n\geq0\) and \(0\leq i\leq n\), write
+\[
+    \nu_i^{(n)}:
+    \mathscr T_{\mathbf{Beh}}(n)
+    \to
+    \mathbf{Beh}_0
+\]
+for the \(i\)-th residual-state map. In particular,
+\[
+    s_n:=\nu_0^{(n)},
+    \qquad
+    t_n:=\nu_n^{(n)}.
+\]
+A generalized element has the form
+\[
+\begin{tikzcd}[column sep=large]
+    H_0
+        \arrow[r, "a_1"]
+    &
+    H_1
+        \arrow[r, "a_2"]
+    &
+    \cdots
+        \arrow[r, "a_n"]
+    &
+    H_n,
+\end{tikzcd}
+\]
+where
+\[
+    H_i=\partial_{a_i}H_{i-1}.
+\]
+The path is labelled in \(\mathbb A^{\mathrm{op}}\) by the opposites of the
+input arrows and in \(\mathbb B^{\mathrm{op}}\) by the corresponding output
+comparisons.
+
+\begin{remark}[Ambient subobject lattices in the trajectory formulas]
+\label{rem:temporal-subobject-lattices}
+Behavioural predicates were introduced as subobjects of \(\mathbf{Beh}_0\) in
+the slice
+\[
+    \mathcal E/(A_0\times B_0).
+\]
+The trajectory state maps
+\[
+    s_n,\nu_i^{(n)}:
+    \mathscr T_{\mathbf{Beh}}(n)
+    \to
+    \mathbf{Beh}_0
+\]
+are not generally morphisms in that fixed slice, because the input and output
+anchors may change along an execution.
+
+Accordingly, the pullbacks, regular images, and dependent products in this
+section are computed in \(\mathcal E\). This introduces no ambiguity: for
+the fixed structure map
+\[
+    \mathbf{Beh}_0\to A_0\times B_0,
+\]
+there is a canonical identification
+\[
+    \operatorname{Sub}_{\mathcal E}(\mathbf{Beh}_0)
+    \cong
+    \operatorname{Sub}_{\mathcal E/(A_0\times B_0)}
+    (\mathbf{Beh}_0).
+\]
+Every resulting subobject of \(\mathbf{Beh}_0\) inherits its structure map to
+\(A_0\times B_0\).
+\end{remark}
+
+\subsection{Derivative-invariant behavioural specifications}
+\label{subsec:trajectory-realization-residual-contract}
+
+Let
+\[
+    V\hookrightarrow\mathbf{Beh}_0
+\]
+be derivative invariant. The canonical transition and output-comparison maps
+restrict to \(V\), producing the canonical realization \(\iota(V)\).
+
+\begin{theorem}[Trajectory object of a derivative-invariant specification]
+\label{thm:trajectory-object-residual-contract}
+For every \(n\geq0\), there is a canonical pullback isomorphism
+\[
+\begin{tikzcd}[column sep=large]
+    \mathscr T_{\iota(V)}(n)
+        \arrow[r, "\cong"]
+    &
+    V\times_{\mathbf{Beh}_0,s_n}
+    \mathscr T_{\mathbf{Beh}}(n).
+\end{tikzcd}
+\]
+Consequently, a canonical residual trajectory lies in
+\(\mathscr T_{\iota(V)}(n)\) if and only if its initial residual state lies
+in \(V\).
+\end{theorem}
+
+\begin{proof}
+Deterministic path lifting gives
+\[
+    \mathscr T_{\mathbf{Beh}}(n)
+    \cong
+    \mathbf{Beh}_0
+    \times_{A_0}
+    \operatorname{Path}(\mathbb A^{\mathrm{op}})(n),
+\]
+under which \(s_n\) is projection to \(\mathbf{Beh}_0\). Similarly,
+\[
+    \mathscr T_{\iota(V)}(n)
+    \cong
+    V\times_{A_0}
+    \operatorname{Path}(\mathbb A^{\mathrm{op}})(n).
+\]
+Pulling the first isomorphism back along
+\(V\hookrightarrow\mathbf{Beh}_0\) produces the second. Derivative
+invariance guarantees that the transition structure restricts and hence that
+every later residual state remains in \(V\).
+\end{proof}
+
+\begin{corollary}[All trajectory boundaries remain in the specification]
+\label{cor:all-vertices-remain-contract}
+For every \(n\geq0\) and every \(0\leq i\leq n\),
+\[
+    s_n^\ast V
+    \leq
+    \bigl(\nu_i^{(n)}\bigr)^\ast V
+\]
+as subobjects of \(\mathscr T_{\mathbf{Beh}}(n)\).
+\end{corollary}
+
+\begin{proof}
+By the theorem, a trajectory beginning in \(V\) is a trajectory of the
+restricted canonical realization \(\iota(V)\). Every state projection of
+that restricted trajectory factors through \(V\).
+\end{proof}
+
+\subsection{Finite-path characterization of derivative invariance}
+\label{subsec:temporal-characterization-derivative-invariance}
+
+Let
+\[
+    C\hookrightarrow\mathbf{Beh}_0
+\]
+be an arbitrary behavioural predicate.
+
+\begin{theorem}[Finite-path characterization of derivative invariance]
+\label{thm:finite-horizon-characterization-contracts}
+The following are equivalent:
+\begin{enumerate}
+    \item \(C\) is derivative invariant;
+    \item every one-step canonical residual execution beginning in \(C\)
+    ends in \(C\), equivalently
+    \[
+        s_1^\ast C\leq t_1^\ast C;
+    \]
+    \item for every \(n\geq0\) and every \(0\leq i\leq n\),
+    \[
+        s_n^\ast C
+        \leq
+        \bigl(\nu_i^{(n)}\bigr)^\ast C;
+    \]
+    \item every finite canonical residual execution beginning in \(C\)
+    remains in \(C\) at every state boundary.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Derivative invariance says exactly that every applicable derivative of a
+state in \(C\) lies again in \(C\). The object of applicable one-step
+derivatives is \(\mathscr T_{\mathbf{Beh}}(1)\), with source and target maps
+\(s_1\) and \(t_1\). Thus conditions one and two are equivalent.
+
+Assume the one-step condition. An \(n\)-step residual execution is a chain of
+one-step executions. Repeated application of the one-step inclusion propagates
+membership in \(C\) from the initial state to every later boundary. This gives
+condition three. Conditions three and four are the external and internal
+readings of the same family of subobject inclusions. Finally, condition three
+at \(n=1\) and \(i=1\) is the one-step condition.
+\end{proof}
+
+Thus derivative-invariant behavioural specifications are exactly the
+state-determined predicates closed under every finite residual prefix.
+
+\subsection{Generated derivative closure as endpoint reachability}
+\label{subsec:temporal-interpretation-generated-closure}
+
+For a predicate
+\[
+    C\hookrightarrow\mathbf{Beh}_0,
+\]
+define the object of length-\(n\) canonical trajectories beginning in \(C\)
+by
+\[
+    \mathscr T_C(n)
+    :=
+    C\times_{\mathbf{Beh}_0,s_n}
+    \mathscr T_{\mathbf{Beh}}(n).
+\]
+Write
+\[
+    t_{n,C}:
+    \mathscr T_C(n)
+    \to
+    \mathbf{Beh}_0
+\]
+for the terminal-state map. Form
+\[
+    S_C
+    :=
+    \coprod_{n\in\mathbb N}\mathscr T_C(n)
+\]
+and
+\[
+    \tau_C
+    :=
+    \coprod_{n\in\mathbb N}t_{n,C}:
+    S_C\to\mathbf{Beh}_0.
+\]
+
+\begin{definition}[Finite-path endpoint reachability]
+\label{def:temporal-reachability-closure}
+The \textbf{finite-path endpoint reachability closure} of \(C\) is
+\[
+    \operatorname{Reach}_{\mathrm{path}}(C)
+    :=
+    \operatorname{Im}(\tau_C).
+\]
+\end{definition}
+
+The augmented nerve of the canonical behaviour category supplies a total
+contraction
+\[
+    \kappa_n:
+    \mathscr T_{\mathbf{Beh}}(n)
+    \to
+    \mathscr T_{\mathbf{Beh}}(1)
+\]
+induced by the order-preserving map
+\[
+    [1]\to[n],
+    \qquad
+    0\mapsto0,
+    \quad
+    1\mapsto n.
+\]
+For \(n=0\), this is identity insertion. It satisfies
+\[
+    s_1\kappa_n=s_n,
+    \qquad
+    t_1\kappa_n=t_n.
+\]
+
+\begin{theorem}[Generated derivative closure is endpoint reachability]
+\label{thm:generated-closure-temporal-reachability}
+There is a canonical equality
+\[
+    \operatorname{Reach}_{\mathrm{path}}(C)
+    =
+    \operatorname{Gen}_{\partial}(C).
+\]
+\end{theorem}
+
+\begin{proof}
+Because \(s_1\kappa_n=s_n\), total contraction restricts to
+\[
+    \kappa_{n,C}:
+    \mathscr T_C(n)
+    \to
+    \mathscr T_C(1).
+\]
+The terminal-state equation gives
+\[
+    t_{n,C}
+    =
+    t_{1,C}\kappa_{n,C}.
+\]
+Hence
+\[
+    \operatorname{Im}(t_{n,C})
+    \leq
+    \operatorname{Im}(t_{1,C})
+\]
+for every \(n\). Conversely, the length-one component occurs among the
+coproduct components of \(\tau_C\). Therefore
+\[
+    \operatorname{Im}(\tau_C)
+    =
+    \operatorname{Im}(t_{1,C}).
+\]
+
+The map \(t_{1,C}\) sends a behaviour \(H\in C\), together with an
+applicable input arrow \(a\), to the derivative \(\partial_aH\). By the
+one-step construction of generated derivative closure in the preceding
+chapter, its regular image is exactly
+\[
+    \operatorname{Gen}_{\partial}(C).
+\]
+Therefore
+\[
+    \operatorname{Reach}_{\mathrm{path}}(C)
+    =
+    \operatorname{Gen}_{\partial}(C).
+\]
+\end{proof}
+
+The theorem also explains why all finite lengths add no new endpoint states
+beyond length one in the full categorical execution semantics. Any finite
+input path has a composite input arrow, and total contraction processes that
+composite in one categorical step.
+
+\begin{remark}[Deferred universal safety construction]
+\label{rem:residual-universal-safety-deferred}
+The inclusions
+\[
+    s_n^\ast C
+    \leq
+    \bigl(\nu_i^{(n)}\bigr)^\ast C
+\]
+already give the finite-trajectory characterization of derivative
+invariance.  To construct the largest derivative-invariant subobject below an
+arbitrary predicate \(C\), one additionally quantifies universally over all
+trajectory lengths and all boundary maps.  That construction uses the
+dependent products and complete subobject lattices appropriate to the
+logical layer of the theory.  It will therefore be developed with the
+trajectory box modalities in the later dynamic-logic chapter rather than
+repeated here.
+\end{remark}
+
+\section{One-object, Boolean, and generator-level specializations}
+\label{sec:temporal-one-object-boolean}
+
+\subsection{One-object input and output categories}
+\label{subsec:temporal-one-object-specialization}
+
+Suppose
+\[
+    \mathbb A=\mathbf B M,
+    \qquad
+    \mathbb B=\mathbf B N
+\]
+are one-object internal categories associated with monoid objects \(M\) and
+\(N\). Using the canonical symmetry
+\[
+    M\times P\cong P\times M,
+\]
+we write execution arrows in state-first form
+\[
+    (x,m).
+\]
+
+A Mealy morphism consists of a state object \(P\), a right \(M\)-action
+\[
+    x\cdot m,
+\]
+and an output cocycle
+\[
+    \omega:M\times P\to N
+\]
+satisfying
+\[
+    x\cdot(mn)
+    =
+    (x\cdot m)\cdot n
+\]
+and
+\[
+    \omega(mn,x)
+    =
+    \omega(m,x)\,
+    \omega(n,x\cdot m).
+\]
+
+The execution category has object object \(P\) and arrow object
+\(P\times M\). Its source, target, identity, and composition are
+\[
+    s(x,m)=x,
+    \qquad
+    t(x,m)=x\cdot m,
+\]
+\[
+    e(x)=(x,1_M),
+\]
+\[
+    (x,m);(x\cdot m,n)
+    =
+    (x,mn).
+\]
+The input label of \((x,m)\) is \(m^{\mathrm{op}}\), and the output label is
+\(\omega(m,x)^{\mathrm{op}}\).
+
+An \(n\)-step execution is uniquely determined by
+\[
+    (x;m_1,\ldots,m_n).
+\]
+Its state path is
+\[
+\begin{tikzcd}[column sep=large]
+    x
+        \arrow[r, "m_1"]
+    &
+    x\cdot m_1
+        \arrow[r, "m_2"]
+    &
+    \cdots
+        \arrow[r, "m_n"]
+    &
+    x\cdot(m_1\cdots m_n).
+\end{tikzcd}
+\]
+The output-comparison arrows in \(N\) are
+\[
+    \omega(m_1,x),
+\]
+\[
+    \omega(m_2,x\cdot m_1),
+\]
+\[
+    \ldots,
+\]
+\[
+    \omega
+    \bigl(
+        m_n,
+        x\cdot(m_1\cdots m_{n-1})
+    \bigr).
+\]
+The output path in \(\mathbf BN^{\mathrm{op}}\) consists of their opposites.
+
+Contiguous restriction selects a consecutive block of the monoid labels and
+the corresponding boundary state. Gluing concatenates two label strings when
+the terminal state of the first equals the initial state of the second.
+Contraction sends adjacent labels \(m_i,m_{i+1}\) to \(m_im_{i+1}\). The
+cocycle law says that the output comparison of the contracted execution is the
+composite of the two original output comparisons.
+
+Total contraction sends
+\[
+    (x;m_1,\ldots,m_n)
+\]
+to
+\[
+    (x;m_1\cdots m_n).
+\]
+This concrete formula exhibits directly why path length is segmentation in the
+full one-object category: an arbitrary word or monoid element already labels a
+single categorical step.
+
+\subsection{Boolean derivative executions}
+\label{subsec:boolean-language-trajectories}
+
+From this subsection onward, work in
+\[
+    \mathcal E=\mathbf{Set},
+\]
+and let \(\Sigma\) be an ordinary set of letters. Let
+\[
+    L:\Sigma^\ast\to2
+\]
+be a Boolean language. Write
+\[
+    \operatorname{Der}(L)
+    :=
+    \{
+        \partial_uL
+        \mid
+        u\in\Sigma^\ast
+    \}
+\]
+for its set of left derivatives, where
+\[
+    \partial_uL(w):=L(uw).
+\]
+The right \(\Sigma^\ast\)-action on residual languages is
+\[
+    H\cdot v:=\partial_vH.
+\]
+For \(H=\partial_uL\), one has
+\[
+    H\cdot v
+    =
+    \partial_v(\partial_uL)
+    =
+    \partial_{uv}L.
+\]
+The observation map is
+\[
+    o:\operatorname{Der}(L)\to2,
+    \qquad
+    o(H):=H(\varepsilon).
+\]
+
+Because the input category is
+\[
+    \mathbf B\Sigma^\ast,
+\]
+a one-step categorical execution may be labelled by an arbitrary word
+\(v\in\Sigma^\ast\), not only by a single letter. The full derivative
+execution category \(\operatorname{Exec}(L)\) has
+\begin{enumerate}
+    \item objects \(H\in\operatorname{Der}(L)\);
+    \item arrows
+    \[
+        (H,v):
+        H\to\partial_vH,
+        \qquad
+        v\in\Sigma^\ast.
+    \]
+\end{enumerate}
+Composition is
+\[
+\begin{tikzcd}[column sep=large]
+    H
+        \arrow[r, "v"]
+    &
+    \partial_vH
+        \arrow[r, "w"]
+    &
+    \partial_{vw}H,
+\end{tikzcd}
+\]
+and contracts to the arrow \((H,vw)\).
+
+Write
+\[
+    \mathscr T_L
+    :=
+    \operatorname{Path}
+    \bigl(
+        \operatorname{Exec}(L)
+    \bigr)
+\]
+for the trajectory sheaf of the full word action.
+
+\begin{proposition}[Finite word-labelled derivative executions]
+\label{prop:temporal-derivative-automaton}
+The \(n\)-sections of \(\mathscr T_L\) are tuples
+\[
+    (H;v_1,\ldots,v_n),
+\]
+where
+\[
+    H\in\operatorname{Der}(L),
+    \qquad
+    v_i\in\Sigma^\ast.
+\]
+The associated residual path is
+\[
+    H,
+    \quad
+    \partial_{v_1}H,
+    \quad
+    \partial_{v_2}\partial_{v_1}H,
+    \quad
+    \ldots,
+    \quad
+    \partial_{v_n}\cdots\partial_{v_1}H.
+\]
+If \(H=\partial_uL\), this is
+\[
+    \partial_uL,
+    \quad
+    \partial_{uv_1}L,
+    \quad
+    \partial_{uv_1v_2}L,
+    \quad
+    \ldots,
+    \quad
+    \partial_{uv_1\cdots v_n}L.
+\]
+\end{proposition}
+
+\begin{proof}
+Apply deterministic path lifting to the right
+\(\Sigma^\ast\)-action on \(\operatorname{Der}(L)\). An input path of
+length \(n\) in the one-object category
+\(\mathbf B(\Sigma^\ast)^{\mathrm{op}}\) is a tuple
+\[
+    (v_1,\ldots,v_n)\in(\Sigma^\ast)^n.
+\]
+The successive states are obtained by the displayed right action. The
+calculation
+\[
+    \partial_{v_i}\partial_{uv_1\cdots v_{i-1}}L
+    =
+    \partial_{uv_1\cdots v_i}L
+\]
+gives the second description.
+\end{proof}
+
+The Boolean output comparison for a word step may be read as the observation
+change along that derivative transition. For the purposes of path structure,
+what matters is that the output labels compose according to the Mealy cocycle,
+exactly as in the general one-object case.
+
+\subsection{Letterwise execution paths}
+\label{subsec:letterwise-derivative-trajectories}
+
+The categorical execution above treats every word as a one-step label. To make
+path length count letters, retain only transitions labelled by elements of the
+generating set \(\Sigma\).
+
+\begin{definition}[Letterwise derivative graph]
+\label{def:letterwise-derivative-trajectory-sheaf}
+The \textbf{letterwise derivative graph}
+\[
+    G_L^\Sigma
+\]
+has
+\begin{enumerate}
+    \item vertex set \(\operatorname{Der}(L)\);
+    \item edge set \(\operatorname{Der}(L)\times\Sigma\);
+    \item source and target maps
+    \[
+        s(H,a)=H,
+        \qquad
+        t(H,a)=\partial_aH.
+    \]
+\end{enumerate}
+Its trajectory sheaf is denoted
+\[
+    \mathscr T_L^\Sigma
+    :=
+    \operatorname{Path}(G_L^\Sigma).
+\]
+\end{definition}
+
+An \(n\)-section is
+\[
+    (H;a_1,\ldots,a_n),
+    \qquad
+    a_i\in\Sigma.
+\]
+Starting at \(L\), the residual path is
+\[
+\begin{tikzcd}[column sep=large]
+    L
+        \arrow[r, "a_1"]
+    &
+    \partial_{a_1}L
+        \arrow[r, "a_2"]
+    &
+    \cdots
+        \arrow[r, "a_n"]
+    &
+    \partial_{a_1\cdots a_n}L.
+\end{tikzcd}
+\]
+The observation at boundary \(i\) is
+\[
+    o\bigl(\partial_{a_1\cdots a_i}L\bigr)
+    =
+    L(a_1\cdots a_i).
+\]
+Hence a letterwise execution beginning at \(L\) records the acceptance value
+of every prefix of the observed word, including the empty prefix.
+
+\begin{proposition}[Letterwise restriction]
+\label{prop:letterwise-derivative-trajectories}
+For every \(n\geq0\), there is a canonical monomorphism
+\[
+    \mathscr T_L^\Sigma(n)
+    \hookrightarrow
+    \mathscr T_L(n)
+\]
+whose image consists of the word-labelled executions
+\[
+    (H;v_1,\ldots,v_n)
+\]
+for which every \(v_i\) has length one. These monomorphisms commute with
+contiguous path restriction.
+\end{proposition}
+
+\begin{proof}
+The inclusion of generators
+\[
+    \Sigma\hookrightarrow\Sigma^\ast
+\]
+induces an inclusion of the letter-transition graph into the underlying graph
+of the full \(\Sigma^\ast\)-action category. Applying the graph path functor
+gives the levelwise monomorphisms. Contiguous restriction preserves the
+property that every one-step label has length one.
+\end{proof}
+
+The letterwise trajectory sheaf is closed under restriction and gluing. It is
+not closed under the contraction inherited from the full execution category:
+contracting two letter-labelled edges produces an edge labelled by a word of
+length two, which is not an edge of \(G_L^\Sigma\).
+
+\subsection{Free categorical completion of letterwise execution}
+\label{subsec:letterwise-free-category-completion}
+
+Let
+\[
+    \operatorname{Free}(G_L^\Sigma)
+\]
+be the free category on the letterwise derivative graph. An arrow is a finite
+letter path
+\[
+    (H;a_1,\ldots,a_n),
+\]
+including the empty path at \(H\).
+
+\begin{theorem}[Word-labelled execution as free categorical completion]
+\label{thm:letterwise-free-category-completion}
+There is a canonical isomorphism of categories
+\[
+\begin{tikzcd}[column sep=large]
+    \operatorname{Free}(G_L^\Sigma)
+        \arrow[r, "\cong"]
+    &
+    \operatorname{Exec}(L).
+\end{tikzcd}
+\]
+\end{theorem}
+
+\begin{proof}
+Define a functor
+\[
+    F:
+    \operatorname{Free}(G_L^\Sigma)
+    \to
+    \operatorname{Exec}(L)
+\]
+which is the identity on residual languages and sends
+\[
+    (H;a_1,\ldots,a_n)
+\]
+to
+\[
+    (H,a_1\cdots a_n).
+\]
+The empty path is sent to \((H,\varepsilon)\), the identity execution at
+\(H\).
+
+For a fixed residual state \(H\), a letter sequence determines a unique path
+in \(G_L^\Sigma\), because every successive vertex is forced to be
+\[
+    H,
+    \partial_{a_1}H,
+    \ldots,
+    \partial_{a_1\cdots a_n}H.
+\]
+Every word in \(\Sigma^\ast\) has a unique decomposition as a finite letter
+sequence. Hence \(F\) is bijective on every hom-set. Concatenation of letter
+paths is sent to multiplication of words, so \(F\) preserves composition.
+It is therefore an isomorphism.
+\end{proof}
+
+\begin{remark}[Letterwise paths and Segal completion]
+\label{rem:letterwise-contraction}
+The full word-labelled nerve is not a Segal composition structure on the fixed
+letterwise trajectory sheaf. Indeed,
+\[
+    \mathscr T_L^\Sigma(1)
+    =
+    \operatorname{Der}(L)\times\Sigma,
+\]
+whereas
+\[
+    N_+\operatorname{Exec}(L)_1
+    =
+    \operatorname{Der}(L)\times\Sigma^\ast.
+\]
+A Segal composition structure on a fixed trajectory sheaf leaves the degree-one
+object unchanged.
+
+Rather, \(\operatorname{Exec}(L)\) is the free categorical completion of the
+letterwise graph. It adjoins identity arrows labelled by the empty word and
+composite one-step arrows labelled by arbitrary words. Its augmented nerve is
+the canonical strict Segal object of that completed category, while
+\[
+    \mathscr T_L^\Sigma
+    \hookrightarrow
+    \operatorname{Path}(\operatorname{Exec}(L))
+\]
+is the subsheaf of paths segmented entirely into letters.
+\end{remark}
+
+\subsection{Classical finite-trajectory minimization}
+\label{subsec:classical-temporal-minimization}
+
+\begin{corollary}[Finite-trajectory minimization of deterministic automata]
+\label{cor:classical-temporal-minimization}
+Let \(\mathcal A\) be a reachable deterministic automaton recognizing \(L\).
+Its semantic quotient onto the derivative automaton induces a surjection on
+executions of every finite path length, both for the full
+\(\Sigma^\ast\)-labelled execution semantics and for the letterwise
+restriction. If \(\mathcal A\) is minimal, these maps are bijections.
+
+For an arbitrary deterministic automaton recognizing \(L\), the same
+statements hold after restriction to its reachable subautomaton.
+\end{corollary}
+
+\begin{proof}
+For a reachable deterministic automaton recognizing \(L\), the semantic image
+of the state map is precisely \(\operatorname{Der}(L)\). The semantic map is
+therefore a surjective strict homomorphism onto the derivative automaton.
+Theorem~\ref{thm:temporal-preservation-regular-quotients} gives surjections in
+every finite path length for the full word-labelled execution semantics.
+
+For letterwise paths, deterministic path lifting identifies a length-\(n\)
+execution with an initial state together with an element of \(\Sigma^n\). The
+induced map is the product of the state quotient with the identity on
+\(\Sigma^n\), and is therefore surjective.
+
+If the automaton is minimal, its semantic state map is an isomorphism, so the
+induced maps on both full and letterwise executions are bijections. An
+arbitrary recognizing automaton may contain unreachable states whose residual
+behaviours are not derivatives of the language from the chosen initial state;
+restriction to the reachable subautomaton removes this obstruction.
+\end{proof}
+
+\section{Relation to interval-based system semantics}
+\label{sec:comparison-interval-sheaf-machines}
+
+\subsection{Common span architecture}
+\label{subsec:common-span-architecture-temporal}
+
+Many sheaf-theoretic approaches to systems represent a machine by a span
+\[
+\begin{tikzcd}[column sep=large]
+    \text{input trajectories}
+    &
+    \text{system trajectories}
+        \arrow[l]
+        \arrow[r]
+    &
+    \text{output trajectories}.
+\end{tikzcd}
+\]
+The construction of this chapter has exactly that architecture. A Mealy
+morphism determines
+\[
+\begin{tikzcd}[column sep=large]
+    \operatorname{Path}(\mathbb A^{\mathrm{op}})
+    &
+    \mathscr T_\Phi
+        \arrow[l, "{\operatorname{Path}(I_\Phi)}"']
+        \arrow[r, "{\operatorname{Path}(O_\Phi)}"]
+    &
+    \operatorname{Path}(\mathbb B^{\mathrm{op}}).
+\end{tikzcd}
+\]
+Composition is implemented by pullback over the shared intermediate
+trajectory sheaf:
+\[
+\begin{tikzcd}[column sep=large]
+    \mathscr T_{\Psi\circ\Phi}
+        \arrow[r, "\cong"]
+    &
+    \mathscr T_\Phi
+        \times_{\operatorname{Path}(\mathbb B^{\mathrm{op}})}
+    \mathscr T_\Psi.
+\end{tikzcd}
+\]
+This parallel is structural rather than merely notational. Both constructions
+treat a system trajectory as a mediator between compatible input and output
+trajectory data, and both use pullback to synchronize systems along a shared
+interface.
+
+\subsection{Derived rather than primitive temporal behaviour}
+\label{subsec:difference-primitive-structure-temporal}
+
+The difference lies in what is taken as primitive. In an interval-based sheaf
+model, temporally extended behaviour is usually specified directly. One begins
+with sections over intervals and restriction maps between them, and local
+gluing is part of the system definition.
+
+In the present theory, the primitive automata data are
+\begin{enumerate}
+    \item a persistent state carrier;
+    \item typed input and output anchors;
+    \item a deterministic transition operation;
+    \item an output comparison satisfying the Mealy cocycle law.
+\end{enumerate}
+The trajectory sheaf is then derived from the execution category. Its gluing
+property is not an independent axiom on the Mealy morphism: it follows from the
+iterated pullback description of composable one-step executions.
+
+This distinction has two consequences. First, every Mealy morphism yields a
+discrete finite-time machine of interval-sheaf form. Second, an arbitrary
+interval-based machine need not admit a presentation by a persistent state
+carrier and deterministic one-step transition-output structure. Such a
+presentation would require an additional reconstruction theorem, generally
+with hypotheses expressing determinism, state persistence, and one-step
+generation.
+
+The present site has no durations or translations. A section over \([n]\)
+records a path with \(n\) chosen categorical segments. Passing to interval
+sites with lengths, translations, continuous durations, or hybrid time would
+require an explicit change-of-site construction and a comparison of the
+corresponding gluing conditions.
+
+\subsection{The added categorical composition structure}
+\label{subsec:segal-refinement-temporal}
+
+The finite-path sheaf remembers temporal restriction and gluing. Because it is
+derived from an internal category, it also has coherent categorical
+composition data. The distinction can be summarized as follows:
+\[
+\begin{tikzcd}[column sep=large]
+    N_+\operatorname{Exec}(\Phi)
+        \arrow[r, "{j^\ast}"]
+    &
+    \mathscr T_\Phi.
+\end{tikzcd}
+\]
+The object on the right records
+\begin{enumerate}
+    \item finite paths;
+    \item restriction to contiguous temporal windows;
+    \item initial and terminal truncation;
+    \item gluing along matching state boundaries.
+\end{enumerate}
+The object on the left additionally records
+\begin{enumerate}
+    \item insertion of identity executions;
+    \item contraction of adjacent execution steps;
+    \item the unit and associativity equations for iterated contraction.
+\end{enumerate}
+
+This added structure is significant for the semantic applications.  Total
+contraction is what reduces finite-path endpoint reachability to one-step
+derivative generation.  In the later logical development, prefix contraction
+will likewise compare universal finite-trajectory conditions with one-step
+invariance.  Neither reduction would be available from a bare graph
+trajectory sheaf.
+
+\subsection{Scope and limitations}
+\label{subsec:limitations-temporal-trajectories}
+
+The constructions of this chapter are restricted to
+\begin{enumerate}
+    \item discrete linear path shapes;
+    \item finite executions;
+    \item deterministic Mealy transition structure;
+    \item strict semantic homomorphisms;
+    \item sequential composition of execution steps.
+\end{enumerate}
+They do not by themselves provide
+\begin{enumerate}
+    \item continuous-time or hybrid trajectory semantics;
+    \item infinitary execution objects;
+    \item branching, cubical, pomset, or higher-dimensional execution shapes;
+    \item a classification of all interval-based machines by Mealy morphisms;
+    \item a temporal fixed-point logic;
+    \item a primitive notion of duration attached to a categorical arrow.
+\end{enumerate}
+
+The next chapter evaluates the output-comparison labels of these execution
+categories in a downstream action.  The resulting relative execution category
+will admit both an uncurried action-category presentation and a curried
+polynomial total-response presentation.  The subsequent chapter will develop
+the corresponding span, profile, and finite-trajectory logics.
+
+\section{Chapter synthesis and passage to response semantics}
+\label{sec:temporal-trajectories-chapter-synthesis}
+
+\subsection{From automata to path sheaves}
+\label{subsec:temporal-classification-summary}
+
+The chapter began with the Mealy transition-output laws rather than with an
+abstract interval site. From those laws we constructed the execution category
+and the labelled span
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbb A^{\mathrm{op}}
+    &
+    \operatorname{Exec}(\Phi)
+        \arrow[l, "I_\Phi"']
+        \arrow[r, "O_\Phi"]
+    &
+    \mathbb B^{\mathrm{op}}.
+\end{tikzcd}
+\]
+Its finite path objects are the finite runs of the automaton. Deterministic
+path lifting identifies them as
+\[
+    \mathscr T_\Phi(n)
+    \cong
+    P\times_{A_0}
+    \operatorname{Path}(\mathbb A^{\mathrm{op}})(n).
+\]
+Thus a run is uniquely determined by its initial state and input path.
+
+Abstracting the restriction and gluing operations gave the finite-path site.
+The resulting classification may be summarized as follows.
+
+\begin{theorem}[Finite-path classification]
+\label{thm:temporal-classification-summary}
+The following hold:
+\begin{enumerate}
+    \item the augmented discrete interval category carries the topology
+    generated by elementary-edge covers;
+    \item an \(\mathcal E\)-valued presheaf is a trajectory sheaf exactly
+    when
+    \[
+        X(-1)\cong1
+    \]
+    and, for every \(n\geq1\),
+    \[
+        X(n)
+        \cong
+        \underbrace{
+        X(1)\times_{X(0)}\cdots\times_{X(0)}X(1)
+        }_{n\text{ factors}};
+    \]
+    \item internal graphs are equivalent to trajectory sheaves,
+    \[
+    \begin{tikzcd}[column sep=large]
+        \mathbf{Graph}_{\mathrm{int}}(\mathcal E)
+            \arrow[r, "\simeq"]
+        &
+        \mathbf{TrajSh}_{\mathcal E};
+    \end{tikzcd}
+    \]
+    \item adjacent path gluing is the canonical pullback isomorphism
+    \[
+        X(m+n)
+        \cong
+        X(m)\times_{X(0)}X(n).
+    \]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+These are Proposition
+\ref{prop:concrete-trajectory-sheaf-condition}, Corollary
+\ref{cor:adjacent-temporal-gluing}, and Theorem
+\ref{thm:graph-trajectory-sheaf-equivalence}.
+\end{proof}
+
+\subsection{From path sheaves to categorical execution}
+\label{subsec:segal-execution-summary}
+
+The graph-level path objects do not determine identity arrows or composition.
+Those operations were recovered by extending from contiguous interval maps to
+all order-preserving maps.
+
+\begin{theorem}[Segal execution classification]
+\label{thm:segal-execution-summary}
+The following hold:
+\begin{enumerate}
+    \item augmented strict Segal objects are equivalent to internal categories,
+    \[
+    \begin{tikzcd}[column sep=large]
+        \mathsf{Seg}^{\mathrm{str}}_+(\mathcal E)
+            \arrow[r, "\simeq"]
+        &
+        \mathsf{IntCat}(\mathcal E);
+    \end{tikzcd}
+    \]
+    \item the underlying trajectory sheaf of an internal category is the path
+    sheaf of its underlying graph;
+    \item internal category structures on a graph are equivalent to Segal
+    composition structures on its trajectory sheaf;
+    \item every Mealy morphism determines both a labelled trajectory span and
+    a Segal-complete labelled execution span;
+    \item path length records a chosen categorical segmentation, while the
+    Segal contractions record its composite.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+These statements are Theorem
+\ref{thm:internal-nerve-equivalence}, Proposition
+\ref{prop:category-paths-underlying-graph}, Theorem
+\ref{thm:classification-segal-enhancements}, and the constructions of
+Section~\ref{sec:temporal-execution-semantics}.
+\end{proof}
+
+\subsection{Composition, minimization, and the next semantic layer}
+\label{subsec:temporal-semantics-minimization-summary}
+
+\begin{theorem}[Finite-trajectory semantics and minimization]
+\label{thm:temporal-semantics-minimization-summary}
+For Mealy morphisms and strict semantic homomorphisms:
+\begin{enumerate}
+    \item execution categories and trajectory sheaves are functorial in strict
+    semantic homomorphisms;
+    \item Mealy composition is represented by pullback,
+    \[
+        \mathscr T_{\Psi\circ\Phi}
+        \cong
+        \mathscr T_\Phi
+        \times_{\operatorname{Path}(\mathbb B^{\mathrm{op}})}
+        \mathscr T_\Psi;
+    \]
+    \item the composition comparison is natural and coherently associative;
+    \item strict regular semantic quotients induce regular epimorphisms in
+    every finite path length;
+    \item behavioural minimization induces a canonical trajectory quotient
+    \[
+        \mathscr T_\Phi
+        \twoheadrightarrow
+        \mathscr T_{\operatorname{Beh}(\Phi)};
+    \]
+    \item reachable and separated realizations have the same trajectory sheaf
+    as the canonical derivative realization;
+    \item derivative-invariant predicates are precisely those closed under all
+    finite residual prefixes;
+    \item generated derivative closure is finite-path endpoint reachability.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Functoriality and composition are Proposition
+\ref{prop:functoriality-execution-categories}, Theorem
+\ref{thm:execution-category-composition}, and Theorem
+\ref{thm:temporal-composition}.  Quotient preservation and minimization are
+Theorems \ref{thm:temporal-preservation-regular-quotients} and
+\ref{thm:temporal-semantic-quotient}.  The residual statements are Theorems
+\ref{thm:finite-horizon-characterization-contracts} and
+\ref{thm:generated-closure-temporal-reachability}.
+\end{proof}
+
+\begin{remark}[Conceptual summary]
+\label{rem:temporal-final-conceptual-summary}
+The chapter has three interacting levels.
+
+At the automata level, a Mealy morphism determines a category of one-step
+executions and a labelled finite-run semantics.  At the graph level, finite
+runs restrict to contiguous windows and glue uniquely from compatible
+one-step segments.  At the categorical level, identity insertion and coherent
+contraction organize those paths into an augmented strict Segal object.
+
+The semantic consequence
+\[
+    \text{behavioural state minimization}
+    \quad\Longrightarrow\quad
+    \text{finite-trajectory minimization}
+\]
+is therefore compatible with all finite labelled execution structure.  For
+full categorical execution, finite path length measures segmentation, not
+primitive duration.  For letterwise Boolean execution, the generating graph
+supplies a genuine atomic-step interpretation, and the full word-labelled
+execution category is its free categorical completion.
+\end{remark}
+
+\subsection{Passage to evaluated and curried response semantics}
+\label{subsec:temporal-passage-response-semantics}
+
+The output of this chapter is the labelled execution span
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbb A^{\mathrm{op}}
+    &
+    \operatorname{Exec}(\Phi)
+        \arrow[l, "I_\Phi"']
+        \arrow[r, "O_\Phi"]
+    &
+    \mathbb B^{\mathrm{op}},
+\end{tikzcd}
+\]
+together with its path sheaf and Segal composition structure.
+
+The next chapter performs two operations on this data.  First, a right
+\(\mathbb B\)-action evaluates the output-comparison label and produces a
+relative execution category.  Second, the labelled one-step action is
+transposed by dependent product into a polynomial total-response coalgebra.
+The resulting comparison has the form
+\[
+\begin{tikzcd}[column sep=huge]
+    \text{labelled relative action}
+        \arrow[r, shift left=1.1ex, "\text{curry}"]
+    &
+    \text{multiplicative response coalgebra}
+        \arrow[l, shift left=1.1ex, "\text{flatten}"']
+\end{tikzcd}
+\]
+and flattening recovers the relative execution category.  The following logic
+chapter will then compare predicates on selected execution witnesses,
+predicate liftings on total response profiles, and modalities over the finite
+trajectory objects constructed here.

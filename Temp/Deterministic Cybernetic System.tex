@@ -1,0 +1,1847 @@
+\chapter{Deterministic Cybernetic Systems}
+\label{chap:deterministic-cybernetics}
+
+\section{Orientation: Why Cybernetics Belongs Here}
+\label{sec:cybernetic-orientation}
+
+The preceding chapters developed a categorical theory of stateful open systems.  Interfaces were
+represented by internal categories, stateful processes by Mealy morphisms, comparisons by Mealy
+simulations, behaviour by residual semantics, specifications by subobjects and dynamic modalities,
+parallelism by product structure, true concurrency by cubical execution, and feedback by hidden-interface
+trace.
+
+This chapter gives a concrete application of that machinery to deterministic cybernetics.  The
+guiding idea is that a deterministic cybernetic system consists of a plant, an adaptive controller,
+an optimizing decision mechanism, and a learning update mechanism connected through feedback.
+
+The naive systems diagram is
+\[
+\text{plant}
+\;\longleftrightarrow\;
+\text{controller}
+\;\longleftrightarrow\;
+\text{policy}
+\;\longleftrightarrow\;
+\text{optimizer}
+\;\longleftrightarrow\;
+\text{updater}.
+\]
+This diagram is useful as informal intuition, but it is too flat as mathematics.  The formal
+decomposition used in this chapter is
+\[
+\boxed{
+\text{plant}
+\quad\text{feedback-composed with}\quad
+\text{adaptive controller}.
+}
+\]
+The adaptive controller then has internal state containing:
+\[
+\boxed{
+\text{controller state}
++
+\text{policy/model state}
++
+\text{optimizer state}
++
+\text{updater state}.
+}
+\]
+
+The feedback construction supplies the external wiring.  The adaptive controller supplies the
+internal decision and learning dynamics.  The resulting closed system is a deterministic process on
+the coupled state object.
+
+The word ``deterministic'' is important.  This chapter does not develop stochastic control or
+Markov decision processes.  Rather, it identifies the deterministic skeleton underlying such systems:
+state changes are functions, and the corresponding Markov kernels are Dirac kernels.  Thus ordinary
+Mealy machines are read as deterministic controlled Markov processes with output.
+
+There is also an important terminological convention.  We shall not describe the closed-loop system
+as globally clocked.  A global clocking metaphor risks suggesting that independent events have been
+reduced to interleaving schedules.  That would be the wrong reading in the presence of the true
+concurrency theory developed earlier.  Instead, we speak of a causal Mealy step, a state-mediated
+feedback step, or guarded adaptive feedback.  These phrases indicate only that some data depend on
+previously produced data.  For example, an updater cannot learn from a reward before the reward has
+been produced.  This is causal dependence, not interleaving semantics.
+
+The central thesis of the chapter is therefore:
+\[
+\boxed{
+\text{A deterministic cybernetic system is a state-mediated feedback composite of a plant and
+an adaptive controller.}
+}
+\]
+Equivalently, after closing the feedback interface, it is a deterministic Markov process on the
+coupled state object.
+
+\section{Deterministic Mealy Processes as Dirac Markov Processes}
+\label{sec:mealy-dirac-markov}
+
+We begin with the elementary bridge from Mealy machines to deterministic Markov processes.
+
+\begin{definition}[Deterministic Mealy process]
+\label{def:deterministic-mealy-process}
+A deterministic Mealy process from an input set \(I\) to an output set \(O\) consists of a state
+set \(S\), a transition map
+\[
+\tau:S\times I\longrightarrow S,
+\]
+and an output map
+\[
+\omega:S\times I\longrightarrow O.
+\]
+Given a current state \(s_t\in S\) and an input \(i_t\in I\), execution is given by
+\[
+s_{t+1}=\tau(s_t,i_t),
+\qquad
+o_t=\omega(s_t,i_t).
+\]
+\end{definition}
+
+For each fixed input \(i\in I\), the transition map
+\[
+\tau_i:S\longrightarrow S,
+\qquad
+\tau_i(s)=\tau(s,i),
+\]
+determines a deterministic Markov kernel
+\[
+K_i:S\longrightarrow \mathcal D(S)
+\]
+by
+\[
+K_i(s)=\delta_{\tau(s,i)},
+\]
+where \(\mathcal D(S)\) denotes the set of probability distributions on \(S\), and
+\(\delta_x\) is the Dirac distribution concentrated at \(x\).
+
+If output is retained as part of the next observable event, we obtain the Dirac kernel
+\[
+\overline K_i:S\longrightarrow \mathcal D(S\times O)
+\]
+defined by
+\[
+\overline K_i(s)=\delta_{(\tau(s,i),\omega(s,i))}.
+\]
+
+Thus a deterministic Mealy process is exactly a controlled Markov process whose transition
+probabilities take only the values \(0\) and \(1\).
+
+\begin{proposition}[Mealy processes and Dirac Markov processes]
+\label{prop:mealy-dirac-markov}
+Every deterministic Mealy process determines a Dirac-valued controlled Markov process with output.
+Conversely, every Dirac-valued controlled Markov process with output determines a deterministic
+Mealy process.
+\end{proposition}
+
+\begin{proof}
+Given a deterministic Mealy process \((S,\tau,\omega)\), define
+\[
+\overline K_i(s)=\delta_{(\tau(s,i),\omega(s,i))}.
+\]
+This is a controlled Markov kernel whose value at each state is a Dirac distribution.
+
+Conversely, suppose that for each input \(i\in I\) we have a Markov kernel
+\[
+\overline K_i:S\longrightarrow \mathcal D(S\times O)
+\]
+such that \(\overline K_i(s)\) is always a Dirac distribution.  Then for each \(s\in S\) and
+\(i\in I\), there is a unique pair \((s',o)\in S\times O\) such that
+\[
+\overline K_i(s)=\delta_{(s',o)}.
+\]
+Define
+\[
+\tau(s,i)=s',
+\qquad
+\omega(s,i)=o.
+\]
+This gives a deterministic Mealy process.  The two constructions are inverse to one another.
+\end{proof}
+
+The categorical point is that the Mealy process already contains the Markov state.  The Markov
+property says that the future depends on the past only through the current state.  In a deterministic
+Mealy process, this dependence is functional rather than probabilistic.
+
+In the one-object specialization of the general theory, a Mealy morphism is a state object with a
+right action of the input monoid and an output cocycle valued in the output monoid.  The Dirac
+kernel description is the corresponding finite-set probabilistic shadow.
+
+\section{Plants, Observations, Rewards, and Action Interfaces}
+\label{sec:plants-observations-rewards}
+
+A cybernetic system contains a plant: the system being regulated.
+
+\begin{definition}[Deterministic plant]
+\label{def:deterministic-plant}
+A deterministic plant consists of:
+\[
+X=\text{plant state object},
+\]
+\[
+A=\text{action interface},
+\]
+\[
+O=\text{observation interface},
+\]
+\[
+R=\text{reward, cost, or performance interface},
+\]
+together with maps
+\[
+p:X\times A\longrightarrow X,
+\]
+\[
+h:X\longrightarrow O,
+\]
+and
+\[
+\rho:X\times A\times X\longrightarrow R.
+\]
+Given a state \(x\in X\) and an action \(a\in A\), the next plant state is
+\[
+x'=p(x,a),
+\]
+the resulting observation is
+\[
+o'=h(x'),
+\]
+and the resulting performance signal is
+\[
+r=\rho(x,a,x').
+\]
+\end{definition}
+
+The plant may be packaged as a Mealy process
+\[
+P:A\rightsquigarrow O\times R
+\]
+with internal state \(X\).  Its transition-output structure is
+\[
+P(x,a)=
+\bigl(
+p(x,a),\,h(p(x,a)),\,\rho(x,a,p(x,a))
+\bigr).
+\]
+
+The convention in this chapter is that the plant emits the post-action observation and performance
+signal.  Thus an action produces a plant transition, and the resulting state is then observed:
+\[
+a_t
+\leadsto
+x_{t+1}
+\leadsto
+(o_{t+1},r_t).
+\]
+The controller may also use a current observation \(o_t=h(x_t)\) to choose the action.  The
+post-action observation \(o_{t+1}\) is then used by the adaptive updater.
+
+This distinction prevents the following two maps from being conflated:
+\[
+h(x_t)=o_t,
+\qquad
+h(x_{t+1})=o_{t+1}.
+\]
+The first is used for present decision-making.  The second is used for learning from the consequence
+of the decision.
+
+\section{Adaptive Controllers as Stateful Mealy Systems}
+\label{sec:adaptive-controllers}
+
+A controller in a deterministic cybernetic system is not merely a function
+\[
+O\longrightarrow A.
+\]
+That is only a stateless policy readout.  A learning controller is stateful.
+
+\begin{definition}[Adaptive controller]
+\label{def:adaptive-controller}
+An adaptive controller from observation/performance interface \(O\times R\) to action/value
+interface \(A\times V\) is a deterministic Mealy process
+\[
+K:O\times R\rightsquigarrow A\times V
+\]
+whose internal state object is decomposed as
+\[
+K_0=C\times \Theta\times Z\times U.
+\]
+Here:
+\[
+C=\text{controller mode, guard, or safety state},
+\]
+\[
+\Theta=\text{policy, model, parameter, or critic state},
+\]
+\[
+Z=\text{optimizer state},
+\]
+\[
+U=\text{updater or memory state}.
+\]
+\end{definition}
+
+The controller receives an observation/performance signal and emits an action together with a value
+or certificate:
+\[
+(o,r)
+\longmapsto
+(a,v).
+\]
+The selected action \(a\) is sent to the plant.  The value \(v\) is an exposed performance or
+optimization certificate.
+
+The policy itself should be separated from the policy state.  For a fixed parameter or model state
+\(\theta\in\Theta\), there may be a stateless policy readout
+\[
+\pi_\theta:O\longrightarrow A.
+\]
+But the adaptive policy system is stateful because \(\theta\) changes:
+\[
+\theta\longmapsto\theta'.
+\]
+Thus the accurate statement is not merely that the policy is stateful.  Rather, the adaptive
+controller has policy, model, or critic state.
+
+\section{Policy States, Evaluators, Optimizers, and Updaters}
+\label{sec:policy-evaluator-optimizer-updater}
+
+The adaptive controller internally separates four functions:
+\[
+\text{guards},
+\qquad
+\text{evaluation},
+\qquad
+\text{optimization},
+\qquad
+\text{update}.
+\]
+This separation is the main structural point of the chapter.
+
+\subsection{Guards and Admissible Actions}
+\label{subsec:guards-admissible-actions}
+
+The controller state may restrict the actions currently allowed.  We represent this by a guard
+relation
+\[
+G\hookrightarrow C\times O\times A.
+\]
+In finite-set notation, this is equivalently a map
+\[
+G:C\times O\longrightarrow \mathcal P(A),
+\]
+where \(G(c,o)\subseteq A\) is the set of actions admissible in controller state \(c\) under
+observation \(o\).
+
+For example:
+\[
+\text{a thermostat may forbid rapid switching},
+\]
+\[
+\text{an inventory controller may forbid repeated large orders},
+\]
+\[
+\text{a cruise controller may forbid acceleration in an unsafe following state},
+\]
+\[
+\text{a navigation controller may forbid moves known to be blocked}.
+\]
+
+\subsection{Evaluators}
+\label{subsec:evaluators}
+
+Let \(W\) be an ordered value object.  An evaluator is a map
+\[
+Q:\Theta\times C\times O\times A\longrightarrow W.
+\]
+For fixed \((\theta,c,o)\), the function
+\[
+a\longmapsto Q(\theta,c,o,a)
+\]
+scores each candidate action.
+
+The evaluator is the location of value functions, cost functions, predictive models, safety
+penalties, learned estimates, and critic values.  It does not itself choose an action.  It only
+assigns values.
+
+\subsection{Optimizers}
+\label{subsec:optimizers}
+
+The optimizer performs the current decision.  It has state \(Z\), reads the current policy/model
+state, controller state, and observation, and returns a selected action, an optimal value, and an
+updated optimizer state:
+\[
+\Omega:Z\times \Theta\times C\times O\longrightarrow A\times W\times Z.
+\]
+Write
+\[
+\Omega(z,\theta,c,o)=(a^*,v^*,z^+).
+\]
+The intended equations are
+\[
+a^*\in \operatorname{argmax}_{a\in G(c,o)} Q(\theta,c,o,a),
+\]
+and
+\[
+v^*=\max_{a\in G(c,o)} Q(\theta,c,o,a).
+\]
+Thus the optimizer carries both an \(\operatorname{argmax}\) component and a \(\max\) component.
+The selected action \(a^*\) controls the plant.  The value \(v^*\) is the value certificate.
+
+\subsection{The Optimizing Subobject}
+\label{subsec:optimizing-subobject}
+
+In a more categorical presentation, the optimizer may be represented by an optimizing subobject.
+Define
+\[
+\operatorname{Opt}_Q
+\hookrightarrow
+Z\times\Theta\times C\times O\times A\times W\times Z.
+\]
+An element
+\[
+(z,\theta,c,o,a,v,z^+)
+\]
+belongs to \(\operatorname{Opt}_Q\) when:
+\[
+a\in G(c,o),
+\]
+\[
+Q(\theta,c,o,a)=v,
+\]
+and for every admissible action \(b\in G(c,o)\),
+\[
+Q(\theta,c,o,b)\leq v.
+\]
+
+If the optimizing subobject is represented by a function, then one has a deterministic optimizer
+\[
+\Omega:Z\times\Theta\times C\times O\longrightarrow A\times W\times Z.
+\]
+If not, the optimizer is naturally span-valued.  In that case, multiple actions may realize the
+same maximum.  This chapter mostly uses deterministic representatives, but the span-valued form is
+the natural generalization.
+
+\subsection{Updaters}
+\label{subsec:updaters}
+
+The updater performs learning.  It changes the future controller and policy/model state after the
+plant consequence is observed.
+
+An updater is a map
+\[
+L:
+C\times\Theta\times Z\times U
+\times O\times A\times W\times R\times O
+\longrightarrow
+C\times\Theta\times Z\times U.
+\]
+The input variables are:
+\[
+(c,\theta,z,u,o,a,v,r,o').
+\]
+Here \(o\) is the observation used for the present decision, \(a\) is the selected action, \(v\)
+is the optimizer's value certificate, \(r\) is the resulting performance signal, and \(o'\) is the
+post-action observation.
+
+The updater may implement:
+\[
+\text{table update},
+\qquad
+\text{model update},
+\qquad
+\text{safety-state update},
+\]
+\[
+\text{controller-mode update},
+\qquad
+\text{optimizer-cache update},
+\qquad
+\text{memory update}.
+\]
+
+The central distinction is:
+\[
+\boxed{
+\text{optimizer = within-step decision},
+}
+\]
+whereas
+\[
+\boxed{
+\text{updater = across-step adaptation}.
+}
+\]
+The optimizer chooses using the current policy/model state.  The updater changes the policy/model
+state for future choices.
+
+\section{The Causal Closed-Loop Mealy Transition}
+\label{sec:causal-closed-loop-transition}
+
+We now define the closed-loop deterministic system obtained from a plant and an adaptive controller.
+
+Let the plant be
+\[
+(X,A,O,R,p,h,\rho),
+\]
+and let the adaptive controller have state object
+\[
+C\times\Theta\times Z\times U.
+\]
+The coupled closed-loop state object is
+\[
+S=X\times C\times\Theta\times Z\times U.
+\]
+
+Given
+\[
+s=(x,c,\theta,z,u)\in S,
+\]
+define the current observation
+\[
+o=h(x).
+\]
+The optimizer produces
+\[
+(a^*,v^*,z^+)=\Omega(z,\theta,c,o).
+\]
+The plant then responds:
+\[
+x'=p(x,a^*).
+\]
+The resulting observation is
+\[
+o'=h(x').
+\]
+The performance signal is
+\[
+r=\rho(x,a^*,x').
+\]
+Finally, the updater produces the next adaptive-controller state:
+\[
+(c',\theta',z',u')
+=
+L(c,\theta,z^+,u,o,a^*,v^*,r,o').
+\]
+
+\begin{definition}[Closed-loop transition]
+\label{def:closed-loop-transition}
+The closed-loop transition of the deterministic adaptive cybernetic system is the function
+\[
+F:X\times C\times\Theta\times Z\times U
+\longrightarrow
+X\times C\times\Theta\times Z\times U
+\]
+defined by
+\[
+F(x,c,\theta,z,u)=(x',c',\theta',z',u'),
+\]
+where \(x'\), \(c'\), \(\theta'\), \(z'\), and \(u'\) are computed by the preceding equations.
+\end{definition}
+
+This is a causal Mealy transition.  The word ``causal'' only means that the update reads the
+consequence of the action.  It does not impose a global interleaving semantics on independent
+components.
+
+\begin{theorem}[Closed-loop deterministic Markov process]
+\label{thm:closed-loop-deterministic-markov}
+Every deterministic adaptive cybernetic system determines a deterministic Markov process on the
+closed-loop state object
+\[
+S=X\times C\times\Theta\times Z\times U.
+\]
+\end{theorem}
+
+\begin{proof}
+The displayed construction defines a function
+\[
+F:S\longrightarrow S.
+\]
+The corresponding Markov kernel is the Dirac kernel
+\[
+K(s)=\delta_{F(s)}.
+\]
+Thus the closed-loop system is a deterministic Markov process.
+\end{proof}
+
+\begin{corollary}[Eventually periodic finite behaviour]
+\label{cor:eventually-periodic-cybernetic}
+If \(X\), \(C\), \(\Theta\), \(Z\), and \(U\) are finite, then every initial closed-loop state has
+eventually periodic state behaviour under \(F\).
+\end{corollary}
+
+\begin{proof}
+The state object
+\[
+S=X\times C\times\Theta\times Z\times U
+\]
+is finite.  Therefore the sequence
+\[
+s,\ F(s),\ F^2(s),\ldots
+\]
+eventually repeats.
+\end{proof}
+
+\section{Feedback Closure and Signed Interfaces}
+\label{sec:feedback-signed-interfaces-cybernetics}
+
+The preceding section defined the closed-loop execution map.  We now relate it to feedback
+composition.
+
+At the interface level, the plant is a Mealy process
+\[
+P:A\rightsquigarrow O\times R.
+\]
+The adaptive controller is a Mealy process
+\[
+K:O\times R\rightsquigarrow A\times V.
+\]
+The action output of \(K\) is connected to the action input of \(P\), and the observation/reward
+output of \(P\) is connected to the observation/reward input of \(K\).
+
+Equivalently, in signed-interface notation, the plant may be viewed as a component
+\[
+P:\mathbf 1\longrightarrow (O\times R,A),
+\]
+because it produces observation/reward data and consumes action data.  The adaptive controller may
+be viewed as a component
+\[
+K:(O\times R,A)\longrightarrow (V,0),
+\]
+because it consumes observation/reward data, produces action data, and exposes a value output.
+
+Their composite is a closed-loop component
+\[
+\mathbf 1\longrightarrow (V,0).
+\]
+The interface
+\[
+(O\times R,A)
+\]
+is hidden by feedback.
+
+Thus the trace or Int construction supplies the feedback wiring:
+\[
+\boxed{
+\text{trace/Int supplies the signed feedback discipline}.
+}
+\]
+The causal closed-loop Mealy transition supplies the state-mediated adaptive dynamics:
+\[
+\boxed{
+\text{causal Mealy execution supplies the learning dynamics}.
+}
+\]
+
+The optimizer and updater are not created by the trace.  They are stateful components of the
+adaptive controller.  The trace closes the external plant-controller loop.
+
+\section{Specifications of Deterministic Cybernetic Systems}
+\label{sec:cybernetic-specifications}
+
+Once the closed-loop system is represented by a transition
+\[
+F:S\longrightarrow S,
+\]
+a state specification is a subobject
+\[
+\varphi\hookrightarrow S.
+\]
+In \(\mathbf{Set}\), this is simply a subset \(\varphi\subseteq S\).
+
+The one-step diamond modality is
+\[
+\langle F\rangle\varphi.
+\]
+Since \(F\) is deterministic and functional, this is simply the inverse image
+\[
+F^{-1}(\varphi).
+\]
+Likewise, the box modality
+\[
+[F]\varphi
+\]
+also reduces to inverse image in the deterministic functional case.
+
+For iterated execution, we write
+\[
+\langle F^*\rangle \varphi
+\]
+for eventual reachability of \(\varphi\), and
+\[
+[F^*]\varphi
+\]
+for invariance of \(\varphi\) along all finite executions.
+
+Typical cybernetic specifications include:
+\[
+\langle F^*\rangle\mathrm{Comfort}
+\]
+for eventual comfort in a thermostat,
+\[
+[F^*]\mathrm{SafeTemp}
+\]
+for temperature safety,
+\[
+\langle F^*\rangle(\theta_b>\theta_a)
+\]
+for eventual learning of a better bandit arm,
+\[
+[F^*]\mathrm{NoStockout}
+\]
+for inventory safety,
+\[
+\langle F^*\rangle\mathrm{Target}
+\]
+for navigation reachability, and
+\[
+[F^*](d>0)
+\]
+for collision avoidance in cruise control.
+
+In span-valued or nondeterministic variants, diamonds and boxes diverge into their usual may/must
+interpretations.  In the deterministic examples below, they coincide at one step but remain
+conceptually useful for reachability and invariance.
+
+\section{Simulations and Abstraction of Closed-Loop Systems}
+\label{sec:cybernetic-simulations}
+
+Closed-loop cybernetic systems can be compared by simulations.
+
+\begin{definition}[Strict closed-loop simulation]
+\label{def:strict-closed-loop-simulation}
+Let
+\[
+F:S\longrightarrow S
+\]
+and
+\[
+F':S'\longrightarrow S'
+\]
+be deterministic closed-loop systems.  A strict simulation from \(F\) to \(F'\) is a map
+\[
+\sigma:S\longrightarrow S'
+\]
+such that
+\[
+\sigma(F(s))=F'(\sigma(s))
+\]
+for every \(s\in S\).
+Equivalently, the square
+\[
+\begin{tikzcd}
+S \arrow[r,"F"] \arrow[d,"\sigma"'] & S \arrow[d,"\sigma"] \\
+S' \arrow[r,"F'"'] & S'
+\end{tikzcd}
+\]
+commutes.
+\end{definition}
+
+A simulation may compare plants, controllers, optimizers, updaters, or entire closed-loop systems.
+For example:
+\[
+\text{a plant simulation abstracts one plant by another},
+\]
+\[
+\text{a controller simulation compares two controllers},
+\]
+\[
+\text{an optimizer simulation preserves selected actions and values},
+\]
+\[
+\text{a closed-loop simulation compares whole cybernetic systems}.
+\]
+
+\begin{proposition}[Preservation of forward behaviour]
+\label{prop:simulation-forward-behaviour}
+If \(\sigma:S\to S'\) is a strict simulation from \(F\) to \(F'\), then for every \(n\geq 0\),
+\[
+\sigma(F^n(s))=(F')^n(\sigma(s)).
+\]
+\end{proposition}
+
+\begin{proof}
+The proof is by induction on \(n\).  The case \(n=0\) is immediate.  If the statement holds for
+\(n\), then
+\[
+\sigma(F^{n+1}(s))
+=
+\sigma(F(F^n(s)))
+=
+F'(\sigma(F^n(s)))
+=
+F'((F')^n(\sigma(s)))
+=
+(F')^{n+1}(\sigma(s)).
+\]
+\end{proof}
+
+Thus simulations preserve forward trajectories.  Consequently, specifications expressed at the
+abstract level may be transported along suitable simulation maps.  In span form, one replaces the
+commuting square by a compatible simulation span and obtains the corresponding relational version.
+
+\section{Example I: Adaptive Thermostat}
+\label{sec:example-adaptive-thermostat}
+
+The first example is a finite adaptive thermostat.
+
+Let the plant state be the temperature level
+\[
+X=\{0,1,2,3,4\}.
+\]
+Let the actions be
+\[
+A=\{H,I,C\},
+\]
+where \(H\) means heat, \(I\) means idle, and \(C\) means cool.  The plant transition is
+\[
+p(x,H)=\min(4,x+1),
+\]
+\[
+p(x,I)=x,
+\]
+\[
+p(x,C)=\max(0,x-1).
+\]
+The observation is full-state observation:
+\[
+h(x)=x.
+\]
+
+Let the controller state record the previous action:
+\[
+C=A.
+\]
+Let the policy state be a learned comfort target:
+\[
+\Theta=\{2,3\}.
+\]
+Let the optimizer state be a tie-breaking or cache state:
+\[
+Z=A.
+\]
+Let the updater memory be the previous observation:
+\[
+U=X.
+\]
+
+For \(\epsilon>0\) small, define the evaluator
+\[
+Q(\theta,c,o,a)
+=
+-\left|p(o,a)-\theta\right|
+-\epsilon\cdot \mathbf 1_{a\neq c}.
+\]
+The first term rewards moving toward the target.  The second term penalizes switching.
+
+The optimizer returns
+\[
+(a^*,v^*,z^+)=\Omega(z,\theta,c,o),
+\]
+where
+\[
+a^*\in \operatorname{argmax}_{a\in A}Q(\theta,c,o,a),
+\]
+\[
+v^*=\max_{a\in A}Q(\theta,c,o,a),
+\]
+and
+\[
+z^+=a^*.
+\]
+If there are exact ties, fix the deterministic priority
+\[
+I\succ H\succ C.
+\]
+
+The updater is
+\[
+\theta'=
+\begin{cases}
+2 & \text{if } o'\leq 1,\\
+3 & \text{if } o'\geq 4,\\
+\theta & \text{otherwise},
+\end{cases}
+\]
+and
+\[
+c'=a^*,
+\qquad
+z'=z^+,
+\qquad
+u'=o'.
+\]
+
+The closed-loop state is
+\[
+S=X\times A\times \{2,3\}\times A\times X.
+\]
+
+\subsection{Trajectory from a cold state}
+\label{subsec:thermostat-cold-trajectory}
+
+Take initial state
+\[
+(x,c,\theta,z,u)=(0,I,3,I,0).
+\]
+Then one possible trajectory is:
+
+\[
+\begin{array}{c|c|c|c|c|c|c}
+t & x_t & c_t & \theta_t & a_t^* & x_{t+1} & v_t^* \\
+\hline
+0 & 0 & I & 3 & H & 1 & -2-\epsilon \\
+1 & 1 & H & 2 & H & 2 & 0 \\
+2 & 2 & H & 2 & I & 2 & -\epsilon \\
+3 & 2 & I & 2 & I & 2 & 0 \\
+4 & 2 & I & 2 & I & 2 & 0
+\end{array}
+\]
+
+The system moves from too cold to the comfort region and then remains there.
+
+\subsection{Trajectory from a hot state}
+\label{subsec:thermostat-hot-trajectory}
+
+Take initial state
+\[
+(x,c,\theta,z,u)=(4,I,2,I,4).
+\]
+Then:
+
+\[
+\begin{array}{c|c|c|c|c|c|c}
+t & x_t & c_t & \theta_t & a_t^* & x_{t+1} & v_t^* \\
+\hline
+0 & 4 & I & 2 & C & 3 & -1-\epsilon \\
+1 & 3 & C & 3 & I & 3 & -\epsilon \\
+2 & 3 & I & 3 & I & 3 & 0 \\
+3 & 3 & I & 3 & I & 3 & 0
+\end{array}
+\]
+
+The example exhibits all components:
+\[
+X=\text{plant temperature},
+\]
+\[
+C=\text{previous action},
+\]
+\[
+\Theta=\text{learned comfort target},
+\]
+\[
+Z=\text{optimizer tie-breaking/cache state},
+\]
+\[
+U=\text{previous observation}.
+\]
+
+The argmax output controls the plant.  The max output records the quality of the best currently
+available control action.
+
+\section{Example II: Deterministic Bandit Learning}
+\label{sec:example-deterministic-bandit}
+
+The deterministic bandit is the smallest example in which learning is visible.
+
+Let
+\[
+A=\{a,b\}
+\]
+be the action set.  The plant state is a deterministic reward table
+\[
+X=\{0,1\}^A.
+\]
+Fix the concrete plant
+\[
+x(a)=0,
+\qquad
+x(b)=1.
+\]
+The plant state does not change:
+\[
+p(x,i)=x.
+\]
+The reward is
+\[
+\rho(x,i,x)=x(i).
+\]
+The observation object is terminal:
+\[
+O=1.
+\]
+
+The policy state is an estimated reward table
+\[
+\Theta=\{0,1\}^A.
+\]
+Write
+\[
+\theta=(\hat r_a,\hat r_b).
+\]
+Let the optimizer state be
+\[
+Z=\{\operatorname{try}\,a,\operatorname{try}\,b,\operatorname{exploit}\}.
+\]
+Let the updater memory be
+\[
+U=A+\{\bot\}.
+\]
+
+The evaluator is
+\[
+Q(\theta,i)=\hat r_i.
+\]
+The optimizer is:
+\[
+\Omega(\operatorname{try}\,a,\theta)
+=
+(a,\hat r_a,\operatorname{try}\,b),
+\]
+\[
+\Omega(\operatorname{try}\,b,\theta)
+=
+(b,\hat r_b,\operatorname{exploit}),
+\]
+and
+\[
+\Omega(\operatorname{exploit},\theta)
+=
+(i^*,v^*,\operatorname{exploit}),
+\]
+where
+\[
+i^*\in \operatorname{argmax}_{i\in A}\hat r_i,
+\qquad
+v^*=\max_{i\in A}\hat r_i.
+\]
+Ties are broken by the priority \(a\succ b\).
+
+The updater sets the estimate of the selected action to the observed reward:
+\[
+\hat r_i'=r
+\]
+for the chosen action \(i\), and leaves the other estimate fixed.
+
+Starting with
+\[
+\theta_0=(0,0),
+\qquad
+z_0=\operatorname{try}\,a,
+\]
+the trajectory is:
+
+\[
+\begin{array}{c|c|c|c|c|c|c}
+t & z_t & \theta_t & i_t & r_t & \theta_{t+1} & v_t^* \\
+\hline
+0 & \operatorname{try}\,a & (0,0) & a & 0 & (0,0) & 0 \\
+1 & \operatorname{try}\,b & (0,0) & b & 1 & (0,1) & 0 \\
+2 & \operatorname{exploit} & (0,1) & b & 1 & (0,1) & 1 \\
+3 & \operatorname{exploit} & (0,1) & b & 1 & (0,1) & 1
+\end{array}
+\]
+
+This example separates exploration, optimization, and update.  The optimizer chooses using the
+current estimates.  The updater changes the estimates after observing reward.  Therefore the
+optimizer is not the learner; the updater is the learner.
+
+\section{Example III: Finite Inventory Regulation}
+\label{sec:example-inventory-regulation}
+
+We next consider a finite deterministic inventory controller.
+
+Let inventory levels be
+\[
+I=\{0,1,2,3,4,5\}.
+\]
+Let demand phase be
+\[
+D=\{0,1,2\}.
+\]
+The plant state is
+\[
+X=I\times D.
+\]
+Demand is deterministic and cyclic:
+\[
+d_0=1,
+\qquad
+d_1=3,
+\qquad
+d_2=2.
+\]
+Actions are order quantities:
+\[
+A=\{0,1,2,3\}.
+\]
+
+If the plant state is \((x,i)\) and the order is \(a\), define
+\[
+y=\min(5,x+a).
+\]
+The resulting inventory is
+\[
+x'=\max(0,y-d_i),
+\]
+and the demand phase advances by
+\[
+i'=i+1\pmod 3.
+\]
+Thus
+\[
+p((x,i),a)=(x',i').
+\]
+The observation is
+\[
+h(x,i)=(x,d_i).
+\]
+
+A simple performance signal is negative cost.  Let shortage be
+\[
+\operatorname{short}(x,i,a)=\max(0,d_i-\min(5,x+a)),
+\]
+and holding be
+\[
+\operatorname{hold}(x,i,a)=\max(0,\min(5,x+a)-d_i).
+\]
+Define
+\[
+\rho((x,i),a,(x',i'))
+=
+-\bigl(2\operatorname{short}(x,i,a)+\operatorname{hold}(x,i,a)+a\bigr).
+\]
+
+Let the controller state be a cooldown bit:
+\[
+C=\{0,1\}.
+\]
+Let the policy state be a demand estimate:
+\[
+\Theta=\{1,2,3\}.
+\]
+Let the optimizer state store the previous selected order:
+\[
+Z=A.
+\]
+Let updater memory store the previous observed demand:
+\[
+U=\{1,2,3\}.
+\]
+
+The guard is
+\[
+G(c,o)=
+\begin{cases}
+\{0,1\} & \text{if } c=1,\\
+\{0,1,2,3\} & \text{if } c=0.
+\end{cases}
+\]
+Thus after a large order, the controller temporarily restricts the next order.
+
+For observation \(o=(x,d_i)\), define the evaluator
+\[
+Q(\theta,c,o,a)
+=
+-\left|x+a-\theta\right|-a.
+\]
+The optimizer chooses
+\[
+a^*\in \operatorname{argmax}_{a\in G(c,o)}Q(\theta,c,o,a),
+\]
+and returns
+\[
+v^*=\max_{a\in G(c,o)}Q(\theta,c,o,a).
+\]
+
+The updater sets
+\[
+\theta'=d_i,
+\]
+and
+\[
+c'=
+\begin{cases}
+1 & \text{if } a^*=3,\\
+0 & \text{otherwise}.
+\end{cases}
+\]
+It also sets
+\[
+z'=a^*,
+\qquad
+u'=d_i.
+\]
+
+A sample trajectory beginning at
+\[
+((x,i),c,\theta,z,u)=((1,0),0,1,0,1)
+\]
+is:
+
+\[
+\begin{array}{c|c|c|c|c|c|c|c|c}
+t & x_t & i_t & d_{i_t} & c_t & \theta_t & a_t^* & v_t^* & x_{t+1} \\
+\hline
+0 & 1 & 0 & 1 & 0 & 1 & 0 & 0 & 0 \\
+1 & 0 & 1 & 3 & 0 & 1 & 1 & -1 & 0 \\
+2 & 0 & 2 & 2 & 0 & 3 & 2 & -3 & 0 \\
+3 & 0 & 0 & 1 & 0 & 2 & 1 & -1 & 0 \\
+4 & 0 & 1 & 3 & 0 & 1 & 1 & -1 & 0
+\end{array}
+\]
+
+The controller is not optimal in any sophisticated operations-research sense.  That is not the point.
+The point is structural: the plant state, controller guard state, demand-estimate state, optimizer
+state, and updater memory have distinct roles.
+
+\section{Example IV: Finite Navigation with Learned Map}
+\label{sec:example-navigation-learned-map}
+
+This example illustrates model learning.
+
+Let positions be
+\[
+P=\{0,1,2,3\},
+\]
+with target position \(3\).  Let actions be
+\[
+A=\{L,S,R\},
+\]
+where \(L\) moves left, \(S\) stays, and \(R\) moves right.
+
+The plant state includes a wall bit:
+\[
+X=P\times\{0,1\}.
+\]
+The value \(w=1\) means that the edge \(1\to 2\) is blocked.  The wall bit is part of the plant
+state, but the controller may not initially know it.
+
+For \(w\in\{0,1\}\), define:
+\[
+p((q,w),L)=(\max(0,q-1),w),
+\]
+\[
+p((q,w),S)=(q,w),
+\]
+and
+\[
+p((q,w),R)=
+\begin{cases}
+(1,w) & \text{if } q=1 \text{ and } w=1,\\
+(\min(3,q+1),w) & \text{otherwise}.
+\end{cases}
+\]
+The observation is
+\[
+o=(q,\beta),
+\]
+where \(\beta\in\{0,1\}\) records whether the last action produced a bump.  In this finite
+presentation, the bump signal may be included in updater memory, or equivalently in the post-action
+observation.
+
+Let the policy/model state be
+\[
+\Theta=\{0,1,?\}.
+\]
+The value \(?\) means that the controller has not yet learned whether the wall is present.
+
+Let the controller mode be
+\[
+C=\{\operatorname{explore},\operatorname{avoid},\operatorname{done}\}.
+\]
+Let the optimizer state and updater memory be finite sets storing the previous action and bump
+signal:
+\[
+Z=A,
+\qquad
+U=A\times\{0,1\}.
+\]
+
+The evaluator uses the learned model to predict progress toward the target:
+\[
+Q(\theta,c,o,a)
+=
+-\operatorname{dist}_{\theta}(p_{\theta}(o,a),3)
+-
+\operatorname{risk}_{\theta}(o,a).
+\]
+Here \(p_\theta\) is the controller's learned transition model, and \(\operatorname{risk}_\theta\)
+penalizes attempting \(R\) from position \(1\) when the wall status is unknown or known blocked.
+
+The optimizer chooses
+\[
+a^*\in\operatorname{argmax}_{a\in A}Q(\theta,c,o,a),
+\]
+and returns
+\[
+v^*=\max_{a\in A}Q(\theta,c,o,a).
+\]
+
+The updater modifies the learned wall state:
+\[
+\theta'=
+\begin{cases}
+1 & \text{if action } R \text{ from position } 1 \text{ produces a bump},\\
+0 & \text{if action } R \text{ from position } 1 \text{ succeeds},\\
+\theta & \text{otherwise}.
+\end{cases}
+\]
+The controller mode updates by
+\[
+c'=
+\begin{cases}
+\operatorname{done} & \text{if } q'=3,\\
+\operatorname{avoid} & \text{if } \theta'=1,\\
+\operatorname{explore} & \text{otherwise}.
+\end{cases}
+\]
+
+If the wall is absent, a typical trajectory is:
+\[
+\begin{array}{c|c|c|c|c|c}
+t & q_t & \theta_t & c_t & a_t^* & q_{t+1} \\
+\hline
+0 & 0 & ? & \operatorname{explore} & R & 1 \\
+1 & 1 & ? & \operatorname{explore} & R & 2 \\
+2 & 2 & 0 & \operatorname{explore} & R & 3 \\
+3 & 3 & 0 & \operatorname{done} & S & 3
+\end{array}
+\]
+
+If the wall is present, the trajectory begins:
+\[
+\begin{array}{c|c|c|c|c|c|c}
+t & q_t & \theta_t & c_t & a_t^* & \text{bump} & \theta_{t+1} \\
+\hline
+0 & 0 & ? & \operatorname{explore} & R & 0 & ? \\
+1 & 1 & ? & \operatorname{explore} & R & 1 & 1 \\
+2 & 1 & 1 & \operatorname{avoid} & S & 0 & 1
+\end{array}
+\]
+
+The example shows that deterministic learning need not be reward learning.  It can be model
+learning.  The policy/model state \(\Theta\) stores an internal approximation to the plant.
+
+The natural specifications are:
+\[
+\langle F^*\rangle\operatorname{Target}
+\]
+for eventual target reachability, and
+\[
+[F^*]\operatorname{Safe}
+\]
+for safety.  In the wall-present case, reachability may fail unless additional actions or paths are
+available.  The formalism exposes this failure as a property of the closed-loop transition.
+
+\section{Example V: Adaptive Cruise Control}
+\label{sec:example-adaptive-cruise}
+
+We now consider a finite deterministic cruise-control system.
+
+Let following distance be
+\[
+d\in\{0,1,2,3,4\}.
+\]
+Let ego velocity be
+\[
+v\in\{0,1,2\}.
+\]
+Let lead-car velocity be
+\[
+\ell\in\{0,1,2\}.
+\]
+The plant state is
+\[
+X=\{0,1,2,3,4\}\times\{0,1,2\}\times\{0,1,2\}.
+\]
+Actions are accelerations:
+\[
+A=\{-1,0,+1\}.
+\]
+
+Given state \((d,v,\ell)\) and action \(a\), the ego velocity updates by
+\[
+v'=\min(2,\max(0,v+a)).
+\]
+The following distance updates by
+\[
+d'=\min(4,\max(0,d+\ell-v')).
+\]
+For simplicity, keep the lead-car velocity constant:
+\[
+\ell'=\ell.
+\]
+Thus
+\[
+p((d,v,\ell),a)=(d',v',\ell').
+\]
+The observation is full:
+\[
+h(d,v,\ell)=(d,v,\ell).
+\]
+
+The reward is a negative safety/performance cost:
+\[
+\rho((d,v,\ell),a,(d',v',\ell'))
+=
+-\left(
+10\cdot\mathbf 1_{d'=0}
++
+|v'-\ell|
++
+\mathbf 1_{a=-1}
+\right).
+\]
+
+Let the policy state be the learned safe following gap:
+\[
+\Theta=\{1,2,3\}.
+\]
+Let the controller mode be
+\[
+C=\{\operatorname{normal},\operatorname{braking}\}.
+\]
+Let \(Z=A\) store the previous optimizer choice, and let \(U\) store the previous observation.
+
+The evaluator is
+\[
+Q(\theta,c,(d,v,\ell),a)
+=
+-|v'-\ell|
+-
+10\cdot\mathbf 1_{d'<\theta}
+-
+\mathbf 1_{a=-1},
+\]
+where \(v'\) and \(d'\) are computed from the plant prediction under action \(a\).
+
+The optimizer returns
+\[
+a^*\in\operatorname{argmax}_{a\in A}Q(\theta,c,o,a),
+\]
+and
+\[
+v^*=\max_{a\in A}Q(\theta,c,o,a).
+\]
+
+The updater changes the safe-gap estimate by
+\[
+\theta'=
+\begin{cases}
+\min(3,\theta+1) & \text{if } d'\leq \theta,\\
+\max(1,\theta-1) & \text{if } d'\geq \theta+2,\\
+\theta & \text{otherwise},
+\end{cases}
+\]
+and changes the controller mode by
+\[
+c'=
+\begin{cases}
+\operatorname{braking} & \text{if } d'\leq \theta,\\
+\operatorname{normal} & \text{if } d'>\theta.
+\end{cases}
+\]
+Set
+\[
+z'=a^*,
+\qquad
+u'=o'.
+\]
+
+A safe initial trajectory might begin:
+\[
+\begin{array}{c|c|c|c|c|c|c|c}
+t & d_t & v_t & \ell_t & \theta_t & c_t & a_t^* & v_t^* \\
+\hline
+0 & 4 & 1 & 1 & 2 & \operatorname{normal} & 0 & 0 \\
+1 & 4 & 1 & 1 & 1 & \operatorname{normal} & 0 & 0 \\
+2 & 4 & 1 & 1 & 1 & \operatorname{normal} & 0 & 0
+\end{array}
+\]
+
+An unsafe initial trajectory might begin:
+\[
+\begin{array}{c|c|c|c|c|c|c|c}
+t & d_t & v_t & \ell_t & \theta_t & c_t & a_t^* & v_t^* \\
+\hline
+0 & 1 & 2 & 0 & 2 & \operatorname{normal} & -1 & -11 \\
+1 & 0 & 1 & 0 & 3 & \operatorname{braking} & -1 & -11 \\
+2 & 0 & 0 & 0 & 3 & \operatorname{braking} & 0 & -10
+\end{array}
+\]
+
+The precise numerical values are less important than the structural separation:
+\[
+\text{plant dynamics},
+\quad
+\text{safety mode},
+\quad
+\text{adaptive safe-gap parameter},
+\quad
+\text{optimizer},
+\quad
+\text{updater}.
+\]
+The specification
+\[
+[F^*](d>0)
+\]
+expresses collision avoidance.  The example shows that an optimizer can choose the best available
+action while still exposing a low value certificate \(v^*\), indicating that every admissible action
+is bad from the current state.
+
+\section{Example VI: Two Concurrent Plants Under One Adaptive Controller}
+\label{sec:example-concurrent-plants}
+
+This example explains why the causal update discipline does not collapse concurrency into
+interleaving.
+
+Let two independent rooms be controlled by a shared energy manager.  For each \(i=1,2\), let
+\[
+X_i=\{0,1,2,3,4\}
+\]
+be the temperature state of room \(i\), and let
+\[
+A_i=\{H,I,C\}
+\]
+be its action set.  The individual plant dynamics are
+\[
+p_i(x_i,H)=\min(4,x_i+1),
+\]
+\[
+p_i(x_i,I)=x_i,
+\]
+\[
+p_i(x_i,C)=\max(0,x_i-1).
+\]
+The two plants combine in parallel:
+\[
+X=X_1\times X_2,
+\qquad
+A=A_1\times A_2,
+\]
+with transition
+\[
+p((x_1,x_2),(a_1,a_2))
+=
+(p_1(x_1,a_1),p_2(x_2,a_2)).
+\]
+This product transition is not an interleaving.  The two plant coordinates update independently.
+
+The controller observes
+\[
+o=(x_1,x_2).
+\]
+Let the policy state be target temperatures
+\[
+\Theta=\{2,3\}\times\{2,3\}.
+\]
+Let the controller state \(C\) store an energy mode:
+\[
+C=\{\operatorname{normal},\operatorname{saving}\}.
+\]
+
+The admissible joint actions are constrained by a shared energy budget:
+\[
+G(c,o)
+=
+\{(a_1,a_2)\in A_1\times A_2\mid \text{not both }a_1=H\text{ and }a_2=H\}.
+\]
+In saving mode, one may impose the stronger guard
+\[
+G(\operatorname{saving},o)
+=
+\{(a_1,a_2)\mid a_1\neq H,\ a_2\neq H\}.
+\]
+
+The evaluator is
+\[
+Q(\theta,c,o,(a_1,a_2))
+=
+-\left|p_1(x_1,a_1)-\theta_1\right|
+-\left|p_2(x_2,a_2)-\theta_2\right|
+-\operatorname{energy}(a_1,a_2).
+\]
+The optimizer chooses the best admissible joint action:
+\[
+(a_1^*,a_2^*)\in
+\operatorname{argmax}_{(a_1,a_2)\in G(c,o)}
+Q(\theta,c,o,(a_1,a_2)),
+\]
+and returns the corresponding maximum value.
+
+The important point is that the plant side is genuinely parallel:
+\[
+P_1\times P_2:
+A_1\times A_2
+\rightsquigarrow
+O_1\times O_2.
+\]
+The controller may introduce a coupled optimization problem, but this does not mean the plant
+updates are interleaved.  Causal dependence is not interleaving semantics.
+
+Thus this deterministic cybernetic pattern remains compatible with product-parallel and cubical
+true-concurrency structure.  The update depends on dataflow, not on a global sequential scheduler.
+
+\section{Example VII: Optimizer Comparison and Value Certificates}
+\label{sec:example-optimizer-comparison}
+
+The optimizer was required to output both
+\[
+\operatorname{argmax}
+\]
+and
+\[
+\max.
+\]
+This example explains why.
+
+Consider a plant and evaluator for which the selected action controls the plant, but the value of
+the selected action is also observed by a monitor.  The action output is
+\[
+a^*,
+\]
+whereas the value certificate is
+\[
+v^*.
+\]
+
+For instance, in the cruise-control example,
+\[
+a^*
+\]
+is the acceleration command, while
+\[
+v^*
+\]
+measures the value of the best available acceleration.  A low \(v^*\) says that the controller is
+in a bad situation even after optimizing.
+
+This supports specifications such as
+\[
+[F^*](v^*\geq \alpha),
+\]
+which says that the closed-loop system always has an available control action of value at least
+\(\alpha\).  It also supports
+\[
+\langle F^*\rangle(v^*<\alpha),
+\]
+which says that degraded control is eventually reachable.
+
+One may also express fallback policies:
+\[
+v^*<\alpha
+\Longrightarrow
+\operatorname{EmergencyMode}.
+\]
+
+Compare three controllers:
+\[
+K_{\operatorname{act}},
+\qquad
+K_{\operatorname{val}},
+\qquad
+K_{\operatorname{both}}.
+\]
+The first exposes only the selected action \(a^*\).  The second exposes only the value \(v^*\).  The
+third exposes both:
+\[
+(a^*,v^*).
+\]
+Only the third simultaneously controls the plant and certifies the quality of the current decision.
+
+Therefore the optimizer should not be represented only by an action map
+\[
+O\longrightarrow A.
+\]
+It should be represented by a decision-value map
+\[
+O\longrightarrow A\times W,
+\]
+or, in the stateful setting,
+\[
+\Omega:Z\times\Theta\times C\times O\longrightarrow A\times W\times Z.
+\]
+
+\section{Behaviour, Eventual Periodicity, and Black-Boxing}
+\label{sec:cybernetic-behaviour-black-boxing}
+
+Let the closed-loop transition be
+\[
+F:S\longrightarrow S.
+\]
+Let the visible output of the closed system be
+\[
+b:S\longrightarrow B.
+\]
+For example,
+\[
+B=O\times A\times R\times W
+\]
+may record observation, selected action, reward, and optimizer value.
+
+The visible behaviour from an initial state \(s_0\in S\) is the stream
+\[
+b(s_0),\ b(F(s_0)),\ b(F^2(s_0)),\ldots.
+\]
+
+\begin{proposition}[Eventually periodic visible behaviour]
+\label{prop:eventually-periodic-visible-behaviour}
+If \(S\) is finite, then for every initial state \(s_0\), the visible behaviour stream
+\[
+b(s_0),\ b(F(s_0)),\ b(F^2(s_0)),\ldots
+\]
+is eventually periodic.
+\end{proposition}
+
+\begin{proof}
+Since \(S\) is finite, the state sequence
+\[
+s_0,\ F(s_0),\ F^2(s_0),\ldots
+\]
+eventually repeats.  Applying \(b\) to this eventually periodic sequence gives an eventually
+periodic output sequence.
+\end{proof}
+
+This gives a useful black-box perspective on the examples.  The thermostat stabilizes or cycles.
+The deterministic bandit eventually exploits.  The inventory controller may enter a demand-cycle
+orbit.  The navigation system reaches the target or loops.  The cruise controller stabilizes,
+oscillates, or enters emergency behaviour.
+
+Thus the internal plant/controller/policy/optimizer/updater states may be hidden, leaving only the
+observable closed-loop trace.
+
+\section{What the Examples Establish}
+\label{sec:what-examples-establish}
+
+The examples justify the formal pattern.  In each case, the closed-loop state has the form
+\[
+S=X\times C\times\Theta\times Z\times U.
+\]
+The plant state \(X\) belongs to the regulated system.  The controller state \(C\) records modes,
+guards, or safety information.  The policy/model state \(\Theta\) records learned predictive or
+evaluative data.  The optimizer state \(Z\) records tie-breaking, search, or cache data.  The
+updater state \(U\) records the memory needed to change the future policy/model state.
+
+Each example also uses:
+\[
+Q:\Theta\times C\times O\times A\longrightarrow W
+\]
+as evaluator,
+\[
+\Omega:Z\times\Theta\times C\times O\longrightarrow A\times W\times Z
+\]
+as optimizer, and
+\[
+L:
+C\times\Theta\times Z\times U
+\times O\times A\times W\times R\times O
+\longrightarrow
+C\times\Theta\times Z\times U
+\]
+as updater.
+
+The main distinctions are:
+
+\[
+\begin{array}{c|l}
+\text{distinction} & \text{meaning} \\
+\hline
+X \text{ versus } C & \text{plant dynamics versus controller mode} \\
+\Theta \text{ versus } \pi_\theta & \text{policy state versus policy readout} \\
+Q \text{ versus } \Omega & \text{evaluation versus selection} \\
+\Omega \text{ versus } L & \text{current decision versus future learning} \\
+a^* \text{ versus } v^* & \text{control action versus value certificate} \\
+\text{trace/Int} \text{ versus } F & \text{feedback wiring versus closed-loop execution}
+\end{array}
+\]
+
+The flat systems diagram is therefore repaired as follows:
+\[
+\boxed{
+\text{plant and adaptive controller are feedback-composed through signed interfaces;}
+}
+\]
+\[
+\boxed{
+\text{the adaptive controller internalizes policy state, optimization, and update;}
+}
+\]
+\[
+\boxed{
+\text{the resulting closed-loop system is deterministic Markov on the coupled state object.}
+}
+\]
+
+\section{Chapter Summary}
+\label{sec:cybernetic-summary}
+
+This chapter showed that deterministic cybernetics is a natural application of categorical automata
+theory.
+
+First, ordinary deterministic Mealy machines were identified with Dirac-valued controlled Markov
+processes.  A Mealy transition-output pair
+\[
+\tau:S\times I\to S,
+\qquad
+\omega:S\times I\to O
+\]
+determines the Dirac kernel
+\[
+s\longmapsto \delta_{(\tau(s,i),\omega(s,i))}.
+\]
+
+Second, plants were represented as stateful Mealy systems
+\[
+P:A\rightsquigarrow O\times R.
+\]
+They receive actions, update plant state, and emit observations and performance signals.
+
+Third, adaptive controllers were represented as stateful Mealy systems
+\[
+K:O\times R\rightsquigarrow A\times V
+\]
+whose internal state decomposes as
+\[
+C\times\Theta\times Z\times U.
+\]
+This decomposition separates controller mode, policy/model state, optimizer state, and updater
+memory.
+
+Fourth, the optimizer was represented as a stateful argmax/max component
+\[
+\Omega:Z\times\Theta\times C\times O\to A\times W\times Z.
+\]
+Its action projection controls the plant.  Its value projection certifies the quality of the current
+decision.
+
+Fifth, the updater was represented as the learning component
+\[
+L:
+C\times\Theta\times Z\times U
+\times O\times A\times W\times R\times O
+\to
+C\times\Theta\times Z\times U.
+\]
+It changes the future decision problem after observing the plant consequence.
+
+Sixth, the plant and adaptive controller were closed into a single deterministic transition
+\[
+F:X\times C\times\Theta\times Z\times U
+\to
+X\times C\times\Theta\times Z\times U.
+\]
+The associated Markov process is the Dirac kernel
+\[
+s\longmapsto \delta_{F(s)}.
+\]
+
+Finally, the examples showed that the same pattern applies to thermostatic regulation, deterministic
+bandit learning, inventory control, navigation with learned maps, adaptive cruise control, concurrent
+plants under a shared controller, and optimizer-value monitoring.
+
+Thus deterministic cybernetics is not an external metaphor added to categorical automata theory.
+It is the closed-loop adaptive-control fragment of the theory: stateful open systems connected by
+feedback, equipped with optimization, update, behaviour, and specification.

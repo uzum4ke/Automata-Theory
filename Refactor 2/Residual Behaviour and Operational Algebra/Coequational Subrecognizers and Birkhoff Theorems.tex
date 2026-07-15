@@ -1,35 +1,3 @@
-% --------------------------------------------------------------------------
-% STATUS: Mathematically complete in substance.
-%
-% Before final publication:
-%
-% [M1] In the definition of P \models V, specify that the initial
-%      factorization of beta_P through V is taken in the carrier slice E/Z.
-%      The following lemma then proves that this factorization is strict.
-%
-% [M2] Clarify the terminology "regular quotient". Either retain the
-%      carrier-based definition throughout, or add a corollary after the
-%      regular-image theorem showing that categorical regular epimorphisms
-%      are detected by the carrier functor.
-%
-% [M3] In the behaviourally separated reflection corollary, replace the
-%      claim that eta_P is monic because m_P is monic. The correct argument
-%      is that beta_P = m_P eta_P is monic, and every first factor of a
-%      monomorphism is monic.
-%
-% [M4] Remove or correct the final input-reindexing diagram that depicts
-%      F^\sharp as defined on all of Beh_{A,B,0}. Its actual domain is
-%      A'_0 x_{A_0} Beh_{A,B,0}.
-%
-% Editorial:
-% [E1] Rename the projection pi_Beh used in the safety-core construction.
-% [E2] Distinguish equality of subobjects from canonical isomorphism of
-%      chosen image representatives.
-% [E3] State the identity/composition coherence of F^* and F^\sharp.
-% [E4] Replace hard-coded chapter numbers by cross-references.
-% [E5] Consider renaming "exact structure" to "regular-image structure".
-% --------------------------------------------------------------------------
-
 \chapter{Coequational Subobjects and Birkhoff Theorems}
 \label{ch:coequational-subobjects-birkhoff}
 
@@ -150,6 +118,18 @@ categorical varieties of languages
     \cite{Johnstone2002,Borceux1994,Jacobs1999CategoricalLogic}.
 \end{assumption}
 
+\paragraph{Internal-language convention.}
+All arguments below written in generalized-element notation are interpreted
+in the Mitchell--Bénabou internal language of \(\mathcal E\). Equivalently,
+each such argument may be read after pullback along an arbitrary generalized
+element. In particular, assertions of the form
+\[
+    x\in X,
+\]
+implications between subobject-membership predicates, and elementwise
+equalities are shorthand for the corresponding internal statements in
+\(\mathcal E\).
+
 The input and output internal categories are
 \[
     \mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A),
@@ -219,85 +199,90 @@ and
     =
     \omega_Q(1\times f).
 \]
-Subobjects, regular quotients, coproducts, and full subcategories below are
-therefore taken in
+For every Mealy morphism
+\[
+    P=(P,p_P,q_P,\delta_P,\omega_P),
+\]
+write
+\[
+    D_P
+    :=
+    A_1\times_{t_A,A_0,p_P}P
+\]
+for its transition domain, and write
+\[
+    \lambda_P:D_P\to A_1,
+    \qquad
+    \rho_P:D_P\to P
+\]
+for the two pullback projections. Thus
+\[
+    t_A\lambda_P=p_P\rho_P.
+\]
+The transition and output typing equations may then be written
+\[
+    p_P\delta_P=s_A\lambda_P,
+\]
+and
+\[
+    s_B\omega_P=q_P\delta_P,
+    \qquad
+    t_B\omega_P=q_P\rho_P.
+\]
+
+For a map
+\[
+    f:P\to Q
+\]
+over \(A_0\), write
+\[
+    \widehat f:
+    D_P\to D_Q
+\]
+for the induced map on transition domains, characterized by
+\[
+    \lambda_Q\widehat f=\lambda_P,
+    \qquad
+    \rho_Q\widehat f=f\rho_P.
+\]
+In generalized-element notation,
+\[
+    \widehat f(a,x)=(a,fx).
+\]
+Subobjects, coproducts, and full subcategories below are taken in
 \[
     \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}
 \]
-unless explicitly stated otherwise. A regular quotient means a
-regular-epimorphic strict semantic homomorphism.
+unless explicitly stated otherwise. Regular quotients are understood in the
+carrier-based sense of the following definition.
 
-The strictness equations may be displayed by
-\[
-\begin{tikzcd}[column sep=huge, row sep=large]
-    A_1\times_{A_0}P
-        \arrow[r, "{1\times f}"]
-        \arrow[d, "\delta_P"']
-    &
-    A_1\times_{A_0}Q
-        \arrow[d, "\delta_Q"]
-    \\
-    P
-        \arrow[r, "f"']
-    &
-    Q
-\end{tikzcd}
-\qquad
-\begin{tikzcd}[column sep=huge, row sep=large]
-    A_1\times_{A_0}P
-        \arrow[r, "{1\times f}"]
-        \arrow[dr, "\omega_P"']
-    &
-    A_1\times_{A_0}Q
-        \arrow[d, "\omega_Q"]
-    \\
-    &
-    B_1 .
-\end{tikzcd}
-\]
-The carrier condition is
-\[
-\begin{tikzcd}[column sep=large, row sep=large]
-    P
-        \arrow[rr, "f"]
-        \arrow[dr, "{(p_P,q_P)}"']
-    &&
-    Q
-        \arrow[dl, "{(p_Q,q_Q)}"]
-    \\
-    &
-    Z .
-\end{tikzcd}
-\]
-
-A strict semantic homomorphism
-\[
-    e:P\to Q
-\]
-is called a \emph{regular quotient} if its underlying carrier map
-\[
-    e:P\to Q
-\]
-is a regular epimorphism in the carrier slice
-\[
-    \mathcal E/Z.
-\]
-Equivalently, regular quotients in this chapter are regular-epimorphic strict
-semantic homomorphisms whose regular-epimorphic character is detected by the
-carrier functor
-\[
-    U:
-    \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}
-    \to
-    \mathcal E/Z.
-\]
+\begin{definition}[Regular quotient]
+\label{def:regular-quotient-strict-mealy}
+    A strict semantic homomorphism
+    \[
+        e:P\to Q
+    \]
+    is a \textbf{regular quotient} if its underlying carrier map
+    \[
+        Ue:UP\to UQ
+    \]
+    is a regular epimorphism in
+    \[
+        \mathcal E/Z,
+        \qquad
+        Z=A_0\times B_0.
+    \]
+    Thus regular-quotient closure throughout this chapter means closure under
+    strict semantic homomorphisms whose carriers are regular epimorphisms in
+    the carrier slice.
+\end{definition}
 
 A replete full subcategory
 \[
     \mathcal C\subseteq
     \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}
 \]
-is said to be \emph{closed under strict homomorphic preimages} if, for every
+is said to be \textbf{closed under strict homomorphic preimages} if, for every
 strict semantic homomorphism
 \[
     f:P\to Q,
@@ -426,7 +411,8 @@ coalgebraic behaviour maps
         \qquad
         g:Q\to R
     \]
-    be strict semantic homomorphisms. Form their pullback in the carrier slice:
+    be strict semantic homomorphisms. Form their pullback in the carrier
+    slice:
     \[
     \begin{tikzcd}[column sep=large, row sep=large]
         X
@@ -447,26 +433,24 @@ coalgebraic behaviour maps
     \[
         X=P\times_RQ
     \]
-    in \(\mathcal E/Z\). Write
+    in \(\mathcal E/Z\). Put
     \[
         p_X:=p_P\pi_P=p_Q\pi_Q,
         \qquad
         q_X:=q_P\pi_P=q_Q\pi_Q.
     \]
 
-    The projections induce maps on transition domains
+    Write
     \[
-        \widehat\pi_P:
+        D_X
+        :=
         A_1\times_{t_A,A_0,p_X}X
-        \to
-        A_1\times_{t_A,A_0,p_P}P
     \]
-    and
+    and similarly for \(D_P,D_Q,D_R\). The pullback projections induce maps
     \[
-        \widehat\pi_Q:
-        A_1\times_{t_A,A_0,p_X}X
-        \to
-        A_1\times_{t_A,A_0,p_Q}Q.
+        \widehat\pi_P:D_X\to D_P,
+        \qquad
+        \widehat\pi_Q:D_X\to D_Q.
     \]
 
     Since \(f\) and \(g\) are strict,
@@ -474,15 +458,26 @@ coalgebraic behaviour maps
     \begin{aligned}
         f\delta_P\widehat\pi_P
         &=
-        \delta_R(1\times f)\widehat\pi_P
+        \delta_R\widehat f\,\widehat\pi_P
         \\
         &=
-        \delta_R(1\times g)\widehat\pi_Q
+        \delta_R\widehat g\,\widehat\pi_Q
         \\
         &=
         g\delta_Q\widehat\pi_Q.
     \end{aligned}
     \]
+    The middle equality follows from
+    \[
+        f\pi_P=g\pi_Q,
+    \]
+    which implies
+    \[
+        \widehat f\,\widehat\pi_P
+        =
+        \widehat g\,\widehat\pi_Q.
+    \]
+
     Hence the pair
     \[
         \bigl(
@@ -490,12 +485,10 @@ coalgebraic behaviour maps
             \delta_Q\widehat\pi_Q
         \bigr)
     \]
-    factors uniquely through the pullback \(X\). Define
+    factors uniquely through the underlying pullback \(X\) in
+    \(\mathcal E\). Define
     \[
-        \delta_X:
-        A_1\times_{t_A,A_0,p_X}X
-        \to
-        X
+        \delta_X:D_X\to X
     \]
     by
     \[
@@ -508,15 +501,33 @@ coalgebraic behaviour maps
         \delta_Q\widehat\pi_Q.
     \]
 
-    The strict output equations give
+    The transition has the required input typing:
+    \[
+    \begin{aligned}
+        p_X\delta_X
+        &=
+        p_P\pi_P\delta_X
+        \\
+        &=
+        p_P\delta_P\widehat\pi_P
+        \\
+        &=
+        s_A\lambda_P\widehat\pi_P
+        \\
+        &=
+        s_A\lambda_X.
+    \end{aligned}
+    \]
+
+    Strictness of \(f\) and \(g\) also gives
     \[
     \begin{aligned}
         \omega_P\widehat\pi_P
         &=
-        \omega_R(1\times f)\widehat\pi_P
+        \omega_R\widehat f\,\widehat\pi_P
         \\
         &=
-        \omega_R(1\times g)\widehat\pi_Q
+        \omega_R\widehat g\,\widehat\pi_Q
         \\
         &=
         \omega_Q\widehat\pi_Q.
@@ -524,13 +535,10 @@ coalgebraic behaviour maps
     \]
     Define the common map to be
     \[
-        \omega_X:
-        A_1\times_{t_A,A_0,p_X}X
-        \to
-        B_1.
+        \omega_X:D_X\to B_1.
     \]
 
-    The typing equations follow from those of \(P\) and \(Q\). For example,
+    The output map has the required source typing:
     \[
     \begin{aligned}
         s_B\omega_X
@@ -544,21 +552,91 @@ coalgebraic behaviour maps
         q_P\pi_P\delta_X
         \\
         &=
-        q_X\delta_X,
+        q_X\delta_X.
     \end{aligned}
     \]
-    and similarly
+
+    It also has the required target typing. Writing
     \[
-        t_B\omega_X=q_X\pi_X.
+        \rho_X:D_X\to X
+    \]
+    for the state projection,
+    \[
+    \begin{aligned}
+        t_B\omega_X
+        &=
+        t_B\omega_P\widehat\pi_P
+        \\
+        &=
+        q_P\rho_P\widehat\pi_P
+        \\
+        &=
+        q_P\pi_P\rho_X
+        \\
+        &=
+        q_X\rho_X.
+    \end{aligned}
     \]
 
-    The transition unit and multiplication laws hold after composing with
-    both pullback projections \(\pi_P\) and \(\pi_Q\), where they become the
-    corresponding laws in \(P\) and \(Q\). Since the pullback projections are
-    jointly monic, the transition laws hold in \(X\).
+    The transition unit law holds after composing with both pullback
+    projections. For example,
+    \[
+    \begin{aligned}
+        \pi_P\delta_X(1_{p_Xx},x)
+        &=
+        \delta_P(1_{p_P\pi_Px},\pi_Px)
+        \\
+        &=
+        \pi_Px.
+    \end{aligned}
+    \]
+    The analogous equality holds after composing with \(\pi_Q\). Since the
+    pullback projections are jointly monic,
+    \[
+        \delta_X(1_{p_Xx},x)=x.
+    \]
 
-    The output laws follow by direct restriction. In generalized-element
-    notation,
+    For composable arrows
+    \[
+        a:u\to v,
+        \qquad
+        b:v\to w,
+    \]
+    and \(x\in X\) over \(w\), one has
+    \[
+    \begin{aligned}
+        \pi_P\delta_X(b\circ a,x)
+        &=
+        \delta_P(b\circ a,\pi_Px)
+        \\
+        &=
+        \delta_P
+        \bigl(
+            a,
+            \delta_P(b,\pi_Px)
+        \bigr)
+        \\
+        &=
+        \pi_P\delta_X
+        \bigl(
+            a,
+            \delta_X(b,x)
+        \bigr).
+    \end{aligned}
+    \]
+    The same equality holds after composing with \(\pi_Q\). Joint monicity
+    therefore gives
+    \[
+        \delta_X(b\circ a,x)
+        =
+        \delta_X
+        \bigl(
+            a,
+            \delta_X(b,x)
+        \bigr).
+    \]
+
+    The output unit law follows by restriction:
     \[
     \begin{aligned}
         \omega_X(1_{p_Xx},x)
@@ -569,10 +647,11 @@ coalgebraic behaviour maps
         1_{q_P\pi_Px}
         \\
         &=
-        1_{q_Xx},
+        1_{q_Xx}.
     \end{aligned}
     \]
-    and
+
+    Likewise,
     \[
     \begin{aligned}
         \omega_X(b\circ a,x)
@@ -599,13 +678,17 @@ coalgebraic behaviour maps
     \end{aligned}
     \]
 
-    Thus \(X\) is a Mealy morphism, and the projections
+    Thus
+    \[
+        X=(X,p_X,q_X,\delta_X,\omega_X)
+    \]
+    is a Mealy morphism. By construction, the projections
     \[
         \pi_P:X\to P,
         \qquad
         \pi_Q:X\to Q
     \]
-    are strict.
+    preserve transition and output strictly.
 
     Now suppose that
     \[
@@ -613,7 +696,7 @@ coalgebraic behaviour maps
         \qquad
         k:T\to Q
     \]
-    are strict maps satisfying
+    are strict semantic homomorphisms satisfying
     \[
         fh=gk.
     \]
@@ -621,30 +704,70 @@ coalgebraic behaviour maps
     \[
         \ell:T\to X
     \]
-    with
+    in \(\mathcal E/Z\) satisfying
     \[
         \pi_P\ell=h,
         \qquad
         \pi_Q\ell=k.
     \]
-    Transition preservation for \(\ell\) follows after composing with the
-    jointly monic pullback projections, and output preservation follows from
+
+    To prove transition preservation, compose with the pullback projections:
     \[
-        \omega_X(1\times\ell)
-        =
-        \omega_P(1\times h)
-        =
-        \omega_T.
+    \begin{aligned}
+        \pi_P\ell\delta_T
+        &=
+        h\delta_T
+        \\
+        &=
+        \delta_P\widehat h
+        \\
+        &=
+        \delta_P\widehat\pi_P\,\widehat\ell
+        \\
+        &=
+        \pi_P\delta_X\widehat\ell,
+    \end{aligned}
     \]
-    Hence \(\ell\) is strict. This proves that the carrier pullback is the
-    pullback in
-    \(\mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}\).
+    and similarly
+    \[
+        \pi_Q\ell\delta_T
+        =
+        \pi_Q\delta_X\widehat\ell.
+    \]
+    Joint monicity gives
+    \[
+        \ell\delta_T
+        =
+        \delta_X\widehat\ell.
+    \]
 
-    If the carrier of a strict map \(f:P\to Q\) is monic, then \(f\) is monic
-    because the carrier functor is faithful.
+    Output preservation follows from
+    \[
+    \begin{aligned}
+        \omega_X\widehat\ell
+        &=
+        \omega_P\widehat\pi_P\,\widehat\ell
+        \\
+        &=
+        \omega_P\widehat h
+        \\
+        &=
+        \omega_T.
+    \end{aligned}
+    \]
+    Hence \(\ell\) is strict. This proves that \(U\) creates the displayed
+    pullback.
 
-    Conversely, suppose \(f\) is monic in the strict Mealy category. Its
-    kernel pair is created by the carrier functor:
+    Suppose now that
+    \[
+        f:P\to Q
+    \]
+    is a strict semantic homomorphism whose carrier is monic in
+    \(\mathcal E/Z\). Since the carrier functor is faithful, \(f\) is monic
+    in the strict Mealy category.
+
+    Conversely, suppose that \(f\) is monic in the strict Mealy category.
+    Since pullbacks are created by \(U\), the kernel pair of \(f\) is
     \[
     \begin{tikzcd}[column sep=large, row sep=large]
         P\times_QP
@@ -661,12 +784,12 @@ coalgebraic behaviour maps
     \[
         fr_1=fr_2
     \]
-    and \(f\) is monic, one has
+    and \(f\) is monic,
     \[
         r_1=r_2.
     \]
-    Therefore the carrier kernel-pair projections agree, so the underlying
-    carrier map of \(f\) is monic in \(\mathcal E/Z\).
+    Therefore the underlying carrier kernel-pair projections agree. Hence
+    the carrier of \(f\) is monic in \(\mathcal E/Z\).
 \end{proof}
 
 \section{Local coequational theories}
@@ -761,16 +884,19 @@ and write
 \]
 There are two maps
 \[
-    \pi_{\mathbf{Beh}}:D_{\mathbf{Beh}}\to\mathbf{Beh}_0,
+    \operatorname{pr}_{\partial}:
+    D_{\mathbf{Beh}}\to\mathbf{Beh}_0,
     \qquad
-    \partial:D_{\mathbf{Beh}}\to\mathbf{Beh}_0,
+    \partial:
+    D_{\mathbf{Beh}}\to\mathbf{Beh}_0,
 \]
-where
+defined by
 \[
-    \pi_{\mathbf{Beh}}(a,H)=H,
+    \operatorname{pr}_{\partial}(a,H)=H,
     \qquad
     \partial(a,H)=\partial_aH.
 \]
+
 Whenever a derivative domain occurs as a carrier over \(Z\), it is regarded
 over \(Z\) by the derivative state. Thus \(D_{\mathbf{Beh}}\) is regarded as
 an object of \(\mathcal E/Z\) by the composite
@@ -778,7 +904,8 @@ an object of \(\mathcal E/Z\) by the composite
 \begin{tikzcd}[column sep=large, row sep=large]
     D_{\mathbf{Beh}}
         \arrow[r, "\partial"]
-        \arrow[dr, dashed, "{(s_A\pi_{A_1},\,q_{\mathbf{Beh}}\partial)}"']
+        \arrow[dr, dashed,
+            "{(s_A\pi_{A_1},\,q_{\mathbf{Beh}}\partial)}"']
     &
     \mathbf{Beh}_0
         \arrow[d, "{(p_{\mathbf{Beh}},q_{\mathbf{Beh}})}"]
@@ -793,16 +920,30 @@ Thus, if
 \]
 and \(H\) lies over \(v\), then \((a,H)\) has \(Z\)-coordinate
 \[
-    \bigl(u,\;q_{\mathbf{Beh}}(\partial_aH)\bigr).
+    \bigl(
+        u,
+        q_{\mathbf{Beh}}(\partial_aH)
+    \bigr).
 \]
-With this convention, the derivative map \(\partial\) is a morphism in
-\(\mathcal E/Z\). The projection \(\pi_{\mathbf{Beh}}\), however, is not in
-general a morphism over \(Z\), since it remembers the interface coordinates
-of the original behaviour rather than those of its derivative. Pullbacks and
-universal quantification along \(\pi_{\mathbf{Beh}}\) below are therefore taken
-in \(\mathcal E\). Since subobjects of \(\mathbf{Beh}_0\) in \(\mathcal E\)
-are canonically the same as subobjects of \(\mathbf{Beh}_0\) in
-\(\mathcal E/Z\), the resulting predicates are again regarded over \(Z\).
+
+With this convention, the derivative map
+\[
+    \partial:D_{\mathbf{Beh}}\to\mathbf{Beh}_0
+\]
+is a morphism in \(\mathcal E/Z\). The state projection
+\[
+    \operatorname{pr}_{\partial}:
+    D_{\mathbf{Beh}}\to\mathbf{Beh}_0
+\]
+is not in general a morphism over \(Z\), since it remembers the interface and
+anchor coordinates of the original behaviour rather than those of its
+derivative.
+
+Pullbacks and universal quantification along
+\(\operatorname{pr}_{\partial}\) below are therefore taken in \(\mathcal E\).
+Since subobjects of \(\mathbf{Beh}_0\) in \(\mathcal E\) are canonically the
+same as subobjects of \(\mathbf{Beh}_0\) in \(\mathcal E/Z\), the resulting
+predicates are again regarded over \(Z\).
 
 \subsection{Behavioural predicates and residual invariance}
 \label{subsec:behavioural-predicates-residual-invariance}
@@ -916,9 +1057,14 @@ already satisfies the predicate.
     is the \textbf{generated residual closure} of \(C\).
 \end{definition}
 
-For the specification given by the inclusion \(j_C\), this is precisely the
-derivative image \(\operatorname{Der}_0(C)\) constructed in Chapter~3.
-The derivative-closure theorem therefore gives the following universal
+For the specification given by the inclusion
+\[
+    j_C:C\to\mathbf{Beh}_0,
+\]
+this is precisely the derivative image constructed in
+Chapter~\ref{ch:behaviour-categories-myhill-nerode}. The derivative-closure
+theorem,
+Theorem~\ref{thm:derivative-closure}, therefore gives the following universal
 property.
 
 \begin{proposition}[Universal property of generated residual closure]
@@ -938,26 +1084,64 @@ property.
         C\leq I_\partial(V).
     \]
 \end{proposition}
-
 \begin{proof}
-    Apply the derivative-closure theorem of Chapter~3 to the behaviour
-    specification
+    Apply Theorem~\ref{thm:derivative-closure} to the behaviour specification
     \[
         j_C:C\to\mathbf{Beh}_0.
     \]
-    Its derivative image is \(\operatorname{Gen}_\partial(C)\), and the theorem
-    states exactly that this image is the smallest derivative-closed subobject
-    containing the image of \(j_C\), which is \(C\) itself.
+    Its formal derivative orbit is
+    \[
+        A_1\times_{t_A,A_0,p_C}C,
+    \]
+    and its residual evaluation map is
+    \[
+        \partial(1\times j_C):
+        A_1\times_{t_A,A_0,p_C}C
+        \to
+        \mathbf{Beh}_0.
+    \]
+    By definition, the regular image of this map is
+    \[
+        \operatorname{Gen}_\partial(C)
+        \hookrightarrow
+        \mathbf{Beh}_0.
+    \]
+
+    Theorem~\ref{thm:derivative-closure} states that this regular image is
+    residually invariant and is the smallest residually invariant subobject
+    containing the image of \(j_C\). Since \(j_C\) is itself a monomorphism,
+    its image is exactly the predicate \(C\). Hence
+    \[
+        \operatorname{Gen}_\partial(C)
+    \]
+    is the least residually invariant predicate containing \(C\).
+
+    Therefore, for every residually invariant predicate \(V\),
+    \[
+        \operatorname{Gen}_\partial(C)\leq V
+    \]
+    if and only if
+    \[
+        C\leq V.
+    \]
+    Equivalently,
+    \[
+        \operatorname{Gen}_\partial(C)\leq V
+        \quad\Longleftrightarrow\quad
+        C\leq I_\partial(V).
+    \]
 \end{proof}
 
 The second construction uses universal quantification over all derivatives of
 a behaviour. Since \(\mathcal E\) is locally cartesian closed, pullback along
+the state projection
 \[
-    \pi_{\mathbf{Beh}}:D_{\mathbf{Beh}}\to\mathbf{Beh}_0
+    \operatorname{pr}_{\partial}:
+    D_{\mathbf{Beh}}\to\mathbf{Beh}_0
 \]
 has a right adjoint on subobject posets,
 \[
-    \forall_{\pi_{\mathbf{Beh}}}:
+    \forall_{\operatorname{pr}_{\partial}}:
     \operatorname{Sub}_{\mathcal E}(D_{\mathbf{Beh}})
     \to
     \operatorname{Sub}_{\mathcal E}(\mathbf{Beh}_0).
@@ -973,14 +1157,22 @@ has a right adjoint on subobject posets,
     \[
         \operatorname{Safe}_\partial(C)
         :=
-        \forall_{\pi_{\mathbf{Beh}}}
-        \bigl(\partial^*C\bigr)
+        \forall_{\operatorname{pr}_{\partial}}
+        \bigl(
+            \partial^*C
+        \bigr)
         \hookrightarrow
         \mathbf{Beh}_0,
     \]
-    where \(\partial^*C\hookrightarrow D_{\mathbf{Beh}}\) is the pullback of
-    \(C\hookrightarrow\mathbf{Beh}_0\) along the derivative map
-    \(\partial\).
+    where
+    \[
+        \partial^*C\hookrightarrow D_{\mathbf{Beh}}
+    \]
+    is the pullback of
+    \[
+        C\hookrightarrow\mathbf{Beh}_0
+    \]
+    along the derivative map \(\partial\).
 \end{definition}
 
 Internally, the defining predicate is
@@ -1001,9 +1193,13 @@ which every admissible residual continuation satisfies \(C\).
         \hookrightarrow
         \mathbf{Beh}_0
     \]
-    is residually invariant and is the greatest residually invariant predicate
-    contained in \(C\). Consequently, for every
-    \(V\in\mathsf{Coeq}_{\mathbb A,\mathbb B}\),
+    is residually invariant and is the greatest residually invariant
+    predicate contained in \(C\).
+
+    Consequently, for every
+    \[
+        V\in\mathsf{Coeq}_{\mathbb A,\mathbb B},
+    \]
     \[
         I_\partial(V)\leq C
         \quad\Longleftrightarrow\quad
@@ -1015,38 +1211,53 @@ which every admissible residual continuation satisfies \(C\).
     \leavevmode
     \begin{enumerate}
         \item \textbf{The safety core lies in the original predicate.}
+
         The identity map of the input category gives a section
         \[
             \iota_{\mathbf{Beh}}:
             \mathbf{Beh}_0\to D_{\mathbf{Beh}},
             \qquad
-            H\longmapsto(1_{p_{\mathbf{Beh}}(H)},H),
+            H\longmapsto
+            \bigl(
+                1_{p_{\mathbf{Beh}}(H)},
+                H
+            \bigr),
         \]
         satisfying
         \[
-            \pi_{\mathbf{Beh}}\iota_{\mathbf{Beh}}
+            \operatorname{pr}_{\partial}
+            \iota_{\mathbf{Beh}}
             =
             1_{\mathbf{Beh}_0},
-            \qquad
+        \]
+        and
+        \[
             \partial\iota_{\mathbf{Beh}}
             =
             1_{\mathbf{Beh}_0}.
         \]
-        Hence, if every derivative of \(H\) lies in \(C\), then the identity
-        derivative of \(H\) lies in \(C\). Therefore
+
+        Hence, if every derivative of \(H\) lies in \(C\), then in particular
+        the identity derivative of \(H\) lies in \(C\). Therefore
         \[
             \operatorname{Safe}_\partial(C)\leq C.
         \]
 
         \item \textbf{The safety core is derivative-closed.}
+
         Let
         \[
             H\in\operatorname{Safe}_\partial(C),
             \qquad
             a:u\to p_{\mathbf{Beh}}(H).
         \]
-        To show that \(\partial_aH\) belongs to
-        \(\operatorname{Safe}_\partial(C)\), let
+        To show that
+        \[
+            \partial_aH
+            \in
+            \operatorname{Safe}_\partial(C),
+        \]
+        let
         \[
             c:w\to u.
         \]
@@ -1056,18 +1267,24 @@ which every admissible residual continuation satisfies \(C\).
             =
             \partial_{a\circ c}H.
         \]
-        Since \(H\) lies in the safety core, the right-hand side lies in
-        \(C\). Thus every derivative of \(\partial_aH\) lies in \(C\), so
+        Since \(H\) lies in the safety core, every derivative of \(H\),
+        including \(\partial_{a\circ c}H\), lies in \(C\). Thus every
+        derivative of \(\partial_aH\) lies in \(C\), and therefore
         \[
-            \partial_aH\in\operatorname{Safe}_\partial(C).
+            \partial_aH
+            \in
+            \operatorname{Safe}_\partial(C).
         \]
 
+        Hence \(\operatorname{Safe}_\partial(C)\) is residually invariant.
+
         \item \textbf{Prove maximality.}
+
         Let \(V\) be residually invariant and suppose
         \[
             V\leq C.
         \]
-        If \(H\in V\), derivative-closedness gives
+        If \(H\in V\), residual invariance gives
         \[
             \partial_aH\in V
         \]
@@ -1085,12 +1302,19 @@ which every admissible residual continuation satisfies \(C\).
         \[
             V\leq\operatorname{Safe}_\partial(C),
         \]
-        then the first part gives
+        then
         \[
-            V\leq C.
+            V\leq C
         \]
-        This proves the stated equivalence and the maximality of the safety
-        core.
+        by the first part.
+
+        This proves
+        \[
+            I_\partial(V)\leq C
+            \quad\Longleftrightarrow\quad
+            V\leq\operatorname{Safe}_\partial(C),
+        \]
+        and establishes the claimed maximality.
     \end{enumerate}
 \end{proof}
 
@@ -1279,17 +1503,18 @@ strict subobjects of the canonical behaviour machine.
     \begin{aligned}
         s_B\omega_V
         &=
-        s_B\omega_{\mathbf{Beh}}(1\times j_V)
+        s_B\omega_{\mathbf{Beh}}\widehat j_V
         \\
         &=
         q_{\mathbf{Beh}}
-        \delta_{\mathbf{Beh}}(1\times j_V)
+        \delta_{\mathbf{Beh}}
+        \widehat j_V
         \\
         &=
         q_{\mathbf{Beh}}j_V\delta_V
         \\
         &=
-        q_V\delta_V,
+        q_V\delta_V.
     \end{aligned}
     \]
     and
@@ -1297,16 +1522,21 @@ strict subobjects of the canonical behaviour machine.
     \begin{aligned}
         t_B\omega_V
         &=
-        t_B\omega_{\mathbf{Beh}}(1\times j_V)
+        t_B\omega_{\mathbf{Beh}}\widehat j_V
         \\
         &=
-        q_{\mathbf{Beh}}\pi_{\mathbf{Beh}}(1\times j_V)
+        q_{\mathbf{Beh}}
+        \rho_{\mathbf{Beh}}
+        \widehat j_V
         \\
         &=
-        q_V\pi_V.
+        q_{\mathbf{Beh}}j_V\rho_V
+        \\
+        &=
+        q_V\rho_V.
     \end{aligned}
     \]
-
+    
     The transition unit law follows from
     \[
     \begin{aligned}
@@ -1485,18 +1715,41 @@ and
 \label{def:models-coequational-theory}
     Let
     \[
-        V\hookrightarrow\mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+        j_V:
+        V\hookrightarrow
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
     \]
-    be a local coequational theory. A Mealy morphism
+    be a local coequational theory, and regard its carrier as the monomorphism
+    \[
+        j_V:V\hookrightarrow\mathbf{Beh}_0
+    \]
+    in
+    \[
+        \mathcal E/Z,
+        \qquad
+        Z=A_0\times B_0.
+    \]
+
+    A Mealy morphism
     \[
         P:\mathbb A\rightsquigarrow\mathbb B
     \]
     \textbf{models} \(V\), or \textbf{satisfies the residual behavioural
-    contract} \(V\), if its terminal semantic map
+    contract} \(V\), if its carrier semantic map
     \[
-        \beta_P:P\to\mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+        \beta_P:P\to\mathbf{Beh}_0
     \]
-    factors through \(V\). We write
+    factors through \(j_V\) in the carrier slice \(\mathcal E/Z\).
+    Equivalently, there is a necessarily unique morphism
+    \[
+        \bar\beta_P:P\to V
+    \]
+    in \(\mathcal E/Z\) such that
+    \[
+        j_V\bar\beta_P=\beta_P.
+    \]
+
+    We write
     \[
         P\models V
     \]
@@ -1741,7 +1994,7 @@ and
     \end{enumerate}
 \end{proof}
 
-\section{Semantic images and exact structure}
+\section{Semantic images and regular-image structure}
 \label{sec:regular-semantic-images}
 
 \subsection{Regular-epimorphic descent for subobjects}
@@ -1939,36 +2192,44 @@ image in the carrier slice, equipped with this created strict Mealy structure.
 \end{proposition}
 
 \begin{proof}
-    Since regular epimorphisms are stable under pullback, the induced map
+    Put
     \[
-        \widehat e:
-        A_1\times_{t_A,A_0,p_P}P
-        \twoheadrightarrow
-        A_1\times_{t_A,A_0,p_I}I
+        p_I:=p_Qm,
+        \qquad
+        q_I:=q_Qm,
     \]
-    is a regular epimorphism. It is given in generalized-element notation by
+    and write
     \[
-        (a,x)\longmapsto(a,ex).
+        D_I
+        :=
+        A_1\times_{t_A,A_0,p_I}I.
     \]
 
-    Consider
+    Since regular epimorphisms are stable under pullback, the induced map
+    \[
+        \widehat e:D_P\twoheadrightarrow D_I
+    \]
+    is a regular epimorphism. In generalized-element notation,
+    \[
+        \widehat e(a,x)=(a,ex).
+    \]
+
+    Consider the underlying map in \(\mathcal E\)
     \[
         h_\delta
         :=
-        \delta_Q(1\times m):
-        A_1\times_{t_A,A_0,p_I}I
-        \to
-        Q.
+        \delta_Q\widehat m:
+        D_I\to Q.
     \]
     Since \(f=me\) and \(f\) is strict,
     \[
     \begin{aligned}
         h_\delta\widehat e
         &=
-        \delta_Q(1\times m)(1\times e)
+        \delta_Q\widehat m\,\widehat e
         \\
         &=
-        \delta_Q(1\times f)
+        \delta_Q\widehat f
         \\
         &=
         f\delta_P
@@ -1977,37 +2238,44 @@ image in the carrier slice, equipped with this created strict Mealy structure.
         me\delta_P.
     \end{aligned}
     \]
-    Thus \(h_\delta\widehat e\) factors through the monomorphism
+    Thus \(h_\delta\widehat e\) factors through the underlying monomorphism
     \[
         m:I\hookrightarrow Q.
     \]
-    By
-    Lemma~\ref{lem:regular-epi-descent-for-subobjects-membership}, there is a
-    unique map
+
+    At this point the transition map on \(I\) has not yet been constructed,
+    so \(D_I\) is not yet being regarded over \(Z\) by a derivative-state
+    coordinate. We therefore apply
+    Lemma~\ref{lem:regular-epi-descent-for-subobjects-membership}
+    in the underlying category \(\mathcal E\).
+
+    Since \(\widehat e\) is regular epimorphic in \(\mathcal E\), \(m\) is
+    monic in \(\mathcal E\), and
     \[
-        \delta_I:
-        A_1\times_{t_A,A_0,p_I}I
-        \to
-        I
+        h_\delta\widehat e
+        =
+        m(e\delta_P),
+    \]
+    there is a unique map
+    \[
+        \delta_I:D_I\to I
     \]
     satisfying
     \[
         m\delta_I
         =
-        \delta_Q(1\times m).
+        \delta_Q\widehat m.
     \]
 
     Define
     \[
         \omega_I
         :=
-        \omega_Q(1\times m):
-        A_1\times_{t_A,A_0,p_I}I
-        \to
-        B_1.
+        \omega_Q\widehat m:
+        D_I\to B_1.
     \]
 
-    The transition typing equation follows from
+    The transition has the required input typing:
     \[
     \begin{aligned}
         p_I\delta_I
@@ -2015,42 +2283,60 @@ image in the carrier slice, equipped with this created strict Mealy structure.
         p_Qm\delta_I
         \\
         &=
-        p_Q\delta_Q(1\times m)
+        p_Q\delta_Q\widehat m
         \\
         &=
-        s_A\pi_{A_1}.
+        s_A\lambda_Q\widehat m
+        \\
+        &=
+        s_A\lambda_I.
     \end{aligned}
     \]
-    The output typing equations are
+
+    The output map has the required source typing:
     \[
     \begin{aligned}
         s_B\omega_I
         &=
-        s_B\omega_Q(1\times m)
+        s_B\omega_Q\widehat m
         \\
         &=
-        q_Q\delta_Q(1\times m)
+        q_Q\delta_Q\widehat m
         \\
         &=
         q_Qm\delta_I
         \\
         &=
-        q_I\delta_I,
+        q_I\delta_I.
     \end{aligned}
     \]
-    and
+
+    It also has the required target typing:
     \[
     \begin{aligned}
         t_B\omega_I
         &=
-        t_B\omega_Q(1\times m)
+        t_B\omega_Q\widehat m
         \\
         &=
-        q_Q\pi_Q(1\times m)
+        q_Q\rho_Q\widehat m
         \\
         &=
-        q_I\pi_I.
+        q_Qm\rho_I
+        \\
+        &=
+        q_I\rho_I.
     \end{aligned}
+    \]
+
+    These equations show that \(\delta_I\) and \(\omega_I\) are correctly
+    typed. In particular, \(D_I\) may now be regarded over \(Z\) by
+    \[
+        \left\langle
+            s_A\lambda_I,\,
+            q_I\delta_I
+        \right\rangle:
+        D_I\to A_0\times B_0.
     \]
 
     The transition unit law holds after composing with \(m\):
@@ -2069,7 +2355,13 @@ image in the carrier slice, equipped with this created strict Mealy structure.
         \delta_I(1_{p_Iz},z)=z.
     \]
 
-    Similarly,
+    For composable arrows
+    \[
+        a:u\to v,
+        \qquad
+        b:v\to w,
+    \]
+    and \(z\in I\) over \(w\),
     \[
     \begin{aligned}
         m\delta_I(b\circ a,z)
@@ -2095,10 +2387,10 @@ image in the carrier slice, equipped with this created strict Mealy structure.
         \bigl(
             a,
             \delta_I(b,z)
-        \bigr),
+        \bigr).
     \end{aligned}
     \]
-    so monicity gives
+    Monicity of \(m\) gives
     \[
         \delta_I(b\circ a,z)
         =
@@ -2109,7 +2401,7 @@ image in the carrier slice, equipped with this created strict Mealy structure.
         \bigr).
     \]
 
-    The output laws follow by direct restriction from \(Q\):
+    The output unit law follows by restriction:
     \[
     \begin{aligned}
         \omega_I(1_{p_Iz},z)
@@ -2120,10 +2412,11 @@ image in the carrier slice, equipped with this created strict Mealy structure.
         1_{q_Qmz}
         \\
         &=
-        1_{q_Iz},
+        1_{q_Iz}.
     \end{aligned}
     \]
-    and
+
+    Similarly,
     \[
     \begin{aligned}
         \omega_I(b\circ a,z)
@@ -2159,17 +2452,23 @@ image in the carrier slice, equipped with this created strict Mealy structure.
     \end{aligned}
     \]
 
+    Hence
+    \[
+        I=(I,p_I,q_I,\delta_I,\omega_I)
+    \]
+    is a Mealy morphism.
+
     The equations
     \[
         m\delta_I
         =
-        \delta_Q(1\times m)
+        \delta_Q\widehat m
     \]
     and
     \[
         \omega_I
         =
-        \omega_Q(1\times m)
+        \omega_Q\widehat m
     \]
     show that \(m\) is strict.
 
@@ -2181,30 +2480,31 @@ image in the carrier slice, equipped with this created strict Mealy structure.
         f\delta_P
         \\
         &=
-        \delta_Q(1\times f)
+        \delta_Q\widehat f
         \\
         &=
-        \delta_Q(1\times m)(1\times e)
+        \delta_Q\widehat m\,\widehat e
         \\
         &=
-        m\delta_I(1\times e).
+        m\delta_I\widehat e.
     \end{aligned}
     \]
     Since \(m\) is monic,
     \[
         e\delta_P
         =
-        \delta_I(1\times e).
+        \delta_I\widehat e.
     \]
+
     For the output,
     \[
     \begin{aligned}
-        \omega_I(1\times e)
+        \omega_I\widehat e
         &=
-        \omega_Q(1\times m)(1\times e)
+        \omega_Q\widehat m\,\widehat e
         \\
         &=
-        \omega_Q(1\times f)
+        \omega_Q\widehat f
         \\
         &=
         \omega_P.
@@ -2212,15 +2512,16 @@ image in the carrier slice, equipped with this created strict Mealy structure.
     \]
     Hence \(e\) is strict.
 
-    The carrier of \(m\) is monic. Therefore
-    Lemma~\ref{lem:coeq-carrier-created-pullbacks-monomorphisms} implies that
-    \(m\) is monic in the strict Mealy category.
+    Since the carrier of \(m\) is monic,
+    Lemma~\ref{lem:coeq-carrier-created-pullbacks-monomorphisms}
+    implies that \(m\) is monic in the strict Mealy category.
 
-    We next prove that \(e\) is a categorical regular epimorphism. Let
+    We next prove that \(e\) is a regular epimorphism in the strict Mealy
+    category. Let
     \[
         R_e\rightrightarrows P
     \]
-    be its kernel pair in the strict Mealy category. By
+    be its kernel pair there. By
     Lemma~\ref{lem:coeq-carrier-created-pullbacks-monomorphisms}, this kernel
     pair is created by the carrier functor.
 
@@ -2228,13 +2529,13 @@ image in the carrier slice, equipped with this created strict Mealy structure.
     \[
         h:P\to X
     \]
-    be a strict semantic homomorphism coequalizing \(R_e\). Since the carrier
-    map \(e\) is the coequalizer of its carrier kernel pair, the underlying map
-    of \(h\) descends uniquely to a map over \(Z\)
+    be a strict semantic homomorphism coequalizing the kernel pair of \(e\).
+    Since the carrier map \(e\) is the coequalizer of its carrier kernel pair,
+    the underlying carrier map of \(h\) descends uniquely to a map
     \[
         \bar h:I\to X
     \]
-    satisfying
+    in \(\mathcal E/Z\) satisfying
     \[
         \bar h e=h.
     \]
@@ -2251,28 +2552,25 @@ image in the carrier slice, equipped with this created strict Mealy structure.
         h\delta_P
         \\
         &=
-        \delta_X(1\times h)
+        \delta_X\widehat h
         \\
         &=
-        \delta_X(1\times\bar h)(1\times e)
-        \\
-        &=
-        \delta_X(1\times\bar h)\widehat e.
+        \delta_X\widehat{\bar h}\,\widehat e.
     \end{aligned}
     \]
     Since \(\widehat e\) is epic,
     \[
         \bar h\delta_I
         =
-        \delta_X(1\times\bar h).
+        \delta_X\widehat{\bar h}.
     \]
 
-    Similarly,
+    Likewise,
     \[
     \begin{aligned}
-        \omega_X(1\times\bar h)\widehat e
+        \omega_X\widehat{\bar h}\,\widehat e
         &=
-        \omega_X(1\times h)
+        \omega_X\widehat h
         \\
         &=
         \omega_P
@@ -2281,12 +2579,19 @@ image in the carrier slice, equipped with this created strict Mealy structure.
         \omega_I\widehat e.
     \end{aligned}
     \]
-    Therefore
+    Since \(\widehat e\) is epic,
     \[
-        \omega_X(1\times\bar h)=\omega_I.
+        \omega_X\widehat{\bar h}
+        =
+        \omega_I.
     \]
-    Thus \(\bar h\) is strict, and \(e\) is the coequalizer of its kernel pair
-    in the strict Mealy category. Hence \(e\) is a regular epimorphism there.
+    Thus \(\bar h\) is strict.
+
+    Therefore \(e\) is the coequalizer of its kernel pair in
+    \[
+        \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B},
+    \]
+    and hence is a regular epimorphism there.
 
     Finally, suppose that \(f\) factors through a strict monomorphism
     \[
@@ -2295,22 +2600,26 @@ image in the carrier slice, equipped with this created strict Mealy structure.
     \[
         f=nh
     \]
-    for some strict map \(h:P\to J\). Since the carrier factorization
+    for some strict semantic homomorphism
+    \[
+        h:P\to J.
+    \]
+    Since
     \[
         P\xrightarrow{e}I\xrightarrow{m}Q
     \]
-    is the carrier image of \(f\), there is a unique carrier map
+    is the carrier image factorization of \(f\), there is a unique carrier map
     \[
         u:I\to J
     \]
-    such that
+    in \(\mathcal E/Z\) satisfying
     \[
         ue=h,
         \qquad
         nu=m.
     \]
 
-    The map \(u\) is strict. Indeed,
+    The map \(u\) preserves transition:
     \[
     \begin{aligned}
         nu\delta_I
@@ -2318,53 +2627,189 @@ image in the carrier slice, equipped with this created strict Mealy structure.
         m\delta_I
         \\
         &=
-        \delta_Q(1\times m)
+        \delta_Q\widehat m
         \\
         &=
-        \delta_Q(1\times n)(1\times u)
+        \delta_Q\widehat n\,\widehat u
         \\
         &=
-        n\delta_J(1\times u).
+        n\delta_J\widehat u.
     \end{aligned}
     \]
     Since the carrier of \(n\) is monic,
     \[
         u\delta_I
         =
-        \delta_J(1\times u).
+        \delta_J\widehat u.
     \]
-    Moreover,
+
+    It also preserves output:
     \[
     \begin{aligned}
-        \omega_J(1\times u)
+        \omega_J\widehat u
         &=
-        \omega_Q(1\times n)(1\times u)
+        \omega_Q\widehat n\,\widehat u
         \\
         &=
-        \omega_Q(1\times m)
+        \omega_Q\widehat m
         \\
         &=
         \omega_I.
     \end{aligned}
     \]
-    Thus \(u\) is the unique strict factorization through \(J\).
+    Hence \(u\) is strict.
 
-    Therefore \(m:I\hookrightarrow Q\) has the universal property of the
-    image of \(f\), and the displayed factorization is the regular image
-    factorization in
-    \(\mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}\).
+    Its uniqueness as a strict map follows from its uniqueness as a carrier
+    map. Therefore \(m:I\hookrightarrow Q\) has the universal property of the
+    image of \(f\), and
+    \[
+        P\xrightarrow{e}I\xrightarrow{m}Q
+    \]
+    is the regular image factorization in the strict Mealy category.
 
-    Uniqueness of the Mealy structure on \(I\) follows because strictness of
+    Finally, the Mealy structure on \(I\) is unique. Indeed, strictness of
     \(m\) forces
     \[
-        m\delta_I=\delta_Q(1\times m)
+        m\delta_I=\delta_Q\widehat m
     \]
     and
     \[
-        \omega_I=\omega_Q(1\times m),
+        \omega_I=\omega_Q\widehat m,
     \]
-    while \(m\) is monic.
+    and monicity of \(m\) determines \(\delta_I\) uniquely.
 \end{proof}
+
+\begin{corollary}[Regular epimorphisms are detected by carriers]
+\label{cor:carrier-regular-quotients-categorical}
+    Let
+    \[
+        e:P\to Q
+    \]
+    be a strict semantic homomorphism. Then the following are equivalent:
+    \begin{enumerate}
+        \item the underlying carrier map
+        \[
+            Ue:UP\to UQ
+        \]
+        is a regular epimorphism in
+        \[
+            \mathcal E/Z;
+        \]
+
+        \item the strict semantic homomorphism
+        \[
+            e:P\to Q
+        \]
+        is a regular epimorphism in
+        \[
+            \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}.
+        \]
+    \end{enumerate}
+
+    Consequently, the regular quotients of
+    Definition~\ref{def:regular-quotient-strict-mealy} are exactly the
+    categorical regular epimorphisms in the strict Mealy category.
+\end{corollary}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Carrier regular epimorphisms are categorical regular
+        epimorphisms.}
+
+        Suppose that
+        \[
+            Ue:UP\to UQ
+        \]
+        is a regular epimorphism in \(\mathcal E/Z\).
+
+        Apply
+        Proposition~\ref{prop:regular-image-factorization-mealy} to \(e\).
+        Since the carrier image of a regular epimorphism is its entire
+        codomain, its carrier regular-image factorization is, up to the unique
+        canonical isomorphism of image representatives,
+        \[
+            UP\xrightarrow{Ue}UQ\xrightarrow{1_{UQ}}UQ.
+        \]
+        The proposition creates this factorization in the strict Mealy
+        category and identifies its first map as a categorical regular
+        epimorphism. Hence \(e\) is a regular epimorphism in
+        \[
+            \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}.
+        \]
+
+        \item \textbf{Categorical regular epimorphisms have regular-epimorphic
+        carriers.}
+
+        Conversely, suppose
+        \[
+            e:P\to Q
+        \]
+        is a regular epimorphism in the strict Mealy category.
+
+        Factor its carrier in \(\mathcal E/Z\) as
+        \[
+            UP
+            \xrightarrow{Ue'}
+            UI
+            \xrightarrow{Um}
+            UQ,
+        \]
+        where \(Ue'\) is regular epimorphic and \(Um\) is monic.
+
+        By
+        Proposition~\ref{prop:regular-image-factorization-mealy}, the object
+        \(I\) carries a unique Mealy structure for which
+        \[
+            P\xrightarrow{e'}I\xrightarrow{m}Q
+        \]
+        is the regular image factorization of \(e\) in the strict Mealy
+        category. Thus
+        \[
+            e=me',
+        \]
+        with \(e'\) a regular epimorphism and \(m\) a monomorphism.
+
+        Regular epimorphisms are extremal. Since the regular epimorphism \(e\)
+        factors through the monomorphism \(m\), the map \(m\) is an
+        isomorphism. Therefore its carrier
+        \[
+            Um:UI\to UQ
+        \]
+        is an isomorphism in \(\mathcal E/Z\).
+
+        Since
+        \[
+            Ue=(Um)(Ue')
+        \]
+        and \(Ue'\) is regular epimorphic, it follows that \(Ue\) is a regular
+        epimorphism in \(\mathcal E/Z\).
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}
+\label{rem:regular-quotient-terminology}
+    By the preceding corollary, there is no distinction in this chapter
+    between:
+
+    \begin{enumerate}
+        \item a strict semantic homomorphism whose carrier is a regular
+        epimorphism in \(\mathcal E/Z\);
+
+        \item a regular epimorphism in
+        \[
+            \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}.
+        \]
+    \end{enumerate}
+
+    Accordingly, the terms
+    \[
+        \text{regular quotient}
+        \qquad\text{and}\qquad
+        \text{regular-epimorphic quotient}
+    \]
+    may be used interchangeably for strict semantic homomorphisms.
+\end{remark}
 
 \subsection{Semantic images}
 \label{subsec:semantic-images}
@@ -2384,6 +2829,37 @@ image in the carrier slice, equipped with this created strict Mealy structure.
     \]
     in \(\mathcal E/Z\).
 \end{definition}
+
+\begin{remark}[Image subobjects and chosen representatives]
+\label{rem:semantic-image-subobject-convention}
+    The notation
+    \[
+        \operatorname{Beh}(P)
+    \]
+    is used primarily for the regular-image subobject
+    \[
+        \operatorname{Im}(\beta_P)
+        \hookrightarrow
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B},
+    \]
+    regarded as an element of
+    \[
+        \operatorname{Sub}_{\mathcal E/Z}(\mathbf{Beh}_0).
+    \]
+
+    Accordingly, an equality such as
+    \[
+        \operatorname{Beh}(P)=V
+    \]
+    means equality of subobject classes in this subobject poset. If particular
+    regular epi--mono factorizations have been chosen, the corresponding
+    carrier objects need not be literally equal; instead, there is a unique
+    canonical isomorphism between the chosen image representatives commuting
+    with their monomorphisms into \(\mathbf{Beh}_0\).
+
+    The same convention applies to chosen representatives of derivative
+    images, joins, meets, and other regular-image subobjects appearing below.
+\end{remark}
 
 The semantic image is displayed by
 \[
@@ -3218,7 +3694,6 @@ is posetal, these inclusions are automatically functorial.
     \]
     is an isomorphism if and only if \(P\) is behaviourally separated.
 \end{corollary}
-
 \begin{proof}
     The semantic image factorization is
     \[
@@ -3235,20 +3710,72 @@ is posetal, these inclusions are automatically functorial.
     \]
 
     \begin{enumerate}
-        \item \textbf{Behavioural separatedness implies reflection isomorphism.}
-        If \(P\) is behaviourally separated, then
+        \item \textbf{Behavioural separatedness implies reflection
+        isomorphism.}
+
+        Suppose \(P\) is behaviourally separated. Then
         \[
             \beta_P=m_P\eta_P
         \]
-        is monic. Since \(m_P\) is monic, \(\eta_P\) is monic. But
-        \(\eta_P\) is also a regular epimorphism, hence an isomorphism.
+        is monic.
 
-        \item \textbf{Reflection isomorphism implies behavioural separatedness.}
-        Conversely, if \(\eta_P\) is an isomorphism, then \(\beta_P\) is
-        isomorphic to the image inclusion \(m_P\), hence is monic. Therefore
-        \(P\) is behaviourally separated.
+        We claim that \(\eta_P\) is monic. Let
+        \[
+            f,g:X\rightrightarrows P
+        \]
+        satisfy
+        \[
+            \eta_Pf=\eta_Pg.
+        \]
+        Then
+        \[
+        \begin{aligned}
+            \beta_Pf
+            &=
+            m_P\eta_Pf
+            \\
+            &=
+            m_P\eta_Pg
+            \\
+            &=
+            \beta_Pg.
+        \end{aligned}
+        \]
+        Since \(\beta_P\) is monic,
+        \[
+            f=g.
+        \]
+        Hence \(\eta_P\) is monic.
+
+        By construction, \(\eta_P\) is also a regular epimorphism in the
+        strict Mealy category. A morphism that is both a regular epimorphism
+        and a monomorphism is an isomorphism. Therefore
+        \[
+            \eta_P:
+            P\overset{\cong}{\longrightarrow}\operatorname{Beh}(P).
+        \]
+
+        \item \textbf{Reflection isomorphism implies behavioural
+        separatedness.}
+
+        Conversely, suppose
+        \[
+            \eta_P:
+            P\overset{\cong}{\longrightarrow}\operatorname{Beh}(P)
+        \]
+        is an isomorphism. Since
+        \[
+            m_P:
+            \operatorname{Beh}(P)\hookrightarrow
+            \mathbf{Beh}^{\mathrm{can}}
+        \]
+        is monic, the composite
+        \[
+            \beta_P=m_P\eta_P
+        \]
+        is monic. Therefore \(P\) is behaviourally separated.
     \end{enumerate}
-\end{proof}
+\end{proof} 
 
 \subsection{Relation with minimal residual realization}
 \label{subsec:universal-realization-minimal-residual-realization}
@@ -3661,6 +4188,147 @@ where the displayed join is taken over the chosen small representative set.
     \end{enumerate}
 \end{proof}
 
+\begin{lemma}[The representing theory belongs to the class]
+\label{lem:representing-theory-belongs-to-class}
+    Let
+    \[
+        \mathcal C
+        \subseteq
+        \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}
+    \]
+    be a replete full subcategory closed under regular-epimorphic quotients
+    and small coproducts. Let
+    \[
+        \mathcal S_{\mathcal C}
+        :=
+        \{
+            S\hookrightarrow\mathbf{Beh}^{\mathrm{can}}
+            \mid
+            S=\operatorname{Beh}(P)
+            \text{ for some }P\in\mathcal C
+        \},
+    \]
+    and let
+    \[
+        V_{\mathcal C}
+        :=
+        \bigvee_{S\in\mathcal S_{\mathcal C}}S
+        \hookrightarrow
+        \mathbf{Beh}^{\mathrm{can}}
+    \]
+    be formed using a chosen small representative set of the distinct
+    semantic-image subobjects.
+
+    Then the restricted canonical Mealy morphism
+    \[
+        V_{\mathcal C}
+    \]
+    belongs to \(\mathcal C\).
+\end{lemma}
+
+\begin{proof}
+    For every chosen representative
+    \[
+        S\in\mathcal S_{\mathcal C},
+    \]
+    choose an object
+    \[
+        P_S\in\mathcal C
+    \]
+    together with an identification
+    \[
+        S=\operatorname{Beh}(P_S)
+    \]
+    as a subobject of
+    \[
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}.
+    \]
+
+    The semantic-image factorization of \(P_S\) gives a regular quotient
+    \[
+        P_S\twoheadrightarrow\operatorname{Beh}(P_S).
+    \]
+    Since \(\mathcal C\) is closed under regular-epimorphic quotients,
+    \[
+        \operatorname{Beh}(P_S)\in\mathcal C.
+    \]
+    The chosen representative \(S\) is canonically isomorphic to this
+    semantic-image object. Repleteness therefore gives
+    \[
+        S\in\mathcal C.
+    \]
+
+    Form the small coproduct
+    \[
+        C_{\mathcal C}
+        :=
+        \coprod_{S\in\mathcal S_{\mathcal C}}S.
+    \]
+    Since every summand belongs to \(\mathcal C\) and \(\mathcal C\) is
+    closed under small coproducts,
+    \[
+        C_{\mathcal C}\in\mathcal C.
+    \]
+
+    The inclusions
+    \[
+        S\hookrightarrow
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+    \]
+    induce a strict semantic homomorphism
+    \[
+        c_{\mathcal C}:
+        C_{\mathcal C}
+        \longrightarrow
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}.
+    \]
+    Its regular image in the carrier slice is the join of the component
+    subobjects:
+    \[
+        \operatorname{Im}(c_{\mathcal C})
+        =
+        \bigvee_{S\in\mathcal S_{\mathcal C}}S
+        =
+        V_{\mathcal C}.
+    \]
+    By
+    Proposition~\ref{prop:regular-image-factorization-mealy}, this carrier
+    image is created in the strict Mealy category. Thus there is a regular
+    quotient
+    \[
+        C_{\mathcal C}
+        \twoheadrightarrow
+        V_{\mathcal C}
+    \]
+    fitting into
+    \[
+    \begin{tikzcd}[column sep=large, row sep=large]
+        \displaystyle
+        \coprod_{S\in\mathcal S_{\mathcal C}}S
+            \arrow[rr, "c_{\mathcal C}"]
+            \arrow[dr, two heads]
+        &&
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+        \\
+        &
+        V_{\mathcal C}
+            \arrow[ur, hook, "j_{V_{\mathcal C}}"']
+        &
+    \end{tikzcd}
+    \]
+    in
+    \[
+        \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}.
+    \]
+
+    Since \(C_{\mathcal C}\in\mathcal C\) and \(\mathcal C\) is closed under
+    regular-epimorphic quotients, the chosen image representative belongs to
+    \(\mathcal C\) up to canonical isomorphism. Repleteness therefore gives
+    \[
+        V_{\mathcal C}\in\mathcal C.
+    \]
+\end{proof}
+
 \subsection{The theorem}
 \label{subsec:local-coequational-birkhoff-theorem}
 
@@ -3694,47 +4362,94 @@ where the displayed join is taken over the chosen small representative set.
     where the join is taken over a chosen small set of representatives for the
     resulting semantic-image subobjects.
 \end{theorem}
+
 \begin{proof}
     \leavevmode
     \begin{enumerate}
         \item \textbf{Prove necessity.}
-        If
+
+        Suppose
         \[
-            \mathcal C=\mathsf{Mod}(V),
+            \mathcal C=\mathsf{Mod}(V)
         \]
-        then the desired closure properties are
+        for a local coequational theory \(V\). Closure under strict
+        homomorphic preimages, regular-epimorphic quotients, and small
+        coproducts is
         Theorem~\ref{thm:local-coequational-closure}.
 
-        \item \textbf{Construct the candidate theory.}
-        Conversely, suppose \(\mathcal C\) is closed under strict homomorphic
-        preimages, regular-epimorphic quotients, and small coproducts. Define
+        \item \textbf{Construct the representing theory.}
+
+        Conversely, suppose that \(\mathcal C\) is closed under strict
+        homomorphic preimages, regular-epimorphic quotients, and small
+        coproducts.
+
+        Define
+        \[
+            \mathcal S_{\mathcal C}
+            :=
+            \{
+                S\hookrightarrow\mathbf{Beh}^{\mathrm{can}}
+                \mid
+                S=\operatorname{Beh}(P)
+                \text{ for some }P\in\mathcal C
+            \}.
+        \]
+        Choose a small representative set of the distinct subobjects in
+        \(\mathcal S_{\mathcal C}\), and put
         \[
             V_{\mathcal C}
             :=
-            \bigvee_{P\in\mathcal C}\operatorname{Beh}(P)
-            \hookrightarrow\mathbf{Beh}^{\mathrm{can}},
+            \bigvee_{S\in\mathcal S_{\mathcal C}}S
+            \hookrightarrow
+            \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}.
         \]
-        taking the join over representatives of the distinct semantic-image
-        subobjects. Each
+
+        Every semantic image
         \[
-            \operatorname{Beh}(P)\hookrightarrow\mathbf{Beh}^{\mathrm{can}}
+            \operatorname{Beh}(P)
+            \hookrightarrow
+            \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
         \]
         is a local coequational theory by
-        Corollary~\ref{cor:semantic-images-are-coeq-theories}, so
-        \(V_{\mathcal C}\) is a local coequational theory by
-        Lemma~\ref{lem:joins-derivative-closed}.
+        Corollary~\ref{cor:semantic-images-are-coeq-theories}. Hence
+        Lemma~\ref{lem:joins-derivative-closed} implies that
+        \[
+            V_{\mathcal C}
+        \]
+        is a local coequational theory.
 
-        \item \textbf{Show \(\mathcal C\subseteq\mathsf{Mod}(V_{\mathcal C})\).}
-        If \(P\in\mathcal C\), then
+        \item \textbf{Place the representing theory inside the class.}
+
+        By
+        Lemma~\ref{lem:representing-theory-belongs-to-class},
+        \[
+            V_{\mathcal C}\in\mathcal C.
+        \]
+
+        \item \textbf{Show that every object of \(\mathcal C\) models the
+        representing theory.}
+
+        Let
+        \[
+            P\in\mathcal C.
+        \]
+        By construction,
         \[
             \operatorname{Beh}(P)\leq V_{\mathcal C}.
         \]
-        Since \(\beta_P\) factors through \(\operatorname{Beh}(P)\), it factors
-        through \(V_{\mathcal C}\). Hence
+        The semantic map factors through its regular image:
         \[
-            P\models V_{\mathcal C}.
+            P
+            \twoheadrightarrow
+            \operatorname{Beh}(P)
+            \hookrightarrow
+            \mathbf{Beh}^{\mathrm{can}}.
         \]
-        The factorization is
+        Composing the semantic-image inclusion with
+        \[
+            \operatorname{Beh}(P)\hookrightarrow V_{\mathcal C}
+        \]
+        gives a factorization of \(\beta_P\) through \(V_{\mathcal C}\):
         \[
         \begin{tikzcd}[column sep=large, row sep=large]
             P
@@ -3745,173 +4460,86 @@ where the displayed join is taken over the chosen small representative set.
                 \arrow[r, hook]
             &
             V_{\mathcal C}
-                \arrow[r, hook]
+                \arrow[r, hook, "j_{V_{\mathcal C}}"]
             &
             \mathbf{Beh}^{\mathrm{can}} .
         \end{tikzcd}
         \]
+        Hence
+        \[
+            P\models V_{\mathcal C}.
+        \]
+        Therefore
+        \[
+            \mathcal C
+            \subseteq
+            \mathsf{Mod}(V_{\mathcal C}).
+        \]
 
-        \item \textbf{Let a model be given.}
+        \item \textbf{Use the representing theory to prove the converse
+        inclusion.}
+
         Let
         \[
             X\in\mathsf{Mod}(V_{\mathcal C}).
         \]
-        Then
+        By definition, the semantic map of \(X\) admits a unique carrier
+        factorization
         \[
-            \operatorname{Beh}(X)\leq V_{\mathcal C}.
+            \bar\beta_X:
+            X\to V_{\mathcal C}
         \]
-
-        \item \textbf{Decompose the semantic image by intersections.}
-        Since \(\mathcal E/Z\) is a Grothendieck topos, the subobject lattice
+        satisfying
         \[
-            \operatorname{Sub}_{\mathcal E/Z}(\mathbf{Beh}_0)
-        \]
-        is a frame. Hence finite meets distribute over small joins. Therefore
-        \[
-        \begin{aligned}
-            \operatorname{Beh}(X)
-            &=
-            \operatorname{Beh}(X)\wedge V_{\mathcal C} \\
-            &=
-            \operatorname{Beh}(X)\wedge
-            \bigvee_{S\in\mathcal S_{\mathcal C}}S \\
-            &=
-            \bigvee_{S\in\mathcal S_{\mathcal C}}
-            \bigl(\operatorname{Beh}(X)\wedge S\bigr).
-        \end{aligned}
-        \]
-        Each meet is the pullback subobject
-        \[
-        \begin{tikzcd}[column sep=large, row sep=large]
-            \operatorname{Beh}(X)\wedge S
-                \arrow[r]
-                \arrow[d]
-                \arrow[dr, phantom, "\lrcorner", very near start]
-            &
-            S
-                \arrow[d, hook]
-            \\
-            \operatorname{Beh}(X)
-                \arrow[r, hook]
-            &
-            \mathbf{Beh}^{\mathrm{can}} .
-        \end{tikzcd}
-        \]
-
-        \item \textbf{Show each intersection belongs to \(\mathcal C\).}
-        Choose
-        \[
-            P_S\in\mathcal C
-        \]
-        with
-        \[
-            S=\operatorname{Beh}(P_S).
-        \]
-        Since
-        \[
-            P_S\twoheadrightarrow S
-        \]
-        is a regular quotient and \(\mathcal C\) is closed under regular
-        quotients, repleteness gives
-        \[
-            S\in\mathcal C.
-        \]
-        By Lemma~\ref{lem:meets-local-theories},
-        \[
-            \operatorname{Beh}(X)\wedge S
-        \]
-        is a local coequational theory and the projection
-        \[
-            \operatorname{Beh}(X)\wedge S\hookrightarrow S
-        \]
-        is a strict semantic homomorphism. Since \(S\in\mathcal C\) and
-        \(\mathcal C\) is closed under strict homomorphic preimages, it follows
-        that
-        \[
-            \operatorname{Beh}(X)\wedge S\in\mathcal C.
-        \]
-
-        \item \textbf{Use coproducts and regular images.}
-        Form the small coproduct
-        \[
-            C_X:=
-            \coprod_{S\in\mathcal S_{\mathcal C}}
-            \bigl(\operatorname{Beh}(X)\wedge S\bigr),
-        \]
-        using the chosen representative set for
-        \(\mathcal S_{\mathcal C}\). Each summand lies in \(\mathcal C\), and
-        \(\mathcal C\) is closed under small coproducts, so
-        \[
-            C_X\in\mathcal C.
-        \]
-        The canonical strict map
-        \[
-            C_X\to\mathbf{Beh}^{\mathrm{can}}
-        \]
-        has regular image
-        \[
-            \bigvee_{S\in\mathcal S_{\mathcal C}}
-            \bigl(\operatorname{Beh}(X)\wedge S\bigr)
+            j_{V_{\mathcal C}}\bar\beta_X
             =
-            \operatorname{Beh}(X).
+            \beta_X.
         \]
-        Thus the image factorization is
+        This is the triangle
         \[
         \begin{tikzcd}[column sep=large, row sep=large]
-            \displaystyle
-            \coprod_S\bigl(\operatorname{Beh}(X)\wedge S\bigr)
-                \arrow[rr]
-                \arrow[dr, two heads]
+            X
+                \arrow[rr, "\beta_X"]
+                \arrow[dr, "\bar\beta_X"']
             &&
-            \mathbf{Beh}^{\mathrm{can}}
+            \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
             \\
             &
-            \operatorname{Beh}(X)
-                \arrow[ur, hook]
+            V_{\mathcal C}
+                \arrow[ur, hook, "j_{V_{\mathcal C}}"']
             &
         \end{tikzcd}
         \]
-        in
-        \[
-            \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B},
-        \]
-        because regular images are created by the carrier slice. Hence
-        \[
-            \operatorname{Beh}(X)
-        \]
-        is a regular quotient of \(C_X\). Since \(\mathcal C\) is closed under
-        regular quotients,
-        \[
-            \operatorname{Beh}(X)\in\mathcal C.
-        \]
 
-        \item \textbf{Pull back along the semantic quotient.}
-        The semantic image factorization gives a regular quotient
+        By Lemma~\ref{lem:model-factorizations-strict}, the factorization
         \[
-            X\twoheadrightarrow\operatorname{Beh}(X).
+            \bar\beta_X:X\to V_{\mathcal C}
         \]
+        is a strict semantic homomorphism.
+
         Since
         \[
-            \operatorname{Beh}(X)\in\mathcal C
+            V_{\mathcal C}\in\mathcal C
         \]
-        and
-        \[
-            X\to\operatorname{Beh}(X)
-        \]
-        is a strict semantic homomorphism, closure under strict homomorphic
-        preimages gives
+        and \(\mathcal C\) is closed under strict homomorphic preimages, it
+        follows immediately that
         \[
             X\in\mathcal C.
         \]
-
-        \item \textbf{Conclude equality.}
-        Thus
+        Therefore
         \[
-            \mathsf{Mod}(V_{\mathcal C})\subseteq\mathcal C.
+            \mathsf{Mod}(V_{\mathcal C})
+            \subseteq
+            \mathcal C.
         \]
-        Together with the opposite inclusion, this gives
+
+        \item \textbf{Conclude.}
+
+        Combining the two inclusions gives
         \[
-            \mathcal C=\mathsf{Mod}(V_{\mathcal C}).
+            \mathcal C
+            =
+            \mathsf{Mod}(V_{\mathcal C}).
         \]
     \end{enumerate}
 \end{proof}
@@ -3932,18 +4560,20 @@ where the displayed join is taken over the chosen small representative set.
     \]
     as a subobject of the canonical behaviour machine.
 
-    Consequently, if a replete full subcategory \(\mathcal C\) is
-    coequationally definable, then its defining local coequational theory is
-    unique and is
+    Consequently, if a replete full subcategory
+    \[
+        \mathcal C
+        \subseteq
+        \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}
+    \]
+    is coequationally definable, then its defining local coequational theory
+    is unique and is
     \[
         V_{\mathcal C}
         =
         \bigvee_{P\in\mathcal C}
         \operatorname{Beh}(P).
     \]
-
-    The same uniqueness statement holds when \(V\) is required to be a local
-    \(\mathbb T\)-coequational theory.
 \end{corollary}
 
 \begin{proof}
@@ -3978,13 +4608,19 @@ where the displayed join is taken over the chosen small representative set.
         \bigvee_{P\in\mathsf{Mod}(V)}
         \operatorname{Beh}(P).
     \]
-    The two inequalities give equality.
-
-    If
+    The two inequalities give
     \[
-        \mathcal C=\mathsf{Mod}(V),
+        V
+        =
+        \bigvee_{P\in\mathsf{Mod}(V)}
+        \operatorname{Beh}(P).
     \]
-    the displayed equality becomes
+
+    Now suppose
+    \[
+        \mathcal C=\mathsf{Mod}(V).
+    \]
+    Then
     \[
         V
         =
@@ -3993,11 +4629,8 @@ where the displayed join is taken over the chosen small representative set.
         =
         V_{\mathcal C}.
     \]
-    Thus \(V\) is uniquely determined by \(\mathcal C\).
-
-    A local \(\mathbb T\)-coequational theory is in particular a local
-    coequational theory, so the same argument proves uniqueness in the
-    structured case.
+    Thus the defining local coequational theory is uniquely determined by
+    \(\mathcal C\).
 \end{proof}
 
 \section{Structured output and algebraic closure}
@@ -4039,10 +4672,14 @@ bridge between syntactic structure and semantic classes
 
 For \(n>0\), put
 \[
-    \mathbf{Beh}_0^{(n)}
+    \mathbf{Beh}_0^{[n]}
     :=
     \underbrace{
-    \mathbf{Beh}_0\times_{A_0}\cdots\times_{A_0}\mathbf{Beh}_0
+    \mathbf{Beh}_0
+    \times_{A_0}
+    \cdots
+    \times_{A_0}
+    \mathbf{Beh}_0
     }_{n}.
 \]
 A generalized element is a tuple
@@ -4053,51 +4690,91 @@ of residual behaviours
 \[
     H_i:\mathbb A/v\to\mathbb B
 \]
-over the same input object \(v\). For \(n=0\), set
+over the same input object \(v\). For \(n=0\), put
 \[
-    \mathbf{Beh}_0^{(0)}:=A_0.
+    \mathbf{Beh}_0^{[0]}:=A_0.
 \]
 
-For an \(n\)-ary operation
+Let
 \[
-    \theta:\mathbb B^n\to\mathbb B,
+    \theta:\mathbb B^n\to\mathbb B
 \]
-we also use the notation
+be the internal functor corresponding to an \(n\)-ary operation. For \(n>0\),
+write
 \[
     \mathbf{Beh}^{(n)}_{\theta,0}
 \]
-for the same underlying object \(\mathbf{Beh}_0^{(n)}\), equipped with its
-\(\theta\)-induced map to
+for the underlying object
 \[
-    Z=A_0\times B_0.
+    \mathbf{Beh}_0^{[n]}
 \]
-For \(n>0\), this \(Z\)-coordinate is
+equipped with the structure map
 \[
-    (H_1,\dots,H_n)
-    \longmapsto
+    z_\theta:
+    \mathbf{Beh}_0^{[n]}
+    \to
+    Z=A_0\times B_0
+\]
+defined by
+\[
+    z_\theta
+    =
+    \left\langle
+        p_{\mathbf{Beh}}\pi_1,\,
+        \theta_0
+        \left\langle
+            q_{\mathbf{Beh}}\pi_1,
+            \dots,
+            q_{\mathbf{Beh}}\pi_n
+        \right\rangle
+    \right\rangle.
+\]
+Thus
+\[
+    z_\theta(H_1,\dots,H_n)
+    =
     \Bigl(
-        p_{\mathbf{Beh}}(H_1),
-        \theta_0(q_{\mathbf{Beh}}H_1,\dots,q_{\mathbf{Beh}}H_n)
+        p_{\mathbf{Beh}}(H_1),\,
+        \theta_0
+        \bigl(
+            q_{\mathbf{Beh}}H_1,
+            \dots,
+            q_{\mathbf{Beh}}H_n
+        \bigr)
     \Bigr).
 \]
-This coordinate is displayed by
+
+The structure map is characterized by the product cone
 \[
-\begin{tikzcd}[column sep=large, row sep=large]
-    \mathbf{Beh}^{(n)}_{\theta,0}
-        \arrow[r, "{(q_{\mathbf{Beh}}\pi_i)_i}"]
-        \arrow[d, "{p_{\mathbf{Beh}}\pi_1}"']
-        \arrow[dr, dashed, "{(p,\theta_0(q_i)_i)}"]
+\begin{tikzcd}[column sep=huge, row sep=large]
     &
-    B_0^n
-        \arrow[d, "\theta_0"]
+    \mathbf{Beh}^{(n)}_{\theta,0}
+        \arrow[dl, "{p_{\mathbf{Beh}}\pi_1}"']
+        \arrow[d, dashed, "z_\theta"]
+        \arrow[dr,
+            "{\theta_0
+            \langle
+                q_{\mathbf{Beh}}\pi_1,
+                \dots,
+                q_{\mathbf{Beh}}\pi_n
+            \rangle}"]
+    &
     \\
     A_0
-        \arrow[r]
     &
-    Z=A_0\times B_0 .
+    Z=A_0\times B_0
+        \arrow[l, "\pi_{A_0}"]
+        \arrow[r, "\pi_{B_0}"']
+    &
+    B_0 .
 \end{tikzcd}
 \]
-For \(n=0\), if \(\theta:1\to\mathbb B\) selects the object
+
+For \(n=0\), if
+\[
+    \theta:1\to\mathbb B
+\]
+selects the object
 \[
     b_\theta:1\to B_0,
 \]
@@ -4105,7 +4782,15 @@ then
 \[
     \mathbf{Beh}^{(0)}_{\theta,0}=A_0
 \]
-has \(Z\)-coordinate
+is regarded as an object of \(\mathcal E/Z\) by the structure map
+\[
+    \left\langle
+        1_{A_0},
+        b_\theta!
+    \right\rangle:
+    A_0\to A_0\times B_0.
+\]
+In generalized-element notation,
 \[
     v\longmapsto(v,b_\theta).
 \]
@@ -4118,14 +4803,21 @@ is not, in general, the \(n\)-fold product of \(\mathbf{Beh}_0\) in the slice
 \[
     \mathcal E/Z.
 \]
-It is first the fibre product over the common input coordinate \(A_0\), and is
-then regarded as an object of \(\mathcal E/Z\) using the output coordinate
-induced by the operation
+Its underlying object is first formed as the fibre product
+\[
+    \mathbf{Beh}_0
+    \times_{A_0}
+    \cdots
+    \times_{A_0}
+    \mathbf{Beh}_0
+\]
+over the common input coordinate. It is then regarded as an object of
+\(\mathcal E/Z\) using the output coordinate induced by
 \[
     \theta_0:B_0^n\to B_0.
 \]
-This distinction is essential below when closure under \(\mathbb T\)-operations
-is expressed as a factorization in \(\mathcal E/Z\).
+This distinction is essential when closure under \(\mathbb T\)-operations is
+expressed as a factorization in \(\mathcal E/Z\).
 
 \begin{definition}[Pointwise structured behaviour]
 \label{def:pointwise-structured-behaviour}
@@ -4573,68 +5265,179 @@ and identity output arrow at \(b_\theta\).
 
 \begin{definition}[\(\mathbb T\)-coequational theory]
 \label{def:T-coequational-theory}
-    Let \(\mathbb B\) be a \(\mathbb T\)-structured output category. A
-    \textbf{local \(\mathbb T\)-coequational theory} is a local coequational
-    theory
-    \[
-        V\hookrightarrow\mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
-    \]
-    closed under the pointwise operations induced by the \(\mathbb T\)-structure
-    on \(\mathbb B\), where each operation is regarded with its induced
-    \(Z\)-coordinate.
+    Let \(\mathbb T\) be a single-sorted finite-product theory, and let
+    \(\mathbb B\) be a \(\mathbb T\)-structured output category.
 
-    Explicitly, for an \(n\)-ary operation
+    A \textbf{local \(\mathbb T\)-coequational theory} is a local
+    coequational theory
+    \[
+        j_V:
+        V\hookrightarrow
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+    \]
+    that is closed under the pointwise operation induced by every morphism
+    \[
+        \theta:n\to1
+    \]
+    of \(\mathbb T\).
+
+    For \(n>0\), put
+    \[
+        V^{[n]}
+        :=
+        \underbrace{
+        V\times_{A_0}\cdots\times_{A_0}V
+        }_{n}.
+    \]
+    This is the \(n\)-fold product of
+    \[
+        p_V:V\to A_0
+    \]
+    in the slice \(\mathcal E/A_0\).
+
+    For an operation
+    \[
+        \theta:n\to1
+    \]
+    whose interpretation is the internal functor
     \[
         \theta:\mathbb B^n\to\mathbb B,
     \]
-    define, for \(n>0\),
+    regard \(V^{[n]}\) as an object of
     \[
-        V^{(n)}_\theta
+        \mathcal E/Z,
+        \qquad
+        Z=A_0\times B_0,
+    \]
+    by the structure map
+    \[
+        z_{\theta,V}
         :=
-        \underbrace{V\times_{A_0}\cdots\times_{A_0}V}_{n},
+        \left\langle
+            p_V\pi_1,\,
+            \theta_0
+            \left\langle
+                q_V\pi_1,
+                \dots,
+                q_V\pi_n
+            \right\rangle
+        \right\rangle.
     \]
-    equipped with the \(\theta\)-induced map to
+    The resulting object of \(\mathcal E/Z\) is denoted
     \[
-        Z=A_0\times B_0
+        V^{(n)}_\theta.
     \]
-    given by
+
+    Thus, in generalized-element notation,
     \[
-        (H_1,\dots,H_n)
-        \longmapsto
+        z_{\theta,V}(H_1,\dots,H_n)
+        =
         \Bigl(
-            p_V(H_1),
-            \theta_0(q_V(H_1),\dots,q_V(H_n))
+            p_V(H_1),\,
+            \theta_0
+            \bigl(
+                q_V(H_1),
+                \dots,
+                q_V(H_n)
+            \bigr)
         \Bigr).
     \]
-    Equivalently, \(V^{(n)}_\theta\) is the subobject of
-    \[
-        \mathbf{Beh}_0^{(n)}
-        =
-        \mathbf{Beh}_0\times_{A_0}\cdots\times_{A_0}\mathbf{Beh}_0
-    \]
-    whose components lie in \(V\), regarded over \(Z\) by the displayed
-    \(\theta\)-induced output coordinate.
 
-    For \(n=0\), set
+    For a nullary theory operation
     \[
-        V^{(0)}_\theta:=A_0
+        \theta:0\to1,
     \]
-    with \(Z\)-coordinate
+    we use the same symbol
     \[
-        v\longmapsto (v,b_\theta).
+        \theta:1\to\mathbb B
     \]
-    Closure under \(\theta\) means that
+    for its interpretation in the \(\mathbb T\)-structured internal category.
+    Let
     \[
-        \theta_{\mathbf{Beh}}:V^{(n)}_\theta\to\mathbf{Beh}_0
+        b_\theta:1\to B_0
     \]
-    factors through
+    be its selected output object. Put
     \[
-        j_V:V\hookrightarrow\mathbf{Beh}_0
+        V^{(0)}_\theta:=A_0,
     \]
-    as a map over \(Z\). The induced map is denoted
+    regarded over \(Z\) by
     \[
-        \theta_V:V^{(n)}_\theta\to V.
+        \left\langle
+            1_{A_0},
+            b_\theta!
+        \right\rangle:
+        A_0\to A_0\times B_0.
     \]
+
+    Closure under a positive-arity operation
+    \[
+        \theta:n\to1
+    \]
+    means that the pointwise behaviour operation restricts to \(V\):
+    there is a unique map
+    \[
+        \theta_V:
+        V^{(n)}_\theta\to V
+    \]
+    in \(\mathcal E/Z\) satisfying
+    \[
+        j_V\theta_V
+        =
+        \theta_{\mathbf{Beh}}j_V^{[n]},
+    \]
+    where
+    \[
+        j_V^{[n]}
+        :=
+        j_V\times_{A_0}\cdots\times_{A_0}j_V:
+        V^{[n]}
+        \to
+        \mathbf{Beh}_0^{[n]}.
+    \]
+
+    Equivalently, after forgetting the \(B_0\)-coordinate,
+    \[
+        \theta_V:V^{[n]}\to V
+    \]
+    is a map in \(\mathcal E/A_0\) satisfying
+    \[
+        q_V\theta_V
+        =
+        \theta_0
+        \left\langle
+            q_V\pi_1,
+            \dots,
+            q_V\pi_n
+        \right\rangle.
+    \]
+
+    In the nullary case, closure means that there is a unique map
+    \[
+        \theta_V:A_0\to V
+    \]
+    satisfying
+    \[
+        j_V\theta_V
+        =
+        \theta_{\mathbf{Beh}},
+    \]
+    equivalently
+    \[
+        p_V\theta_V=1_{A_0},
+        \qquad
+        q_V\theta_V=b_\theta!.
+    \]
+
+    The proposition below shows that the resulting operations
+    \[
+        \theta_V:V^{[n]}\to V
+    \]
+    form a \(\mathbb T\)-algebra structure on
+    \[
+        p_V:V\to A_0
+    \]
+    in the slice \(\mathcal E/A_0\), and that the output map preserves this
+    structure.
 \end{definition}
 
 The closure condition is displayed by
@@ -4689,15 +5492,17 @@ summarized by the cube-like diagram
     \]
     be a local \(\mathbb T\)-coequational theory, and let
     \[
-        \theta:\mathbb B^n\to\mathbb B
+        \theta:n\to1
     \]
-    be an operation of \(\mathbb T\).
+    be a morphism of the finite-product theory \(\mathbb T\), interpreted as
+    an internal functor
+    \[
+        \theta:\mathbb B^n\to\mathbb B.
+    \]
 
     For \(n>0\), the object
     \[
         V^{(n)}_\theta
-        =
-        V\times_{A_0}\cdots\times_{A_0}V
     \]
     carries the Mealy structure of
     \[
@@ -4711,7 +5516,9 @@ summarized by the cube-like diagram
         \bigr)
         =
         \bigl(
-            \partial_aH_1,\dots,\partial_aH_n
+            \partial_aH_1,
+            \dots,
+            \partial_aH_n
         \bigr),
     \]
     and
@@ -4734,28 +5541,76 @@ summarized by the cube-like diagram
         \theta_V:
         V^{(n)}_\theta\to V
     \]
-    is a strict semantic homomorphism. The analogous statement holds for a
-    nullary operation.
+    is a strict semantic homomorphism. The analogous assertion holds for
+    nullary operations.
 
-    Moreover, the induced operations \(\theta_V\) satisfy all equations of
-    the finite-product theory \(\mathbb T\).
+    After forgetting the \(B_0\)-coordinate, the family
+    \[
+        \theta_V:V^{[n]}\to V
+    \]
+    preserves projections and substitution. Consequently it defines a
+    \(\mathbb T\)-algebra structure on
+    \[
+        p_V:V\to A_0
+    \]
+    in the slice \(\mathcal E/A_0\).
+
+    Moreover,
+    \[
+        \langle p_V,q_V\rangle:
+        V\to A_0\times B_0
+    \]
+    is a homomorphism in \(\mathcal E/A_0\) from this
+    \(\mathbb T\)-algebra to the fibrewise \(\mathbb T\)-algebra
+    \[
+        A_0\times B_0\to A_0
+    \]
+    induced by the \(\mathbb T\)-algebra structure on \(B_0\).
 \end{proposition}
 
 \begin{proof}
-    For \(n>0\), the displayed Mealy structure on \(V^{(n)}_\theta\) is the
-    structured operation
+    Suppose first that \(n>0\).
+
+    By Lemma~\ref{lem:structured-operations-semantic}, the fibre product
+    \[
+        V^{[n]}
+        =
+        V\times_{A_0}\cdots\times_{A_0}V
+    \]
+    carries the Mealy structure
     \[
         \theta(V,\dots,V)
     \]
-    constructed in
-    Lemma~\ref{lem:structured-operations-semantic}. Its carrier is the fibre
-    product over the common input interface \(A_0\), and its output coordinate
-    is induced by
+    when equipped with the \(\theta\)-induced output coordinate. Thus its
+    carrier over \(Z\) is \(V^{(n)}_\theta\), its transition is
     \[
-        \theta_0:B_0^n\to B_0.
+        \delta_{V^{(n)}_\theta}
+        \bigl(
+            a,(H_1,\dots,H_n)
+        \bigr)
+        =
+        \bigl(
+            \partial_aH_1,
+            \dots,
+            \partial_aH_n
+        \bigr),
+    \]
+    and its output is
+    \[
+        \omega_{V^{(n)}_\theta}
+        \bigl(
+            a,(H_1,\dots,H_n)
+        \bigr)
+        =
+        \theta_1
+        \bigl(
+            \omega_V(a,H_1),
+            \dots,
+            \omega_V(a,H_n)
+        \bigr).
     \]
 
-    By closure of \(V\) under \(\theta\), there is a unique map
+    Since \(V\) is closed under \(\theta\), there is a unique map
     \[
         \theta_V:
         V^{(n)}_\theta\to V
@@ -4764,113 +5619,309 @@ summarized by the cube-like diagram
     \[
         j_V\theta_V
         =
-        \theta_{\mathbf{Beh}}
-        (j_V,\dots,j_V).
+        \theta_{\mathbf{Beh}}j_V^{[n]}.
     \]
 
-    We prove transition preservation. After composing with \(j_V\),
+    We prove that \(\theta_V\) preserves transition. Let
+    \[
+        a:u\to v
+    \]
+    and let
+    \[
+        (H_1,\dots,H_n)\in V^{[n]}
+    \]
+    lie over \(v\). After composing with \(j_V\),
     \[
     \begin{aligned}
-        j_V\theta_V\delta_{V^{(n)}_\theta}
-        &=
-        \theta_{\mathbf{Beh}}
-        (j_V,\dots,j_V)
+        &
+        j_V\theta_V
         \delta_{V^{(n)}_\theta}
-        \\
-        &=
-        \delta_{\mathbf{Beh}}
         \bigl(
-            1\times
-            \theta_{\mathbf{Beh}}
-            (j_V,\dots,j_V)
+            a,(H_1,\dots,H_n)
         \bigr)
         \\
-        &=
-        \delta_{\mathbf{Beh}}
-        (1\times j_V\theta_V)
+        &\qquad=
+        \theta_{\mathbf{Beh}}
+        \bigl(
+            j_V\partial_aH_1,
+            \dots,
+            j_V\partial_aH_n
+        \bigr)
         \\
-        &=
-        j_V\delta_V(1\times\theta_V).
+        &\qquad=
+        \theta_{\mathbf{Beh}}
+        \bigl(
+            \partial_a(j_VH_1),
+            \dots,
+            \partial_a(j_VH_n)
+        \bigr)
+        \\
+        &\qquad=
+        \partial_a
+        \bigl(
+            \theta_{\mathbf{Beh}}
+            (j_VH_1,\dots,j_VH_n)
+        \bigr)
+        \\
+        &\qquad=
+        \partial_a
+        \bigl(
+            j_V\theta_V(H_1,\dots,H_n)
+        \bigr)
+        \\
+        &\qquad=
+        j_V\delta_V
+        \bigl(
+            a,
+            \theta_V(H_1,\dots,H_n)
+        \bigr).
     \end{aligned}
     \]
-    The second equality is
+    Here the third equality is
     Lemma~\ref{lem:operations-preserve-derivatives-output}. Since \(j_V\) is
     monic,
     \[
         \theta_V\delta_{V^{(n)}_\theta}
         =
-        \delta_V(1\times\theta_V).
+        \delta_V\widehat{\theta_V}.
     \]
 
-    For the output,
+    The map \(\theta_V\) also preserves output. Indeed,
     \[
     \begin{aligned}
-        \omega_V(1\times\theta_V)
-        &=
-        \omega_{\mathbf{Beh}}
-        (1\times j_V\theta_V)
-        \\
-        &=
-        \omega_{\mathbf{Beh}}
-        \left(
-            1\times
-            \theta_{\mathbf{Beh}}
-            (j_V,\dots,j_V)
-        \right)
-        \\
-        &=
-        \theta_1
+        &
+        \omega_V
         \bigl(
-            \omega_{\mathbf{Beh}}(1\times j_V),
-            \dots,
-            \omega_{\mathbf{Beh}}(1\times j_V)
+            a,
+            \theta_V(H_1,\dots,H_n)
         \bigr)
         \\
-        &=
-        \omega_{V^{(n)}_\theta}.
+        &\qquad=
+        \omega_{\mathbf{Beh}}
+        \bigl(
+            a,
+            j_V\theta_V(H_1,\dots,H_n)
+        \bigr)
+        \\
+        &\qquad=
+        \omega_{\mathbf{Beh}}
+        \bigl(
+            a,
+            \theta_{\mathbf{Beh}}
+            (j_VH_1,\dots,j_VH_n)
+        \bigr)
+        \\
+        &\qquad=
+        \theta_1
+        \bigl(
+            \omega_{\mathbf{Beh}}(a,j_VH_1),
+            \dots,
+            \omega_{\mathbf{Beh}}(a,j_VH_n)
+        \bigr)
+        \\
+        &\qquad=
+        \theta_1
+        \bigl(
+            \omega_V(a,H_1),
+            \dots,
+            \omega_V(a,H_n)
+        \bigr)
+        \\
+        &\qquad=
+        \omega_{V^{(n)}_\theta}
+        \bigl(
+            a,(H_1,\dots,H_n)
+        \bigr).
     \end{aligned}
     \]
-    Thus \(\theta_V\) is strict.
+    Thus \(\theta_V\) is a strict semantic homomorphism.
 
-    For a nullary operation, \(V^{(0)}_\theta=A_0\) carries the nullary Mealy
-    morphism \(\theta()\), and the closure map
+    Now let
+    \[
+        \theta:0\to1
+    \]
+    be nullary. Then
+    \[
+        V^{(0)}_\theta=A_0
+    \]
+    carries the nullary Mealy morphism \(\theta()\). Closure gives a map
     \[
         \theta_V:A_0\to V
     \]
-    is strict by the same derivative and output calculations.
+    satisfying
+    \[
+        j_V\theta_V=\theta_{\mathbf{Beh}}.
+    \]
+    The nullary cases of
+    Lemma~\ref{lem:operations-preserve-derivatives-output}
+    show, by the same monicity argument, that \(\theta_V\) preserves
+    transition and output. Hence it is strict.
 
-    It remains to verify the equations of \(\mathbb T\). Let
-    \[
-        t=u
-    \]
-    be an equation between two \(n\)-ary terms of \(\mathbb T\). The induced
-    pointwise operations on \(\mathbf{Beh}_0\) agree:
-    \[
-        t_{\mathbf{Beh}}=u_{\mathbf{Beh}},
-    \]
-    because the corresponding internal functors
-    \[
-        \mathbb B^n\to\mathbb B
-    \]
-    are equal.
+    We next verify that the underlying maps in \(\mathcal E/A_0\)
+    preserve the finite-product-theory structure.
 
-    The induced maps on \(V\) satisfy
+    Let
     \[
-        j_Vt_V=t_{\mathbf{Beh}}j_V^{(n)}
+        \pi_i:n\to1
+    \]
+    be the \(i\)-th product projection in \(\mathbb T\). The corresponding
+    pointwise operation on behaviours is the ordinary projection
+    \[
+        \pi_{i,\mathbf{Beh}}:
+        \mathbf{Beh}_0^{[n]}\to\mathbf{Beh}_0.
+    \]
+    The ordinary projection
+    \[
+        \pi_i:V^{[n]}\to V
+    \]
+    satisfies
+    \[
+        j_V\pi_i
+        =
+        \pi_{i,\mathbf{Beh}}j_V^{[n]}.
+    \]
+    By uniqueness of factorization through the monomorphism \(j_V\),
+    \[
+        \pi_{i,V}=\pi_i.
+    \]
+    Hence the restricted operations preserve the distinguished projections.
+
+    Let
+    \[
+        \theta:k\to1
     \]
     and
     \[
-        j_Vu_V=u_{\mathbf{Beh}}j_V^{(n)}.
+        \varphi_i:n\to1
+        \qquad
+        (1\leq i\leq k)
     \]
-    Therefore
+    be morphisms in \(\mathbb T\), and put
     \[
-        j_Vt_V=j_Vu_V.
+        \psi
+        :=
+        \theta
+        \circ
+        \left\langle
+            \varphi_1,\dots,\varphi_k
+        \right\rangle:
+        n\to1.
+    \]
+
+    In \(\mathcal E/A_0\), the restricted operations determine a pairing
+    \[
+        \left\langle
+            \varphi_{1,V},
+            \dots,
+            \varphi_{k,V}
+        \right\rangle:
+        V^{[n]}\to V^{[k]}.
+    \]
+    Composing with \(j_V\), one obtains
+    \[
+    \begin{aligned}
+        &
+        j_V
+        \theta_V
+        \left\langle
+            \varphi_{1,V},
+            \dots,
+            \varphi_{k,V}
+        \right\rangle
+        \\
+        &\qquad=
+        \theta_{\mathbf{Beh}}
+        j_V^{[k]}
+        \left\langle
+            \varphi_{1,V},
+            \dots,
+            \varphi_{k,V}
+        \right\rangle
+        \\
+        &\qquad=
+        \theta_{\mathbf{Beh}}
+        \left\langle
+            j_V\varphi_{1,V},
+            \dots,
+            j_V\varphi_{k,V}
+        \right\rangle
+        \\
+        &\qquad=
+        \theta_{\mathbf{Beh}}
+        \left\langle
+            \varphi_{1,\mathbf{Beh}}j_V^{[n]},
+            \dots,
+            \varphi_{k,\mathbf{Beh}}j_V^{[n]}
+        \right\rangle
+        \\
+        &\qquad=
+        \theta_{\mathbf{Beh}}
+        \left\langle
+            \varphi_{1,\mathbf{Beh}},
+            \dots,
+            \varphi_{k,\mathbf{Beh}}
+        \right\rangle
+        j_V^{[n]}
+        \\
+        &\qquad=
+        \psi_{\mathbf{Beh}}j_V^{[n]}
+        \\
+        &\qquad=
+        j_V\psi_V.
+    \end{aligned}
     \]
     Since \(j_V\) is monic,
     \[
-        t_V=u_V.
+        \theta_V
+        \left\langle
+            \varphi_{1,V},
+            \dots,
+            \varphi_{k,V}
+        \right\rangle
+        =
+        \psi_V.
     \]
-    Hence all equations of \(\mathbb T\) hold on \(V\).
+
+    Thus the restricted operations preserve projections and substitution.
+    These are precisely the structural requirements for an interpretation of
+    the single-sorted finite-product theory \(\mathbb T\). Therefore they
+    define a \(\mathbb T\)-algebra structure on
+    \[
+        p_V:V\to A_0
+    \]
+    in \(\mathcal E/A_0\).
+
+    Finally, because
+    \[
+        \theta_V:V^{(n)}_\theta\to V
+    \]
+    is a map in \(\mathcal E/Z\), one has, for every positive-arity
+    operation,
+    \[
+        q_V\theta_V
+        =
+        \theta_0
+        \left\langle
+            q_V\pi_1,
+            \dots,
+            q_V\pi_n
+        \right\rangle.
+    \]
+    For a nullary operation,
+    \[
+        q_V\theta_V=b_\theta!.
+    \]
+    Hence
+    \[
+        \langle p_V,q_V\rangle:
+        V\to A_0\times B_0
+    \]
+    preserves every operation of \(\mathbb T\) in the slice
+    \(\mathcal E/A_0\). It is therefore a homomorphism to the fibrewise
+    \(\mathbb T\)-algebra
+    \[
+        A_0\times B_0\to A_0.
+    \]
 \end{proof}
 
 \subsection{Semantic images and structured operations}
@@ -5135,103 +6186,6 @@ summarized by the cube-like diagram
 \subsection{The structured Birkhoff theorem}
 \label{subsec:T-coequational-birkhoff}
 
-\begin{lemma}[Operation domains distribute over semantic joins]
-\label{lem:operation-domains-distribute-over-joins}
-    Let
-    \[
-        (S_i\hookrightarrow\mathbf{Beh}_0)_{i\in I}
-    \]
-    be a small family of behavioural predicates, and put
-    \[
-        V:=\bigvee_{i\in I}S_i
-        \hookrightarrow\mathbf{Beh}_0.
-    \]
-    For every finite \(n>0\), the canonical map
-    \[
-        \coprod_{(i_1,\dots,i_n)\in I^n}
-        S_{i_1}\times_{A_0}\cdots\times_{A_0}S_{i_n}
-        \longrightarrow
-        V\times_{A_0}\cdots\times_{A_0}V
-    \]
-    is a regular epimorphism.
-
-    If
-    \[
-        \theta:\mathbb B^n\to\mathbb B
-    \]
-    is an operation and both sides are equipped with their
-    \(\theta\)-induced maps to
-    \[
-        Z=A_0\times B_0,
-    \]
-    then the same map is a regular epimorphism in \(\mathcal E/Z\).
-\end{lemma}
-
-\begin{proof}
-    The join \(V\) is represented by the regular image of the coproduct map
-    \[
-        \coprod_{i\in I}S_i\to\mathbf{Beh}_0.
-    \]
-    Hence there is a regular epimorphism
-    \[
-        e:
-        \coprod_{i\in I}S_i
-        \twoheadrightarrow
-        V
-    \]
-    in \(\mathcal E/A_0\).
-
-    Since regular epimorphisms are stable under pullback, finite products in
-    the slice \(\mathcal E/A_0\) preserve regular epimorphisms. Therefore the
-    \(n\)-fold fibre product
-    \[
-        e^{(n)}:
-        \left(
-            \coprod_{i\in I}S_i
-        \right)
-        \times_{A_0}\cdots\times_{A_0}
-        \left(
-            \coprod_{i\in I}S_i
-        \right)
-        \twoheadrightarrow
-        V\times_{A_0}\cdots\times_{A_0}V
-    \]
-    is a regular epimorphism.
-
-    Pullback functors in a Grothendieck topos preserve small coproducts.
-    Consequently there is a canonical isomorphism
-    \[
-    \begin{aligned}
-        &
-        \left(
-            \coprod_{i\in I}S_i
-        \right)
-        \times_{A_0}\cdots\times_{A_0}
-        \left(
-            \coprod_{i\in I}S_i
-        \right)
-        \\
-        &\qquad\cong
-        \coprod_{(i_1,\dots,i_n)\in I^n}
-        S_{i_1}\times_{A_0}\cdots\times_{A_0}S_{i_n}.
-    \end{aligned}
-    \]
-    Under this isomorphism, \(e^{(n)}\) is the map in the statement.
-
-    Now equip every component and the target with the \(Z\)-coordinate
-    induced by
-    \[
-        \theta_0:B_0^n\to B_0.
-    \]
-    The displayed map preserves that coordinate, because it preserves each
-    component anchor before applying \(\theta_0\). Hence it is a morphism in
-    \(\mathcal E/Z\).
-
-    Regular epimorphisms in a slice of a Grothendieck topos are detected by
-    their underlying maps in \(\mathcal E\). Therefore the map remains a
-    regular epimorphism in \(\mathcal E/Z\).
-\end{proof}
-
 \begin{theorem}[\(\mathbb T\)-coequational Birkhoff theorem]
 \label{thm:T-coequational-birkhoff}
     Let \(\mathbb B\) be a \(\mathbb T\)-structured output category, and let
@@ -5260,189 +6214,333 @@ summarized by the cube-like diagram
 \end{theorem}
 
 \begin{proof}
-    Suppose first that
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Prove necessity.}
+
+        Suppose
+        \[
+            \mathcal C=\mathsf{Mod}(V)
+        \]
+        for a local \(\mathbb T\)-coequational theory \(V\).
+
+        Closure under strict homomorphic preimages, regular-epimorphic
+        quotients, and small coproducts follows from
+        Theorem~\ref{thm:local-coequational-closure}. Closure under the
+        operations induced by \(\mathbb T\) follows from
+        Theorem~\ref{thm:T-coequational-closure}.
+
+        \item \textbf{Construct the underlying local theory.}
+
+        Conversely, suppose that \(\mathcal C\) has the four displayed
+        closure properties. By the local coequational Birkhoff theorem,
+        \[
+            V_{\mathcal C}
+            :=
+            \bigvee_{P\in\mathcal C}
+            \operatorname{Beh}(P)
+            \hookrightarrow
+            \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+        \]
+        is a local coequational theory and
+        \[
+            \mathcal C
+            =
+            \mathsf{Mod}(V_{\mathcal C}).
+        \]
+
+        Moreover,
+        Lemma~\ref{lem:representing-theory-belongs-to-class} gives
+        \[
+            V_{\mathcal C}\in\mathcal C.
+        \]
+
+        It remains to prove that \(V_{\mathcal C}\) is closed under every
+        pointwise operation induced by \(\mathbb T\).
+
+        \item \textbf{Treat positive-arity operations.}
+
+        Let
+        \[
+            \theta:\mathbb B^n\to\mathbb B
+        \]
+        be an operation with \(n>0\).
+
+        Since
+        \[
+            V_{\mathcal C}\in\mathcal C
+        \]
+        and \(\mathcal C\) is closed under the operation induced by
+        \(\theta\),
+        \[
+            \theta(
+                V_{\mathcal C},
+                \dots,
+                V_{\mathcal C}
+            )
+            \in
+            \mathcal C.
+        \]
+        Using
+        \[
+            \mathcal C
+            =
+            \mathsf{Mod}(V_{\mathcal C}),
+        \]
+        this object models \(V_{\mathcal C}\). Hence its semantic map admits
+        a unique factorization
+        \[
+            \bar\beta_\theta:
+            \theta(
+                V_{\mathcal C},
+                \dots,
+                V_{\mathcal C}
+            )
+            \longrightarrow
+            V_{\mathcal C}
+        \]
+        satisfying
+        \[
+            j_{V_{\mathcal C}}\bar\beta_\theta
+            =
+            \beta_{
+                \theta(
+                    V_{\mathcal C},
+                    \dots,
+                    V_{\mathcal C}
+                )
+            }.
+        \]
+        By Lemma~\ref{lem:model-factorizations-strict},
+        \(\bar\beta_\theta\) is a strict semantic homomorphism.
+
+        The carrier of
+        \[
+            \theta(
+                V_{\mathcal C},
+                \dots,
+                V_{\mathcal C}
+            )
+        \]
+        is
+        \[
+            (V_{\mathcal C})^{(n)}_\theta.
+        \]
+        By Lemma~\ref{lem:structured-operations-semantic},
+        \[
+        \begin{aligned}
+            \beta_{
+                \theta(
+                    V_{\mathcal C},
+                    \dots,
+                    V_{\mathcal C}
+                )
+            }
+            &=
+            \theta_{\mathbf{Beh}}
+            \bigl(
+                \beta_{V_{\mathcal C}},
+                \dots,
+                \beta_{V_{\mathcal C}}
+            \bigr)
+            \\
+            &=
+            \theta_{\mathbf{Beh}}
+            j_{V_{\mathcal C}}^{[n]}.
+        \end{aligned}
+        \]
+        The second equality uses
+        Lemma~\ref{lem:semantic-map-of-a-restricted-canonical-subobject}:
+        \[
+            \beta_{V_{\mathcal C}}
+            =
+            j_{V_{\mathcal C}}.
+        \]
+
+        Therefore
+        \[
+            j_{V_{\mathcal C}}\bar\beta_\theta
+            =
+            \theta_{\mathbf{Beh}}
+            j_{V_{\mathcal C}}^{[n]}.
+        \]
+        Define
+        \[
+            \theta_{V_{\mathcal C}}
+            :=
+            \bar\beta_\theta:
+            (V_{\mathcal C})^{(n)}_\theta
+            \longrightarrow
+            V_{\mathcal C}.
+        \]
+        Then
+        \[
+            j_{V_{\mathcal C}}\theta_{V_{\mathcal C}}
+            =
+            \theta_{\mathbf{Beh}}
+            j_{V_{\mathcal C}}^{[n]},
+        \]
+        which is exactly the required closure factorization.
+
+        The construction is displayed by
+        \[
+        \begin{tikzcd}[column sep=large, row sep=large]
+            (V_{\mathcal C})^{(n)}_\theta
+                \arrow[rr,
+                    "{\theta_{\mathbf{Beh}}
+                    j_{V_{\mathcal C}}^{[n]}}"]
+                \arrow[dr, "\theta_{V_{\mathcal C}}"']
+            &&
+            \mathbf{Beh}_0
+            \\
+            &
+            V_{\mathcal C}
+                \arrow[ur, hook, "j_{V_{\mathcal C}}"']
+            &
+        \end{tikzcd}
+        \]
+
+        \item \textbf{Treat nullary operations.}
+
+        Let
+        \[
+            \theta:0\to1
+        \]
+        be a nullary operation, interpreted as an internal functor
+        \[
+            \theta:1\to\mathbb B.
+        \]
+        Closure of \(\mathcal C\) under this nullary operation gives
+        \[
+            \theta()\in\mathcal C.
+        \]
+        Therefore
+        \[
+            \theta()\models V_{\mathcal C}.
+        \]
+        Its semantic map admits a unique strict model factorization
+        \[
+            \theta_{V_{\mathcal C}}:
+            A_0\longrightarrow V_{\mathcal C}
+        \]
+        satisfying
+        \[
+            j_{V_{\mathcal C}}\theta_{V_{\mathcal C}}
+            =
+            \beta_{\theta()}.
+        \]
+
+        By the nullary case of
+        Lemma~\ref{lem:structured-operations-semantic}, the semantic map of
+        \(\theta()\) is the constant residual-behaviour map
+        \[
+            \theta_{\mathbf{Beh}}:
+            A_0\to\mathbf{Beh}_0.
+        \]
+        Hence
+        \[
+            j_{V_{\mathcal C}}\theta_{V_{\mathcal C}}
+            =
+            \theta_{\mathbf{Beh}}.
+        \]
+        This is precisely the required nullary closure factorization.
+
+        \item \textbf{Conclude.}
+
+        Thus \(V_{\mathcal C}\) is closed under every pointwise operation
+        induced by \(\mathbb T\). Since it is already a local coequational
+        theory, it is a local \(\mathbb T\)-coequational theory.
+
+        The underlying local Birkhoff theorem gives
+        \[
+            \mathcal C
+            =
+            \mathsf{Mod}(V_{\mathcal C}),
+        \]
+        completing the proof.
+    \end{enumerate}
+\end{proof}
+
+\begin{corollary}[Uniqueness of the defining local
+\(\mathbb T\)-coequational theory]
+\label{cor:uniqueness-defining-local-T-coequational-theory}
+    Let \(\mathbb B\) be a \(\mathbb T\)-structured output category, and let
+    \[
+        V\hookrightarrow
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+    \]
+    be a local \(\mathbb T\)-coequational theory. Then
+    \[
+        V
+        =
+        \bigvee_{P\in\mathsf{Mod}(V)}
+        \operatorname{Beh}(P)
+    \]
+    as a subobject of the canonical behaviour machine.
+
+    Consequently, if a replete full subcategory
+    \[
+        \mathcal C
+        \subseteq
+        \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}
+    \]
+    is definable by a local \(\mathbb T\)-coequational theory, then that theory
+    is unique and is
+    \[
+        V_{\mathcal C}
+        =
+        \bigvee_{P\in\mathcal C}
+        \operatorname{Beh}(P).
+    \]
+\end{corollary}
+
+\begin{proof}
+    Forgetting the additional \(\mathbb T\)-closure, a local
+    \(\mathbb T\)-coequational theory is a local coequational theory.
+    Therefore
+    Corollary~\ref{cor:uniqueness-defining-local-coequational-theory}
+    gives
+    \[
+        V
+        =
+        \bigvee_{P\in\mathsf{Mod}(V)}
+        \operatorname{Beh}(P).
+    \]
+
+    Now suppose
     \[
         \mathcal C=\mathsf{Mod}(V)
     \]
-    for a local \(\mathbb T\)-coequational theory \(V\). Closure under strict
-    homomorphic preimages, regular-epimorphic quotients, and small coproducts
-    follows from
-    Theorem~\ref{thm:local-coequational-closure}. Closure under the
-    \(\mathbb T\)-operations follows from
-    Theorem~\ref{thm:T-coequational-closure}.
-
-    Conversely, suppose that \(\mathcal C\) has the four displayed closure
-    properties. By the local coequational Birkhoff theorem,
+    for a local \(\mathbb T\)-coequational theory \(V\). Then the underlying
+    local coequational subobject is necessarily
     \[
-        V_{\mathcal C}
-        :=
+        V
+        =
         \bigvee_{P\in\mathcal C}
-        \operatorname{Beh}(P)
-        \hookrightarrow
-        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+        \operatorname{Beh}(P).
     \]
-    is a local coequational theory and
+
+    It remains only to observe that the \(\mathbb T\)-structure on this
+    subobject is not additional independent data. For every operation
     \[
-        \mathcal C
+        \theta:n\to1
+    \]
+    of \(\mathbb T\), the induced map
+    \[
+        \theta_V:
+        V^{(n)}_\theta\to V
+    \]
+    is uniquely determined by the factorization equation
+    \[
+        j_V\theta_V
         =
-        \mathsf{Mod}(V_{\mathcal C}).
+        \theta_{\mathbf{Beh}}j_V^{[n]},
     \]
-    It remains to show that \(V_{\mathcal C}\) is closed under the pointwise
-    operations of \(\mathbb T\).
+    because \(j_V\) is monic.
 
-    Choose a small representative set
-    \[
-        \mathcal S_{\mathcal C}
-    \]
-    for the distinct semantic-image subobjects
-    \[
-        \operatorname{Beh}(P),
-        \qquad
-        P\in\mathcal C.
-    \]
-    For each
-    \[
-        S\in\mathcal S_{\mathcal C},
-    \]
-    choose an object
-    \[
-        P_S\in\mathcal C
-    \]
-    together with an identification
-    \[
-        S=\operatorname{Beh}(P_S)
-    \]
-    as a subobject of the canonical behaviour object.
-
-    Let
-    \[
-        \theta:\mathbb B^n\to\mathbb B
-    \]
-    be an \(n\)-ary operation with \(n>0\). By
-    Lemma~\ref{lem:operation-domains-distribute-over-joins}, there is a
-    regular epimorphism in \(\mathcal E/Z\)
-    \[
-        c_\theta:
-        \coprod_{(S_1,\dots,S_n)\in\mathcal S_{\mathcal C}^n}
-        S_1\times_{A_0}\cdots\times_{A_0}S_n
-        \twoheadrightarrow
-        (V_{\mathcal C})^{(n)}_\theta.
-    \]
-
-    Consider a component indexed by
-    \[
-        (S_1,\dots,S_n).
-    \]
-    By
-    Lemma~\ref{lem:semantic-images-structured-operations},
-    \[
-    \begin{aligned}
-        &
-        \operatorname{Im}
-        \left(
-            \theta_{\mathbf{Beh}}:
-            S_1\times_{A_0}\cdots\times_{A_0}S_n
-            \to
-            \mathbf{Beh}_0
-        \right)
-        \\
-        &\qquad=
-        \operatorname{Beh}
-        \bigl(
-            \theta(
-                P_{S_1},
-                \dots,
-                P_{S_n}
-            )
-        \bigr).
-    \end{aligned}
-    \]
-    Since \(\mathcal C\) is closed under the operation induced by \(\theta\),
-    \[
-        \theta(
-            P_{S_1},
-            \dots,
-            P_{S_n}
-        )
-        \in\mathcal C.
-    \]
-    Therefore
-    \[
-        \operatorname{Beh}
-        \bigl(
-            \theta(
-                P_{S_1},
-                \dots,
-                P_{S_n}
-            )
-        \bigr)
-        \leq
-        V_{\mathcal C}.
-    \]
-    Hence the restriction of \(\theta_{\mathbf{Beh}}\) to each component
-    \[
-        S_1\times_{A_0}\cdots\times_{A_0}S_n
-    \]
-    factors through the monomorphism
-    \[
-        j_{V_{\mathcal C}}:
-        V_{\mathcal C}\hookrightarrow\mathbf{Beh}_0.
-    \]
-
-    By the coproduct universal property, the composite
-    \[
-        \theta_{\mathbf{Beh}}c_\theta
-    \]
-    factors through \(j_{V_{\mathcal C}}\). Since \(c_\theta\) is a regular
-    epimorphism, regular-epimorphic descent for subobject membership gives a
-    unique factorization
-    \[
-        \theta_{V_{\mathcal C}}:
-        (V_{\mathcal C})^{(n)}_\theta
-        \to
-        V_{\mathcal C}
-    \]
-    such that
-    \[
-        j_{V_{\mathcal C}}\theta_{V_{\mathcal C}}
-        =
-        \theta_{\mathbf{Beh}}.
-    \]
-    Thus \(V_{\mathcal C}\) is closed under every positive-arity operation of
-    \(\mathbb T\).
-
-    Let now
-    \[
-        \theta:1\to\mathbb B
-    \]
-    be a nullary operation. Closure of \(\mathcal C\) under this nullary
-    operation gives
-    \[
-        \theta()\in\mathcal C.
-    \]
-    Hence
-    \[
-        \operatorname{Beh}(\theta())
-        \leq
-        V_{\mathcal C}.
-    \]
-    The constant behaviour map
-    \[
-        A_0\to\mathbf{Beh}_0
-    \]
-    defining the nullary pointwise operation factors through its semantic
-    image \(\operatorname{Beh}(\theta())\), and therefore through
-    \(V_{\mathcal C}\).
-
-    Consequently \(V_{\mathcal C}\) is a local
-    \(\mathbb T\)-coequational theory. The underlying local Birkhoff theorem
-    already gives
-    \[
-        \mathcal C
-        =
-        \mathsf{Mod}(V_{\mathcal C}),
-    \]
-    completing the proof.
+    Hence both the underlying subobject and all its restricted
+    \(\mathbb T\)-operations are uniquely determined by \(\mathcal C\).
+    Therefore the defining local \(\mathbb T\)-coequational theory is unique.
 \end{proof}
 
 \section{Global input reindexing}
@@ -5915,11 +7013,11 @@ This assignment is functorial.
         F^\sharp(v',\beta_P(x)).
     \]
 \end{proposition}
-
 \begin{proof}
     \leavevmode
     \begin{enumerate}
         \item \textbf{Check typing.}
+
         If
         \[
             a':u'\to v',
@@ -5929,98 +7027,266 @@ This assignment is functorial.
             F_1(a'):F_0(u')\to F_0(v').
         \]
         Hence \(\delta_P(F_1a',x)\) is defined whenever
-        \(p_P(x)=F_0(v')\), and lies over \(F_0(u')\). Therefore
+        \[
+            p_P(x)=F_0(v'),
+        \]
+        and satisfies
+        \[
+            p_P(\delta_P(F_1a',x))=F_0(u').
+        \]
+        Therefore
         \[
             (u',\delta_P(F_1a',x))
         \]
         lies in
         \[
-            A'_0\times_{A_0}P.
-        \]
-        The typing square is
-        \[
-        \begin{tikzcd}[column sep=large, row sep=large]
-            \delta_P(F_1a',x)
-                \arrow[r, maps to]
-                \arrow[d, maps to]
-            &
-            F_0(u')
-                \arrow[d, "F_0"]
-            \\
-            x
-                \arrow[r, maps to]
-            &
-            F_0(v') .
-        \end{tikzcd}
+            A'_0\times_{F_0,A_0,p_P}P.
         \]
 
+        The output
+        \[
+            \omega_P(F_1a',x)
+        \]
+        has source
+        \[
+            q_P(\delta_P(F_1a',x))
+        \]
+        and target
+        \[
+            q_P(x),
+        \]
+        so it has the required typing for \(F^*P\).
+
         \item \textbf{Verify the Mealy laws.}
-        The unit and multiplication laws follow from functoriality of \(F\) and
-        the Mealy laws in \(P\). The output laws are inherited in the same way.
-        For instance, for \(a':u'\to v'\) and \(b':v'\to w'\),
+
+        The transition unit law follows from preservation of identities by
+        \(F\):
         \[
         \begin{aligned}
-            \delta_{F^*P}(b'\circ a',(w',x))
+            \delta_{F^*P}
+            \bigl(
+                1_{v'},
+                (v',x)
+            \bigr)
             &=
-            (u',\delta_P(F_1(b'\circ a'),x)) \\
+            \bigl(
+                v',
+                \delta_P(F_1(1_{v'}),x)
+            \bigr)
+            \\
             &=
-            (u',\delta_P(F_1b'\circ F_1a',x)) \\
+            \bigl(
+                v',
+                \delta_P(1_{F_0(v')},x)
+            \bigr)
+            \\
             &=
-            (u',\delta_P(F_1a',\delta_P(F_1b',x))).
+            (v',x).
         \end{aligned}
         \]
 
+        Let
+        \[
+            a':u'\to v',
+            \qquad
+            b':v'\to w'.
+        \]
+        Then
+        \[
+        \begin{aligned}
+            \delta_{F^*P}
+            \bigl(
+                b'\circ a',
+                (w',x)
+            \bigr)
+            &=
+            \bigl(
+                u',
+                \delta_P(F_1(b'\circ a'),x)
+            \bigr)
+            \\
+            &=
+            \bigl(
+                u',
+                \delta_P(F_1b'\circ F_1a',x)
+            \bigr)
+            \\
+            &=
+            \bigl(
+                u',
+                \delta_P
+                \bigl(
+                    F_1a',
+                    \delta_P(F_1b',x)
+                \bigr)
+            \bigr)
+            \\
+            &=
+            \delta_{F^*P}
+            \left(
+                a',
+                \delta_{F^*P}(b',(w',x))
+            \right).
+        \end{aligned}
+        \]
+
+        The output unit law is
+        \[
+        \begin{aligned}
+            \omega_{F^*P}
+            \bigl(
+                1_{v'},
+                (v',x)
+            \bigr)
+            &=
+            \omega_P(1_{F_0(v')},x)
+            \\
+            &=
+            1_{q_P(x)}.
+        \end{aligned}
+        \]
+
+        The output multiplication law is
+        \[
+        \begin{aligned}
+            \omega_{F^*P}
+            \bigl(
+                b'\circ a',
+                (w',x)
+            \bigr)
+            &=
+            \omega_P(F_1b'\circ F_1a',x)
+            \\
+            &=
+            \omega_P(F_1b',x)
+            \circ
+            \omega_P
+            \bigl(
+                F_1a',
+                \delta_P(F_1b',x)
+            \bigr)
+            \\
+            &=
+            \omega_{F^*P}(b',(w',x))
+            \circ
+            \omega_{F^*P}
+            \left(
+                a',
+                \delta_{F^*P}(b',(w',x))
+            \right).
+        \end{aligned}
+        \]
+
+        Hence the displayed data define a Mealy morphism
+        \[
+            F^*P:\mathbb A'\rightsquigarrow\mathbb B.
+        \]
+
         \item \textbf{Check the action on strict semantic homomorphisms.}
+
         Let
         \[
             f:P\to Q
         \]
-        be strict. The map
+        be strict. Define
         \[
-            F^*f(v',x)=(v',fx)
+            F^*f(v',x)=(v',fx).
         \]
-        lies over \(A'_0\) and \(B_0\). Transition preservation follows from
+        This map lies over \(A'_0\) and \(B_0\).
+
+        Transition preservation follows from
         \[
         \begin{aligned}
-            F^*f(\delta_{F^*P}(a',(v',x)))
+            F^*f
+            \bigl(
+                \delta_{F^*P}(a',(v',x))
+            \bigr)
             &=
-            F^*f(u',\delta_P(F_1a',x)) \\
+            F^*f
+            \bigl(
+                u',
+                \delta_P(F_1a',x)
+            \bigr)
+            \\
             &=
-            (u',f\delta_P(F_1a',x)) \\
+            \bigl(
+                u',
+                f\delta_P(F_1a',x)
+            \bigr)
+            \\
             &=
-            (u',\delta_Q(F_1a',fx)) \\
+            \bigl(
+                u',
+                \delta_Q(F_1a',fx)
+            \bigr)
+            \\
             &=
             \delta_{F^*Q}(a',(v',fx)).
         \end{aligned}
         \]
-        Output preservation follows from strictness of \(f\):
+
+        Output preservation follows from
         \[
-            \omega_P(F_1a',x)=\omega_Q(F_1a',fx).
-        \]
-        Identities and composition are inherited from \(\mathcal E\), so
-        \(F^*\) is a functor. The strictness diagram is
-        \[
-        \begin{tikzcd}[column sep=huge, row sep=large]
-            A'_1\times_{A'_0}F^*P
-                \arrow[r, "{1\times F^*f}"]
-                \arrow[d, "\delta_{F^*P}"']
-            &
-            A'_1\times_{A'_0}F^*Q
-                \arrow[d, "\delta_{F^*Q}"]
-            \\
-            F^*P
-                \arrow[r, "F^*f"']
-            &
-            F^*Q .
-        \end{tikzcd}
+            \omega_P(F_1a',x)
+            =
+            \omega_Q(F_1a',fx).
         \]
 
-        \item \textbf{Identify residual semantics.}
-        Residual execution in \(F^*P\) along a residual arrow \(r'\) is
-        execution in \(P\) along \(F_1(r')\). Thus the residual behaviour of
-        \((v',x)\) is the residual behaviour of \(x\) precomposed with
+        Identities and composition are inherited from \(\mathcal E\), so
         \[
-            F_{/v'}:\mathbb A'/v'\to\mathbb A/F_0(v').
+            F^*:
+            \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}
+            \to
+            \mathsf{Mly}^{\mathrm{str}}_{\mathbb A',\mathbb B}
+        \]
+        is a functor.
+
+        \item \textbf{Identify residual semantics.}
+
+        Let
+        \[
+            (v',x)\in F^*P.
+        \]
+        For a residual object
+        \[
+            r':u'\to v'
+        \]
+        of \(\mathbb A'/v'\), execution in \(F^*P\) gives
+        \[
+            \delta_{F^*P}(r',(v',x))
+            =
+            \bigl(
+                u',
+                \delta_P(F_1r',x)
+            \bigr).
+        \]
+        Its output anchor is therefore
+        \[
+            q_P(\delta_P(F_1r',x))
+            =
+            \beta_P(x)(F_1r').
+        \]
+
+        For a residual triangle
+        \[
+            w'\xrightarrow{a'}u'\xrightarrow{r'}v',
+        \]
+        the corresponding residual output is
+        \[
+            \omega_P
+            \bigl(
+                F_1a',
+                \delta_P(F_1r',x)
+            \bigr),
+        \]
+        which is the arrow assigned by \(\beta_P(x)\) to the image under
+        \(F_{/v'}\) of the residual triangle.
+
+        Thus the residual behaviour of \((v',x)\) is the residual behaviour
+        of \(x\) precomposed with
+        \[
+            F_{/v'}:
+            \mathbb A'/v'\to\mathbb A/F_0(v').
         \]
         Hence
         \[
@@ -6029,40 +7295,295 @@ This assignment is functorial.
             F^\sharp(v',\beta_P(x)).
         \]
 
-        \item \textbf{Display the semantic triangle.}
-        This identity is represented by
+        \item \textbf{Display the correctly typed semantic factorization.}
+
+        The semantic identity is the commutativity of
         \[
         \begin{tikzcd}[column sep=large, row sep=large]
             F^*P
-                \arrow[r, "{\langle p_{F^*P},\,\beta_P\pi_P\rangle}"]
+                \arrow[r,
+                    "{\langle
+                        p_{F^*P},
+                        \beta_P\pi_P
+                    \rangle}"]
                 \arrow[dr, "\beta_{F^*P}"']
             &
-            A'_0\times_{A_0}\mathbf{Beh}_{\mathbb A,\mathbb B,0}
+            A'_0
+            \times_{F_0,A_0,p_{\mathbf{Beh}}}
+            \mathbf{Beh}_{\mathbb A,\mathbb B,0}
                 \arrow[d, "F^\sharp"]
             \\
             &
             \mathbf{Beh}_{\mathbb A',\mathbb B,0}.
         \end{tikzcd}
         \]
-        With the carrier projection included, the same statement is
+        Therefore
         \[
-        \begin{tikzcd}[column sep=large, row sep=large]
-            F^*P
-                \arrow[r, "\pi_P"]
-                \arrow[d, "\beta_{F^*P}"']
-                \arrow[dr, phantom, "\circlearrowleft", very near start]
-            &
-            P
-                \arrow[d, "\beta_P"]
-            \\
-            \mathbf{Beh}_{\mathbb A',\mathbb B,0}
-            &
-            \mathbf{Beh}_{\mathbb A,\mathbb B,0}
-                \arrow[l, dashed, "F^\sharp"']
-        \end{tikzcd}
+            \beta_{F^*P}
+            =
+            F^\sharp
+            \circ
+            \left\langle
+                p_{F^*P},
+                \beta_P\pi_P
+            \right\rangle.
         \]
-        where \(F^\sharp\) is read on the pulled-back domain
-        \(A'_0\times_{A_0}\mathbf{Beh}_{\mathbb A,\mathbb B,0}\).
+    \end{enumerate}
+\end{proof}
+
+\begin{proposition}[Coherence of input pullback and residual reindexing]
+\label{prop:input-reindexing-coherence}
+    Let
+    \[
+        1_{\mathbb A}:\mathbb A\to\mathbb A
+    \]
+    be the identity internal functor. There are canonical natural
+    isomorphisms
+    \[
+        (1_{\mathbb A})^*
+        \cong
+        1_{
+            \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}
+        },
+    \]
+    and, after the canonical identification of its pulled-back domain,
+    \[
+        (1_{\mathbb A})^\sharp
+        =
+        1_{\mathbf{Beh}_{\mathbb A,\mathbb B,0}}.
+    \]
+
+    Let
+    \[
+        \mathbb A''
+        \xrightarrow{G}
+        \mathbb A'
+        \xrightarrow{F}
+        \mathbb A
+    \]
+    be composable internal functors. There is a canonical natural
+    isomorphism
+    \[
+        (F\circ G)^*
+        \cong
+        G^*F^*.
+    \]
+
+    On residual behaviours, after the canonical pullback identification
+    \[
+    \begin{aligned}
+        &
+        A''_0
+        \times_{F_0G_0,A_0,p_{\mathbf{Beh}}}
+        \mathbf{Beh}_{\mathbb A,\mathbb B,0}
+        \\
+        &\qquad\cong
+        A''_0
+        \times_{G_0,A'_0}
+        \left(
+            A'_0
+            \times_{F_0,A_0,p_{\mathbf{Beh}}}
+            \mathbf{Beh}_{\mathbb A,\mathbb B,0}
+        \right),
+    \end{aligned}
+    \]
+    one has
+    \[
+        (F\circ G)^\sharp
+        =
+        G^\sharp
+        \circ
+        \bigl(
+            1_{A''_0}\times_{A'_0}F^\sharp
+        \bigr).
+    \]
+
+    These identity and composition isomorphisms satisfy the usual unit and
+    associativity coherence conditions. They are compatible with residual
+    semantics: under the canonical isomorphism
+    \[
+        (F\circ G)^*P\cong G^*F^*P,
+    \]
+    the two induced semantic maps to
+    \[
+        \mathbf{Beh}_{\mathbb A'',\mathbb B,0}
+    \]
+    agree.
+\end{proposition}
+
+\begin{proof}
+    \leavevmode
+    \begin{enumerate}
+        \item \textbf{Identity coherence for input pullback.}
+
+        The carrier of
+        \[
+            (1_{\mathbb A})^*P
+        \]
+        is
+        \[
+            A_0\times_{1_{A_0},A_0,p_P}P.
+        \]
+        The second pullback projection gives the canonical isomorphism
+        \[
+            A_0\times_{A_0}P
+            \overset{\cong}{\longrightarrow}
+            P.
+        \]
+        Under this isomorphism, the pulled-back transition and output maps are
+        exactly those of \(P\), because
+        \[
+            (1_{\mathbb A})_1=1_{A_1}.
+        \]
+        These isomorphisms are natural in strict semantic homomorphisms, giving
+        \[
+            (1_{\mathbb A})^*
+            \cong
+            1.
+        \]
+
+        \item \textbf{Composition coherence for input pullback.}
+
+        The carrier of \((F\circ G)^*P\) is
+        \[
+            A''_0
+            \times_{F_0G_0,A_0,p_P}
+            P.
+        \]
+        The carrier of \(G^*F^*P\) is
+        \[
+            A''_0
+            \times_{G_0,A'_0}
+            \left(
+                A'_0
+                \times_{F_0,A_0,p_P}
+                P
+            \right).
+        \]
+        The associativity universal property of pullbacks gives a canonical
+        isomorphism between these two carriers.
+
+        On an input arrow
+        \[
+            a'':u''\to v'',
+        \]
+        both transition structures apply the transition of \(P\) to
+        \[
+            F_1G_1(a'')
+            =
+            (F\circ G)_1(a'').
+        \]
+        Their outputs are likewise both
+        \[
+            \omega_P(F_1G_1(a''),x).
+        \]
+        Hence the carrier isomorphism is a strict Mealy isomorphism, natural
+        in \(P\):
+        \[
+            (F\circ G)^*
+            \cong
+            G^*F^*.
+        \]
+
+        \item \textbf{Identity coherence for residual reindexing.}
+
+        For every \(v\in A_0\), the residual-slice functor induced by the
+        identity is
+        \[
+            (1_{\mathbb A})_{/v}
+            =
+            1_{\mathbb A/v}.
+        \]
+        Therefore
+        \[
+            (1_{\mathbb A})^\sharp(v,H)
+            =
+            H\circ1_{\mathbb A/v}
+            =
+            H.
+        \]
+        After identifying
+        \[
+            A_0\times_{A_0}\mathbf{Beh}_{\mathbb A,\mathbb B,0}
+            \cong
+            \mathbf{Beh}_{\mathbb A,\mathbb B,0},
+        \]
+        one has
+        \[
+            (1_{\mathbb A})^\sharp
+            =
+            1_{\mathbf{Beh}_{\mathbb A,\mathbb B,0}}.
+        \]
+
+        \item \textbf{Composition coherence for residual reindexing.}
+
+        Let
+        \[
+            v''\in A''_0.
+        \]
+        The residual-slice functor of the composite satisfies
+        \[
+            (F\circ G)_{/v''}
+            =
+            F_{/G_0(v'')}
+            \circ
+            G_{/v''}.
+        \]
+        This equality holds on residual objects because
+        \[
+            (F\circ G)_1(r'')
+            =
+            F_1(G_1(r'')),
+        \]
+        and it holds on residual arrows by functoriality of \(F\) and \(G\).
+
+        Hence, for
+        \[
+            H:
+            \mathbb A/F_0G_0(v'')
+            \to
+            \mathbb B,
+        \]
+        \[
+        \begin{aligned}
+            (F\circ G)^\sharp(v'',H)
+            &=
+            H\circ(F\circ G)_{/v''}
+            \\
+            &=
+            H\circ F_{/G_0(v'')}
+            \circ G_{/v''}
+            \\
+            &=
+            G^\sharp
+            \bigl(
+                v'',
+                F^\sharp(G_0(v''),H)
+            \bigr).
+        \end{aligned}
+        \]
+        This is the asserted composition equation.
+
+        \item \textbf{Verify coherence and semantic compatibility.}
+
+        The unit and associativity coherence conditions for \(F^*\) are the
+        canonical coherence conditions of iterated pullbacks. The
+        corresponding conditions for \(F^\sharp\) follow from strict
+        associativity and unitality of functor composition.
+
+        Finally, Proposition~\ref{prop:input-pullback-mealy} identifies
+        residual semantics by precomposition with the relevant residual-slice
+        functor. Since
+        \[
+            (F\circ G)_{/v''}
+            =
+            F_{/G_0(v'')}
+            \circ
+            G_{/v''},
+        \]
+        the semantic map obtained directly from \((F\circ G)^*P\) agrees with
+        the semantic map obtained through \(G^*F^*P\) under the canonical
+        pullback isomorphism.
     \end{enumerate}
 \end{proof}
 
@@ -6076,15 +7597,37 @@ This assignment is functorial.
     \[
         P:\mathbb A\rightsquigarrow\mathbb B
     \]
-    be a Mealy morphism. Then
+    be a Mealy morphism.
+
+    Write the semantic image factorization of \(P\) as
     \[
-        \operatorname{Im}
-        \left(
-            A'_0\times_{F_0,A_0,p_{\operatorname{Beh}(P)}}
-            \operatorname{Beh}(P)
-            \xrightarrow{F^\sharp}
-            \mathbf{Beh}_{\mathbb A',\mathbb B,0}
-        \right)
+        P
+        \xrightarrow{e_P}
+        \operatorname{Beh}(P)
+        \xrightarrow{m_P}
+        \mathbf{Beh}_{\mathbb A,\mathbb B,0}.
+    \]
+    Define
+    \[
+        F^\sharp_P:
+        A'_0
+        \times_{F_0,A_0,p_{\operatorname{Beh}(P)}}
+        \operatorname{Beh}(P)
+        \to
+        \mathbf{Beh}_{\mathbb A',\mathbb B,0}
+    \]
+    to be the restriction
+    \[
+        F^\sharp_P
+        :=
+        F^\sharp
+        \circ
+        (1_{A'_0}\times m_P).
+    \]
+
+    Then
+    \[
+        \operatorname{Im}(F^\sharp_P)
         =
         \operatorname{Beh}(F^*P)
     \]
@@ -6092,18 +7635,18 @@ This assignment is functorial.
     \[
         \mathbf{Beh}_{\mathbb A',\mathbb B,0}
     \]
-    in
+    in the slice
     \[
         \mathcal E/(A'_0\times B_0).
     \]
 \end{lemma}
 
 \begin{proof}
-    Let
+    Put
     \[
-        Z_{\mathbb A}=A_0\times B_0,
+        Z_{\mathbb A}:=A_0\times B_0,
         \qquad
-        Z_{\mathbb A'}=A'_0\times B_0,
+        Z_{\mathbb A'}:=A'_0\times B_0,
     \]
     and let
     \[
@@ -6113,62 +7656,178 @@ This assignment is functorial.
         Z_{\mathbb A'}\to Z_{\mathbb A}.
     \]
 
-    Factor the semantic map of \(P\) as
+    The semantic map of \(P\) has regular image factorization
     \[
+    \begin{tikzcd}[column sep=large, row sep=large]
         P
-        \xrightarrow{e_P}
-        \operatorname{Beh}(P)
-        \xrightarrow{m_P}
+            \arrow[rr, "\beta_P"]
+            \arrow[dr, two heads, "e_P"']
+        &&
         \mathbf{Beh}_{\mathbb A,\mathbb B,0}
+        \\
+        &
+        \operatorname{Beh}(P)
+            \arrow[ur, hook, "m_P"']
+        &
+    \end{tikzcd}
     \]
-    in \(\mathcal E/Z_{\mathbb A}\), with \(e_P\) regular epimorphic and
-    \(m_P\) monic.
+    in \(\mathcal E/Z_{\mathbb A}\).
 
-    Pulling \(e_P\) back along \(\overline F\) gives a regular epimorphism in
-    \(\mathcal E/Z_{\mathbb A'}\):
+    Pulling this factorization back along
+    \[
+        \overline F:
+        Z_{\mathbb A'}\to Z_{\mathbb A}
+    \]
+    gives a regular epimorphism
     \[
         \overline F^*e_P:
+        \overline F^*P
+        \twoheadrightarrow
+        \overline F^*\operatorname{Beh}(P)
+    \]
+    in \(\mathcal E/Z_{\mathbb A'}\).
+
+    There are canonical pullback isomorphisms
+    \[
+    \begin{aligned}
+        \overline F^*P
+        &=
+        Z_{\mathbb A'}
+        \times_{Z_{\mathbb A}}
+        P
+        \\
+        &\cong
+        A'_0
+        \times_{F_0,A_0,p_P}
+        P
+        \\
+        &=
+        F^*P,
+    \end{aligned}
+    \]
+    and
+    \[
+    \begin{aligned}
+        \overline F^*\operatorname{Beh}(P)
+        &=
+        Z_{\mathbb A'}
+        \times_{Z_{\mathbb A}}
+        \operatorname{Beh}(P)
+        \\
+        &\cong
+        A'_0
+        \times_{F_0,A_0,p_{\operatorname{Beh}(P)}}
+        \operatorname{Beh}(P).
+    \end{aligned}
+    \]
+    The \(B_0\)-coordinate in each pullback is forced by the output projection
+    of the corresponding state, which gives these canonical
+    identifications.
+
+    Under these identifications, write
+    \[
+        \widetilde e_P:
         F^*P
         \twoheadrightarrow
         A'_0
         \times_{F_0,A_0,p_{\operatorname{Beh}(P)}}
-        \operatorname{Beh}(P).
+        \operatorname{Beh}(P)
     \]
-    On generalized elements this map is
+    for the pullback of \(e_P\). In generalized-element notation,
     \[
-        (v',x)\longmapsto(v',e_Px).
+        \widetilde e_P(v',x)
+        =
+        (v',e_Px).
+    \]
+    Since regular epimorphisms are stable under pullback,
+    \(\widetilde e_P\) is a regular epimorphism in
+    \[
+        \mathcal E/Z_{\mathbb A'}.
     \]
 
-    By Proposition~\ref{prop:input-pullback-mealy} and the factorization
+    By
+    Proposition~\ref{prop:input-pullback-mealy},
+    \[
+        \beta_{F^*P}
+        =
+        F^\sharp
+        \circ
+        \left\langle
+            p_{F^*P},
+            \beta_P\pi_P
+        \right\rangle.
+    \]
+    Since
     \[
         \beta_P=m_Pe_P,
     \]
-    the semantic map of \(F^*P\) is the composite
+    the map into the pullback behaviour object factors as
+    \[
+    \begin{aligned}
+        \left\langle
+            p_{F^*P},
+            \beta_P\pi_P
+        \right\rangle
+        &=
+        (1_{A'_0}\times m_P)
+        \widetilde e_P.
+    \end{aligned}
+    \]
+    Consequently,
+    \[
+    \begin{aligned}
+        \beta_{F^*P}
+        &=
+        F^\sharp
+        (1_{A'_0}\times m_P)
+        \widetilde e_P
+        \\
+        &=
+        F^\sharp_P
+        \widetilde e_P.
+    \end{aligned}
+    \]
+
+    Thus the semantic map of \(F^*P\) is the composite
     \[
     \begin{tikzcd}[column sep=large, row sep=large]
         F^*P
-            \arrow[r, two heads, "{\overline F^*e_P}"]
+            \arrow[r, two heads, "\widetilde e_P"]
             \arrow[rr, bend left=18, "\beta_{F^*P}"]
         &
-        A'_0\times_{A_0}\operatorname{Beh}(P)
-            \arrow[r, "{F^\sharp(1\times m_P)}"]
+        A'_0
+        \times_{F_0,A_0,p_{\operatorname{Beh}(P)}}
+        \operatorname{Beh}(P)
+            \arrow[r, "F^\sharp_P"]
         &
         \mathbf{Beh}_{\mathbb A',\mathbb B,0}.
     \end{tikzcd}
     \]
 
-    Precomposition with a regular epimorphism does not alter the regular
-    image. Therefore the image of
+    Precomposition with a regular epimorphism does not change a regular
+    image. Therefore
     \[
-        F^\sharp:
-        A'_0\times_{A_0}\operatorname{Beh}(P)
-        \to
-        \mathbf{Beh}_{\mathbb A',\mathbb B,0}
+        \operatorname{Im}(\beta_{F^*P})
+        =
+        \operatorname{Im}(F^\sharp_P).
     \]
-    is the image of \(\beta_{F^*P}\). By definition, the latter is
+    By definition,
     \[
+        \operatorname{Im}(\beta_{F^*P})
+        =
         \operatorname{Beh}(F^*P).
     \]
+    Hence
+    \[
+        \operatorname{Im}(F^\sharp_P)
+        =
+        \operatorname{Beh}(F^*P)
+    \]
+    as subobjects of
+    \[
+        \mathbf{Beh}_{\mathbb A',\mathbb B,0}
+    \]
+    in \(\mathcal E/Z_{\mathbb A'}\).
 \end{proof}
 
 \section{Global coequational theories}
@@ -6396,20 +8055,32 @@ together with factorization through \(V_{\mathbb A'}\).
     \(\mathbb T\)-coequational theories correspond to such families that are
     also closed under the operations induced by \(\mathbb T\).
 \end{theorem}
+
 \begin{proof}
     \leavevmode
     \begin{enumerate}
         \item \textbf{Prove necessity.}
-        If
+
+        Suppose
         \[
-            \mathcal C=\mathsf{Mod}^{g}(V),
+            \mathcal C=\mathsf{Mod}^{g}(V)
         \]
-        then the desired closure properties are
+        for a global coequational theory \(V\). The required closure
+        properties are
         Theorem~\ref{thm:global-coequational-closure}.
 
-        \item \textbf{Construct the local theories from the model family.}
-        Conversely, suppose the displayed closure properties hold. For each
-        \(\mathbb A\), define
+        \item \textbf{Construct the local representing theories.}
+
+        Conversely, suppose that each \(\mathcal C_{\mathbb A}\) is closed
+        under strict homomorphic preimages, regular-epimorphic quotients, and
+        small coproducts, and that the family \(\mathcal C\) is closed under
+        input pullback.
+
+        For every
+        \[
+            \mathbb A\in\mathsf{Inp},
+        \]
+        define
         \[
             \mathcal S_{\mathcal C,\mathbb A}
             :=
@@ -6421,16 +8092,16 @@ together with factorization through \(V_{\mathbb A'}\).
                 \text{ for some }P\in\mathcal C_{\mathbb A}
             \}.
         \]
-        Choose a small representative set for
-        \(\mathcal S_{\mathcal C,\mathbb A}\), and define
+        Choose a small representative set for the distinct subobjects in
+        \(\mathcal S_{\mathcal C,\mathbb A}\), and put
         \[
             V_{\mathcal C,\mathbb A}
             :=
-            \bigvee_{S\in\mathcal S_{\mathcal C,\mathbb A}}
-            S
+            \bigvee_{S\in\mathcal S_{\mathcal C,\mathbb A}}S
             \hookrightarrow
             \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}.
         \]
+
         By Theorem~\ref{thm:local-coequational-birkhoff},
         \(V_{\mathcal C,\mathbb A}\) is a local coequational theory and
         \[
@@ -6438,181 +8109,225 @@ together with factorization through \(V_{\mathbb A'}\).
             =
             \mathsf{Mod}(V_{\mathcal C,\mathbb A}).
         \]
+        By
+        Lemma~\ref{lem:representing-theory-belongs-to-class},
+        one also has
+        \[
+            V_{\mathcal C,\mathbb A}
+            \in
+            \mathcal C_{\mathbb A}.
+        \]
 
-        \item \textbf{Check global reindexing on semantic images.}
+        \item \textbf{Use input-pullback closure on the representing
+        theory.}
+
         Let
         \[
             F:\mathbb A'\to\mathbb A
         \]
-        be an internal functor and let
-        \[
-            S\in\mathcal S_{\mathcal C,\mathbb A}.
-        \]
-        Choose
-        \[
-            P_S\in\mathcal C_{\mathbb A}
-        \]
-        with
-        \[
-            S=\operatorname{Beh}(P_S).
-        \]
-        Closure under input pullback gives
-        \[
-            F^*P_S\in\mathcal C_{\mathbb A'}.
-        \]
-        By Lemma~\ref{lem:input-pullback-semantic-images},
-        \[
-            \operatorname{Im}
-            \left(
-                A'_0\times_{A_0}S
-                \xrightarrow{F^\sharp}
-                \mathbf{Beh}_{\mathbb A',\mathbb B,0}
-            \right)
-            =
-            \operatorname{Beh}(F^*P_S).
-        \]
+        be an internal functor in \(\mathsf{Inp}\).
+
         Since
         \[
-            F^*P_S\in\mathcal C_{\mathbb A'},
+            V_{\mathcal C,\mathbb A}
+            \in
+            \mathcal C_{\mathbb A}
         \]
-        we have
+        and the family \(\mathcal C\) is closed under input pullback,
         \[
-            \operatorname{Beh}(F^*P_S)
-            \leq
-            V_{\mathcal C,\mathbb A'}.
+            F^*V_{\mathcal C,\mathbb A}
+            \in
+            \mathcal C_{\mathbb A'}.
         \]
-        Therefore \(F^\sharp\) sends the pullback of each representative
-        semantic image
+        Using
         \[
-            S\in\mathcal S_{\mathcal C,\mathbb A}
+            \mathcal C_{\mathbb A'}
+            =
+            \mathsf{Mod}(V_{\mathcal C,\mathbb A'}),
         \]
-        into \(V_{\mathcal C,\mathbb A'}\). The factorization is
+        the object \(F^*V_{\mathcal C,\mathbb A}\) models
+        \(V_{\mathcal C,\mathbb A'}\). Hence there is a unique factorization
+        \[
+            \varphi_F:
+            F^*V_{\mathcal C,\mathbb A}
+            \longrightarrow
+            V_{\mathcal C,\mathbb A'}
+        \]
+        satisfying
+        \[
+            j_{V_{\mathcal C,\mathbb A'}}
+            \varphi_F
+            =
+            \beta_{F^*V_{\mathcal C,\mathbb A}}.
+        \]
+        By Lemma~\ref{lem:model-factorizations-strict},
+        \(\varphi_F\) is a strict semantic homomorphism.
+
+        \item \textbf{Identify the model factorization with the required
+        restriction of \(F^\sharp\).}
+
+        The carrier of the input pullback is
+        \[
+            F^*V_{\mathcal C,\mathbb A}
+            =
+            A'_0
+            \times_{F_0,A_0,p_{V_{\mathcal C,\mathbb A}}}
+            V_{\mathcal C,\mathbb A}.
+        \]
+        Write
+        \[
+            \pi_V:
+            F^*V_{\mathcal C,\mathbb A}
+            \to
+            V_{\mathcal C,\mathbb A}
+        \]
+        for its second pullback projection.
+
+        Proposition~\ref{prop:input-pullback-mealy} gives
+        \[
+        \begin{aligned}
+            \beta_{F^*V_{\mathcal C,\mathbb A}}
+            &=
+            F^\sharp
+            \circ
+            \left\langle
+                p_{F^*V_{\mathcal C,\mathbb A}},
+                \beta_{V_{\mathcal C,\mathbb A}}\pi_V
+            \right\rangle.
+        \end{aligned}
+        \]
+        By
+        Lemma~\ref{lem:semantic-map-of-a-restricted-canonical-subobject},
+        \[
+            \beta_{V_{\mathcal C,\mathbb A}}
+            =
+            j_{V_{\mathcal C,\mathbb A}}.
+        \]
+        Therefore
+        \[
+        \begin{aligned}
+            \beta_{F^*V_{\mathcal C,\mathbb A}}
+            &=
+            F^\sharp
+            \circ
+            \left\langle
+                p_{F^*V_{\mathcal C,\mathbb A}},
+                j_{V_{\mathcal C,\mathbb A}}\pi_V
+            \right\rangle.
+        \end{aligned}
+        \]
+
+        The map
+        \[
+            \left\langle
+                p_{F^*V_{\mathcal C,\mathbb A}},
+                j_{V_{\mathcal C,\mathbb A}}\pi_V
+            \right\rangle
+        \]
+        is precisely the canonical pulled-back inclusion
+        \[
+        \begin{aligned}
+            A'_0
+            \times_{F_0,A_0,p_{V_{\mathcal C,\mathbb A}}}
+            V_{\mathcal C,\mathbb A}
+            &\longrightarrow
+            A'_0
+            \times_{F_0,A_0,p_{\mathbf{Beh}}}
+            \mathbf{Beh}_{\mathbb A,\mathbb B,0}.
+        \end{aligned}
+        \]
+        Hence the factorization equation for \(\varphi_F\) becomes
+        \[
+        \begin{aligned}
+            j_{V_{\mathcal C,\mathbb A'}}
+            \varphi_F
+            &=
+            F^\sharp
+            \circ
+            \left\langle
+                p_{F^*V_{\mathcal C,\mathbb A}},
+                j_{V_{\mathcal C,\mathbb A}}\pi_V
+            \right\rangle.
+        \end{aligned}
+        \]
+
+        This is exactly the required global reindexing factorization:
         \[
         \begin{tikzcd}[column sep=large, row sep=large]
-            A'_0\times_{A_0}S
-                \arrow[rr, "F^\sharp"]
-                \arrow[dr, dashed, "\overline{F^\sharp_S}"']
+            A'_0
+            \times_{F_0,A_0,p_{V_{\mathcal C,\mathbb A}}}
+            V_{\mathcal C,\mathbb A}
+                \arrow[rr,
+                    "{F^\sharp
+                    \langle
+                        p,\,
+                        j_{V_{\mathcal C,\mathbb A}}\pi_V
+                    \rangle}"]
+                \arrow[dr, "\varphi_F"']
             &&
             \mathbf{Beh}_{\mathbb A',\mathbb B,0}
             \\
             &
-            \operatorname{Beh}(F^*P_S)
-                \arrow[ur, hook, "m_{F^*P_S}"']
-                \arrow[d, hook]
-            &
-            \\
-            &
             V_{\mathcal C,\mathbb A'}
-                \arrow[uur, hook, "j_{V_{\mathcal C,\mathbb A'}}"']
+                \arrow[ur, hook,
+                    "j_{V_{\mathcal C,\mathbb A'}}"']
             &
         \end{tikzcd}
         \]
+        Thus \(F^\sharp\) sends the pullback of
+        \(V_{\mathcal C,\mathbb A}\) into
+        \(V_{\mathcal C,\mathbb A'}\).
 
-        \item \textbf{Descend from the join.}
-        Since
-        \[
-            V_{\mathcal C,\mathbb A}
-            =
-            \bigvee_{S\in\mathcal S_{\mathcal C,\mathbb A}}S,
-        \]
-        and pullback preserves joins in a topos slice, the object
-        \[
-            A'_0\times_{F_0,A_0,p_{V_{\mathcal C,\mathbb A}}}
-            V_{\mathcal C,\mathbb A}
-        \]
-        is covered by the regular epimorphism
-        \[
-            \coprod_{S\in\mathcal S_{\mathcal C,\mathbb A}}
-            A'_0\times_{A_0}S
-            \twoheadrightarrow
-            A'_0\times_{A_0}V_{\mathcal C,\mathbb A}.
-        \]
-        On each summand,
-        \[
-            F^\sharp
-        \]
-        lands in
-        \[
-            V_{\mathcal C,\mathbb A'}.
-        \]
-        Hence the composite
-        \[
-            A'_0\times_{A_0}V_{\mathcal C,\mathbb A}
-            \xrightarrow{F^\sharp}
-            \mathbf{Beh}_{\mathbb A',\mathbb B,0}
-        \]
-        factors through \(V_{\mathcal C,\mathbb A'}\) after precomposition
-        with a regular epimorphism. By
-        Lemma~\ref{lem:regular-epi-descent-for-subobjects-membership}, applied
-        in the slice over
-        \[
-            Z_{\mathbb A'}=A'_0\times B_0,
-        \]
-        it factors through
-        \[
-            V_{\mathcal C,\mathbb A'}.
-        \]
-        The descent diagram is
-        \[
-        \begin{tikzcd}[column sep=large, row sep=large]
-            \displaystyle
-            \coprod_S A'_0\times_{A_0}S
-                \arrow[r, two heads]
-                \arrow[dr]
-                \arrow[ddr, bend right=18, "F^\sharp"']
-            &
-            A'_0\times_{A_0}V_{\mathcal C,\mathbb A}
-                \arrow[d, dashed]
-                \arrow[dd, bend left=18, "F^\sharp"]
-            \\
-            &
-            V_{\mathcal C,\mathbb A'}
-                \arrow[d, hook]
-            \\
-            &
-            \mathbf{Beh}_{\mathbb A',\mathbb B,0}.
-        \end{tikzcd}
-        \]
-        Thus
+        Since \(F\) was arbitrary, the family
         \[
             V_{\mathcal C}
-            =
+            :=
             (V_{\mathcal C,\mathbb A})_{\mathbb A\in\mathsf{Inp}}
         \]
         is a global coequational theory.
 
         \item \textbf{Handle the structured case.}
-        If \(\mathbb B\) is \(\mathbb T\)-structured and the family
-        \(\mathcal C\) is closed under the operations induced by
-        \(\mathbb T\), then
-        Theorem~\ref{thm:T-coequational-birkhoff} applied pointwise shows that
-        each \(V_{\mathcal C,\mathbb A}\) is a local
-        \(\mathbb T\)-coequational theory. Thus
+
+        Suppose now that \(\mathbb B\) is \(\mathbb T\)-structured and that
+        every \(\mathcal C_{\mathbb A}\) is also closed under the operations
+        induced by \(\mathbb T\).
+
+        By Theorem~\ref{thm:T-coequational-birkhoff}, applied separately to
+        every input category \(\mathbb A\), each
+        \[
+            V_{\mathcal C,\mathbb A}
+        \]
+        is a local \(\mathbb T\)-coequational theory. The preceding argument
+        has already shown that these local theories satisfy the global
+        reindexing condition. Therefore
         \[
             V_{\mathcal C}
         \]
         is a global \(\mathbb T\)-coequational theory.
 
         \item \textbf{Conclude.}
-        For each input category \(\mathbb A\), we have already shown
+
+        For every
+        \[
+            \mathbb A\in\mathsf{Inp},
+        \]
+        the local Birkhoff theorem gives
         \[
             \mathcal C_{\mathbb A}
             =
             \mathsf{Mod}(V_{\mathcal C,\mathbb A}).
         \]
-        Since the family
-        \[
-            V_{\mathcal C}
-        \]
-        is global, this equality is precisely
+        Since \(V_{\mathcal C}\) is a global theory, this equality is precisely
         \[
             \mathcal C_{\mathbb A}
             =
-            \mathsf{Mod}^{g}(V_{\mathcal C})_{\mathbb A}
+            \mathsf{Mod}^{g}(V_{\mathcal C})_{\mathbb A}.
         \]
-        for all
+        Hence
         \[
-            \mathbb A\in\mathsf{Inp}.
+            \mathcal C
+            =
+            \mathsf{Mod}^{g}(V_{\mathcal C}).
         \]
     \end{enumerate}
 \end{proof}

@@ -1,0 +1,3241 @@
+% Docrines and decent
+
+\chapter{Logical Semantics and Coequational Approximation}
+\label{ch:logical-semantics-coequational-approximation}
+
+\section{Purpose and Imported Logical Structure}
+\label{sec:logical-semantics-standing-framework}
+
+The logical constructions of the preceding chapters produce predicates on
+execution objects.  These predicates may depend on more data than residual
+behaviour alone: a downstream state, a response position, a cubical execution
+cell, a finite path, or a hidden feedback state.  The purpose of this
+appendix is to explain how the logical predicates already constructed in the
+previous chapters determine ordinary local coequational theories of residual
+behaviour.
+
+This appendix adds no new ambient logical structure.  Each construction is
+read in the standing ambient context of the chapter from which it is imported.
+In particular, the coequational closure and interior constructions are read
+in the ambient context of
+Chapter~\ref{ch:coequational-subobjects-birkhoff}, while box modalities,
+fixed-point modalities, guarded-profile modalities, cubical modalities, and
+feedback-trace modalities are used only in the fragments where the
+corresponding right adjoints, fixed points, and Beck--Chevalley laws were
+already constructed.
+
+The logical operations used below are the ones already constructed in the
+body of the book:
+
+\begin{enumerate}
+  \item local coequational theories and derivative closure are those of
+  Chapter~\ref{ch:coequational-subobjects-birkhoff};
+
+  \item syntactic transition--output images are those of
+  Chapter~\ref{ch:syntactic-transition-output-eilenberg};
+
+  \item dynamic span diamonds, boxes, tests, and finite choice are those of
+  Chapter~\ref{ch:relative-mealy-program-categories};
+
+  \item guarded response-profile modalities are those of
+  Chapter~\ref{ch:polynomial-relative-mealy-actions};
+
+  \item cubical execution predicates and dynamic cubical modalities are those
+  of Chapter~\ref{ch:cubical-mealy-execution-concurrency-types};
+
+  \item finite-path and feedback-trace modalities are those of
+  Chapter~\ref{ch:feedback-trace}.
+\end{enumerate}
+
+Thus every occurrence of
+\[
+  \exists_f,
+  \qquad
+  \forall_f,
+  \qquad
+  \mu,
+  \qquad
+  \nu
+\]
+below refers to a previously constructed logical operation in the relevant
+chapter.  The appendix only records how these already-defined predicates are
+projected to residual behaviour and then closed or interiorized to obtain
+local coequational theories.
+
+For internal categories \(A\) and \(B\), write
+\[
+  \mathrm{Beh}^{\mathrm{can}}_{A,B}:A\rightsquigarrow B
+\]
+for the canonical residual behaviour Mealy morphism, and write
+\[
+  \mathrm{Beh}_{A,B,0}
+\]
+for its carrier.  When the interfaces \(A,B\) are fixed, abbreviate this
+object to
+\[
+  \mathrm{Beh}_0.
+\]
+It is equipped with anchor maps
+\[
+  p_{\mathrm{Beh}}:\mathrm{Beh}_0\to A_0,
+  \qquad
+  q_{\mathrm{Beh}}:\mathrm{Beh}_0\to B_0.
+\]
+Set
+\[
+  Z:=A_0\times B_0.
+\]
+
+A \textbf{behaviour predicate} is a subobject of
+\(\mathrm{Beh}_0\) in the slice
+\[
+  \mathcal E/Z.
+\]
+A \textbf{local coequational theory} is a derivative-closed behaviour
+predicate, equivalently a strict sub-Mealy object of
+\[
+  \mathrm{Beh}^{\mathrm{can}}_{A,B}.
+\]
+
+If
+\[
+  \Phi:P:A\rightsquigarrow B
+\]
+is a Mealy morphism and
+\[
+  r_Y:Y\to B_0
+\]
+is a right \(B\)-action, the relative execution state object is
+\[
+  S_{\Phi,Y}:=P\times_{q_P,B_0,r_Y}Y.
+\]
+Its canonical instance is
+\[
+  S^{\mathrm{can}}_Y
+  :=
+  \mathrm{Beh}_0\times_{q_{\mathrm{Beh}},B_0,r_Y}Y.
+\]
+Residual semantics of \(P\) gives the strict semantic homomorphism
+\[
+  \beta_P:P\to \mathrm{Beh}^{\mathrm{can}}_{A,B},
+\]
+with carrier map
+\[
+  \beta_P:P\to \mathrm{Beh}_0.
+\]
+It induces a comparison map
+\[
+  \beta_{P,Y}:S_{\Phi,Y}\longrightarrow S^{\mathrm{can}}_Y.
+\]
+
+The comparison between canonical execution predicates and behaviour
+predicates is carried by the projection
+\[
+  \pi_Y:S^{\mathrm{can}}_Y\longrightarrow \mathrm{Beh}_0.
+\]
+For a canonical execution predicate
+\[
+  \psi\hookrightarrow S^{\mathrm{can}}_Y,
+\]
+the existential and universal behaviour projections are the predicate
+projections already available in the logical fragments where they occur:
+\[
+  \exists_{\pi_Y}\psi\hookrightarrow \mathrm{Beh}_0,
+  \qquad
+  \forall_{\pi_Y}\psi\hookrightarrow \mathrm{Beh}_0.
+\]
+The first says that some downstream state over the behaviour satisfies
+\(\psi\).  The second says that every downstream state over the behaviour
+satisfies \(\psi\).
+
+These projected predicates need not be derivative-closed.  Derivative closure
+and derivative interior turn them into local coequational theories:
+\[
+  \mathrm{May}_Y(\psi)
+  :=
+  \mathrm{Der}_0(\exists_{\pi_Y}\psi),
+\]
+and
+\[
+  \mathrm{Must}_Y(\psi)
+  :=
+  \mathrm{DerInt}(\forall_{\pi_Y}\psi).
+\]
+
+The central comparison is the adjoint triple
+\[
+  \mathrm{May}_Y
+  \dashv
+  J_Y
+  \dashv
+  \mathrm{Must}_Y,
+  \qquad
+  J_Y(V)=\pi_Y^*\,iV,
+\]
+where
+\[
+  i:\mathbf{Coeq}_{A,B}
+  \hookrightarrow
+  \operatorname{Sub}_{\mathcal E/Z}(\mathrm{Beh}_0)
+\]
+is the inclusion of local coequational theories into behaviour predicates.
+The rest of the appendix shows how the execution logics constructed earlier
+feed into this coequational comparison.
+
+For an object \(X\to Z\), write
+\[
+  \operatorname{Pred}_Z(X)
+  :=
+  \operatorname{Sub}_{\mathcal E/Z}(X).
+\]
+When no confusion is possible, write simply
+\[
+  \operatorname{Pred}(X).
+\]
+
+\section{Recall: Predicate Transformers Used Earlier}
+\label{sec:base-subobject-calculus}
+
+This appendix uses the subobject semantics developed in the earlier logical
+chapters.  We recall only the clauses needed for the synthesis.
+
+A formula in context denotes a subobject of its context object.  Substitution
+along a map is pullback.  Dynamic diamonds are interpreted by existential
+image along the source map of a span.  Dynamic boxes are interpreted by
+universal image along the same source map in the box fragments constructed in
+the book.
+
+For a span
+\[
+  X\xleftarrow{\ell}U\xrightarrow{r}Y
+\]
+from one of the dynamic fragments, the associated predicate transformers are
+\[
+  \langle U\rangle:
+  \operatorname{Pred}(Y)\to\operatorname{Pred}(X),
+  \qquad
+  \langle U\rangle\varphi
+  :=
+  \exists_{\ell}r^*\varphi,
+\]
+and, in the box fragment,
+\[
+  [U]:
+  \operatorname{Pred}(Y)\to\operatorname{Pred}(X),
+  \qquad
+  [U]\varphi
+  :=
+  \forall_{\ell}r^*\varphi.
+\]
+
+The substitution and functoriality laws used below are the Beck--Chevalley
+and adjunction laws established for the corresponding earlier fragments.
+No additional logical rules are added here.
+
+\begin{proposition}[Soundness inherited from the earlier fragments]
+\label{prop:base-subobject-calculus-soundness}
+Every derivable entailment in any of the logical fragments recalled above is
+interpreted by an inclusion of subobjects in the appropriate execution
+context.
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Reduce to the imported soundness theorem.}
+  Each fragment used in this appendix has already been given a subobject
+  semantics in the corresponding earlier chapter.  The proposition is the
+  soundness theorem for whichever fragment supplies the formula under
+  consideration.
+
+  \item \textbf{Interpret structural rules.}
+  The propositional rules are interpreted by the order-theoretic operations
+  on subobjects, and substitution is interpreted by pullback.
+
+  \item \textbf{Interpret modal rules.}
+  Diamonds and boxes are interpreted by the adjunctions
+  \[
+    \exists_{\ell}\dashv \ell^*,
+    \qquad
+    \ell^*\dashv \forall_{\ell}
+  \]
+  defining existential and universal projection along the source maps of the
+  spans used in the fragment.
+
+  \item \textbf{Use Beck--Chevalley for substitution.}
+  The Beck--Chevalley laws established in the earlier fragments give the
+  substitution laws for the modal operations.  Hence derivable entailments are
+  interpreted by inclusions of subobjects.
+\end{enumerate}
+\end{proof}
+
+\section{Canonical Relative Execution}
+\label{sec:canonical-relative-execution}
+
+Relative execution places a Mealy morphism in a downstream environment.  A
+state of the resulting execution object consists of a system state and a
+downstream state whose anchors agree.  During one primitive execution step,
+the Mealy morphism consumes an input arrow, updates its internal state, and
+produces an output-comparison arrow in \(B\).  The right \(B\)-action then
+uses that output-comparison arrow to update the downstream state.
+
+Let
+\[
+  \Phi:P:A\rightsquigarrow B
+\]
+be a Mealy morphism.  Write
+\[
+  p_P:P\to A_0,
+  \qquad
+  q_P:P\to B_0
+\]
+for its input and output anchors.  The transition and output maps are
+\[
+  \delta_P:
+  A_1\times_{t_A,A_0,p_P}P\longrightarrow P,
+\]
+and
+\[
+  \omega_P:
+  A_1\times_{t_A,A_0,p_P}P\longrightarrow B_1,
+\]
+with typing
+\[
+  t_B\omega_P(a,x)=q_P(x),
+  \qquad
+  s_B\omega_P(a,x)=q_P(\delta_P(a,x)).
+\]
+Thus an input arrow
+\[
+  a:u\to v
+\]
+acts on states over \(v\), and the output comparison
+\[
+  \omega_P(a,x)
+\]
+points from the new output anchor to the old output anchor.
+
+Let
+\[
+  r_Y:Y\to B_0
+\]
+be a right \(B\)-action.  Its action map is
+\[
+  \sigma_Y:
+  B_1\times_{t_B,B_0,r_Y}Y\longrightarrow Y,
+\]
+with
+\[
+  r_Y\sigma_Y=s_B\pi_{B_1}.
+\]
+Therefore a \(B\)-arrow
+\[
+  b:b'\to b
+\]
+acts on a state over \(b\) and produces a state over \(b'\).
+
+\begin{definition}[Relative execution state object]
+\label{def:relative-execution-state-object}
+The \textbf{relative execution state object} of \(\Phi\) against \(Y\) is
+\[
+  S_{\Phi,Y}
+  :=
+  P\times_{q_P,B_0,r_Y}Y.
+\]
+Its \textbf{canonical relative execution state object} is
+\[
+  S^{\mathrm{can}}_Y
+  :=
+  \mathrm{Beh}_0\times_{q_{\mathrm{Beh}},B_0,r_Y}Y.
+\]
+\end{definition}
+
+The primitive execution apex of \((\Phi,Y)\) is
+\[
+  M_{\Phi,Y}
+  :=
+  A_1\times_{t_A,A_0,p_P\pi_P}S_{\Phi,Y}.
+\]
+The primitive execution span is
+\[
+  m_{\Phi,Y}
+  =
+  \left(
+  S_{\Phi,Y}
+  \xleftarrow{s_{\Phi,Y}}
+  M_{\Phi,Y}
+  \xrightarrow{t_{\Phi,Y}}
+  S_{\Phi,Y}
+  \right),
+\]
+where
+\[
+  s_{\Phi,Y}(a,x,y)=(x,y),
+\]
+and
+\[
+  t_{\Phi,Y}(a,x,y)
+  =
+  \left(
+    \delta_P(a,x),
+    \sigma_Y(\omega_P(a,x),y)
+  \right).
+\]
+This target map is well-typed because
+\[
+  t_B\omega_P(a,x)=q_P(x)=r_Y(y)
+\]
+and hence
+\[
+  r_Y\sigma_Y(\omega_P(a,x),y)
+  =
+  s_B\omega_P(a,x)
+  =
+  q_P(\delta_P(a,x)).
+\]
+
+The canonical primitive execution span is
+\[
+  m_{\mathrm{Beh},Y}
+  =
+  \left(
+  S^{\mathrm{can}}_Y
+  \xleftarrow{s_{\mathrm{Beh},Y}}
+  M_{\mathrm{Beh},Y}
+  \xrightarrow{t_{\mathrm{Beh},Y}}
+  S^{\mathrm{can}}_Y
+  \right),
+\]
+where
+\[
+  M_{\mathrm{Beh},Y}
+  :=
+  A_1\times_{t_A,A_0,p_{\mathrm{Beh}}\pi_{\mathrm{Beh}}}
+  S^{\mathrm{can}}_Y.
+\]
+
+Residual semantics replaces a concrete state \(x\in P\) by its residual
+behaviour \(\beta_P(x)\).  Since the downstream state \(y\) is already typed
+over the same output anchor, this replacement extends fibrewise to relative
+execution states:
+\[
+  \beta_{P,Y}
+  :=
+  \beta_P\times_{B_0}1_Y:
+  S_{\Phi,Y}
+  \longrightarrow
+  S^{\mathrm{can}}_Y.
+\]
+
+The primitive residual comparison is summarized by the diagram
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+A_1\times_{A_0}S_{\Phi,Y}
+  \arrow[r, "\overline{\beta}_{P,Y}"]
+  \arrow[d, shift right=.65ex, "s_{\Phi,Y}"']
+  \arrow[d, shift left=.65ex, "t_{\Phi,Y}"]
+&
+A_1\times_{A_0}S^{\mathrm{can}}_Y
+  \arrow[d, shift right=.65ex, "s_{\mathrm{Beh},Y}"']
+  \arrow[d, shift left=.65ex, "t_{\mathrm{Beh},Y}"]
+\\
+S_{\Phi,Y}
+  \arrow[r, "\beta_{P,Y}"']
+&
+S^{\mathrm{can}}_Y .
+\end{tikzcd}
+\]
+
+\begin{proposition}[Primitive residual comparison]
+\label{prop:primitive-residual-comparison}
+The map
+\[
+  \beta_{P,Y}:S_{\Phi,Y}\to S^{\mathrm{can}}_Y
+\]
+extends to a morphism of primitive execution spans
+\[
+  m_{\Phi,Y}\longrightarrow m_{\mathrm{Beh},Y}.
+\]
+The square over source maps
+\[
+\begin{tikzcd}
+M_{\Phi,Y}
+  \arrow[r, "\overline{\beta}_{P,Y}"]
+  \arrow[d, "s_{\Phi,Y}"']
+&
+M_{\mathrm{Beh},Y}
+  \arrow[d, "s_{\mathrm{Beh},Y}"]
+\\
+S_{\Phi,Y}
+  \arrow[r, "\beta_{P,Y}"']
+&
+S^{\mathrm{can}}_Y
+  \arrow[ul, phantom, very near start, "\lrcorner"]
+\end{tikzcd}
+\]
+is a pullback.
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Define the apex comparison.}
+  Define
+  \[
+    \overline{\beta}_{P,Y}(a,x,y)
+    :=
+    (a,\beta_P(x),y).
+  \]
+  This is well-typed because \(\beta_P\) preserves output anchors:
+  \[
+    q_{\mathrm{Beh}}\beta_P=q_P.
+  \]
+
+  \item \textbf{Check source compatibility.}
+  The source maps commute because
+  \[
+    s_{\mathrm{Beh},Y}(a,\beta_P(x),y)
+    =
+    (\beta_P(x),y)
+    =
+    \beta_{P,Y}(s_{\Phi,Y}(a,x,y)).
+  \]
+
+  \item \textbf{Identify the source square as a pullback.}
+  Both apexes are obtained by pulling back the same object \(A_1\) along the
+  input anchor of the corresponding state object:
+  \[
+  \begin{tikzcd}
+  M_{\Phi,Y}
+    \arrow[r]
+    \arrow[d]
+  &
+  A_1
+    \arrow[d, "t_A"]
+  \\
+  S_{\Phi,Y}
+    \arrow[r, "p_P\pi_P"']
+  &
+  A_0
+  \end{tikzcd}
+  \qquad
+  \begin{tikzcd}
+  M_{\mathrm{Beh},Y}
+    \arrow[r]
+    \arrow[d]
+  &
+  A_1
+    \arrow[d, "t_A"]
+  \\
+  S^{\mathrm{can}}_Y
+    \arrow[r, "p_{\mathrm{Beh}}\pi_{\mathrm{Beh}}"']
+  &
+  A_0 .
+  \end{tikzcd}
+  \]
+  Since \(p_{\mathrm{Beh}}\beta_P=p_P\), the comparison square over source
+  maps is the induced pullback square.
+
+  \item \textbf{Check target compatibility.}
+  Residual semantics gives
+  \[
+    \beta_P(\delta_P(a,x))
+    =
+    \partial_a(\beta_P(x)),
+  \]
+  and output preservation gives
+  \[
+    \omega_P(a,x)
+    =
+    \omega_{\mathrm{Beh}}(a,\beta_P(x)).
+  \]
+  Therefore
+  \[
+  \begin{aligned}
+    \beta_{P,Y}(t_{\Phi,Y}(a,x,y))
+    &=
+    \left(
+      \beta_P(\delta_P(a,x)),
+      \sigma_Y(\omega_P(a,x),y)
+    \right)                                      \\
+    &=
+    \left(
+      \partial_a(\beta_P(x)),
+      \sigma_Y(\omega_{\mathrm{Beh}}(a,\beta_P(x)),y)
+    \right)                                      \\
+    &=
+    t_{\mathrm{Beh},Y}(a,\beta_P(x),y).
+  \end{aligned}
+  \]
+
+  \item \textbf{Conclude span compatibility.}
+  The apex comparison commutes with both source and target maps.  Hence it
+  defines a morphism of primitive execution spans.
+\end{enumerate}
+\end{proof}
+
+\begin{definition}[Residual-pullback span scheme]
+\label{def:residual-pullback-span-scheme}
+A \textbf{residual-pullback span scheme} over \((A,B,Y)\) is a span
+construction from one of the execution fragments of the book together with
+its canonical residual comparison data.
+
+Concretely, for every Mealy morphism
+\[
+  \Phi:P:A\rightsquigarrow B,
+\]
+it consists of a span
+\[
+  X_{\Phi,Y}
+  \xleftarrow{\ell_{\Phi}}
+  U_{\Phi}
+  \xrightarrow{r_{\Phi}}
+  Y_{\Phi,Y},
+\]
+the corresponding canonical span
+\[
+  X_{\mathrm{can},Y}
+  \xleftarrow{\ell_{\mathrm{can}}}
+  U_{\mathrm{can}}
+  \xrightarrow{r_{\mathrm{can}}}
+  Y_{\mathrm{can},Y},
+\]
+and residual comparison maps
+\[
+  \beta_X:X_{\Phi,Y}\to X_{\mathrm{can},Y},
+  \qquad
+  \beta_Y:Y_{\Phi,Y}\to Y_{\mathrm{can},Y},
+\]
+together with an apex comparison
+\[
+  \overline{\beta}_U:U_{\Phi}\to U_{\mathrm{can}}
+\]
+such that
+\[
+  \ell_{\mathrm{can}}\overline{\beta}_U
+  =
+  \beta_X\ell_{\Phi},
+  \qquad
+  r_{\mathrm{can}}\overline{\beta}_U
+  =
+  \beta_Y r_{\Phi},
+\]
+and the source square
+\[
+\begin{tikzcd}
+U_{\Phi}
+  \arrow[r, "\overline{\beta}_U"]
+  \arrow[d, "\ell_{\Phi}"']
+&
+U_{\mathrm{can}}
+  \arrow[d, "\ell_{\mathrm{can}}"]
+\\
+X_{\Phi,Y}
+  \arrow[r, "\beta_X"']
+&
+X_{\mathrm{can},Y}
+  \arrow[ul, phantom, very near start, "\lrcorner"]
+\end{tikzcd}
+\]
+is a pullback.
+
+The pullback square over source maps is the square to which the
+Beck--Chevalley law for the available predicate transformer applies:
+regular-image Beck--Chevalley in diamond fragments, and right-adjoint
+Beck--Chevalley in the box fragments.
+\end{definition}
+
+The phrase ``residual-pullback'' records the mechanism used by the semantics.
+The pullback square over source maps is the reason that modal truth in a
+concrete execution context is obtained by pulling back modal truth from the
+canonical execution context.
+
+\begin{definition}[Residual-stable canonical fragment]
+\label{def:residual-stable-canonical-fragment}
+The \textbf{residual-stable canonical fragment} over \((A,B,Y)\) is generated
+inside the already-constructed logical fragments by the following clauses.
+
+\begin{enumerate}
+  \item Atomic predicates are canonical predicates on canonical execution
+  contexts.
+
+  \item The class is closed under the propositional connectives present in
+  the relevant fragment.
+
+  \item If \(U\) is a residual-pullback span scheme and \(\varphi\) is in
+  the fragment, then the diamond formula
+  \[
+    \langle U\rangle\varphi
+  \]
+  is in the fragment.
+
+  \item If the corresponding box modality is part of the earlier fragment,
+  then
+  \[
+    [U]\varphi
+  \]
+  is in the fragment.
+
+  \item If the corresponding finite-path or feedback-trace modality is part
+  of the earlier fragment, then its use is restricted to the path-star or
+  trace constructions for which residual comparison was already shown to be
+  compatible with the imported fixed-point semantics.
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[Canonical pullback semantics]
+\label{thm:canonical-pullback-semantics}
+Let \(\varphi\) be a formula in the residual-stable canonical fragment.  Then
+for every Mealy morphism
+\[
+  \Phi:P:A\rightsquigarrow B
+\]
+one has
+\[
+  \llbracket\varphi\rrbracket_{\Phi,Y}
+  =
+  \beta_X^*
+  \llbracket\varphi\rrbracket_{\mathrm{can},Y},
+\]
+where \(\beta_X\) is the residual comparison map of the execution context in
+which \(\varphi\) is interpreted.
+
+For formulas involving finite-path or trace iteration, the statement is read
+in the corresponding path-star fragment, where residual comparison is
+source-cartesian for the underlying endospans and the fixed-point predicate
+transformers commute with residual pullback.
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Prove the claim by induction on formulas.}
+  The proof is by induction on the construction of \(\varphi\).
+
+  \item \textbf{Handle atomic predicates.}
+  Atomic canonical predicates are, by definition, interpreted in the
+  \(\Phi\)-context by pullback from the canonical context.  Thus the claim
+  holds for atomic formulas.
+
+  \item \textbf{Handle propositional structure.}
+  Pullback preserves the propositional structure available in the fragment.
+  Hence the claim is preserved by the propositional connectives.
+
+  \item \textbf{Handle diamonds.}
+  For a diamond along a residual-pullback span scheme, write the canonical
+  span as
+  \[
+    X_{\mathrm{can},Y}
+    \xleftarrow{\ell_{\mathrm{can}}}
+    U_{\mathrm{can}}
+    \xrightarrow{r_{\mathrm{can}}}
+    Y_{\mathrm{can},Y},
+  \]
+  and the corresponding \(\Phi\)-span as
+  \[
+    X_{\Phi,Y}
+    \xleftarrow{\ell_{\Phi}}
+    U_{\Phi}
+    \xrightarrow{r_{\Phi}}
+    Y_{\Phi,Y}.
+  \]
+  The comparison data form the diagram
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+  U_{\Phi}
+    \arrow[r, "\overline{\beta}_U"]
+    \arrow[d, "\ell_{\Phi}"']
+    \arrow[dr, phantom, very near start, "\lrcorner"]
+  &
+  U_{\mathrm{can}}
+    \arrow[d, "\ell_{\mathrm{can}}"]
+    \arrow[r, "r_{\mathrm{can}}"]
+  &
+  Y_{\mathrm{can},Y}
+  \\
+  X_{\Phi,Y}
+    \arrow[r, "\beta_X"']
+  &
+  X_{\mathrm{can},Y}
+  &
+  Y_{\Phi,Y}
+    \arrow[u, "\beta_Y"']
+    \arrow[ul, "r_{\Phi}"']
+  \end{tikzcd}
+  \]
+  with the source square a pullback and the target maps commuting with
+  residual comparison.  Beck--Chevalley in the relevant diamond fragment
+  gives
+  \[
+    \beta_X^*
+    \exists_{\ell_{\mathrm{can}}}
+    r_{\mathrm{can}}^*(\theta)
+    =
+    \exists_{\ell_{\Phi}}
+    r_{\Phi}^*
+    \beta_Y^*(\theta).
+  \]
+  The induction hypothesis applies to \(\theta\).
+
+  \item \textbf{Handle boxes.}
+  In a box fragment, the same source pullback square and the right-adjoint
+  Beck--Chevalley law give
+  \[
+    \beta_X^*
+    \forall_{\ell_{\mathrm{can}}}
+    r_{\mathrm{can}}^*(\theta)
+    =
+    \forall_{\ell_{\Phi}}
+    r_{\Phi}^*
+    \beta_Y^*(\theta).
+  \]
+  The induction hypothesis again applies to \(\theta\).
+
+  \item \textbf{Handle finite-path and trace modalities.}
+  For finite-path and trace modalities, source-cartesian residual comparison
+  identifies the one-step predicate transformer before and after pullback.
+  Since pullback preserves the joins and meets used in the least and greatest
+  fixed-point interpretations in the imported fragment, the induced
+  fixed-point predicates are again pulled back from the canonical context.
+
+  \item \textbf{Conclude the induction.}
+  All formula constructors in the residual-stable canonical fragment preserve
+  the asserted pullback form.  Therefore
+  \[
+    \llbracket\varphi\rrbracket_{\Phi,Y}
+    =
+    \beta_X^*
+    \llbracket\varphi\rrbracket_{\mathrm{can},Y}.
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Primitive canonical pullback semantics]
+\label{cor:primitive-canonical-pullback-semantics}
+The primitive execution modality associated to
+\[
+  m_{\Phi,Y}:S_{\Phi,Y}\rightsquigarrow S_{\Phi,Y}
+\]
+is pulled back from the canonical primitive execution modality along
+\[
+  \beta_{P,Y}:S_{\Phi,Y}\to S^{\mathrm{can}}_Y.
+\]
+\end{corollary}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Apply the primitive residual-pullback scheme.}
+  Proposition~\ref{prop:primitive-residual-comparison} shows that the
+  primitive execution span is a residual-pullback span scheme.
+
+  \item \textbf{Invoke canonical pullback semantics.}
+  The result is Theorem~\ref{thm:canonical-pullback-semantics} applied to
+  that primitive span scheme.
+\end{enumerate}
+\end{proof}
+
+\section{Coequational Closure and Interior}
+\label{sec:coequational-closure-and-interior}
+
+All subobjects of \(\mathrm{Beh}_0\) in this section are taken in the slice
+\[
+  \mathcal E/Z.
+\]
+
+A behaviour predicate may fail to be stable under future input.  A local
+coequational theory is precisely a behaviour predicate that is closed under
+all residual derivatives.  The operator \(\mathrm{Der}_0\) gives the least
+derivative-closed predicate containing a given predicate.  The operator
+\(\mathrm{DerInt}\) gives the largest derivative-closed predicate contained
+in a given predicate.
+
+A local coequational theory over \(A,B\) is a subobject
+\[
+  V\hookrightarrow \mathrm{Beh}_0
+\]
+whose canonical derivative structure restricts.  Equivalently, if
+\[
+  \delta_{\mathrm{Beh}}:
+  A_1\times_{t_A,A_0,p_{\mathrm{Beh}}}
+  \mathrm{Beh}_0
+  \longrightarrow
+  \mathrm{Beh}_0
+\]
+is the canonical derivative map, then \(V\) is local coequational precisely
+when there exists a map
+\[
+  \delta_V:
+  A_1\times_{t_A,A_0,p_V}V
+  \longrightarrow
+  V
+\]
+making the square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+A_1\times_{t_A,A_0,p_V}V
+  \arrow[r, hook]
+  \arrow[d, "\delta_V"']
+&
+A_1\times_{t_A,A_0,p_{\mathrm{Beh}}}\mathrm{Beh}_0
+  \arrow[d, "\delta_{\mathrm{Beh}}"]
+\\
+V
+  \arrow[r, hook]
+&
+\mathrm{Beh}_0
+\end{tikzcd}
+\]
+commute.
+
+The derivative domain is regarded over
+\[
+  Z=A_0\times B_0
+\]
+by the post-derivative state.  Thus a generalized element \((a,H)\), with
+\[
+  a:u\to v
+\]
+and \(H\) over \(v\), lies over
+\[
+  (u,q_{\mathrm{Beh}}(\partial_aH)).
+\]
+No additional closure condition is imposed on the output-comparison map: its
+codomain remains \(B_1\), and derivative closure supplies exactly the typing
+needed for the restricted transition-output structure.
+
+We write
+\[
+  \mathbf{Coeq}_{A,B}
+\]
+for the poset of local coequational theories, and
+\[
+  i:\mathbf{Coeq}_{A,B}
+  \hookrightarrow
+  \operatorname{Sub}_{\mathcal E/Z}(\mathrm{Beh}_0)
+\]
+for the inclusion.
+
+By the coequational closure theorem from
+Chapter~\ref{ch:coequational-subobjects-birkhoff}, the inclusion \(i\) has
+a left adjoint
+\[
+  \mathrm{Der}_0
+  :
+  \operatorname{Sub}_{\mathcal E/Z}(\mathrm{Beh}_0)
+  \longrightarrow
+  \mathbf{Coeq}_{A,B}.
+\]
+Thus, for every behaviour predicate \(K\) and every local coequational theory
+\(V\),
+\[
+  \mathrm{Der}_0(K)\leq V
+  \quad\Longleftrightarrow\quad
+  K\leq iV.
+\]
+
+\begin{lemma}[Derivative interior]
+\label{lem:derivative-interior}
+The inclusion
+\[
+  i:\mathbf{Coeq}_{A,B}
+  \hookrightarrow
+  \operatorname{Sub}_{\mathcal E/Z}(\mathrm{Beh}_0)
+\]
+has a right adjoint
+\[
+  \mathrm{DerInt}:
+  \operatorname{Sub}_{\mathcal E/Z}(\mathrm{Beh}_0)
+  \longrightarrow
+  \mathbf{Coeq}_{A,B}.
+\]
+It is given by
+\[
+  \mathrm{DerInt}(K)
+  =
+  \bigvee
+  \left\{
+    W\hookrightarrow \mathrm{Beh}_0
+    \ \middle|\
+    W\leq K,\ W\in\mathbf{Coeq}_{A,B}
+  \right\}.
+\]
+\end{lemma}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Specify the join.}
+  The displayed join is taken in
+  \[
+    \operatorname{Sub}_{\mathcal E/Z}(\mathrm{Beh}_0).
+  \]
+  The indexing family is a family of subobjects of the fixed object
+  \(\mathrm{Beh}_0\) in the fixed slice \(\mathcal E/Z\), hence is small in
+  the ambient universe used in
+  Chapter~\ref{ch:coequational-subobjects-birkhoff}.
+
+  \item \textbf{Show the join is coequational.}
+  By the join-closure theorem for local coequational theories in
+  Chapter~\ref{ch:coequational-subobjects-birkhoff}, small joins of local
+  coequational theories are again local coequational theories.  Hence
+  \[
+    \mathrm{DerInt}(K)
+  \]
+  is a local coequational theory.
+
+  \item \textbf{Show containment in \(K\).}
+  Since \(K\) is an upper bound for every local coequational theory
+  \(W\leq K\), the join satisfies
+  \[
+    i\,\mathrm{DerInt}(K)\leq K.
+  \]
+
+  \item \textbf{Verify the universal property.}
+  For a local coequational theory \(V\), the inequality
+  \[
+    iV\leq K
+  \]
+  holds exactly when \(V\) belongs to the indexing family of the displayed
+  join.  This is equivalent to
+  \[
+    V\leq \mathrm{DerInt}(K).
+  \]
+  Therefore
+  \[
+    i\dashv \mathrm{DerInt}.
+  \]
+\end{enumerate}
+\end{proof}
+
+Consequently, for every local coequational theory \(V\) and every behaviour
+predicate \(K\),
+\[
+  iV\leq K
+  \quad\Longleftrightarrow\quad
+  V\leq \mathrm{DerInt}(K).
+\]
+
+\section{May and Must Coequational Approximation}
+\label{sec:may-must-coequational-approximation}
+
+Let
+\[
+  Y\to B_0
+\]
+be a right \(B\)-action.  The canonical relative execution object
+\[
+  S^{\mathrm{can}}_Y
+  =
+  \mathrm{Beh}_0\times_{B_0}Y
+\]
+is an object of the slice \(\mathcal E/Z\) by projection to
+\[
+  \mathrm{Beh}_0\to Z.
+\]
+The projection
+\[
+  \pi_Y:S^{\mathrm{can}}_Y\to \mathrm{Beh}_0
+\]
+is a morphism in \(\mathcal E/Z\).
+
+An execution predicate
+\[
+  \psi\hookrightarrow S^{\mathrm{can}}_Y
+\]
+may depend both on residual behaviour and on downstream state.  To compare it
+with a local coequational theory, the downstream state must be removed.  The
+earlier logical semantics supplies two projection operations along
+\(\pi_Y\).  Existential projection keeps a residual behaviour when some
+compatible downstream state satisfies \(\psi\).  Universal projection keeps a
+residual behaviour when every compatible downstream state satisfies \(\psi\).
+Derivative closure and derivative interior then force these projected
+behaviour predicates to be stable under residual derivatives.
+
+\begin{definition}[Existential and universal behaviour projections]
+\label{def:existential-universal-behaviour-projections}
+For a canonical execution predicate
+\[
+  \psi\hookrightarrow S^{\mathrm{can}}_Y
+\]
+in \(\mathcal E/Z\), define its \textbf{existential behaviour projection} by
+\[
+  \Diamond_Y\psi
+  :=
+  \exists_{\pi_Y}\psi
+  \hookrightarrow
+  \mathrm{Beh}_0.
+\]
+Define its \textbf{universal behaviour projection} by
+\[
+  \Box_Y\psi
+  :=
+  \forall_{\pi_Y}\psi
+  \hookrightarrow
+  \mathrm{Beh}_0.
+\]
+\end{definition}
+
+\begin{definition}[May- and must-coequationalization]
+\label{def:may-must-coequationalization}
+For a canonical execution predicate
+\[
+  \psi\hookrightarrow S^{\mathrm{can}}_Y,
+\]
+define its \textbf{may-coequationalization} by
+\[
+  \mathrm{May}_Y(\psi)
+  :=
+  \mathrm{Der}_0(\exists_{\pi_Y}\psi).
+\]
+Define its \textbf{must-coequationalization} by
+\[
+  \mathrm{Must}_Y(\psi)
+  :=
+  \mathrm{DerInt}(\forall_{\pi_Y}\psi).
+\]
+\end{definition}
+
+\begin{definition}[Execution extension of a coequational theory]
+\label{def:execution-extension-coequational-theory}
+For a local coequational theory
+\[
+  V\hookrightarrow \mathrm{Beh}_0,
+\]
+define its \textbf{canonical \(Y\)-extension} by
+\[
+  J_Y(V)
+  :=
+  \pi_Y^*iV
+  =
+  V\times_{B_0}Y
+  \hookrightarrow
+  S^{\mathrm{can}}_Y.
+\]
+This gives a monotone map
+\[
+  J_Y:\mathbf{Coeq}_{A,B}
+  \longrightarrow
+  \operatorname{Pred}_Z(S^{\mathrm{can}}_Y).
+\]
+\end{definition}
+
+The three comparison operations fit into the diagram
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\operatorname{Pred}_Z(S^{\mathrm{can}}_Y)
+  \arrow[r, shift left=1.1ex, "\exists_{\pi_Y}"]
+  \arrow[r, shift right=1.1ex, "\forall_{\pi_Y}"']
+&
+\operatorname{Pred}_Z(\mathrm{Beh}_0)
+  \arrow[r, shift left=1.1ex, "\mathrm{Der}_0"]
+  \arrow[r, shift right=1.1ex, "\mathrm{DerInt}"']
+&
+\mathbf{Coeq}_{A,B}
+\\
+\mathbf{Coeq}_{A,B}
+  \arrow[u, "J_Y"]
+  \arrow[urr, phantom, "\dashv"]
+\end{tikzcd}
+\]
+where the displayed arrows encode the two composites defining
+\(\mathrm{May}_Y\) and \(\mathrm{Must}_Y\).
+
+\begin{theorem}[May--must coequational approximation]
+\label{thm:may-must-coequational-approximation}
+There is an adjoint triple of posets
+\[
+  \mathrm{May}_Y
+  \dashv
+  J_Y
+  \dashv
+  \mathrm{Must}_Y.
+\]
+Equivalently, for every canonical execution predicate
+\[
+  \psi\hookrightarrow S^{\mathrm{can}}_Y
+\]
+and every local coequational theory
+\[
+  V\hookrightarrow \mathrm{Beh}_0,
+\]
+one has
+\[
+  \mathrm{May}_Y(\psi)\leq V
+  \quad\Longleftrightarrow\quad
+  \psi\leq J_Y(V),
+\]
+and
+\[
+  J_Y(V)\leq\psi
+  \quad\Longleftrightarrow\quad
+  V\leq \mathrm{Must}_Y(\psi).
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Prove the left adjunction.}
+  The inequality
+  \[
+    \mathrm{May}_Y(\psi)\leq V
+  \]
+  is equivalent to
+  \[
+    \mathrm{Der}_0(\exists_{\pi_Y}\psi)\leq V.
+  \]
+  By
+  \[
+    \mathrm{Der}_0\dashv i,
+  \]
+  this is equivalent to
+  \[
+    \exists_{\pi_Y}\psi\leq iV.
+  \]
+  By
+  \[
+    \exists_{\pi_Y}\dashv \pi_Y^*,
+  \]
+  this is equivalent to
+  \[
+    \psi\leq \pi_Y^*iV=J_Y(V).
+  \]
+  Therefore
+  \[
+    \mathrm{May}_Y\dashv J_Y.
+  \]
+
+  \item \textbf{Prove the right adjunction.}
+  The inequality
+  \[
+    J_Y(V)\leq\psi
+  \]
+  is
+  \[
+    \pi_Y^*iV\leq\psi.
+  \]
+  By
+  \[
+    \pi_Y^*\dashv\forall_{\pi_Y},
+  \]
+  this is equivalent to
+  \[
+    iV\leq\forall_{\pi_Y}\psi.
+  \]
+  By
+  \[
+    i\dashv\mathrm{DerInt},
+  \]
+  this is equivalent to
+  \[
+    V\leq \mathrm{DerInt}(\forall_{\pi_Y}\psi)
+    =
+    \mathrm{Must}_Y(\psi).
+  \]
+  Therefore
+  \[
+    J_Y\dashv\mathrm{Must}_Y.
+  \]
+
+  \item \textbf{Assemble the triple.}
+  Combining the two adjunctions gives
+  \[
+    \mathrm{May}_Y
+    \dashv
+    J_Y
+    \dashv
+    \mathrm{Must}_Y.
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{remark}[Vacuity of universal projections]
+\label{rem:vacuity-universal-projections}
+The predicate
+\[
+  \forall_{\pi_Y}\psi
+\]
+is fibrewise universal along
+\[
+  \pi_Y:S^{\mathrm{can}}_Y\to\mathrm{Beh}_0.
+\]
+Thus a behaviour with empty \(\pi_Y\)-fibre satisfies it vacuously.  Write
+\[
+  \operatorname{supp}_Y:=\exists_{\pi_Y}\top.
+\]
+A non-vacuous universal projection is obtained by replacing
+\[
+  \forall_{\pi_Y}\psi
+\]
+with
+\[
+  \operatorname{supp}_Y\wedge \forall_{\pi_Y}\psi.
+\]
+Its coequational approximation is
+\[
+  \mathrm{DerInt}
+  \left(
+    \operatorname{supp}_Y\wedge \forall_{\pi_Y}\psi
+  \right).
+\]
+
+The right adjoint property in
+Theorem~\ref{thm:may-must-coequational-approximation} belongs to the
+vacuous universal projection.  For the non-vacuous construction, restrict the
+coequational side to the \(Y\)-supported local coequational theories
+\[
+  \mathbf{Coeq}^{Y\text{-supp}}_{A,B}
+  :=
+  \left\{
+    V\in\mathbf{Coeq}_{A,B}
+    \ \middle|\
+    iV\leq \operatorname{supp}_Y
+  \right\}.
+\]
+Then for every \(V\in \mathbf{Coeq}^{Y\text{-supp}}_{A,B}\),
+\[
+  J_Y(V)\leq\psi
+  \quad\Longleftrightarrow\quad
+  V\leq
+  \mathrm{DerInt}
+  \left(
+    \operatorname{supp}_Y\wedge \forall_{\pi_Y}\psi
+  \right).
+\]
+Thus the non-vacuous construction gives the largest \(Y\)-supported local
+coequational theory whose \(Y\)-extension lies in \(\psi\).
+\end{remark}
+
+\section{Coequations as Dynamic Invariants}
+\label{sec:coequations-as-dynamic-invariants}
+
+Local coequational theories are stable under residual derivatives.  Relative
+execution turns residual derivatives into primitive dynamic steps.  Therefore
+every local coequational theory induces an invariant predicate on canonical
+relative execution: once the residual behaviour lies in the theory, every
+primitive step keeps the residual behaviour inside the theory.
+
+Let
+\[
+  V\hookrightarrow\mathrm{Beh}_0
+\]
+be a local coequational theory.  Its canonical \(Y\)-extension is
+\[
+  V_Y:=J_Y(V)=V\times_{B_0}Y.
+\]
+The primitive canonical box is the predicate transformer
+\[
+  [m_{\mathrm{Beh},Y}](\varphi)
+  :=
+  \forall_{s_{\mathrm{Beh},Y}}
+  t_{\mathrm{Beh},Y}^*(\varphi).
+\]
+
+\begin{theorem}[Coequations induce primitive invariants]
+\label{thm:coequations-induce-primitive-invariants}
+For every local coequational theory \(V\), one has
+\[
+  V_Y\leq [m_{\mathrm{Beh},Y}]V_Y.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Transpose the desired invariant.}
+  By the adjunction
+  \[
+    s_{\mathrm{Beh},Y}^*\dashv\forall_{s_{\mathrm{Beh},Y}},
+  \]
+  it is enough to show
+  \[
+    s_{\mathrm{Beh},Y}^*V_Y
+    \leq
+    t_{\mathrm{Beh},Y}^*V_Y.
+  \]
+
+  \item \textbf{Describe a source element.}
+  A generalized element of \(s_{\mathrm{Beh},Y}^*V_Y\) is a triple
+  \[
+    (a,H,y)
+  \]
+  with
+  \[
+    t_A(a)=p_{\mathrm{Beh}}(H),
+    \qquad
+    q_{\mathrm{Beh}}(H)=r_Y(y),
+    \qquad
+    H\in V.
+  \]
+
+  \item \textbf{Compute its target.}
+  Its target is
+  \[
+    t_{\mathrm{Beh},Y}(a,H,y)
+    =
+    \left(
+      \partial_aH,
+      \sigma_Y(\omega_{\mathrm{Beh}}(a,H),y)
+    \right).
+  \]
+
+  \item \textbf{Use derivative closure.}
+  Since \(V\) is derivative-closed,
+  \[
+    H\in V
+    \quad\Longrightarrow\quad
+    \partial_aH\in V.
+  \]
+  Therefore the target lies in
+  \[
+    V\times_{B_0}Y=V_Y.
+  \]
+
+  \item \textbf{Conclude the invariant.}
+  Hence
+  \[
+    s_{\mathrm{Beh},Y}^*V_Y
+    \leq
+    t_{\mathrm{Beh},Y}^*V_Y.
+  \]
+  Transposing along
+  \(s_{\mathrm{Beh},Y}^*\dashv\forall_{s_{\mathrm{Beh},Y}}\) gives
+  \[
+    V_Y\leq [m_{\mathrm{Beh},Y}]V_Y.
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Pullback invariance]
+\label{cor:pullback-invariance}
+For every Mealy morphism
+\[
+  \Phi:P:A\rightsquigarrow B,
+\]
+one has
+\[
+  \beta_{P,Y}^*V_Y
+  \leq
+  [m_{\Phi,Y}]\beta_{P,Y}^*V_Y.
+\]
+If
+\[
+  P\models V,
+\]
+that is, if \(\beta_P:P\to\mathrm{Beh}_0\) factors through \(V\), then
+\[
+  \beta_{P,Y}^*V_Y
+  =
+  \top_{S_{\Phi,Y}}.
+\]
+\end{corollary}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Pull back the canonical invariant.}
+  Pull back
+  \[
+    V_Y\leq [m_{\mathrm{Beh},Y}]V_Y
+  \]
+  along
+  \[
+    \beta_{P,Y}:S_{\Phi,Y}\to S^{\mathrm{can}}_Y.
+  \]
+
+  \item \textbf{Use primitive canonical pullback semantics.}
+  By Corollary~\ref{cor:primitive-canonical-pullback-semantics}, the
+  pullback of the canonical primitive box is the primitive box for
+  \(m_{\Phi,Y}\).  Hence
+  \[
+    \beta_{P,Y}^*V_Y
+    \leq
+    [m_{\Phi,Y}]\beta_{P,Y}^*V_Y.
+  \]
+
+  \item \textbf{Handle the model case.}
+  If \(P\models V\), then \(\beta_P\) factors through \(V\).  Therefore
+  \[
+    \beta_{P,Y}:S_{\Phi,Y}\to S^{\mathrm{can}}_Y
+  \]
+  factors through
+  \[
+    V_Y\hookrightarrow S^{\mathrm{can}}_Y.
+  \]
+  Hence
+  \[
+    \beta_{P,Y}^*V_Y
+    =
+    \top_{S_{\Phi,Y}}.
+  \]
+\end{enumerate}
+\end{proof}
+
+\section{Formula-Generated Coequational Theories and Recognizers}
+\label{sec:formula-generated-theories-and-recognizers}
+
+A formula first denotes a predicate on a canonical execution object.  The may
+and must coequationalizations extract derivative-stable behaviour
+specifications from that predicate.  Applying the transition--output image
+construction then gives the algebraic recognizers associated to those
+specifications.
+
+Let
+\[
+  S^{\mathrm{can}}_Y\vdash \varphi\ \mathsf{prop}
+\]
+be a canonical execution formula with interpretation
+\[
+  \llbracket\varphi\rrbracket_{\mathrm{can},Y}
+  \hookrightarrow
+  S^{\mathrm{can}}_Y.
+\]
+
+\begin{definition}[Formula-generated coequational theories]
+\label{def:formula-generated-coequational-theories}
+The \textbf{existential coequational theory generated by \(\varphi\)} is
+\[
+  \mathrm{Th}^{\exists}_Y(\varphi)
+  :=
+  \mathrm{May}_Y
+  \left(
+    \llbracket\varphi\rrbracket_{\mathrm{can},Y}
+  \right).
+\]
+Equivalently,
+\[
+  \mathrm{Th}^{\exists}_Y(\varphi)
+  =
+  \mathrm{Der}_0
+  \left(
+    \exists_{\pi_Y}
+    \llbracket\varphi\rrbracket_{\mathrm{can},Y}
+  \right).
+\]
+
+The \textbf{universal coequational theory generated by \(\varphi\)} is
+\[
+  \mathrm{Th}^{\forall}_Y(\varphi)
+  :=
+  \mathrm{Must}_Y
+  \left(
+    \llbracket\varphi\rrbracket_{\mathrm{can},Y}
+  \right).
+\]
+Equivalently,
+\[
+  \mathrm{Th}^{\forall}_Y(\varphi)
+  =
+  \mathrm{DerInt}
+  \left(
+    \forall_{\pi_Y}
+    \llbracket\varphi\rrbracket_{\mathrm{can},Y}
+  \right).
+\]
+\end{definition}
+
+\begin{theorem}[Universal properties of formula-generated theories]
+\label{thm:formula-generated-universal-properties}
+For every local coequational theory \(V\),
+\[
+  \mathrm{Th}^{\exists}_Y(\varphi)\leq V
+\]
+if and only if
+\[
+  \llbracket\varphi\rrbracket_{\mathrm{can},Y}
+  \leq
+  J_Y(V).
+\]
+Furthermore,
+\[
+  V\leq\mathrm{Th}^{\forall}_Y(\varphi)
+\]
+if and only if
+\[
+  J_Y(V)\leq
+  \llbracket\varphi\rrbracket_{\mathrm{can},Y}.
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Substitute the formula interpretation.}
+  Apply Theorem~\ref{thm:may-must-coequational-approximation} to
+  \[
+    \psi=\llbracket\varphi\rrbracket_{\mathrm{can},Y}.
+  \]
+
+  \item \textbf{Read off the two adjunctions.}
+  The left adjunction gives the existential universal property, and the
+  right adjunction gives the universal universal property.
+\end{enumerate}
+\end{proof}
+
+\begin{proposition}[Monotonicity]
+\label{prop:formula-generated-monotonicity}
+If
+\[
+  \llbracket\varphi\rrbracket_{\mathrm{can},Y}
+  \leq
+  \llbracket\psi\rrbracket_{\mathrm{can},Y},
+\]
+then
+\[
+  \mathrm{Th}^{\exists}_Y(\varphi)
+  \leq
+  \mathrm{Th}^{\exists}_Y(\psi),
+\]
+and
+\[
+  \mathrm{Th}^{\forall}_Y(\varphi)
+  \leq
+  \mathrm{Th}^{\forall}_Y(\psi).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Use monotonicity of projection.}
+  The functors
+  \[
+    \exists_{\pi_Y},
+    \qquad
+    \forall_{\pi_Y}
+  \]
+  are monotone.
+
+  \item \textbf{Use monotonicity of coequationalization.}
+  The functors
+  \[
+    \mathrm{Der}_0,
+    \qquad
+    \mathrm{DerInt}
+  \]
+  are monotone.
+
+  \item \textbf{Compose the monotone maps.}
+  Since \(\mathrm{Th}^{\exists}_Y\) and
+  \(\mathrm{Th}^{\forall}_Y\) are the corresponding composites, both are
+  monotone.
+\end{enumerate}
+\end{proof}
+
+For a local coequational theory
+\[
+  V\hookrightarrow \mathrm{Beh}_0,
+\]
+the restricted canonical behaviour object carries a residual
+transition--output action
+\[
+  \chi_V:A^{\mathrm{op}}\longrightarrow \operatorname{KlEnd}_B(V).
+\]
+Its identity-on-objects regular image is denoted
+\[
+  \operatorname{Op}(V).
+\]
+
+\begin{definition}[Syntactic transition--output recognizers]
+\label{def:syntactic-transition-output-recognizers}
+For a canonical execution formula \(\varphi\), define its
+\textbf{existential syntactic transition--output recognizer} by
+\[
+  \operatorname{SynTO}^{\exists}_Y(\varphi)
+  :=
+  \operatorname{Op}
+  \left(
+    \mathrm{Th}^{\exists}_Y(\varphi)
+  \right),
+\]
+and define its \textbf{universal syntactic transition--output recognizer} by
+\[
+  \operatorname{SynTO}^{\forall}_Y(\varphi)
+  :=
+  \operatorname{Op}
+  \left(
+    \mathrm{Th}^{\forall}_Y(\varphi)
+  \right).
+\]
+\end{definition}
+
+Thus every canonical execution formula gives a pair of algebraic recognizers
+through the pipeline
+\[
+\begin{tikzcd}[column sep=large]
+\varphi
+  \arrow[r, mapsto]
+&
+\llbracket\varphi\rrbracket_{\mathrm{can},Y}
+  \arrow[r, mapsto]
+&
+\mathrm{Th}^{\exists/\forall}_Y(\varphi)
+  \arrow[r, mapsto]
+&
+\operatorname{SynTO}^{\exists/\forall}_Y(\varphi).
+\end{tikzcd}
+\]
+
+\section{Dynamic Span Logic}
+\label{sec:dynamic-span-logic-formal}
+
+A dynamic span
+\[
+  X\xleftarrow{\ell}U\xrightarrow{r}Y
+\]
+is read as a possibly nondeterministic program from \(X\) to \(Y\).  A point
+of \(U\) is an execution witness.  The map \(\ell\) records the starting
+state, and the map \(r\) records the ending state.  The diamond modality asks
+for the existence of an execution witness ending in a state satisfying the
+postcondition.  The box modality asks that every execution witness from the
+current state ends in a state satisfying the postcondition.
+
+\begin{definition}[Dynamic span from Chapter~\ref{ch:relative-mealy-program-categories}]
+\label{def:dynamic-span-recalled}
+A \textbf{dynamic span} in this appendix means one of the spans to which the
+dynamic predicate-transformer semantics of
+Chapter~\ref{ch:relative-mealy-program-categories}
+has already been applied.  Thus its diamond, and its box when present, are
+the predicate transformers
+\[
+  \langle U\rangle\varphi
+  :=
+  \exists_{\ell}r^*\varphi,
+  \qquad
+  [U]\varphi
+  :=
+  \forall_{\ell}r^*\varphi.
+\]
+\end{definition}
+
+\begin{proposition}[Adjoint rules for span modalities]
+\label{prop:adjoint-rules-span-modalities}
+Let
+\[
+  U=(X\xleftarrow{\ell}U\xrightarrow{r}Y)
+\]
+be a dynamic span from the earlier span semantics.  For predicates
+\[
+  \theta\hookrightarrow X,
+  \qquad
+  \varphi\hookrightarrow Y,
+\]
+one has
+\[
+  \langle U\rangle\varphi\leq \theta
+  \quad\Longleftrightarrow\quad
+  r^*\varphi\leq \ell^*\theta,
+\]
+and, in the box fragment,
+\[
+  \theta\leq [U]\varphi
+  \quad\Longleftrightarrow\quad
+  \ell^*\theta\leq r^*\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Transpose the diamond inequality.}
+  Since
+  \[
+    \langle U\rangle\varphi=\exists_{\ell}r^*\varphi,
+  \]
+  the adjunction
+  \[
+    \exists_{\ell}\dashv \ell^*
+  \]
+  gives
+  \[
+    \langle U\rangle\varphi\leq \theta
+    \quad\Longleftrightarrow\quad
+    r^*\varphi\leq \ell^*\theta.
+  \]
+
+  \item \textbf{Transpose the box inequality.}
+  In the box fragment,
+  \[
+    [U]\varphi=\forall_{\ell}r^*\varphi.
+  \]
+  The adjunction
+  \[
+    \ell^*\dashv\forall_{\ell}
+  \]
+  gives
+  \[
+    \theta\leq [U]\varphi
+    \quad\Longleftrightarrow\quad
+    \ell^*\theta\leq r^*\varphi.
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{definition}[Tests]
+\label{def:dynamic-tests}
+For a predicate
+\[
+  \theta\hookrightarrow X
+\]
+in a dynamic context where the test program was constructed in
+Chapter~\ref{ch:relative-mealy-program-categories},
+the \textbf{test program}
+\[
+  \theta?:X\rightsquigarrow X
+\]
+is the span
+\[
+  X\xleftarrow{\theta}\Theta\xrightarrow{\theta}X,
+\]
+where \(\Theta\hookrightarrow X\) represents \(\theta\).
+\end{definition}
+
+\begin{proposition}[Test laws]
+\label{prop:test-laws}
+For every predicate
+\[
+  \varphi\hookrightarrow X,
+\]
+one has
+\[
+  \langle\theta?\rangle\varphi
+  =
+  \theta\wedge\varphi.
+\]
+In the Heyting box fragment,
+\[
+  [\theta?]\varphi
+  =
+  \theta\Rightarrow\varphi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Compute the diamond.}
+  Since both legs of the test span are the inclusion
+  \[
+    \theta:\Theta\hookrightarrow X,
+  \]
+  the diamond is
+  \[
+    \exists_{\theta}\theta^*\varphi.
+  \]
+  This is the image of the pullback of \(\varphi\) to \(\Theta\), hence the
+  meet
+  \[
+    \theta\wedge\varphi.
+  \]
+
+  \item \textbf{Compute the box.}
+  The box is
+  \[
+    \forall_{\theta}\theta^*\varphi.
+  \]
+  This is characterized by the right adjoint to pullback along
+  \(\theta\).  In the Heyting subobject semantics, this right adjoint is
+  \[
+    \theta\Rightarrow\varphi.
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{definition}[Finite choice]
+\label{def:finite-choice-subprograms}
+For subprograms
+\[
+  U,V\hookrightarrow M
+\]
+of a common dynamic span
+\[
+  X\xleftarrow{\ell}M\xrightarrow{r}Y
+\]
+in the finite-choice fragment of
+Chapter~\ref{ch:relative-mealy-program-categories},
+their \textbf{finite choice} is the join
+\[
+  U\vee V\hookrightarrow M.
+\]
+\end{definition}
+
+\begin{proposition}[Finite-choice laws]
+\label{prop:finite-choice-laws}
+For finite-choice subprograms of a common dynamic span, one has
+\[
+  \langle U\vee V\rangle\varphi
+  =
+  \langle U\rangle\varphi
+  \vee
+  \langle V\rangle\varphi.
+\]
+In the box fragments where the corresponding universal decomposition was
+constructed, one has
+\[
+  [U\vee V]\varphi
+  =
+  [U]\varphi
+  \wedge
+  [V]\varphi.
+\]
+In particular, the box law holds for homwise coproduct choice in the modal
+feedback bases of Chapter~\ref{ch:feedback-trace}.
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Use finite-choice semantics for diamonds.}
+  The diamond law is the preservation of finite joins by existential image
+  along the common source map:
+  \[
+    \langle U\vee V\rangle\varphi
+    =
+    \langle U\rangle\varphi
+    \vee
+    \langle V\rangle\varphi.
+  \]
+
+  \item \textbf{Use finite-choice semantics for boxes.}
+  In the fragments where boxes for finite choice were constructed, the
+  corresponding universal decomposition gives
+  \[
+    [U\vee V]\varphi
+    =
+    [U]\varphi
+    \wedge
+    [V]\varphi.
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{definition}[Dynamic formula-generated theories]
+\label{def:dynamic-formula-generated-theories}
+For a dynamic formula
+\[
+  S^{\mathrm{can}}_Y\vdash\varphi\ \mathsf{prop},
+\]
+define its \textbf{existential dynamic formula-generated theory} by
+\[
+  \mathrm{Th}^{\exists,\mathrm{dyn}}_Y(\varphi)
+  :=
+  \mathrm{Th}^{\exists}_Y(\varphi),
+\]
+and define its \textbf{universal dynamic formula-generated theory} by
+\[
+  \mathrm{Th}^{\forall,\mathrm{dyn}}_Y(\varphi)
+  :=
+  \mathrm{Th}^{\forall}_Y(\varphi).
+\]
+\end{definition}
+
+Thus dynamic span logic contributes canonical execution predicates, and the
+coequational semantics of those predicates is the may--must construction of
+Theorem~\ref{thm:may-must-coequational-approximation}.
+
+\section{Guarded Response-Profile Logic}
+\label{sec:guarded-response-profile-logic-formal}
+
+The response-profile language inspects the labelled data of one execution
+step.  A guarded profile can mention the input arrow, the output-comparison
+arrow, the downstream transition, and the next state.  Flattening identifies
+this polynomial description with an ordinary dynamic span whose apex is the
+object of response positions satisfying the same guards.
+
+This section uses the relative response polynomial
+\[
+  M_{A,B,Y}:\mathcal E/S\to \mathcal E/S
+\]
+constructed in Chapter~\ref{ch:polynomial-relative-mealy-actions}.  For each
+state object \(S\) over the relative interface, write
+\[
+  M_{A,B,Y}(S)
+\]
+for its response object.
+
+\begin{definition}[Response positions]
+\label{def:response-positions}
+For a state object \(S\), let
+\[
+  \operatorname{Pos}_{A,B,Y}(S)
+\]
+be the \textbf{position object} of the response polynomial over \(S\).  It is
+equipped with a position projection
+\[
+  \partial_S:
+  \operatorname{Pos}_{A,B,Y}(S)
+  \longrightarrow
+  M_{A,B,Y}(S),
+\]
+and structural maps
+\[
+  \mathrm{in}:
+  \operatorname{Pos}_{A,B,Y}(S)\to A_1,
+\]
+\[
+  \mathrm{out}:
+  \operatorname{Pos}_{A,B,Y}(S)\to B_1,
+\]
+\[
+  \mathrm{down}:
+  \operatorname{Pos}_{A,B,Y}(S)\to
+  \left(\int_B Y\right)_1,
+\]
+and
+\[
+  \mathrm{next}:
+  \operatorname{Pos}_{A,B,Y}(S)\to S.
+\]
+\end{definition}
+
+Let
+\[
+  R\hookrightarrow A_1,
+  \qquad
+  O\hookrightarrow B_1,
+  \qquad
+  T\hookrightarrow \left(\int_B Y\right)_1
+\]
+be predicates.  Let
+\[
+  G^S_{R/O/T}\hookrightarrow \operatorname{Pos}_{A,B,Y}(S)
+\]
+be the response-position predicate
+\[
+  G^S_{R/O/T}
+  :=
+  \mathrm{in}^*R
+  \wedge
+  \mathrm{out}^*O
+  \wedge
+  \mathrm{down}^*T.
+\]
+Write
+\[
+  \partial^G_S:G^S_{R/O/T}\to M_{A,B,Y}(S),
+  \qquad
+  \mathrm{next}^G:G^S_{R/O/T}\to S
+\]
+for the restrictions of \(\partial_S\) and \(\mathrm{next}\).
+
+For a predicate
+\[
+  \varphi\hookrightarrow S,
+\]
+the guarded existential profile lifting constructed in
+Chapter~\ref{ch:polynomial-relative-mealy-actions} is
+\[
+  \lambda_{R/O/T}^S(\varphi)
+  \hookrightarrow
+  M_{A,B,Y}(S),
+\]
+given by
+\[
+  \lambda_{R/O/T}^S(\varphi)
+  :=
+  \exists_{\partial^G_S}
+  \left(
+    (\mathrm{next}^G)^*\varphi
+  \right).
+\]
+The weak guarded universal profile lifting is the corresponding box lifting
+that agrees with the flattened guarded span box; write it as
+\[
+  \rho^{\mathrm{wk},S}_{R/O/T}(\varphi).
+\]
+
+For a Mealy morphism
+\[
+  \Phi:P:A\rightsquigarrow B
+\]
+and a right \(B\)-action \(Y\), let
+\[
+  c_{\Phi,Y}:S_{\Phi,Y}\to M_{A,B,Y}(S_{\Phi,Y})
+\]
+be the induced response coalgebra.  The canonical response coalgebra is
+\[
+  c_{\mathrm{Beh},Y}:
+  S^{\mathrm{can}}_Y
+  \to
+  M_{A,B,Y}(S^{\mathrm{can}}_Y).
+\]
+
+\begin{definition}[Guarded profile modalities]
+\label{def:guarded-profile-modalities}
+Let
+\[
+  \theta\hookrightarrow S_{\Phi,Y}
+\]
+be a state guard.  The \textbf{guarded profile diamond} is the modality
+constructed in Chapter~\ref{ch:polynomial-relative-mealy-actions}; its
+interpretation is
+\[
+  \llbracket
+    \langle\theta;R/O/T\rangle\varphi
+  \rrbracket_{\Phi,Y}
+  :=
+  \theta
+  \wedge
+  c_{\Phi,Y}^*
+  \lambda_{R/O/T}^{S_{\Phi,Y}}
+  \left(
+    \llbracket\varphi\rrbracket_{\Phi,Y}
+  \right).
+\]
+
+The \textbf{weak guarded profile box} is the box that agrees with the box of
+the flattened guarded span:
+\[
+  \llbracket
+    [\theta;R/O/T]_{\mathrm{wk}}\varphi
+  \rrbracket_{\Phi,Y}
+  :=
+  \theta
+  \Rightarrow
+  c_{\Phi,Y}^*
+  \rho^{\mathrm{wk},S_{\Phi,Y}}_{R/O/T}
+  \left(
+    \llbracket\varphi\rrbracket_{\Phi,Y}
+  \right).
+\]
+
+The \textbf{strong guarded profile box} is the stronger profile-level
+predicate transformer of Chapter~\ref{ch:polynomial-relative-mealy-actions}.
+It is first interpreted as a predicate on the canonical relative execution
+object \(S^{\mathrm{can}}_Y\), via the canonical response coalgebra
+\(c_{\mathrm{Beh},Y}\).  Its coequational semantics is then obtained by
+applying \(\mathrm{May}_Y\) or \(\mathrm{Must}_Y\) to that canonical
+predicate.
+\end{definition}
+
+\begin{definition}[Flattening of a guarded profile]
+\label{def:flattening-guarded-profile}
+The \textbf{flattened span program} associated to
+\[
+  \langle\theta;R/O/T\rangle
+\]
+is the guarded subspan of the primitive execution span whose apex is the
+subobject of response positions satisfying
+\[
+  \theta,
+  \qquad
+  R,
+  \qquad
+  O,
+  \qquad
+  T.
+\]
+It is denoted
+\[
+  \langle\theta;R/O/T\rangle_{\mathrm{span}}.
+\]
+The flattened span program associated to
+\[
+  [\theta;R/O/T]_{\mathrm{wk}}
+\]
+uses the same guarded response-position apex and the box predicate
+transformer of that span.
+\end{definition}
+
+The comparison between profile semantics and span semantics is represented
+by
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+G^S_{R/O/T}
+  \arrow[r, hook]
+  \arrow[d, "\partial^G_S"']
+  \arrow[dr, phantom, very near start, "\lrcorner"]
+&
+\operatorname{Pos}_{A,B,Y}(S)
+  \arrow[d, "\partial_S"]
+  \arrow[r, "\mathrm{next}"]
+&
+S
+\\
+M_{A,B,Y}(S)
+  &
+M_{A,B,Y}(S)
+  \arrow[l, equal]
+&
+\end{tikzcd}
+\]
+together with the coalgebra map
+\[
+  c_{\Phi,Y}:S_{\Phi,Y}\to M_{A,B,Y}(S_{\Phi,Y}).
+\]
+Pulling guarded profile predicates back along \(c_{\Phi,Y}\) produces the
+same predicate transformer as the guarded subspan obtained by flattening.
+
+\begin{theorem}[Profile flattening]
+\label{thm:profile-flattening}
+For every guarded profile diamond formula
+\[
+  \rho=\langle\theta;R/O/T\rangle\varphi,
+\]
+one has
+\[
+  \llbracket \rho\rrbracket_{\Phi,Y}
+  =
+  \llbracket \rho^\flat\rrbracket_{\Phi,Y},
+\]
+where \(\rho^\flat\) is the corresponding flattened dynamic-span formula.
+The same equality holds for weak guarded profile boxes.  Strong profile boxes
+are interpreted as canonical predicates and then coequationalized by the same
+may--must construction.  In particular,
+\[
+  \llbracket \rho\rrbracket_{\mathrm{can},Y}
+  =
+  \llbracket \rho^\flat\rrbracket_{\mathrm{can},Y}
+\]
+for diamonds and weak boxes.
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Identify the guarded response-position object.}
+  The response-profile diamond interpretation is the pullback along
+  \[
+    c_{\Phi,Y}
+  \]
+  of an existential projection along the guarded position projection
+  \[
+    \partial^G_S:G^S_{R/O/T}\to M_{A,B,Y}(S).
+  \]
+
+  \item \textbf{Compare with the flattened span.}
+  Flattening identifies \(G^S_{R/O/T}\) with the apex of a guarded subspan of
+  the primitive execution span.  The source and target maps of that subspan
+  are the current-state and continuation maps induced by the response
+  position.
+
+  \item \textbf{Conclude equality for diamonds.}
+  Under this identification, both semantics compute the same existential
+  predicate transformer.  Therefore the profile diamond and its flattened
+  dynamic-span diamond have equal interpretations.
+
+  \item \textbf{Conclude equality for weak boxes.}
+  The weak box interpretation is the corresponding universal projection for
+  the same guarded response-position object.  Hence it agrees with the box of
+  the flattened guarded span.
+
+  \item \textbf{Handle the canonical case.}
+  The same argument applies with
+  \[
+    S=S^{\mathrm{can}}_Y.
+  \]
+  Thus canonical interpretations agree for diamonds and weak boxes.
+
+  \item \textbf{Record the strong-box case.}
+  Strong profile boxes are not identified with flattened span boxes here.
+  They are treated as canonical predicates and then passed through the same
+  may--must coequationalization.
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Profile coequationalization agrees with flattening]
+\label{cor:profile-coequationalization-flattening}
+For every guarded profile diamond formula \(\rho\),
+\[
+  \mathrm{Th}^{\exists}_Y(\rho)
+  =
+  \mathrm{Th}^{\exists}_Y(\rho^\flat).
+\]
+For every weak guarded profile box formula \(\rho\),
+\[
+  \mathrm{Th}^{\forall}_Y(\rho)
+  =
+  \mathrm{Th}^{\forall}_Y(\rho^\flat).
+\]
+\end{corollary}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Use canonical equality.}
+  By Theorem~\ref{thm:profile-flattening}, the canonical interpretations
+  agree.
+
+  \item \textbf{Apply coequationalization.}
+  Applying
+  \[
+    \mathrm{May}_Y
+    \qquad
+    \text{and}
+    \qquad
+    \mathrm{Must}_Y
+  \]
+  gives the displayed equalities of generated coequational theories.
+\end{enumerate}
+\end{proof}
+
+\section{Cubical Execution Logic and Sequential Projections}
+\label{sec:cubical-execution-logic-formal}
+
+Cubical execution predicates may observe higher-dimensional execution cells.
+Such predicates live on cubical execution objects rather than on ordinary
+residual behaviour objects.  The construction in this section does not define
+cubical coequations.  It extracts ordinary residual-behaviour coequations
+from cubical observations by applying one of the sequential behaviour
+projections already present in the cubical semantics.
+
+Let \(F\) be a finite tensor context of evaluated Mealy executions
+\[
+  (\Phi_i,Y_i)_{i\in I}.
+\]
+Write
+\[
+  S_F:=\prod_{i\in I}S_{\Phi_i,Y_i}
+\]
+for the product state object.  For a Boolean interval
+\[
+  \alpha\leq\beta
+\]
+in \(2^I\), write
+\[
+  E^F_{\alpha,\beta}
+\]
+for the corresponding interval-cubical execution object.  Its lower and upper
+endpoint maps are
+\[
+  d^\alpha_{\alpha,\beta},
+  \qquad
+  d^\beta_{\alpha,\beta}.
+\]
+The canonical interval-cubical execution object is denoted
+\[
+  E^{\mathrm{can},F}_{\alpha,\beta}.
+\]
+
+Residual semantics induces comparison maps
+\[
+  \beta^\square_{F,\alpha,\beta}:
+  E^F_{\alpha,\beta}
+  \longrightarrow
+  E^{\mathrm{can},F}_{\alpha,\beta}.
+\]
+For a cubical context \(\Gamma\), write
+\[
+  \beta^\Gamma_F:
+  \llbracket\Gamma\rrbracket_F
+  \longrightarrow
+  \llbracket\Gamma\rrbracket_{\mathrm{can},F}
+\]
+for the induced comparison map.
+
+\begin{definition}[Cell diamond]
+\label{def:cell-diamond}
+Let
+\[
+  U\hookrightarrow E^F_{\alpha,\beta}
+\]
+be a guarded interval subobject from the dynamic-CETT fragment.  The
+\textbf{cell diamond} is interpreted by
+\[
+  \llbracket
+    \langle U\rangle_{\alpha,\beta}\varphi
+  \rrbracket_F
+  :=
+  \exists_{d^\alpha_{\alpha,\beta}|_U}
+  \left(
+    (d^\beta_{\alpha,\beta}|_U)^*
+    \llbracket\varphi\rrbracket_F
+  \right).
+\]
+\end{definition}
+
+\begin{theorem}[Cubical truth is pulled back from canonical cubical execution]
+\label{thm:cubical-truth-pullback}
+Let
+\[
+  \Gamma\vdash\chi\ \mathsf{prop}
+\]
+be a CETT or dynamic-CETT formula from the fragments constructed in
+Chapter~\ref{ch:cubical-mealy-execution-concurrency-types}.  If its atomic
+predicates and guarded cell subobjects are canonical, then
+\[
+  \llbracket\chi\rrbracket_F
+  =
+  (\beta^\Gamma_F)^*
+  \llbracket\chi\rrbracket_{\mathrm{can},F}.
+\]
+For formulas involving finite iteration, this statement is read in the
+path-star fragment already constructed using the finite-path semantics of
+Chapter~\ref{ch:feedback-trace}.
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Handle the finite-limit fragment.}
+  The finite-limit part of CETT is interpreted by products, pullbacks, face
+  maps, endpoint maps, and profile maps.  These constructions are natural
+  under residual semantics.  Hence the claim holds for the finite-limit
+  fragment.
+
+  \item \textbf{Set up the guarded cell square.}
+  For a cell diamond, canonicality of the guard gives a pullback square
+  \[
+  \begin{tikzcd}[column sep=large,row sep=large]
+  U_F
+    \arrow[r]
+    \arrow[d, "d^\alpha|_{U_F}"']
+  &
+  U_{\mathrm{can}}
+    \arrow[d, "d^\alpha|_{U_{\mathrm{can}}}"]
+  \\
+  \llbracket\Gamma\rrbracket_F
+    \arrow[r, "\beta^\Gamma_F"']
+  &
+  \llbracket\Gamma\rrbracket_{\mathrm{can},F}
+    \arrow[ul, phantom, very near start, "\lrcorner"]
+  \end{tikzcd}
+  \]
+  and the upper endpoint maps commute with the same comparison:
+  \[
+  \begin{tikzcd}[column sep=large]
+  U_F
+    \arrow[r]
+    \arrow[d, "d^\beta|_{U_F}"']
+  &
+  U_{\mathrm{can}}
+    \arrow[d, "d^\beta|_{U_{\mathrm{can}}}"]
+  \\
+  \llbracket\Gamma\rrbracket_F
+    \arrow[r, "\beta^\Gamma_F"']
+  &
+  \llbracket\Gamma\rrbracket_{\mathrm{can},F}.
+  \end{tikzcd}
+  \]
+
+  \item \textbf{Apply Beck--Chevalley.}
+  Beck--Chevalley for the lower endpoint map gives compatibility of the
+  existential predicate transformer with residual pullback.  The box case,
+  when included in the formula syntax, uses the right-adjoint
+  Beck--Chevalley law.
+
+  \item \textbf{Handle finite iteration.}
+  For finite iteration modalities, the result is the corresponding
+  path-star/fixed-point compatibility from the finite-path semantics already
+  used by the dynamic cubical fragment.
+
+  \item \textbf{Conclude by induction.}
+  The result follows by induction on formulas.
+\end{enumerate}
+\end{proof}
+
+Cubical formulas produce predicates on cubical execution objects.  To obtain
+ordinary local coequational theories, one uses a sequential behaviour
+projection already supplied by the cubical observation.
+
+\begin{definition}[Sequential behaviour projection supplied by a cubical observation]
+\label{def:sequential-behaviour-projection}
+A \textbf{sequential behaviour projection} is one of the behaviour
+projections arising from the cubical execution constructions of
+Chapter~\ref{ch:cubical-mealy-execution-concurrency-types}.  For example,
+in a single-component interval, the lower endpoint residual-behaviour
+projection gives
+\[
+  q_{\alpha,\beta}:
+  E^{\mathrm{can},F}_{\alpha,\beta}
+  \longrightarrow
+  \mathrm{Beh}_{A^\sharp,B^\sharp,0}.
+\]
+This appendix introduces no additional cubical behaviour object and no
+additional cubical-to-sequential projection.
+\end{definition}
+
+\begin{definition}[Cubical sequential coequational projections]
+\label{def:cubical-sequential-coequational-projections}
+Let
+\[
+  \chi\hookrightarrow E^{\mathrm{can},F}_{\alpha,\beta}
+\]
+be a canonical cubical predicate, and let
+\[
+  q_{\alpha,\beta}:
+  E^{\mathrm{can},F}_{\alpha,\beta}
+  \to
+  \mathrm{Beh}_{A^\sharp,B^\sharp,0}
+\]
+be a sequential behaviour projection supplied by the cubical semantics.
+Define the \textbf{existential cubical sequential coequational projection} by
+\[
+  \mathrm{Th}^{\exists,\square}_{\alpha,\beta}(\chi)
+  :=
+  \mathrm{Der}^{A^\sharp,B^\sharp}_0
+  \left(
+    \exists_{q_{\alpha,\beta}}\chi
+  \right),
+\]
+and define the \textbf{universal cubical sequential coequational projection}
+by
+\[
+  \mathrm{Th}^{\forall,\square}_{\alpha,\beta}(\chi)
+  :=
+  \mathrm{DerInt}^{A^\sharp,B^\sharp}
+  \left(
+    \forall_{q_{\alpha,\beta}}\chi
+  \right).
+\]
+These are local coequational theories in
+\[
+  \mathbf{Coeq}_{A^\sharp,B^\sharp}.
+\]
+\end{definition}
+
+\begin{remark}[Ordinary rather than cubical coequations]
+\label{rem:ordinary-rather-than-cubical-coequations}
+The construction above produces ordinary residual-behaviour projections of
+cubical observations.  A full non-interleaving coequational theory would
+require a cubical behaviour object, for example an object
+\[
+  \mathrm{Beh}^{\square}_{A,B},
+\]
+together with an appropriate notion of cubical derivative-closed subobject.
+The present appendix uses the ordinary coequational semantics already
+constructed for residual behaviours.
+\end{remark}
+
+\section{Finite Paths and Feedback Trace}
+\label{sec:finite-paths-feedback-trace-formal}
+
+Finite-path semantics internalizes repeated execution.  The diamond
+\[
+  \langle p^\star\rangle\varphi
+\]
+says that some finite number of \(p\)-steps reaches \(\varphi\).  The box
+\[
+  [p^\star]\varphi
+\]
+says that all finite \(p\)-executions remain within the specified
+postcondition, in the sense encoded by the finite-path semantics of
+Chapter~\ref{ch:feedback-trace}.  Feedback trace
+adds a hidden interface: an execution may move from the visible part into the
+hidden part, iterate there for finitely many hidden steps, and then return to
+the visible part.
+
+In this section we use the modal feedback base of
+Chapter~\ref{ch:feedback-trace}.  Thus finite path
+spans, feedback trace spans, fixed-point interpretations of the corresponding
+predicate transformers, and the associated Beck--Chevalley laws are exactly
+the structures already used there.
+
+Let
+\[
+  p:X\rightsquigarrow X
+\]
+be an endospan in the finite-path fragment.  Its finite-path span is denoted
+\[
+  p^\star:X\rightsquigarrow X.
+\]
+The diamond of finite iteration is interpreted by the least fixed point
+\[
+  \langle p^\star\rangle\varphi
+  =
+  \mu Z.\,(\varphi\vee \langle p\rangle Z).
+\]
+The box of finite iteration is interpreted by the greatest fixed point
+\[
+  [p^\star]\varphi
+  =
+  \nu Z.\,(\varphi\wedge [p]Z).
+\]
+
+Let
+\[
+  R:X+H\rightsquigarrow Y+H
+\]
+be a feedback span.  Its block decomposition is written
+\[
+  R=
+  \begin{pmatrix}
+    R_{XY} & R_{XH}\\
+    R_{HY} & R_{HH}
+  \end{pmatrix}.
+\]
+The feedback trace is
+\[
+  \operatorname{Tr}^H(R)
+  =
+  R_{XY}
+  \boxplus
+  R_{HY}\circ \operatorname{Path}(R_{HH})\circ R_{XH}.
+\]
+
+When the box fragment of the feedback semantics is available, the box
+\[
+  [\operatorname{Tr}^H(R)]
+\]
+denotes the universal predicate transformer of the traced feedback span
+constructed in
+Chapter~\ref{ch:feedback-trace}.
+
+\begin{proposition}[Trace diamond]
+\label{prop:trace-diamond}
+For a postcondition
+\[
+  \varphi\hookrightarrow Y,
+\]
+one has
+\[
+  \langle\operatorname{Tr}^H(R)\rangle\varphi
+  =
+  \langle R_{XY}\rangle\varphi
+  \vee
+  \langle R_{XH}\rangle
+  \mu Z.
+  \left(
+    \langle R_{HY}\rangle\varphi
+    \vee
+    \langle R_{HH}\rangle Z
+  \right).
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Decompose the trace span.}
+  The trace span decomposes as the finite choice of the direct visible branch
+  \[
+    R_{XY}
+  \]
+  and the branch that enters the hidden interface through \(R_{XH}\), iterates
+  inside \(H\) along \(R_{HH}\), and exits through \(R_{HY}\).
+
+  \item \textbf{Apply finite choice.}
+  The diamond of a finite choice is the join of the diamonds of the chosen
+  branches.
+
+  \item \textbf{Apply finite-path semantics.}
+  The hidden iteration is interpreted by the least fixed point
+  \[
+    \mu Z.
+    \left(
+      \langle R_{HY}\rangle\varphi
+      \vee
+      \langle R_{HH}\rangle Z
+    \right).
+  \]
+
+  \item \textbf{Assemble the formula.}
+  Combining the direct branch and hidden branch gives the displayed
+  expression.
+\end{enumerate}
+\end{proof}
+
+Let
+\[
+  S=S^{\mathrm{can}}_Y.
+\]
+Let
+\[
+  U:S\rightsquigarrow S
+\]
+be a canonical relative execution sub-endospan.  Define
+\[
+  L_U:S+S\rightsquigarrow S+S
+\]
+by
+\[
+  L_U
+  =
+  \begin{pmatrix}
+    0_{S,S} & 1_S\\
+    1_S & U
+  \end{pmatrix},
+\]
+where the first copy of \(S\) is visible and the second copy is hidden.
+
+\begin{theorem}[Path-star as feedback trace]
+\label{thm:path-star-as-feedback-trace}
+There is an isomorphism of spans
+\[
+  \operatorname{Tr}^S(L_U)
+  \cong
+  \operatorname{Path}(U).
+\]
+Consequently, for every postcondition
+\[
+  \varphi\hookrightarrow S,
+\]
+one has
+\[
+  \mathrm{Th}^{\exists}_Y
+  \left(
+    \langle U^\star\rangle\varphi
+  \right)
+  =
+  \mathrm{Th}^{\exists}_Y
+  \left(
+    \langle\operatorname{Tr}^S(L_U)\rangle\varphi
+  \right),
+\]
+and
+\[
+  \mathrm{Th}^{\forall}_Y
+  \left(
+    [U^\star]\varphi
+  \right)
+  =
+  \mathrm{Th}^{\forall}_Y
+  \left(
+    [\operatorname{Tr}^S(L_U)]\varphi
+  \right).
+\]
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Compute the trace blockwise.}
+  For the matrix \(L_U\), the visible-to-visible block is empty, the
+  visible-to-hidden block is the identity, the hidden-to-visible block is the
+  identity, and the hidden-to-hidden block is \(U\).  Hence the trace formula
+  gives
+  \[
+    \operatorname{Tr}^S(L_U)
+    =
+    0_{S,S}
+    \boxplus
+    1_S\circ\operatorname{Path}(U)\circ 1_S.
+  \]
+
+  \item \textbf{Cancel the identities and empty branch.}
+  The right-hand side is canonically isomorphic to
+  \[
+    \operatorname{Path}(U).
+  \]
+
+  \item \textbf{Pass to predicate transformers.}
+  Isomorphic spans induce equal predicate transformers.  Therefore
+  \[
+    \langle U^\star\rangle\varphi
+    =
+    \langle\operatorname{Tr}^S(L_U)\rangle\varphi
+  \]
+  and
+  \[
+    [U^\star]\varphi
+    =
+    [\operatorname{Tr}^S(L_U)]\varphi
+  \]
+  in the corresponding box fragment.
+
+  \item \textbf{Apply coequationalization.}
+  Applying
+  \[
+    \mathrm{May}_Y
+    \qquad
+    \text{and}
+    \qquad
+    \mathrm{Must}_Y
+  \]
+  gives the displayed equalities of coequational theories.
+\end{enumerate}
+\end{proof}
+
+\section{Stability under Downstream Change and Simulation}
+\label{sec:stability-downstream-simulation-formal}
+
+The constructions are functorial in two directions.  Changing the downstream
+action changes the environment in which output comparisons are evaluated.  A
+morphism of right actions therefore gives substitution of predicates along
+the induced map of execution objects.  A Mealy simulation changes the program
+being observed.  Since relative program categories are contravariant in
+simulations, simulation induces predicate substitution in the opposite
+direction.
+
+\subsection{Downstream Change}
+\label{subsec:downstream-change-formal}
+
+Let
+\[
+  g:Y\to Y'
+\]
+be a morphism of right \(B\)-actions.  It induces maps
+\[
+  1_P\times_{B_0} g:
+  S_{\Phi,Y}
+  \longrightarrow
+  S_{\Phi,Y'},
+\]
+and
+\[
+  h:=1_{\mathrm{Beh}}\times_{B_0} g:
+  S^{\mathrm{can}}_Y
+  \longrightarrow
+  S^{\mathrm{can}}_{Y'}.
+\]
+The canonical projections satisfy
+\[
+  \pi_Y=\pi_{Y'}h.
+\]
+
+The downstream comparison triangle is
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+S^{\mathrm{can}}_Y
+  \arrow[rr, "h"]
+  \arrow[dr, "\pi_Y"']
+&&
+S^{\mathrm{can}}_{Y'}
+  \arrow[dl, "\pi_{Y'}"]
+\\
+&
+\mathrm{Beh}_0 .
+\end{tikzcd}
+\]
+
+\begin{proposition}[Downstream substitution]
+\label{prop:downstream-substitution}
+For every formula
+\[
+  S_{\Phi,Y'}\vdash\varphi\ \mathsf{prop}
+\]
+in the dynamic, guarded, cubical, or trace fragment under consideration,
+there is a substituted formula
+\[
+  S_{\Phi,Y}\vdash (1_P\times_{B_0} g)^*\varphi\ \mathsf{prop}.
+\]
+Moreover,
+\[
+  \varphi\leq\psi
+  \quad\Longrightarrow\quad
+  (1_P\times_{B_0} g)^*\varphi
+  \leq
+  (1_P\times_{B_0} g)^*\psi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Handle atomic predicates.}
+  Atomic predicates are pulled back along
+  \[
+    1_P\times_{B_0} g.
+  \]
+
+  \item \textbf{Handle propositional structure.}
+  Pullback preserves the propositional structure of the fragment.
+
+  \item \textbf{Handle modalities.}
+  For modalities, equivariance of \(g\) gives the corresponding morphisms of
+  relative execution spans.  The relevant source squares are the
+  Beck--Chevalley squares already used in the earlier downstream-stability
+  results.
+
+  \item \textbf{Handle guarded, cubical, path, and trace constructors.}
+  These constructors are stable by the same functoriality of their execution
+  objects.
+
+  \item \textbf{Conclude by induction.}
+  The substituted formula exists by induction on formula formation, and
+  monotonicity follows because pullback is monotone.
+\end{enumerate}
+\end{proof}
+
+\begin{proposition}[Downstream comparison of coequational projections]
+\label{prop:downstream-comparison-coequational-projections}
+Let
+\[
+  \psi'\hookrightarrow S^{\mathrm{can}}_{Y'}
+\]
+be a canonical execution predicate.  Then
+\[
+  \mathrm{May}_Y(h^*\psi')
+  \leq
+  \mathrm{May}_{Y'}(\psi').
+\]
+Furthermore,
+\[
+  \mathrm{Must}_{Y'}(\psi')
+  \leq
+  \mathrm{Must}_Y(h^*\psi').
+\]
+If the triangle
+\[
+  \pi_Y=\pi_{Y'}h
+\]
+is exact for both existential and universal projection in the sense already
+used by the downstream-stability theorem of the relevant fragment, then the
+corresponding inequalities are equalities.
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Compare existential projections.}
+  Since
+  \[
+    \pi_Y=\pi_{Y'}h,
+  \]
+  the unit of
+  \[
+    \exists_{\pi_{Y'}}\dashv \pi_{Y'}^*
+  \]
+  gives
+  \[
+    \psi'\leq
+    \pi_{Y'}^*\exists_{\pi_{Y'}}\psi'.
+  \]
+  Pulling back along \(h\) gives
+  \[
+    h^*\psi'
+    \leq
+    \pi_Y^*\exists_{\pi_{Y'}}\psi'.
+  \]
+  By the adjunction
+  \[
+    \exists_{\pi_Y}\dashv \pi_Y^*,
+  \]
+  this yields
+  \[
+    \exists_{\pi_Y}h^*\psi'
+    \leq
+    \exists_{\pi_{Y'}}\psi'.
+  \]
+  Applying the monotone functor \(\mathrm{Der}_0\) gives
+  \[
+    \mathrm{May}_Y(h^*\psi')
+    \leq
+    \mathrm{May}_{Y'}(\psi').
+  \]
+
+  \item \textbf{Compare universal projections.}
+  The counit of
+  \[
+    \pi_{Y'}^*\dashv\forall_{\pi_{Y'}}
+  \]
+  gives
+  \[
+    \pi_{Y'}^*\forall_{\pi_{Y'}}\psi'
+    \leq
+    \psi'.
+  \]
+  Pulling back along \(h\) gives
+  \[
+    \pi_Y^*\forall_{\pi_{Y'}}\psi'
+    \leq
+    h^*\psi'.
+  \]
+  By the adjunction
+  \[
+    \pi_Y^*\dashv\forall_{\pi_Y},
+  \]
+  this yields
+  \[
+    \forall_{\pi_{Y'}}\psi'
+    \leq
+    \forall_{\pi_Y}h^*\psi'.
+  \]
+  Applying the monotone functor \(\mathrm{DerInt}\) gives
+  \[
+    \mathrm{Must}_{Y'}(\psi')
+    \leq
+    \mathrm{Must}_Y(h^*\psi').
+  \]
+
+  \item \textbf{Identify the equality case.}
+  If the projection triangle is exact for both existential and universal
+  projection in the imported downstream-stability theorem, then the two
+  comparison inequalities before applying \(\mathrm{Der}_0\) and
+  \(\mathrm{DerInt}\) are equalities.  Hence the corresponding
+  coequational comparisons are equalities.
+\end{enumerate}
+\end{proof}
+
+\subsection{Simulation Substitution}
+\label{subsec:simulation-substitution-formal}
+
+Let
+\[
+  \Theta:\Phi\Rightarrow\Psi
+\]
+be a Mealy simulation.  Relative program categories are contravariant in
+Mealy simulations.  Hence \(\Theta\) induces a functor
+\[
+  H_{\Theta,Y}:
+  \operatorname{Prog}_{\Psi,Y}
+  \longrightarrow
+  \operatorname{Prog}_{\Phi,Y}.
+\]
+On state objects, write the associated comparison as
+\[
+  h_{\Theta,Y}:
+  S_{\Psi,Y}\longrightarrow S_{\Phi,Y}.
+\]
+It induces predicate substitution
+\[
+  h_{\Theta,Y}^*:
+  \operatorname{Pred}(S_{\Phi,Y})
+  \longrightarrow
+  \operatorname{Pred}(S_{\Psi,Y}).
+\]
+
+\begin{proposition}[Simulation substitution]
+\label{prop:simulation-substitution-logical}
+For every formula
+\[
+  S_{\Phi,Y}\vdash\varphi\ \mathsf{prop}
+\]
+in the fragment under consideration, there is a substituted formula
+\[
+  S_{\Psi,Y}\vdash h_{\Theta,Y}^*\varphi\ \mathsf{prop}.
+\]
+Moreover,
+\[
+  \varphi\leq\psi
+  \quad\Longrightarrow\quad
+  h_{\Theta,Y}^*\varphi
+  \leq
+  h_{\Theta,Y}^*\psi.
+\]
+\end{proposition}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Handle atomic predicates.}
+  Atomic predicates are pulled back along
+  \[
+    h_{\Theta,Y}.
+  \]
+
+  \item \textbf{Handle propositional structure.}
+  Pullback preserves the propositional connectives available in the fragment.
+
+  \item \textbf{Transport dynamic modalities.}
+  For dynamic modalities, subprograms are transported along
+  \[
+    H_{\Theta,Y}.
+  \]
+  The corresponding span comparison squares are the Beck--Chevalley squares
+  from the simulation-stability theorem for relative program categories.
+
+  \item \textbf{Transport higher constructors.}
+  The guarded response-profile, cubical, path, and trace cases use the
+  functoriality of the corresponding execution objects under Mealy
+  simulations.
+
+  \item \textbf{Conclude by induction.}
+  The substituted formula exists by induction on formula formation, and
+  monotonicity follows from monotonicity of pullback.
+\end{enumerate}
+\end{proof}
+
+\begin{remark}[Recognizer variance]
+\label{rem:recognizer-variance}
+The comparison of syntactic transition--output recognizers is obtained by
+applying the operation-image construction
+\[
+  \operatorname{Op}
+\]
+to the comparison of generated coequational theories.  Its variance is the
+variance established for transition--output images in
+Chapter~\ref{ch:syntactic-transition-output-eilenberg}; no additional logical
+variance is introduced in this appendix.
+\end{remark}
+
+\section{Logical Synthesis}
+\label{sec:logical-synthesis-formal}
+
+The appendix can now be summarized as a single synthesis statement.  Execution
+logic supplies predicates on canonical execution objects.  Behaviour
+projection turns those predicates into predicates on canonical residual
+behaviour.  Derivative closure and derivative interior turn behaviour
+predicates into local coequational theories.  Transition--output images then
+extract the associated algebraic recognizers.
+
+\begin{theorem}[Logical synthesis theorem]
+\label{thm:logical-synthesis}
+Fix internal categories \(A,B\).  For every right \(B\)-action \(Y\), the
+following hold.
+
+\begin{enumerate}
+  \item The canonical relative execution object is
+  \[
+    S^{\mathrm{can}}_Y
+    =
+    \mathrm{Beh}_0\times_{B_0}Y.
+  \]
+
+  \item Every Mealy morphism
+  \[
+    \Phi:P:A\rightsquigarrow B
+  \]
+  has a residual comparison map
+  \[
+    \beta_{P,Y}:S_{\Phi,Y}\to S^{\mathrm{can}}_Y.
+  \]
+
+  \item Primitive dynamic truth is pulled back from canonical primitive truth
+  along
+  \[
+    \beta_{P,Y}.
+  \]
+
+  \item More generally, every formula in the residual-stable canonical
+  fragment is pulled back from its canonical interpretation along the
+  appropriate residual comparison map.
+
+  \item Every local coequational theory
+  \[
+    V\hookrightarrow\mathrm{Beh}_0
+  \]
+  induces a primitive dynamic invariant
+  \[
+    V_Y\leq [m_{\mathrm{Beh},Y}]V_Y.
+  \]
+
+  \item Every canonical execution predicate
+  \[
+    \psi\hookrightarrow S^{\mathrm{can}}_Y
+  \]
+  has a may-coequational approximation
+  \[
+    \mathrm{May}_Y(\psi)
+    =
+    \mathrm{Der}_0(\exists_{\pi_Y}\psi),
+  \]
+  and a must-coequational approximation
+  \[
+    \mathrm{Must}_Y(\psi)
+    =
+    \mathrm{DerInt}(\forall_{\pi_Y}\psi).
+  \]
+
+  \item These approximations form the adjoint triple
+  \[
+    \mathrm{May}_Y
+    \dashv
+    J_Y
+    \dashv
+    \mathrm{Must}_Y,
+    \qquad
+    J_Y(V)=\pi_Y^*\,iV.
+  \]
+
+  \item Dynamic formulas, guarded response-profile formulas, finite path and
+  trace formulas, and ordinary sequential projections of cubical formulas
+  produce local coequational theories by applying the preceding may--must
+  construction to their canonical interpretations.
+
+  \item The generated coequational theories have syntactic
+  transition--output recognizers
+  \[
+    \operatorname{SynTO}^{\exists/\forall}_Y(\varphi)
+    =
+    \operatorname{Op}
+    \left(
+      \mathrm{Th}^{\exists/\forall}_Y(\varphi)
+    \right).
+  \]
+
+  \item The constructions are stable under downstream action maps and Mealy
+  simulations, with variance determined by the corresponding downstream
+  substitution maps, contravariant simulation-induced program functors, and
+  the variance of transition--output images.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+  \item \textbf{Identify canonical execution.}
+  Item \(1\) is the definition of the canonical relative execution object.
+
+  \item \textbf{Identify residual comparison.}
+  Item \(2\) follows from residual semantics of Mealy morphisms.
+
+  \item \textbf{Apply primitive pullback semantics.}
+  Item \(3\) is
+  Corollary~\ref{cor:primitive-canonical-pullback-semantics}.
+
+  \item \textbf{Apply general pullback semantics.}
+  Item \(4\) is Theorem~\ref{thm:canonical-pullback-semantics}.
+
+  \item \textbf{Apply coequational invariance.}
+  Item \(5\) is
+  Theorem~\ref{thm:coequations-induce-primitive-invariants}.
+
+  \item \textbf{Recall may and must approximations.}
+  Item \(6\) is
+  Definition~\ref{def:may-must-coequationalization}.
+
+  \item \textbf{Use the adjoint triple.}
+  Item \(7\) is
+  Theorem~\ref{thm:may-must-coequational-approximation}.
+
+  \item \textbf{Assemble the logical fragments.}
+  Item \(8\) is the combination of the dynamic, guarded-profile, trace, and
+  cubical-projection constructions of this appendix.
+
+  \item \textbf{Apply transition--output images.}
+  Item \(9\) is
+  Definition~\ref{def:syntactic-transition-output-recognizers}.
+
+  \item \textbf{Apply stability results.}
+  Item \(10\) is Proposition~\ref{prop:downstream-substitution},
+  Proposition~\ref{prop:downstream-comparison-coequational-projections}, and
+  Proposition~\ref{prop:simulation-substitution-logical}, together with
+  Remark~\ref{rem:recognizer-variance}.
+\end{enumerate}
+\end{proof}
+
+The constructions of the appendix are summarized by the diagram
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\text{execution structure from Chapters 6--9}
+  \arrow[r]
+&
+\text{logical modality}
+  \arrow[r]
+&
+\psi\hookrightarrow X^{\mathrm{can}}
+  \arrow[d, "{\exists_q,\ \forall_q}"]
+\\
+&
+&
+\text{behaviour predicate}
+  \arrow[d, "{\mathrm{Der}_0,\ \mathrm{DerInt}}"]
+\\
+&
+&
+\mathbf{Coeq}_{A^\sharp,B^\sharp}
+  \arrow[d, "\operatorname{Op}"]
+\\
+&
+&
+\text{syntactic transition--output recognizer}.
+\end{tikzcd}
+\]
+
+For ordinary relative execution,
+\[
+  X^{\mathrm{can}}=S^{\mathrm{can}}_Y,
+  \qquad
+  q=\pi_Y,
+  \qquad
+  (A^\sharp,B^\sharp)=(A,B).
+\]
+For cubical execution, \(X^{\mathrm{can}}\) is a canonical cubical execution
+object and \(q\) is one of the sequential behaviour projections supplied by
+the cubical semantics.  For finite-path and feedback-trace formulas, the
+path or trace span first defines a predicate transformer on
+\(S^{\mathrm{can}}_Y\).  The resulting predicate on
+\(S^{\mathrm{can}}_Y\) is then projected along \(\pi_Y\).  Equivalently, when
+one presents the path or trace apex itself as the execution object, the
+behaviour projection is the initial-state map followed by \(\pi_Y\).
+
+Thus execution logic supplies predicates on canonical execution objects.
+Quantification along the behaviour-projection map turns those predicates into
+behaviour predicates.  Derivative closure and derivative interior turn the
+behaviour predicates into local coequational theories.  Transition--output
+images then extract the associated algebraic recognizers.  This appendix is
+therefore conservative over the preceding chapters: it introduces no new
+logical primitives, but records the common coequational comparison pattern
+shared by the logical constructions already developed in the book.

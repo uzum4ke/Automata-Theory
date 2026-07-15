@@ -1,0 +1,4794 @@
+\chapter{Descent over Input Interfaces and Temporal--Interface Interchange}
+\label{ch:descent-input-interfaces}
+
+\section{Overview and standing assumptions}
+\label{sec:interface-descent-overview}
+
+Chapter~\ref{ch:temporal-trajectories-segal-execution} developed locality in
+the temporal variable. For a fixed input interface \(\mathbb A\), a finite
+execution restricts to contiguous temporal subintervals and is reconstructed
+by gluing compatible adjacent execution segments.
+
+The present chapter studies a second and categorically distinct locality
+principle:
+\[
+    \text{locality in the input interface}.
+\]
+
+An internal category
+\[
+    \mathbb A
+\]
+describes a structured input environment. Its objects represent input
+contexts, modes, configurations, or typing conditions. Its arrows represent
+allowed input actions between those contexts, and composition represents
+sequential execution of inputs.
+
+An internal functor
+\[
+    F:\mathbb A'\to\mathbb A
+\]
+is interpreted as a local presentation of that input environment. Depending on
+the application, it may represent:
+\begin{enumerate}
+    \item one operating mode of a controller;
+    \item the commands visible to one subsystem;
+    \item one sensor's input vocabulary;
+    \item a refinement of global input contexts by local representatives;
+    \item a local presentation of a protocol;
+    \item a restricted class of disturbances or environmental interactions.
+\end{enumerate}
+
+A system
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+restricts contravariantly to
+\[
+    F^\ast\Phi:
+    \mathbb A'\rightsquigarrow\mathbb B.
+\]
+This restriction describes how the same stateful mechanism behaves when it is
+exercised only through the local input presentation \(\mathbb A'\).
+
+The corresponding local-to-global question is:
+
+\begin{quote}
+Suppose compatible state-transition-output systems have been specified on
+overlapping local input presentations. Do they arise from one global system,
+and is that global system uniquely determined?
+\end{quote}
+
+This is the effective-descent problem for strict Mealy systems.
+
+The overlap compatibility is stronger than equality of observable outputs.
+Local systems must identify the same underlying stateful mechanism:
+\begin{enumerate}
+    \item their state carriers must correspond on overlaps;
+    \item corresponding input actions must induce corresponding transitions;
+    \item their output comparisons must agree;
+    \item the identifications must be coherent on triple overlaps.
+\end{enumerate}
+
+Thus interface descent is a theory of patching state machines across
+overlapping input vocabularies or input presentations.
+
+Several distinct levels of interface coverage occur:
+\begin{enumerate}
+    \item coverage of input objects controls reconstruction of state carriers;
+    \item coverage of input arrows controls reconstruction of one-step
+    transition and output structure;
+    \item coverage of composable pairs controls the Mealy multiplication laws;
+    \item coverage of all finite input paths controls direct reconstruction of
+    finite trajectories;
+    \item invertibility of residual restriction controls whether local future
+    behaviours are exactly restrictions of global future behaviours;
+    \item coverage of all arrows entering locally represented targets controls
+    derivative generation and universal safety.
+\end{enumerate}
+
+These conditions have different operational meanings and are not
+interchangeable. The chapter therefore uses a hierarchy of interface-cover
+classes rather than one undifferentiated notion of cover.
+
+The principal results are:
+\begin{enumerate}
+    \item strict Mealy systems form an input-indexed category;
+    \item strict systems satisfy extensive descent over coproduct
+    decompositions;
+    \item strict systems satisfy effective descent along covers which are
+    regular epic in nerve degrees \(0\), \(1\), and \(2\);
+    \item canonical residual behaviours restrict strictly along input
+    functors;
+    \item residual contracts satisfy effective descent along residually exact
+    covers;
+    \item derivative generation, safety, abstraction, realization, and
+    minimization commute with sufficiently exact input restriction;
+    \item contract satisfaction, separatedness, and residual reachability are
+    interface-local;
+    \item finite execution objects satisfy degreewise descent along nervewise
+    covers;
+    \item temporal gluing and interface reconstruction commute.
+\end{enumerate}
+
+Throughout the chapter:
+\begin{enumerate}
+    \item \(\mathcal E\) is a Grothendieck topos with chosen pullbacks;
+    \item \(\mathbb B\) is a fixed internal output category;
+    \item \(\mathsf{Inp}\) is a fixed essentially small full subcategory of
+    \(\mathsf{IntCat}(\mathcal E)\);
+    \item \(\mathsf{Inp}\) is closed under the pullbacks, finite Čech objects,
+    and small coproducts used below.
+\end{enumerate}
+
+All internal categories, internal functors, Mealy morphisms, strict semantic
+homomorphisms, canonical behaviour machines, and trajectory constructions use
+the conventions of the preceding chapters.
+
+For an internal functor
+\[
+    F:\mathbb A'\to\mathbb A,
+\]
+write
+\[
+    \overline F
+    :=
+    F_0\times 1_{B_0}:
+    A'_0\times B_0
+    \to
+    A_0\times B_0.
+\]
+The notation
+\[
+    \overline F^{\,\ast}
+\]
+denotes pullback in the corresponding slices of \(\mathcal E\). The notation
+\[
+    F^\ast\Phi
+\]
+denotes input restriction of a Mealy system. Residual restriction and semantic
+direct reindexing are denoted respectively by
+\[
+    F^\sharp
+    \qquad\text{and}\qquad
+    F^\bullet.
+\]
+
+For a covering family
+\[
+    \{p_i:\mathbb U_i\to\mathbb A\}_{i\in I},
+\]
+write
+\[
+    p:=\coprod_i p_i:
+    \coprod_i\mathbb U_i\to\mathbb A.
+\]
+Descent for the family means descent along this coproduct functor. By
+extensivity, a system over \(\coprod_i\mathbb U_i\) is equivalently a family
+of systems over the \(\mathbb U_i\), and its Čech powers recover the usual
+pairwise and triple overlaps.
+
+\section{The input-indexed category of strict systems}
+\label{sec:input-indexed-strict-systems}
+
+\subsection{Input restriction}
+\label{subsec:input-pullback-strict-systems}
+
+Let
+\[
+    F:\mathbb A'\to\mathbb A
+\]
+be an internal functor, and let
+\[
+    \Phi=(P,\delta_P,\omega_P):
+    \mathbb A\rightsquigarrow\mathbb B
+\]
+be a Mealy morphism.
+
+The carrier of the input restriction is
+\[
+    P_F
+    :=
+    A'_0\times_{F_0,A_0,p_P}P.
+\]
+It fits into the pullback square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+    P_F
+        \arrow[r, "\pi_P"]
+        \arrow[d, "p_{P_F}"']
+    &
+    P
+        \arrow[d, "p_P"]
+    \\
+    A'_0
+        \arrow[r, "F_0"']
+    &
+    A_0.
+\end{tikzcd}
+\]
+Its output anchor is
+\[
+    q_{P_F}:=q_P\pi_P.
+\]
+
+A generalized element of \(P_F\) is written
+\[
+    (v',x),
+    \qquad
+    F_0(v')=p_P(x).
+\]
+
+For an arrow
+\[
+    a':u'\to v'
+\]
+of \(\mathbb A'\), define
+\[
+    \delta_{P_F}(a',(v',x))
+    :=
+    \left(
+        u',
+        \delta_P(F_1a',x)
+    \right),
+\]
+and
+\[
+    \omega_{P_F}(a',(v',x))
+    :=
+    \omega_P(F_1a',x).
+\]
+
+\begin{proposition}[Input restriction of strict Mealy systems]
+\label{prop:input-pullback-strict-mealy}
+The displayed formulas define a Mealy morphism
+\[
+    F^\ast\Phi:
+    \mathbb A'\rightsquigarrow\mathbb B.
+\]
+If
+\[
+    f:\Phi\to\Psi
+\]
+is a strict semantic homomorphism, then
+\[
+    F^\ast f:
+    F^\ast\Phi\to F^\ast\Psi
+\]
+has carrier map
+\[
+    (v',x)\longmapsto(v',f(x)).
+\]
+Consequently, input restriction defines a functor
+\[
+    F^\ast:
+    \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}
+    \to
+    \mathsf{Mly}^{\mathrm{str}}_{\mathbb A',\mathbb B}.
+\]
+\end{proposition}
+
+\begin{proof}
+For the transition typing equation,
+\[
+    p_{P_F}
+    \delta_{P_F}(a',(v',x))
+    =
+    u'
+    =
+    s_{A'}(a').
+\]
+For the output typing equations,
+\[
+    s_B\omega_{P_F}(a',(v',x))
+    =
+    s_B\omega_P(F_1a',x)
+    =
+    q_P\delta_P(F_1a',x),
+\]
+which equals
+\[
+    q_{P_F}\delta_{P_F}(a',(v',x)).
+\]
+Similarly,
+\[
+    t_B\omega_{P_F}(a',(v',x))
+    =
+    q_{P_F}(v',x).
+\]
+
+The unit equations follow from
+\[
+    F_1(e_{A'}v')=e_A(F_0v')
+\]
+and the unit equations of \(\Phi\).
+
+For composable arrows
+\[
+    a':u'\to v',
+    \qquad
+    b':v'\to w',
+\]
+functoriality of \(F\) gives
+\[
+    F_1(b'\circ a')
+    =
+    F_1b'\circ F_1a'.
+\]
+The transition and output multiplication equations therefore follow from the
+corresponding equations of \(\Phi\).
+
+For a strict homomorphism \(f\), strict transition preservation gives
+\[
+    f\delta_P(F_1a',x)
+    =
+    \delta_Q(F_1a',f(x)),
+\]
+and strict output preservation gives
+\[
+    \omega_Q(F_1a',f(x))
+    =
+    \omega_P(F_1a',x).
+\]
+Thus the pulled-back carrier map is strict.
+\end{proof}
+
+\begin{remark}[Systems interpretation of input restriction]
+\label{rem:systems-interpretation-input-restriction}
+Input restriction does not construct a new physical mechanism. It presents the
+same mechanism through a smaller or more refined input vocabulary.
+
+The local state \((v',x)\) records:
+\begin{enumerate}
+    \item a global machine state \(x\);
+    \item a chosen local representative \(v'\) of the global input context
+    \(p_P(x)\).
+\end{enumerate}
+A local input \(a'\) is translated to the global input \(F_1a'\), processed by
+the original machine, and then re-anchored at the local source object.
+
+Thus \(F^\ast\Phi\) answers the question:
+\[
+    \text{how does \(\Phi\) behave when operated through the interface \(F\)?}
+\]
+\end{remark}
+
+\subsection{Pseudofunctoriality}
+\label{subsec:input-pullback-pseudofunctoriality}
+
+For every internal category \(\mathbb A\), there is a canonical isomorphism
+\[
+    \upsilon_{\mathbb A}:
+    1_{\mathbb A}^\ast
+    \xrightarrow{\cong}
+    1_{\mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B}}.
+\]
+
+For composable internal functors
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbb A''
+        \arrow[r, "G"]
+    &
+    \mathbb A'
+        \arrow[r, "F"]
+    &
+    \mathbb A,
+\end{tikzcd}
+\]
+associativity of pullbacks gives a canonical isomorphism
+\[
+    \alpha_{F,G}:
+    G^\ast F^\ast
+    \xrightarrow{\cong}
+    (F\circ G)^\ast.
+\]
+
+\begin{proposition}[Coherence of input restriction]
+\label{prop:coherence-input-pullback}
+The comparison isomorphisms
+\[
+    \upsilon_{\mathbb A}
+    \qquad\text{and}\qquad
+    \alpha_{F,G}
+\]
+satisfy the unit and associativity coherence equations for a pseudofunctor.
+\end{proposition}
+
+\begin{proof}
+All comparison maps are the canonical maps between iterated pullbacks of the
+same carrier diagram. The coherence equations follow from uniqueness in the
+universal property of pullbacks.
+\end{proof}
+
+\begin{definition}[Input-indexed category of strict systems]
+\label{def:input-indexed-system-pseudofunctor}
+Define
+\[
+    \mathsf{Sys}_{\mathbb B}:
+    \mathsf{Inp}^{\mathrm{op}}
+    \to
+    \mathbf{Cat}
+\]
+by
+\[
+    \mathsf{Sys}_{\mathbb B}(\mathbb A)
+    :=
+    \mathsf{Mly}^{\mathrm{str}}_{\mathbb A,\mathbb B},
+\]
+and
+\[
+    \mathsf{Sys}_{\mathbb B}(F)
+    :=
+    F^\ast.
+\]
+The coherence isomorphisms are those of
+Proposition~\ref{prop:coherence-input-pullback}.
+\end{definition}
+
+\subsection{The total category of systems}
+\label{subsec:grothendieck-construction-input-systems}
+
+\begin{definition}[Total category of strict systems]
+\label{def:total-category-strict-systems}
+The Grothendieck construction
+\[
+    \int\mathsf{Sys}_{\mathbb B}
+\]
+has:
+\begin{enumerate}
+    \item objects \((\mathbb A,\Phi)\), where
+    \[
+        \mathbb A\in\mathsf{Inp}
+    \]
+    and
+    \[
+        \Phi:\mathbb A\rightsquigarrow\mathbb B;
+    \]
+    \item morphisms
+    \[
+        (\mathbb A',\Phi')
+        \longrightarrow
+        (\mathbb A,\Phi)
+    \]
+    consisting of an internal functor
+    \[
+        F:\mathbb A'\to\mathbb A
+    \]
+    and a strict semantic homomorphism
+    \[
+        \varphi:
+        \Phi'\to F^\ast\Phi.
+    \]
+\end{enumerate}
+\end{definition}
+
+Composition uses the comparison
+\[
+\begin{tikzcd}[column sep=large]
+    G^\ast F^\ast\Phi
+        \arrow[r, "\alpha_{F,G}", "\cong"']
+    &
+    (F\circ G)^\ast\Phi.
+\end{tikzcd}
+\]
+
+The projection
+\[
+    \pi_{\mathsf{Sys}}:
+    \int\mathsf{Sys}_{\mathbb B}
+    \to
+    \mathsf{Inp}
+\]
+sends
+\[
+    (\mathbb A,\Phi)\longmapsto\mathbb A
+\]
+and
+\[
+    (F,\varphi)\longmapsto F.
+\]
+
+\begin{proposition}[Fibration of strict systems]
+\label{prop:fibration-strict-systems}
+The projection
+\[
+    \pi_{\mathsf{Sys}}
+\]
+is a Grothendieck fibration. A morphism over
+\[
+    F:\mathbb A'\to\mathbb A
+\]
+is cartesian precisely when its strict component is an isomorphism
+\[
+    \Phi'\xrightarrow{\cong}F^\ast\Phi.
+\]
+\end{proposition}
+
+\begin{proof}
+For every \((\mathbb A,\Phi)\) and every
+\(F:\mathbb A'\to\mathbb A\), the morphism
+\[
+    (\mathbb A',F^\ast\Phi)
+    \longrightarrow
+    (\mathbb A,\Phi)
+\]
+with strict component
+\[
+    1_{F^\ast\Phi}
+\]
+has the cartesian universal property. The characterization follows from the
+standard Grothendieck construction of a contravariant pseudofunctor.
+\end{proof}
+
+\section{Čech descent for strict systems}
+\label{sec:cech-descent-strict-systems}
+
+\subsection{Čech powers of an input functor}
+\label{subsec:cech-powers-input-functor}
+
+Let
+\[
+    p:\mathbb U\to\mathbb A
+\]
+be an internal functor.
+
+Define the Čech powers
+\[
+    \mathbb U^{\langle r\rangle}
+    :=
+    \underbrace{
+    \mathbb U\times_{\mathbb A}
+    \cdots\times_{\mathbb A}\mathbb U
+    }_{r\text{ factors}}
+\]
+for \(r\geq1\).
+
+In particular,
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbb U^{\langle2\rangle}
+        =
+    \mathbb U\times_{\mathbb A}\mathbb U
+        \arrow[r, shift left=0.7ex, "\pi_1"]
+        \arrow[r, shift right=0.7ex, "\pi_2"']
+    &
+    \mathbb U,
+\end{tikzcd}
+\]
+and
+\[
+    \mathbb U^{\langle3\rangle}
+    =
+    \mathbb U\times_{\mathbb A}
+    \mathbb U\times_{\mathbb A}\mathbb U.
+\]
+
+Write
+\[
+    \pi_{12},\pi_{23},\pi_{13}:
+    \mathbb U^{\langle3\rangle}
+    \to
+    \mathbb U^{\langle2\rangle}
+\]
+for the three pairwise projections.
+
+The overlap category
+\[
+    \mathbb U^{\langle2\rangle}
+\]
+records two local presentations with the same global image. The triple
+overlap records three such presentations simultaneously.
+
+\subsection{System descent structures}
+\label{subsec:system-descent-data-rigorous}
+
+\begin{definition}[System descent structure]
+\label{def:system-descent-datum-rigorous}
+A \textbf{system descent structure} for
+\[
+    p:\mathbb U\to\mathbb A
+\]
+consists of:
+\begin{enumerate}
+    \item a strict Mealy system
+    \[
+        \Phi_{\mathbb U}
+        \in
+        \mathsf{Sys}_{\mathbb B}(\mathbb U);
+    \]
+    \item an isomorphism
+    \[
+        \vartheta:
+        \pi_1^\ast\Phi_{\mathbb U}
+        \xrightarrow{\cong}
+        \pi_2^\ast\Phi_{\mathbb U}
+    \]
+    over
+    \(\mathbb U^{\langle2\rangle}\);
+    \item the cocycle equation
+    \[
+        \pi_{23}^\ast\vartheta
+        \circ
+        \pi_{12}^\ast\vartheta
+        =
+        \pi_{13}^\ast\vartheta
+    \]
+    over
+    \(\mathbb U^{\langle3\rangle}\),
+    after inserting the canonical pseudofunctorial comparison
+    isomorphisms.
+\end{enumerate}
+\end{definition}
+
+A morphism
+\[
+    f:
+    (\Phi_{\mathbb U},\vartheta)
+    \to
+    (\Psi_{\mathbb U},\chi)
+\]
+of system descent structures is a strict semantic homomorphism
+\[
+    f:\Phi_{\mathbb U}\to\Psi_{\mathbb U}
+\]
+such that
+\[
+    \chi\circ\pi_1^\ast f
+    =
+    \pi_2^\ast f\circ\vartheta.
+\]
+
+Write
+\[
+    \mathsf{Desc}_p
+    \left(
+        \mathsf{Sys}_{\mathbb B}
+    \right)
+\]
+for the category of system descent structures.
+
+\begin{remark}[Operational meaning of overlap coherence]
+\label{rem:operational-overlap-coherence}
+The isomorphism \(\vartheta\) says that two local presentations of the same
+global input situation describe the same stateful mechanism.
+
+It identifies:
+\begin{enumerate}
+    \item the corresponding local states;
+    \item the transitions produced by corresponding input actions;
+    \item the associated output comparisons.
+\end{enumerate}
+
+The cocycle equation says that changing from local presentation \(1\) to
+presentation \(2\), and then from \(2\) to \(3\), gives the same state
+identification as changing directly from \(1\) to \(3\).
+
+Thus pairwise compatibility is not sufficient. The local coordinate changes
+for the state machine must be jointly coherent.
+\end{remark}
+
+\subsection{The comparison functor}
+\label{subsec:system-descent-comparison}
+
+Every global system
+\[
+    \Phi\in\mathsf{Sys}_{\mathbb B}(\mathbb A)
+\]
+determines a canonical system descent structure. Its local system is
+\[
+    p^\ast\Phi.
+\]
+The two pullbacks to
+\(\mathbb U^{\langle2\rangle}\) are canonically isomorphic because
+\[
+    p\pi_1=p\pi_2.
+\]
+
+\begin{definition}[System descent comparison]
+\label{def:system-descent-comparison-rigorous}
+The \textbf{system descent comparison functor} is
+\[
+    K_p:
+    \mathsf{Sys}_{\mathbb B}(\mathbb A)
+    \to
+    \mathsf{Desc}_p
+    \left(
+        \mathsf{Sys}_{\mathbb B}
+    \right).
+\]
+\end{definition}
+
+\subsection{Identifiability and integrability}
+\label{subsec:identifiability-integrability-categorical}
+
+\begin{definition}[Interface identifiability]
+\label{def:interface-identifiability-rigorous}
+The input functor \(p\) is \textbf{identifying for strict systems} if
+\[
+    K_p
+\]
+is fully faithful.
+\end{definition}
+
+\begin{definition}[Interface integrability]
+\label{def:interface-integrability-rigorous}
+The input functor \(p\) is \textbf{integrating for strict systems} if
+\[
+    K_p
+\]
+is essentially surjective.
+\end{definition}
+
+\begin{definition}[Effective system descent]
+\label{def:effective-system-descent}
+The input functor \(p\) has \textbf{effective descent for strict systems} if
+\[
+    K_p
+\]
+is an equivalence.
+\end{definition}
+
+Identifiability means that no globally meaningful distinction between systems
+or strict system maps is invisible on every local patch.
+
+Integrability means that every compatible local family can be implemented by
+one global system.
+
+Effective descent combines these two statements:
+\[
+\begin{tikzcd}[column sep=huge]
+    \text{compatible local systems}
+        \arrow[r, leftrightarrow, "\text{effective descent}"]
+    &
+    \text{global system, unique up to isomorphism}.
+\end{tikzcd}
+\]
+
+\section{System cover classes}
+\label{sec:system-cover-classes}
+
+\subsection{Nerve components}
+\label{subsec:nerve-components-input-cover}
+
+For an internal category \(\mathbb A\), write
+\[
+    A_n:=N\mathbb A_n.
+\]
+Thus
+\[
+    A_0
+\]
+is the object object,
+\[
+    A_1
+\]
+is the arrow object, and
+\[
+    A_2
+    =
+    A_1\times_{t_A,A_0,s_A}A_1
+\]
+is the object of composable pairs.
+
+An internal functor
+\[
+    p:\mathbb U\to\mathbb A
+\]
+induces maps
+\[
+    p_n:
+    U_n\to A_n
+\]
+for every \(n\geq0\).
+
+\subsection{Extensive covers}
+\label{subsec:extensive-interface-covers}
+
+\begin{definition}[Extensive interface cover]
+\label{def:extensive-interface-cover}
+An \textbf{extensive interface cover} is a family of coproduct injections
+\[
+    \iota_i:
+    \mathbb A_i\to
+    \coprod_{i\in I}\mathbb A_i.
+\]
+\end{definition}
+
+The object and arrow objects decompose as
+\[
+    \left(
+        \coprod_i\mathbb A_i
+    \right)_0
+    =
+    \coprod_iA_{i,0},
+\]
+and
+\[
+    \left(
+        \coprod_i\mathbb A_i
+    \right)_1
+    =
+    \coprod_iA_{i,1}.
+\]
+There are no arrows between distinct components.
+
+Systems-theoretically, an extensive cover represents a genuinely disconnected
+input environment. A system on the whole interface is therefore exactly an
+independent family of systems on its connected components.
+
+\subsection{\texorpdfstring{\(2\)}{2}-nerve covers}
+\label{subsec:two-nerve-covers}
+
+\begin{definition}[\(2\)-nerve cover]
+\label{def:two-nerve-cover}
+An internal functor
+\[
+    p:\mathbb U\to\mathbb A
+\]
+is a \textbf{\(2\)-nerve cover} if
+\[
+    p_0:U_0\twoheadrightarrow A_0,
+\]
+\[
+    p_1:U_1\twoheadrightarrow A_1,
+\]
+and
+\[
+    p_2:U_2\twoheadrightarrow A_2
+\]
+are regular epimorphisms.
+\end{definition}
+
+The three conditions have distinct operational meanings.
+
+\paragraph{Degree zero.}
+Every global input context is locally represented. This is what allows states
+anchored at every global context to be reconstructed.
+
+\paragraph{Degree one.}
+Every global input action is locally represented. This allows reconstruction
+of the one-step transition and output response.
+
+\paragraph{Degree two.}
+Every globally executable pair of inputs is jointly represented. This allows
+one to check that processing two inputs successively agrees with processing
+their composite.
+
+The distinction is important. A collection of local interfaces may contain
+every individual command while failing to contain some executable pair in one
+common patch. In that situation, the response to each command is visible, but
+their sequential interaction is not locally testable.
+
+\subsection{Nervewise covers}
+\label{subsec:nervewise-covers}
+
+\begin{definition}[Nervewise interface cover]
+\label{def:nervewise-interface-cover}
+An internal functor
+\[
+    p:\mathbb U\to\mathbb A
+\]
+is a \textbf{nervewise cover} if
+\[
+    p_n:U_n\twoheadrightarrow A_n
+\]
+is a regular epimorphism for every \(n\geq0\).
+\end{definition}
+
+Every nervewise cover is a \(2\)-nerve cover. The converse need not hold.
+
+A \(2\)-nerve cover reconstructs the rules of the machine. A nervewise cover
+additionally represents every finite input history and therefore supports
+direct descent of already-expanded finite runs.
+
+\subsection{Stability of nerve covers}
+\label{subsec:stability-nerve-covers}
+
+\begin{proposition}[Stability of nerve covers]
+\label{prop:stability-nerve-covers}
+The classes of \(2\)-nerve covers and nervewise covers:
+\begin{enumerate}
+    \item contain all identity functors;
+    \item are closed under composition;
+    \item are stable under pullback in \(\mathsf{Inp}\).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The nerve functor preserves limits, so a pullback of internal functors induces
+a pullback in every nerve degree. Regular epimorphisms in a Grothendieck topos
+contain identities and are stable under pullback and composition.
+\end{proof}
+
+\subsection{System and trajectory topologies}
+\label{subsec:system-trajectory-topologies}
+
+\begin{definition}[System interface pretopology]
+\label{def:system-interface-pretopology}
+Let
+\[
+    \mathcal K_{\mathrm{sys}}
+\]
+be the smallest Grothendieck pretopology on \(\mathsf{Inp}\) containing:
+\begin{enumerate}
+    \item all extensive interface covers;
+    \item all singleton \(2\)-nerve covers.
+\end{enumerate}
+Write
+\[
+    \tau_{\mathrm{sys}}
+\]
+for the generated Grothendieck topology.
+\end{definition}
+
+\begin{definition}[Trajectory interface pretopology]
+\label{def:trajectory-interface-pretopology}
+Let
+\[
+    \mathcal K_{\mathrm{traj}}
+\]
+be the smallest Grothendieck pretopology on \(\mathsf{Inp}\) containing:
+\begin{enumerate}
+    \item all extensive interface covers;
+    \item all singleton nervewise covers.
+\end{enumerate}
+Write
+\[
+    \tau_{\mathrm{traj}}
+\]
+for the generated Grothendieck topology.
+\end{definition}
+
+\section{Extensive descent}
+\label{sec:extensive-descent-input-interfaces}
+
+\subsection{Decomposition of carriers}
+\label{subsec:extensive-decomposition-carriers}
+
+Let
+\[
+    \mathbb A
+    =
+    \coprod_{i\in I}\mathbb A_i.
+\]
+Then
+\[
+    A_0=\coprod_iA_{i,0}.
+\]
+
+Since \(\mathcal E\) is infinitary extensive, there is a canonical equivalence
+\[
+    \mathcal E/
+    \left(
+        \left(
+            \coprod_iA_{i,0}
+        \right)
+        \times B_0
+    \right)
+    \simeq
+    \prod_i
+    \mathcal E/(A_{i,0}\times B_0).
+\]
+
+A carrier
+\[
+    P\to
+    \left(
+        \coprod_iA_{i,0}
+    \right)
+    \times B_0
+\]
+therefore decomposes, up to canonical isomorphism, as
+\[
+    P\cong\coprod_iP_i
+\]
+with
+\[
+    P_i\to A_{i,0}\times B_0.
+\]
+
+\subsection{Decomposition of transition domains}
+\label{subsec:extensive-decomposition-derivative-domains}
+
+Since
+\[
+    A_1=\coprod_iA_{i,1},
+\]
+and every arrow belongs to a unique component,
+\[
+    A_1\times_{A_0}P
+    \cong
+    \coprod_i
+    \left(
+        A_{i,1}\times_{A_{i,0}}P_i
+    \right).
+\]
+
+Consequently:
+\begin{enumerate}
+    \item a transition map on \(P\) is equivalent to a family of transition
+    maps on the \(P_i\);
+    \item an output map on \(P\) is equivalent to a family of output maps on
+    the \(P_i\);
+    \item every typing, unit, and multiplication equation is equivalent to its
+    componentwise family.
+\end{enumerate}
+
+\begin{theorem}[Extensive descent for strict Mealy systems]
+\label{thm:extensive-descent-strict-systems}
+There is a canonical equivalence
+\[
+\begin{tikzcd}[column sep=huge]
+    \mathsf{Sys}_{\mathbb B}
+    \left(
+        \coprod_{i\in I}\mathbb A_i
+    \right)
+        \arrow[r, "\simeq"]
+    &
+    \prod_{i\in I}
+    \mathsf{Sys}_{\mathbb B}(\mathbb A_i).
+\end{tikzcd}
+\]
+\end{theorem}
+
+\begin{proof}
+Infinitary extensivity gives the equivalence on carriers. The transition
+domain decomposes as the coproduct of the component transition domains.
+Transition and output maps are therefore exactly componentwise families, and
+all Mealy equations are componentwise. Strict semantic homomorphisms decompose
+in the same manner.
+\end{proof}
+
+\subsection{Decomposition of canonical behaviours}
+\label{subsec:extensive-decomposition-canonical-behaviours}
+
+Let
+\[
+    v\in A_{i,0}.
+\]
+Because there are no arrows between distinct coproduct components, there is a
+canonical isomorphism
+\[
+    \left(
+        \coprod_j\mathbb A_j
+    \right)/v
+    \cong
+    \mathbb A_i/v.
+\]
+
+\begin{proposition}[Extensive decomposition of canonical behaviours]
+\label{prop:extensive-decomposition-canonical-behaviours}
+There is a canonical isomorphism over
+\[
+    \left(
+        \coprod_iA_{i,0}
+    \right)
+    \times B_0
+\]
+of canonical behaviour carriers
+\[
+    \mathbf{Beh}_{\coprod_i\mathbb A_i,\mathbb B,0}
+    \cong
+    \coprod_i
+    \mathbf{Beh}_{\mathbb A_i,\mathbb B,0}.
+\]
+This isomorphism preserves the canonical transition and output structure.
+\end{proposition}
+
+\begin{proof}
+Over an object \(v\in A_{i,0}\), a residual behaviour is an internal functor
+\[
+    \left(
+        \coprod_j\mathbb A_j
+    \right)/v
+    \to
+    \mathbb B.
+\]
+The residual-category isomorphism identifies this with a functor
+\[
+    \mathbb A_i/v\to\mathbb B.
+\]
+The identification is natural in residual restriction and preserves
+evaluation of output comparisons. It therefore assembles into an isomorphism
+of canonical behaviour Mealy morphisms.
+\end{proof}
+
+\begin{proposition}[Residual exactness of coproduct inclusions]
+\label{prop:residual-exactness-coproduct-inclusions}
+For every coproduct inclusion
+\[
+    \iota_i:
+    \mathbb A_i\to\coprod_j\mathbb A_j,
+\]
+the functor \(\iota_i\) is universally behaviour-exact and universally
+derivative-covering.
+\end{proposition}
+
+\begin{proof}
+For every \(v\in A_{i,0}\), there is a canonical isomorphism
+\[
+    \left(\coprod_j\mathbb A_j\right)/v
+    \cong
+    \mathbb A_i/v.
+\]
+Residual restriction along \(\iota_i\) is therefore an isomorphism.
+
+Every arrow of the coproduct category whose target lies in
+\(\mathbb A_i\) belongs uniquely to \(\mathbb A_i\). Hence the
+incoming-arrow comparison for \(\iota_i\) is an isomorphism.
+
+To check the universal clauses, let
+\[
+    H:\mathbb C\to\coprod_j\mathbb A_j
+\]
+be any internal functor. The object object \(C_0\) decomposes according to
+which coproduct component contains its image. Since the source and target of
+an arrow have images in the same component, \(\mathbb C\) decomposes as the
+coproduct of the corresponding full inverse-image categories. Thus a pullback
+of \(\iota_i\) is again a coproduct-component inclusion. The preceding slice
+and incoming-arrow arguments apply after every base change.
+\end{proof}
+
+\subsection{Extensive descent of contracts}
+\label{subsec:extensive-descent-residual-contracts}
+
+\begin{theorem}[Extensive descent for residual contracts]
+\label{thm:extensive-descent-residual-contracts}
+There is a canonical isomorphism of posets
+\[
+    \mathsf{Ctr}_{\mathbb B}
+    \left(
+        \coprod_i\mathbb A_i
+    \right)
+    \cong
+    \prod_i
+    \mathsf{Ctr}_{\mathbb B}(\mathbb A_i).
+\]
+\end{theorem}
+
+\begin{proof}
+By
+Proposition~\ref{prop:extensive-decomposition-canonical-behaviours},
+subobjects of the global canonical behaviour carrier decompose componentwise.
+Every input arrow lies in a unique component, so derivative invariance is
+equivalent to componentwise derivative invariance.
+\end{proof}
+
+\subsection{Extensive descent of temporal trajectories}
+\label{subsec:extensive-descent-temporal-trajectories}
+
+Let
+\[
+    \Phi
+    \cong
+    \coprod_i\Phi_i
+\]
+under
+Theorem~\ref{thm:extensive-descent-strict-systems}.
+
+\begin{proposition}[Extensive decomposition of execution categories]
+\label{prop:extensive-decomposition-execution-categories}
+There is a canonical isomorphism
+\[
+    \operatorname{Exec}(\Phi)
+    \cong
+    \coprod_i
+    \operatorname{Exec}(\Phi_i).
+\]
+\end{proposition}
+
+\begin{proof}
+The object object is
+\[
+    P\cong\coprod_iP_i.
+\]
+The arrow object is
+\[
+    A_1\times_{A_0}P
+    \cong
+    \coprod_i
+    \left(
+        A_{i,1}\times_{A_{i,0}}P_i
+    \right).
+\]
+All source, target, identity, and composition maps are componentwise.
+\end{proof}
+
+\begin{corollary}[Extensive descent of trajectories]
+\label{cor:extensive-descent-trajectories}
+There is a canonical isomorphism of trajectory sheaves
+\[
+    \mathscr T_\Phi
+    \cong
+    \coprod_i\mathscr T_{\Phi_i}.
+\]
+\end{corollary}
+
+\begin{proof}
+Apply the trajectory functor
+\[
+    \operatorname{Path}
+\]
+to
+Proposition~\ref{prop:extensive-decomposition-execution-categories}.
+Finite paths cannot cross between distinct coproduct components.
+\end{proof}
+
+\section{Effective descent of strict Mealy systems}
+\label{sec:effective-descent-strict-mealy-systems}
+
+Throughout this section, let
+\[
+    p:\mathbb U\to\mathbb A
+\]
+be a \(2\)-nerve cover.
+
+\subsection{Descent of carriers}
+\label{subsec:descent-of-carriers}
+
+Let
+\[
+    \Phi_{\mathbb U}
+    =
+    (P_{\mathbb U},
+    \delta_{\mathbb U},
+    \omega_{\mathbb U})
+\]
+be the local system of a system descent structure.
+
+Its carrier is an object
+\[
+    P_{\mathbb U}
+    \to
+    U_0\times B_0.
+\]
+The carrier component of the overlap isomorphism gives ordinary descent
+structure along
+\[
+    p_0\times1_{B_0}:
+    U_0\times B_0
+    \twoheadrightarrow
+    A_0\times B_0.
+\]
+
+Regular epimorphisms in a Grothendieck topos are effective descent morphisms.
+Hence there exists an object
+\[
+    P\to A_0\times B_0
+\]
+and an isomorphism
+\[
+    \xi_P:
+    \overline p^{\,\ast}P
+    \xrightarrow{\cong}
+    P_{\mathbb U}
+\]
+compatible with the carrier overlap identification.
+
+Write
+\[
+    p_P:P\to A_0
+\]
+and
+\[
+    q_P:P\to B_0
+\]
+for the two anchors.
+
+Operationally, surjectivity of \(p_0\) means that every global operating
+context occurs in at least one local presentation. Without this condition,
+states anchored over a missing context could not be recovered from the local
+systems.
+
+\subsection{Transition-domain base change}
+\label{subsec:derivative-domain-base-change}
+
+Define the global transition domain
+\[
+    D_P
+    :=
+    A_1\times_{t_A,A_0,p_P}P.
+\]
+The local transition domain is
+\[
+    D_{P_{\mathbb U}}
+    :=
+    U_1
+    \times_{t_U,U_0,p_{P_{\mathbb U}}}
+    P_{\mathbb U}.
+\]
+
+\begin{lemma}[Transition domains commute with input restriction]
+\label{lem:derivative-domains-input-pullback}
+Under the carrier identification
+\[
+    P_{\mathbb U}
+    \cong
+    U_0\times_{p_0,A_0,p_P}P,
+\]
+there is a canonical isomorphism over \(U_1\)
+\[
+    D_{P_{\mathbb U}}
+    \cong
+    U_1\times_{p_1,A_1}D_P.
+\]
+\end{lemma}
+
+\begin{proof}
+The right-hand side consists of triples
+\[
+    (a',a,x)
+\]
+such that
+\[
+    a=p_1(a')
+\]
+and
+\[
+    t_A(a)=p_P(x).
+\]
+Functoriality of \(p\) gives
+\[
+    t_Ap_1(a')
+    =
+    p_0t_U(a').
+\]
+Thus the same structure is equivalently a pair
+\[
+    (a',(t_Ua',x))
+\]
+with
+\[
+    p_0t_U(a')=p_P(x),
+\]
+which is precisely an element of
+\[
+    U_1\times_{U_0}P_{\mathbb U}.
+\]
+The comparison is the canonical pullback-pasting isomorphism.
+\end{proof}
+
+\subsection{Compatibility of the local operation maps}
+\label{subsec:compatibility-local-operation-maps}
+
+The nerve preserves pullbacks. Hence
+\[
+    N(\mathbb U\times_{\mathbb A}\mathbb U)_1
+    \cong
+    U_1\times_{A_1}U_1,
+\]
+and
+\[
+    N(\mathbb U\times_{\mathbb A}\mathbb U)_2
+    \cong
+    U_2\times_{A_2}U_2.
+\]
+
+The strictness of the overlap isomorphism
+\[
+    \vartheta:
+    \pi_1^\ast\Phi_{\mathbb U}
+    \xrightarrow{\cong}
+    \pi_2^\ast\Phi_{\mathbb U}
+\]
+therefore says exactly that:
+\begin{enumerate}
+    \item the two pullbacks of the local transition map to
+    \(U_1\times_{A_1}U_1\) agree after transporting states through
+    \(\vartheta\);
+    \item the corresponding output maps agree;
+    \item the induced comparisons on composable pairs are coherent.
+\end{enumerate}
+
+Thus the local operation maps are morphisms between effective descent objects
+over \(A_1\), rather than merely maps whose domains and codomains happen to
+descend.
+
+\subsection{Descent of transition maps}
+\label{subsec:descent-transition-maps-rigorous}
+
+The transition typing equation
+\[
+    p_{P_{\mathbb U}}\delta_{\mathbb U}
+    =
+    s_U\pi_{U_1}
+\]
+allows the local transition to be regarded as a map in
+\(\mathcal E/U_1\):
+\[
+    \widetilde\delta_{\mathbb U}:
+    D_{P_{\mathbb U}}
+    \to
+    s_U^\ast P_{\mathbb U}.
+\]
+
+Under
+Lemma~\ref{lem:derivative-domains-input-pullback},
+both source and target are pullbacks along
+\[
+    p_1:U_1\twoheadrightarrow A_1
+\]
+of
+\[
+    D_P
+    \qquad\text{and}\qquad
+    s_A^\ast P.
+\]
+
+\begin{proposition}[Descent of transition structure]
+\label{prop:descent-transition-structure}
+There exists a unique map over \(A_1\)
+\[
+    \widetilde\delta_P:
+    D_P\to s_A^\ast P
+\]
+whose pullback along \(p_1\) is
+\(\widetilde\delta_{\mathbb U}\).
+Its composite with
+\[
+    s_A^\ast P\to P
+\]
+defines a global transition map
+\[
+    \delta_P:D_P\to P.
+\]
+\end{proposition}
+
+\begin{proof}
+The map
+\[
+    p_1:U_1\twoheadrightarrow A_1
+\]
+is an effective descent morphism. The overlap compatibility of
+\(\widetilde\delta_{\mathbb U}\) was identified in the preceding subsection.
+Morphisms between descended objects therefore descend uniquely.
+\end{proof}
+
+\subsection{Descent of output maps}
+\label{subsec:descent-output-maps-rigorous}
+
+Regard the local output map as a map over \(U_1\):
+\[
+    \widetilde\omega_{\mathbb U}
+    :=
+    \left\langle
+        \pi_{U_1},
+        \omega_{\mathbb U}
+    \right\rangle:
+    D_{P_{\mathbb U}}
+    \to
+    U_1\times B_1.
+\]
+
+The object \(U_1\times B_1\) is the pullback of
+\[
+    A_1\times B_1
+\]
+along \(p_1\).
+
+\begin{proposition}[Descent of output structure]
+\label{prop:descent-output-structure}
+There exists a unique map over \(A_1\)
+\[
+    \widetilde\omega_P:
+    D_P\to A_1\times B_1
+\]
+whose pullback is
+\(\widetilde\omega_{\mathbb U}\).
+Projection to \(B_1\) defines
+\[
+    \omega_P:D_P\to B_1.
+\]
+\end{proposition}
+
+\begin{proof}
+The overlap compatibility follows from strictness of the local system
+identification. Effective descent along \(p_1\) therefore descends the map
+uniquely.
+\end{proof}
+
+\subsection{Reflection of typing equations}
+\label{subsec:reflection-typing-equations}
+
+The transition typing equation holds by construction. The remaining output
+typing equations are
+\[
+    s_B\omega_P
+    =
+    q_P\delta_P,
+\]
+and
+\[
+    t_B\omega_P
+    =
+    q_P\pi_P.
+\]
+
+\begin{proposition}[Descent of typing equations]
+\label{prop:descent-typing-equations}
+The descended transition and output maps satisfy all Mealy typing equations.
+\end{proposition}
+
+\begin{proof}
+Pulling the candidate equations back along
+\[
+    p_1:U_1\twoheadrightarrow A_1
+\]
+gives the local typing equations. Pullback along a regular epimorphism reflects
+equality of maps, so the global equations hold.
+\end{proof}
+
+\subsection{Reflection of unit equations}
+\label{subsec:reflection-unit-equations}
+
+\begin{proposition}[Descent of unit equations]
+\label{prop:descent-unit-equations}
+The descended transition and output maps satisfy the Mealy unit laws.
+\end{proposition}
+
+\begin{proof}
+The transition unit equation is an equality of maps
+\[
+    P\rightrightarrows P,
+\]
+and the output unit equation is an equality of maps
+\[
+    P\rightrightarrows B_1.
+\]
+Pulling them back along
+\[
+    \overline p:
+    U_0\times B_0
+    \twoheadrightarrow
+    A_0\times B_0
+\]
+gives the local unit equations. Since \(\overline p\) is a regular
+epimorphism, pullback reflects equality.
+\end{proof}
+
+\subsection{Reflection of multiplication equations}
+\label{subsec:reflection-multiplication-equations}
+
+Let
+\[
+    A_2
+    =
+    A_1\times_{t_A,A_0,s_A}A_1
+\]
+be the object of composable pairs
+\[
+    a:u\to v,
+    \qquad
+    b:v\to w.
+\]
+Write
+\[
+    \pi_1,\pi_2:
+    A_2\rightrightarrows A_1
+\]
+for the first and second arrows.
+
+Define the two-step execution domain
+\[
+    D_P^{(2)}
+    :=
+    A_2
+    \times_{t_A\pi_2,A_0,p_P}
+    P.
+\]
+
+The transition multiplication law is an equality
+\[
+    D_P^{(2)}
+    \rightrightarrows
+    P,
+\]
+and the output multiplication law is an equality
+\[
+    D_P^{(2)}
+    \rightrightarrows
+    B_1.
+\]
+
+\begin{proposition}[Descent of multiplication equations]
+\label{prop:descent-multiplication-equations}
+The descended transition and output maps satisfy the Mealy multiplication
+laws.
+\end{proposition}
+
+\begin{proof}
+Pulling
+\[
+    D_P^{(2)}
+\]
+back along
+\[
+    p_2:U_2\twoheadrightarrow A_2
+\]
+gives the local two-step execution domain. Under this identification, the
+pullbacks of the two global transition expressions are the two sides of the
+local transition multiplication law. The same holds for the output
+multiplication expressions.
+
+Since \(p_2\) is a regular epimorphism, pullback along \(p_2\) reflects
+equality.
+\end{proof}
+
+\begin{remark}[Why composable pairs must be covered]
+\label{rem:why-composable-pairs-covered}
+Coverage of individual arrows determines the response to each input
+separately. It does not, by itself, determine whether two locally specified
+responses fit the global sequential law.
+
+Coverage of \(A_2\) says that every globally executable pair is visible
+together in some local presentation. It is therefore the exact level at which
+one can verify
+\[
+    \text{response to a composite}
+    =
+    \text{successive responses}.
+\]
+\end{remark}
+
+\subsection{Descent of strict homomorphisms}
+\label{subsec:descent-strict-homomorphisms}
+
+Let
+\[
+    (\Phi_{\mathbb U},\vartheta)
+\]
+and
+\[
+    (\Psi_{\mathbb U},\chi)
+\]
+be system descent structures, and let
+\[
+    f_{\mathbb U}:
+    \Phi_{\mathbb U}\to\Psi_{\mathbb U}
+\]
+be a compatible local strict homomorphism.
+
+Its carrier map descends uniquely along
+\[
+    \overline p
+\]
+to
+\[
+    f:P\to Q.
+\]
+
+\begin{proposition}[Descent of strict semantic homomorphisms]
+\label{prop:descent-strict-semantic-homomorphisms}
+The descended carrier map \(f\) is a strict semantic homomorphism.
+\end{proposition}
+
+\begin{proof}
+The transition-preservation and output-preservation equations are equalities
+of maps over \(A_1\). Their pullbacks along \(p_1\) are the strict
+preservation equations for \(f_{\mathbb U}\). Since \(p_1\) is a regular
+epimorphism, the global equations hold.
+\end{proof}
+
+\subsection{The effective descent theorem}
+\label{subsec:effective-descent-theorem-strict-systems}
+
+\begin{theorem}[Effective descent for strict Mealy systems]
+\label{thm:effective-descent-strict-mealy-systems}
+For every \(2\)-nerve cover
+\[
+    p:\mathbb U\to\mathbb A,
+\]
+the comparison functor
+\[
+    K_p:
+    \mathsf{Sys}_{\mathbb B}(\mathbb A)
+    \longrightarrow
+    \mathsf{Desc}_p
+    \left(
+        \mathsf{Sys}_{\mathbb B}
+    \right)
+\]
+is an equivalence.
+\end{theorem}
+
+\begin{proof}
+\leavevmode
+\begin{enumerate}
+    \item \textbf{Essential surjectivity.}
+    Given a system descent structure, descend the carrier along \(p_0\), the
+    transition and output maps along \(p_1\), and reflect the typing, unit, and
+    multiplication laws along \(p_1\), \(p_0\), and \(p_2\), respectively.
+    The preceding propositions produce a global strict Mealy system whose
+    pullback is isomorphic to the local system with its overlap
+    identification.
+
+    \item \textbf{Fullness.}
+    A compatible local strict homomorphism descends on carriers along \(p_0\).
+    Proposition
+    \ref{prop:descent-strict-semantic-homomorphisms}
+    shows that the descended map is strict.
+
+    \item \textbf{Faithfulness.}
+    If two global strict homomorphisms have equal pullbacks, their carrier maps
+    become equal after pullback along the regular epimorphism
+    \(\overline p\). Hence they are equal globally.
+\end{enumerate}
+\end{proof}
+
+\begin{remark}[Systems-theoretic form of the theorem]
+\label{rem:systems-form-effective-descent}
+The theorem says that a global state machine is reconstructed from local
+models provided:
+\begin{enumerate}
+    \item every input context is locally represented;
+    \item every one-step input action is locally represented;
+    \item every executable pair of input actions is locally represented;
+    \item the local state, transition, and output models agree coherently on
+    overlaps.
+\end{enumerate}
+
+No additional coverage of longer paths is needed to reconstruct the machine
+itself, because its longer executions are generated by one-step transition
+structure and the multiplication laws.
+\end{remark}
+
+\subsection{The stack of strict systems}
+\label{subsec:stack-of-strict-systems}
+
+\begin{lemma}[Composition of effective descent]
+\label{lem:composition-effective-descent}
+Let
+\[
+    \mathcal F:
+    \mathcal C^{\mathrm{op}}\to\mathbf{Cat}
+\]
+be a pseudofunctor. Suppose \(\mathcal F\) satisfies effective descent for a
+first covering family and for the pullbacks of a second covering family to the
+domains of the first. Then it satisfies effective descent for the composite
+covering family.
+\end{lemma}
+
+\begin{proof}
+A compatible local family for the composite cover is equivalently:
+\begin{enumerate}
+    \item a compatible family on each first-stage domain for the pulled-back
+    second-stage cover;
+    \item compatibility among the resulting first-stage objects.
+\end{enumerate}
+The first collection of descent equivalences reconstructs the first-stage
+objects. The second reconstructs the global object. The same argument applies
+to morphisms.
+\end{proof}
+
+\begin{corollary}[Stack of strict Mealy systems]
+\label{cor:stack-strict-mealy-systems}
+The pseudofunctor
+\[
+    \mathsf{Sys}_{\mathbb B}
+\]
+is a stack for
+\[
+    \tau_{\mathrm{sys}}.
+\]
+\end{corollary}
+
+\begin{proof}
+Effective descent for extensive covers is
+Theorem~\ref{thm:extensive-descent-strict-systems}.
+Effective descent for singleton \(2\)-nerve covers is
+Theorem~\ref{thm:effective-descent-strict-mealy-systems}.
+The generating cover classes are stable under pullback, and effective descent
+is stable under composition by
+Lemma~\ref{lem:composition-effective-descent}.
+\end{proof}
+
+\section{Residual restriction and semantic reindexing}
+\label{sec:residual-restriction-semantic-reindexing}
+
+\subsection{Residual slice comparison}
+\label{subsec:residual-slice-comparison}
+
+Let
+\[
+    F:\mathbb A'\to\mathbb A
+\]
+be an internal functor.
+
+For a generalized object
+\[
+    v'\in A'_0,
+\]
+there is an induced internal functor
+\[
+    F_{/v'}:
+    \mathbb A'/v'
+    \to
+    \mathbb A/F_0v'
+\]
+which sends
+\[
+    r:u'\to v'
+\]
+to
+\[
+    F_1r:F_0u'\to F_0v'.
+\]
+
+Precomposition gives
+\[
+    (F_{/v'})^\ast:
+    [\mathbb A/F_0v',\mathbb B]
+    \to
+    [\mathbb A'/v',\mathbb B].
+\]
+
+Systems-theoretically, a residual behaviour at \(v'\) describes the future
+response of a state to every input continuation entering \(v'\).
+Precomposition along \(F_{/v'}\) forgets the global continuations which are
+not represented by the local interface.
+
+\subsection{Residual restriction}
+\label{subsec:residual-restriction}
+
+\begin{definition}[Residual restriction comparison]
+\label{def:residual-restriction-comparison}
+The \textbf{residual restriction comparison} is the carrier map
+\[
+    F^\sharp:
+    \overline F^{\,\ast}
+    \mathbf{Beh}_{\mathbb A,\mathbb B,0}
+    \to
+    \mathbf{Beh}_{\mathbb A',\mathbb B,0}
+\]
+whose component over \(v'\) sends
+\[
+    H:
+    \mathbb A/F_0v'\to\mathbb B
+\]
+to
+\[
+    H\circ F_{/v'}:
+    \mathbb A'/v'\to\mathbb B.
+\]
+\end{definition}
+
+The source is the carrier of
+\[
+    F^\ast
+    \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}.
+\]
+
+\begin{theorem}[Strictness of residual restriction]
+\label{thm:strictness-residual-restriction}
+For every internal functor
+\[
+    F:\mathbb A'\to\mathbb A,
+\]
+the map \(F^\sharp\) is a strict semantic homomorphism
+\[
+    F^\sharp:
+    F^\ast
+    \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+    \to
+    \mathbf{Beh}^{\mathrm{can}}_{\mathbb A',\mathbb B}.
+\]
+Explicitly,
+\[
+    F^\sharp
+    \left(
+        \partial_{F_1a'}H
+    \right)
+    =
+    \partial_{a'}
+    \left(
+        F^\sharp H
+    \right),
+\]
+and
+\[
+    \omega_{\mathbb A'}
+    \left(
+        a',
+        F^\sharp H
+    \right)
+    =
+    \omega_{\mathbb A}
+    \left(
+        F_1a',
+        H
+    \right).
+\]
+\end{theorem}
+
+\begin{proof}
+For
+\[
+    a':u'\to v',
+\]
+the residual functors fit into the strictly commuting square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+    \mathbb A'/u'
+        \arrow[r]
+        \arrow[d, "F_{/u'}"']
+    &
+    \mathbb A'/v'
+        \arrow[d, "F_{/v'}"]
+    \\
+    \mathbb A/F_0u'
+        \arrow[r]
+    &
+    \mathbb A/F_0v'.
+\end{tikzcd}
+\]
+Precomposition around this square gives the derivative equation.
+
+The output comparison is obtained by evaluating the residual functor on the
+distinguished arrow represented by the current input. The functor
+\(F_{/v'}\) sends the distinguished arrow represented by \(a'\) to that
+represented by \(F_1a'\). Hence the output equation holds.
+\end{proof}
+
+\subsection{Coherence of residual restriction}
+\label{subsec:coherence-residual-restriction}
+
+For composable input functors
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbb A''
+        \arrow[r, "G"]
+    &
+    \mathbb A'
+        \arrow[r, "F"]
+    &
+    \mathbb A,
+\end{tikzcd}
+\]
+residual precomposition satisfies
+\[
+    (F\circ G)^\sharp
+    =
+    G^\sharp
+    \circ
+    \overline G^{\,\ast}F^\sharp
+\]
+after the canonical pullback comparison.
+
+\begin{proposition}[Pseudonaturality of residual restriction]
+\label{prop:pseudonaturality-residual-restriction}
+The family \(F^\sharp\) satisfies
+\[
+    1_{\mathbb A}^\sharp
+    =
+    1,
+\]
+and
+\[
+    (F\circ G)^\sharp
+    =
+    G^\sharp
+    \circ
+    \overline G^{\,\ast}F^\sharp
+\]
+up to canonical pullback coherence.
+\end{proposition}
+
+\begin{proof}
+Both composites act on a residual functor by precomposition with
+\[
+    \mathbb A''/v''
+    \to
+    \mathbb A'/G_0v''
+    \to
+    \mathbb A/F_0G_0v''.
+\]
+\end{proof}
+
+\subsection{Semantic direct reindexing}
+\label{subsec:semantic-direct-reindexing}
+
+Let
+\[
+    V
+    \hookrightarrow
+    \mathbf{Beh}_{\mathbb A,\mathbb B,0}
+\]
+be a behavioural predicate.
+
+Ordinary base pullback gives
+\[
+    \overline F^{\,\ast}V
+    \hookrightarrow
+    \overline F^{\,\ast}
+    \mathbf{Beh}_{\mathbb A,\mathbb B,0},
+\]
+but its codomain is not the canonical behaviour object over
+\(\mathbb A'\).
+
+\begin{definition}[Semantic direct reindexing]
+\label{def:semantic-direct-reindexing}
+Define
+\[
+    F^\bullet V
+    \hookrightarrow
+    \mathbf{Beh}_{\mathbb A',\mathbb B,0}
+\]
+to be the regular image of
+\[
+\begin{tikzcd}[column sep=large]
+    \overline F^{\,\ast}V
+        \arrow[r, tail]
+    &
+    \overline F^{\,\ast}
+    \mathbf{Beh}_{\mathbb A,\mathbb B,0}
+        \arrow[r, "F^\sharp"]
+    &
+    \mathbf{Beh}_{\mathbb A',\mathbb B,0}.
+\end{tikzcd}
+\]
+\end{definition}
+
+Thus \(F^\bullet V\) consists of the local residual behaviours which actually
+arise by restricting members of \(V\).
+
+\begin{proposition}[Basic properties of semantic direct reindexing]
+\label{prop:basic-properties-semantic-direct-reindexing}
+Semantic direct reindexing:
+\begin{enumerate}
+    \item is monotone;
+    \item preserves arbitrary joins;
+    \item satisfies
+    \[
+        1_{\mathbb A}^\bullet
+        =
+        1;
+    \]
+    \item satisfies a canonical composition isomorphism
+    \[
+        G^\bullet F^\bullet V
+        \cong
+        (F\circ G)^\bullet V.
+    \]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Monotonicity and join preservation follow from pullback and regular-image
+formation in a Grothendieck topos. The identity comparison follows from
+\(1^\sharp=1\).
+
+For composition, pullback preserves regular images, and the image of a
+composite is unchanged by replacing the intermediate domain by its regular
+image. The result then follows from
+Proposition~\ref{prop:pseudonaturality-residual-restriction}.
+\end{proof}
+
+\subsection{Naturality of terminal semantics}
+\label{subsec:naturality-terminal-semantics-input}
+
+Let
+\[
+    \beta_\Phi:
+    P\to
+    \mathbf{Beh}_{\mathbb A,\mathbb B,0}
+\]
+be the terminal semantic map of
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B.
+\]
+
+\begin{proposition}[Naturality of residual semantics]
+\label{prop:naturality-residual-semantics}
+The square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+    F^\ast P
+        \arrow[r, "\overline F^{\,\ast}\beta_\Phi"]
+        \arrow[d, "\beta_{F^\ast\Phi}"']
+    &
+    \overline F^{\,\ast}
+    \mathbf{Beh}_{\mathbb A,\mathbb B,0}
+        \arrow[d, "F^\sharp"]
+    \\
+    \mathbf{Beh}_{\mathbb A',\mathbb B,0}
+        \arrow[r, equal]
+    &
+    \mathbf{Beh}_{\mathbb A',\mathbb B,0}
+\end{tikzcd}
+\]
+commutes.
+\end{proposition}
+
+\begin{proof}
+For a pulled-back state \((v',x)\), the upper-right composite computes the
+global residual behaviour of \(x\) and restricts it along
+\[
+    F_{/v'}.
+\]
+The lower-left composite computes the residual behaviour of the restricted
+system from \((v',x)\). Both assign to each local residual input path its
+image under \(F\), followed by the global residual semantics of \(x\).
+\end{proof}
+
+\begin{theorem}[Behavioural abstraction under arbitrary restriction]
+\label{thm:behavioural-abstraction-arbitrary-restriction}
+For every internal functor
+\[
+    F:\mathbb A'\to\mathbb A
+\]
+and every system
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B,
+\]
+there is a canonical equality of subobjects
+\[
+    \operatorname{Beh}_{\mathbb A'}(F^\ast\Phi)
+    =
+    F^\bullet
+    \operatorname{Beh}_{\mathbb A}(\Phi).
+\]
+\end{theorem}
+
+\begin{proof}
+The semantic image of \(F^\ast\Phi\) is the regular image of
+\[
+    \beta_{F^\ast\Phi}
+    =
+    F^\sharp
+    \circ
+    \overline F^{\,\ast}\beta_\Phi.
+\]
+The regular image of
+\(\overline F^{\,\ast}\beta_\Phi\) is
+\[
+    \overline F^{\,\ast}
+    \operatorname{Beh}_{\mathbb A}(\Phi)
+\]
+because regular images are stable under pullback. Taking the image after
+\(F^\sharp\) gives
+\[
+    F^\bullet
+    \operatorname{Beh}_{\mathbb A}(\Phi).
+\]
+\end{proof}
+
+\section{Residual cover classes}
+\label{sec:residual-cover-classes}
+
+\subsection{Behaviour-exact input functors}
+\label{subsec:behaviour-exact-input-functors}
+
+\begin{definition}[Behaviour-exact input functor]
+\label{def:behaviour-exact-input-functor}
+An internal functor
+\[
+    F:\mathbb A'\to\mathbb A
+\]
+is \textbf{behaviour-exact relative to \(\mathbb B\)} if
+\[
+    F^\sharp:
+    F^\ast
+    \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+    \xrightarrow{\cong}
+    \mathbf{Beh}^{\mathrm{can}}_{\mathbb A',\mathbb B}
+\]
+is an isomorphism of strict Mealy systems.
+\end{definition}
+
+Behaviour exactness says that the local interface has exactly the correct
+future semantics:
+\begin{enumerate}
+    \item two global residual behaviours cannot become indistinguishable after
+    restriction;
+    \item every local residual behaviour extends uniquely to a global one over
+    the represented global context.
+\end{enumerate}
+
+Thus behaviour exactness is a lossless interface translation at the level of
+complete future response.
+
+When \(F\) is behaviour-exact, define residual pullback by transporting
+ordinary slice pullback through \(F^\sharp\):
+\[
+    F^\ast V
+    :=
+    F^\sharp
+    \left(
+        \overline F^{\,\ast}V
+    \right).
+\]
+Then
+\[
+    F^\bullet V
+    =
+    F^\ast V.
+\]
+
+\begin{corollary}[Behavioural abstraction under exact restriction]
+\label{cor:behavioural-abstraction-exact-restriction}
+If \(F\) is behaviour-exact, then
+\[
+    F^\ast
+    \operatorname{Beh}_{\mathbb A}(\Phi)
+    \cong
+    \operatorname{Beh}_{\mathbb A'}(F^\ast\Phi).
+\]
+\end{corollary}
+
+\subsection{Incoming-arrow comparison}
+\label{subsec:incoming-arrow-comparison}
+
+Define the object of global arrows entering a locally represented target by
+\[
+    \widehat A_{1,F}
+    :=
+    A'_0
+    \times_{F_0,A_0,t_A}
+    A_1.
+\]
+
+A generalized element is a pair
+\[
+    (v',a)
+\]
+with
+\[
+    t_A(a)=F_0(v').
+\]
+
+There is a canonical map
+\[
+    \lambda_F:
+    A'_1\to\widehat A_{1,F}
+\]
+given by
+\[
+    \lambda_F(a')
+    =
+    \left(
+        t_{A'}a',
+        F_1a'
+    \right).
+\]
+
+\begin{definition}[Derivative-covering input functor]
+\label{def:derivative-covering-input-functor}
+An internal functor
+\[
+    F:\mathbb A'\to\mathbb A
+\]
+is \textbf{derivative-covering} if
+\[
+    \lambda_F:
+    A'_1\twoheadrightarrow\widehat A_{1,F}
+\]
+is a regular epimorphism.
+\end{definition}
+
+Derivative covering says:
+
+\begin{quote}
+Whenever the local interface represents a current input context, it also
+represents every global input action which may be applied in that context.
+\end{quote}
+
+This is the interface condition needed for local safety checks to be complete.
+Without it, a local system may be safe under every locally visible input while
+omitting a globally possible input that violates the contract.
+
+\subsection{Universal residual exactness}
+\label{subsec:universal-residual-exactness}
+
+Behaviour exactness and derivative covering need not be stable under arbitrary
+base change. The residual topology therefore uses their universal forms.
+
+\begin{definition}[Universally behaviour-exact input functor]
+\label{def:universally-behaviour-exact}
+An internal functor \(F\) is \textbf{universally behaviour-exact} if every
+pullback of \(F\) in \(\mathsf{Inp}\) is behaviour-exact relative to
+\(\mathbb B\).
+\end{definition}
+
+\begin{definition}[Universally derivative-covering input functor]
+\label{def:universally-derivative-covering}
+An internal functor \(F\) is \textbf{universally derivative-covering} if every
+pullback of \(F\) in \(\mathsf{Inp}\) is derivative-covering.
+\end{definition}
+
+\begin{definition}[Residually effective cover]
+\label{def:residually-effective-cover}
+An internal functor
+\[
+    p:\mathbb U\to\mathbb A
+\]
+is a \textbf{residually effective cover relative to \(\mathbb B\)} if:
+\begin{enumerate}
+    \item \(p\) is a \(2\)-nerve cover;
+    \item \(p\) is universally behaviour-exact;
+    \item \(p\) is universally derivative-covering.
+\end{enumerate}
+\end{definition}
+
+A \textbf{nervewise residually effective cover} is a residually effective
+cover which is also nervewise covering.
+
+\subsection{Stability of residual covers}
+\label{subsec:stability-residual-covers}
+
+\begin{lemma}[Composition of derivative-covering functors]
+\label{lem:composition-derivative-covering}
+If
+\[
+\begin{tikzcd}[column sep=large]
+    \mathbb A''
+        \arrow[r, "G"]
+    &
+    \mathbb A'
+        \arrow[r, "F"]
+    &
+    \mathbb A
+\end{tikzcd}
+\]
+are derivative-covering, then \(F\circ G\) is derivative-covering.
+\end{lemma}
+
+\begin{proof}
+The incoming-arrow comparison for the composite factors as
+\[
+\begin{tikzcd}[column sep=large]
+    A''_1
+        \arrow[r, "\lambda_G", two heads]
+    &
+    A''_0\times_{G_0,A'_0,t_{A'}}A'_1
+        \arrow[r, two heads]
+    &
+    A''_0\times_{F_0G_0,A_0,t_A}A_1.
+\end{tikzcd}
+\]
+The second map is the pullback of \(\lambda_F\) along \(G_0\). Both maps are
+regular epimorphisms.
+\end{proof}
+
+\begin{lemma}[Composition of behaviour-exact functors]
+\label{lem:composition-behaviour-exact}
+If \(F\) and \(G\) are behaviour-exact, then \(F\circ G\) is
+behaviour-exact.
+\end{lemma}
+
+\begin{proof}
+By
+Proposition~\ref{prop:pseudonaturality-residual-restriction},
+the residual restriction map of the composite is the composite of the
+pullback of \(F^\sharp\) with \(G^\sharp\). A composite of isomorphisms is an
+isomorphism.
+\end{proof}
+
+\begin{proposition}[Stability of residually effective covers]
+\label{prop:stability-residually-effective-covers}
+Residually effective covers:
+\begin{enumerate}
+    \item contain identities;
+    \item are stable under pullback;
+    \item are closed under composition.
+\end{enumerate}
+The same statements hold for nervewise residually effective covers.
+\end{proposition}
+
+\begin{proof}
+Pullback stability follows from the universal clauses and
+Proposition~\ref{prop:stability-nerve-covers}.
+
+A pullback of a composite can be factored as a composite of successive
+pullbacks. Applying
+Lemmas~\ref{lem:composition-derivative-covering} and
+\ref{lem:composition-behaviour-exact}
+after these pullbacks proves composition stability.
+\end{proof}
+
+\subsection{The residual interface topology}
+\label{subsec:residual-interface-topology}
+
+\begin{definition}[Residual interface pretopology]
+\label{def:residual-interface-pretopology}
+Let
+\[
+    \mathcal K_{\mathrm{res}}
+\]
+be the smallest Grothendieck pretopology on \(\mathsf{Inp}\) containing:
+\begin{enumerate}
+    \item all extensive interface covers;
+    \item all singleton residually effective covers.
+\end{enumerate}
+Write
+\[
+    \tau_{\mathrm{res}}
+\]
+for the generated Grothendieck topology.
+\end{definition}
+
+Proposition~\ref{prop:residual-exactness-coproduct-inclusions} ensures that
+the members of the extensive generating families have the residual exactness
+properties used below.
+
+\section{Descent of residual behavioural contracts}
+\label{sec:descent-residual-behavioural-contracts}
+
+Throughout this section, let
+\[
+    p:\mathbb U\to\mathbb A
+\]
+be a residually effective cover.
+
+\subsection{Descent of behavioural predicates}
+\label{subsec:descent-behavioural-predicates-rigorous}
+
+Behaviour exactness gives an isomorphism
+\[
+    p^\sharp:
+    \overline p^{\,\ast}
+    \mathbf{Beh}_{\mathbb A,\mathbb B,0}
+    \xrightarrow{\cong}
+    \mathbf{Beh}_{\mathbb U,\mathbb B,0}.
+\]
+
+\begin{definition}[Predicate descent structure]
+\label{def:predicate-descent-datum}
+A \textbf{predicate descent structure} consists of a subobject
+\[
+    C_{\mathbb U}
+    \hookrightarrow
+    \mathbf{Beh}_{\mathbb U,\mathbb B,0}
+\]
+whose two pullbacks to
+\(\mathbb U^{\langle2\rangle}\) agree under the canonical behaviour-exact
+comparison.
+\end{definition}
+
+Write
+\[
+    \mathsf{Desc}_p
+    \left(
+        \mathsf{Pred}_{\mathbb B}
+    \right)
+\]
+for the resulting poset.
+
+\begin{proposition}[Descent of behavioural predicates]
+\label{prop:descent-behavioural-predicates-rigorous}
+The comparison
+\[
+    \mathsf{Pred}_{\mathbb B}(\mathbb A)
+    \longrightarrow
+    \mathsf{Desc}_p
+    \left(
+        \mathsf{Pred}_{\mathbb B}
+    \right)
+\]
+is an isomorphism of posets.
+\end{proposition}
+
+\begin{proof}
+The map
+\[
+    \overline p:
+    U_0\times B_0
+    \twoheadrightarrow
+    A_0\times B_0
+\]
+is an effective descent morphism for objects and subobjects in the
+corresponding slices. Behaviour exactness identifies the local canonical
+behaviour object with the pullback of the global one. Compatible local
+subobjects therefore descend uniquely.
+\end{proof}
+
+\subsection{The pulled-back global derivative domain}
+\label{subsec:pulled-back-global-derivative-domain}
+
+Write
+\[
+    \mathbf{Beh}_{\mathbb A,0}
+    :=
+    \mathbf{Beh}_{\mathbb A,\mathbb B,0}.
+\]
+
+The global derivative domain is
+\[
+    D_{\mathbb A}
+    :=
+    A_1
+    \times_{t_A,A_0,p_{\mathbf{Beh}}}
+    \mathbf{Beh}_{\mathbb A,0}.
+\]
+Write
+\[
+    d_0:
+    D_{\mathbb A}\to
+    \mathbf{Beh}_{\mathbb A,0}
+\]
+for the current-state projection, and
+\[
+    d_1:
+    D_{\mathbb A}\to
+    \mathbf{Beh}_{\mathbb A,0}
+\]
+for the derivative action.
+
+Define
+\[
+    \widehat D_p
+    :=
+    \widehat A_{1,p}
+    \times_{U_0}
+    \overline p^{\,\ast}
+    \mathbf{Beh}_{\mathbb A,0}.
+\]
+
+Using behaviour exactness, the local derivative domain is
+\[
+    D_{\mathbb U}
+    :=
+    U_1
+    \times_{t_U,U_0,p_{\mathbf{Beh}}}
+    \mathbf{Beh}_{\mathbb U,0}.
+\]
+
+There is a canonical comparison
+\[
+    \Lambda_p:
+    D_{\mathbb U}\to\widehat D_p
+\]
+induced by
+\[
+    \lambda_p:
+    U_1\to\widehat A_{1,p}
+\]
+and the inverse of \(p^\sharp\).
+
+\begin{lemma}[Derivative-domain covering]
+\label{lem:derivative-domain-covering}
+The map
+\[
+    \Lambda_p:
+    D_{\mathbb U}\twoheadrightarrow\widehat D_p
+\]
+is a regular epimorphism.
+\end{lemma}
+
+\begin{proof}
+The map \(\Lambda_p\) is a pullback of
+\[
+    \lambda_p:
+    U_1\twoheadrightarrow\widehat A_{1,p}
+\]
+along the pulled-back canonical behaviour carrier. Regular epimorphisms are
+stable under pullback.
+\end{proof}
+
+\subsection{Derivative invariance as a subobject inclusion}
+\label{subsec:derivative-invariance-subobject-inclusion}
+
+Let
+\[
+    C\hookrightarrow\mathbf{Beh}_{\mathbb A,0}
+\]
+be a behavioural predicate.
+
+\begin{proposition}[Subobject form of derivative invariance]
+\label{prop:subobject-form-derivative-invariance}
+The predicate \(C\) is derivative-invariant if and only if
+\[
+    d_0^\ast C
+    \leq
+    d_1^\ast C
+\]
+in
+\[
+    \operatorname{Sub}(D_{\mathbb A}).
+\]
+\end{proposition}
+
+\begin{proof}
+The subobject \(d_0^\ast C\) consists of current residual states in \(C\)
+together with applicable input arrows. The subobject \(d_1^\ast C\) consists
+of those pairs whose derivative state lies in \(C\). The inclusion says
+exactly that every derivative of a state in \(C\) remains in \(C\).
+\end{proof}
+
+\subsection{Locality of derivative invariance}
+\label{subsec:locality-derivative-invariance-rigorous}
+
+\begin{theorem}[Derivative invariance is interface-local]
+\label{thm:derivative-invariance-interface-local}
+A behavioural predicate
+\[
+    C\hookrightarrow\mathbf{Beh}_{\mathbb A,0}
+\]
+is derivative-invariant if and only if
+\[
+    p^\ast C
+    \hookrightarrow
+    \mathbf{Beh}_{\mathbb U,0}
+\]
+is derivative-invariant.
+\end{theorem}
+
+\begin{proof}
+If \(C\) is derivative-invariant, strictness of \(p^\sharp\) implies that
+\(p^\ast C\) is derivative-invariant.
+
+Conversely, suppose \(p^\ast C\) is derivative-invariant. Its invariance is
+the inclusion
+\[
+    d_{0,\mathbb U}^\ast(p^\ast C)
+    \leq
+    d_{1,\mathbb U}^\ast(p^\ast C)
+\]
+on \(D_{\mathbb U}\).
+
+Under behaviour exactness, this is the pullback along
+\[
+    \Lambda_p:
+    D_{\mathbb U}\twoheadrightarrow\widehat D_p
+\]
+of the pullback to \(\widehat D_p\) of
+\[
+    d_0^\ast C
+    \leq
+    d_1^\ast C.
+\]
+Pullback along a regular epimorphism reflects subobject inclusion, so the
+candidate inclusion holds on \(\widehat D_p\).
+
+The object \(\widehat D_p\) is the pullback of \(D_{\mathbb A}\) along the
+regular epimorphism covering current-state anchors. Pullback along this map
+again reflects subobject inclusion. Hence
+\[
+    d_0^\ast C
+    \leq
+    d_1^\ast C
+\]
+holds globally.
+\end{proof}
+
+\begin{remark}[Safety interpretation]
+\label{rem:interface-local-safety-interpretation}
+The forward implication says that a globally safe residual specification
+remains safe after restricting the input vocabulary.
+
+The converse is more substantial. It says that local safety is complete
+because:
+\begin{enumerate}
+    \item behaviour exactness ensures that the local residual states are
+    exactly the restrictions of global residual states;
+    \item derivative covering ensures that no globally possible input at a
+    represented context has been omitted from the local safety test;
+    \item object coverage ensures that every global current context is
+    represented somewhere locally.
+\end{enumerate}
+\end{remark}
+
+\subsection{Contract descent}
+\label{subsec:contract-descent-rigorous}
+
+\begin{definition}[Contract descent structure]
+\label{def:contract-descent-datum-rigorous}
+A \textbf{contract descent structure} is a predicate descent structure
+\[
+    V_{\mathbb U}
+    \hookrightarrow
+    \mathbf{Beh}_{\mathbb U,0}
+\]
+such that \(V_{\mathbb U}\) is derivative-invariant.
+\end{definition}
+
+Write
+\[
+    \mathsf{Desc}_p
+    \left(
+        \mathsf{Ctr}_{\mathbb B}
+    \right)
+\]
+for the resulting poset.
+
+\begin{theorem}[Effective descent of residual contracts]
+\label{thm:effective-descent-residual-contracts}
+For every residually effective cover
+\[
+    p:\mathbb U\to\mathbb A,
+\]
+the comparison
+\[
+    \mathsf{Ctr}_{\mathbb B}(\mathbb A)
+    \longrightarrow
+    \mathsf{Desc}_p
+    \left(
+        \mathsf{Ctr}_{\mathbb B}
+    \right)
+\]
+is an isomorphism of posets.
+\end{theorem}
+
+\begin{proof}
+By
+Proposition~\ref{prop:descent-behavioural-predicates-rigorous},
+every compatible local predicate descends uniquely to a global predicate.
+By
+Theorem~\ref{thm:derivative-invariance-interface-local},
+the descended predicate is derivative-invariant exactly when its local
+pullback is derivative-invariant.
+\end{proof}
+
+\begin{remark}[Specifications versus implementations]
+\label{rem:specifications-versus-implementations}
+Contract descent reconstructs a global set of permitted residual behaviours.
+It does not reconstruct a chosen implementation unless the local systems also
+carry compatible state and transition identifications.
+
+Thus:
+\[
+    \text{compatible local specifications}
+    \centernot\Longrightarrow
+    \text{compatible chosen implementations}.
+\]
+Several locally chosen controllers may satisfy contracts that glue perfectly
+while using incompatible hidden states or incompatible overlap dynamics.
+\end{remark}
+
+\begin{corollary}[Stack of residual contracts]
+\label{cor:stack-residual-contracts}
+The indexed poset
+\[
+    \mathsf{Ctr}_{\mathbb B}
+\]
+is a stack for
+\[
+    \tau_{\mathrm{res}}.
+\]
+Equivalently, it is a sheaf of posets on the residual interface site.
+\end{corollary}
+
+\begin{proof}
+Extensive descent is
+Theorem~\ref{thm:extensive-descent-residual-contracts}.
+Singleton residual descent is
+Theorem~\ref{thm:effective-descent-residual-contracts}.
+The generating cover classes are pullback-stable, and descent composes by
+Lemma~\ref{lem:composition-effective-descent}.
+\end{proof}
+
+\section{Derivative closure and canonical realization under restriction}
+\label{sec:derivative-closure-canonical-realization-restriction}
+
+Throughout this section, let
+\[
+    F:\mathbb A'\to\mathbb A
+\]
+be behaviour-exact and derivative-covering.
+
+\subsection{Generated derivative closure}
+\label{subsec:generated-derivative-closure-restriction}
+
+Let
+\[
+    C\hookrightarrow\mathbf{Beh}_{\mathbb A,0}.
+\]
+
+Define
+\[
+    D_{\mathbb A}(C)
+    :=
+    D_{\mathbb A}
+    \times_{d_0,\mathbf{Beh}_{\mathbb A,0}}
+    C.
+\]
+Generated derivative closure is the regular image
+\[
+    \operatorname{Gen}_{\partial,\mathbb A}(C)
+    =
+    \operatorname{Im}
+    \left(
+        D_{\mathbb A}(C)
+        \xrightarrow{d_1}
+        \mathbf{Beh}_{\mathbb A,0}
+    \right).
+\]
+
+Because identity arrows are included, this image contains \(C\). Because
+arbitrary input arrows include composites, it is derivative-invariant.
+
+\begin{lemma}[Images under regular-epimorphic refinement]
+\label{lem:images-regular-epimorphic-refinement}
+Let
+\[
+    E\twoheadrightarrow D\xrightarrow{f}X
+\]
+be a regular epimorphism followed by an arbitrary map. Then
+\[
+    \operatorname{Im}(f)
+    =
+    \operatorname{Im}(f\circ e).
+\]
+\end{lemma}
+
+\begin{proof}
+Factor \(f\) as a regular epimorphism followed by a monomorphism. Since the
+composite of regular epimorphisms is regular epic, the same monomorphism is an
+image factor for \(f\circ e\).
+\end{proof}
+
+\begin{theorem}[Generated closure commutes with residual restriction]
+\label{thm:generated-closure-commutes-restriction}
+There is a canonical isomorphism
+\[
+    F^\ast
+    \operatorname{Gen}_{\partial,\mathbb A}(C)
+    \cong
+    \operatorname{Gen}_{\partial,\mathbb A'}
+    (F^\ast C).
+\]
+\end{theorem}
+
+\begin{proof}
+Pullback stability of regular images identifies
+\[
+    F^\ast
+    \operatorname{Gen}_{\partial,\mathbb A}(C)
+\]
+with the image of the pulled-back global derivative action on the pulled-back
+predicate.
+
+The pulled-back global incoming-arrow domain is
+\(\widehat D_F\). The local derivative domain maps to it by the regular
+epimorphism
+\[
+    \Lambda_F:
+    D_{\mathbb A'}\twoheadrightarrow\widehat D_F.
+\]
+Strictness of \(F^\sharp\) identifies the local derivative map with the
+pulled-back global derivative map after precomposition by \(\Lambda_F\).
+
+By
+Lemma~\ref{lem:images-regular-epimorphic-refinement},
+this precomposition does not change the image. The resulting image is
+\[
+    \operatorname{Gen}_{\partial,\mathbb A'}
+    (F^\ast C).
+\]
+\end{proof}
+
+\subsection{Safety cores}
+\label{subsec:safety-cores-restriction}
+
+The safety core is
+\[
+    \operatorname{Safe}_{\partial,\mathbb A}(C)
+    =
+    \forall_{d_0}
+    \left(
+        d_1^\ast C
+    \right).
+\]
+
+\begin{lemma}[Universal quantification under an epimorphic refinement]
+\label{lem:universal-quantification-epimorphic-refinement}
+Let
+\[
+    E\xrightarrow{e}D\xrightarrow{f}X
+\]
+be maps in a Grothendieck topos, with \(e\) a regular epimorphism. For every
+subobject
+\[
+    S\hookrightarrow D,
+\]
+there is a canonical equality
+\[
+    \forall_f(S)
+    =
+    \forall_{fe}(e^\ast S).
+\]
+\end{lemma}
+
+\begin{proof}
+For every subobject \(T\hookrightarrow X\),
+\[
+\begin{aligned}
+    T\leq\forall_{fe}(e^\ast S)
+    &\iff
+    e^\ast f^\ast T\leq e^\ast S
+    \\
+    &\iff
+    f^\ast T\leq S
+    \\
+    &\iff
+    T\leq\forall_f(S).
+\end{aligned}
+\]
+The middle equivalence uses reflection of subobject inclusion by pullback
+along the regular epimorphism \(e\). Hence the two right adjoints define the
+same subobject.
+\end{proof}
+
+\begin{theorem}[Safety core commutes with residual restriction]
+\label{thm:safety-core-commutes-restriction}
+There is a canonical isomorphism
+\[
+    F^\ast
+    \operatorname{Safe}_{\partial,\mathbb A}(C)
+    \cong
+    \operatorname{Safe}_{\partial,\mathbb A'}
+    (F^\ast C).
+\]
+\end{theorem}
+
+\begin{proof}
+The square comparing the pulled-back global derivative domain
+\(\widehat D_F\) with the global derivative domain is a pullback.
+Beck--Chevalley for dependent products gives
+\[
+    F^\ast
+    \forall_{d_0}
+    \left(
+        d_1^\ast C
+    \right)
+    \cong
+    \forall_{\widehat d_0}
+    \left(
+        \widehat d_1^\ast F^\ast C
+    \right).
+\]
+
+The local derivative domain maps by the regular epimorphism
+\[
+    \Lambda_F:
+    D_{\mathbb A'}\twoheadrightarrow\widehat D_F.
+\]
+Strictness identifies the pullback of
+\(\widehat d_1^\ast F^\ast C\) with
+\[
+    d_{1,\mathbb A'}^\ast(F^\ast C).
+\]
+Applying
+Lemma~\ref{lem:universal-quantification-epimorphic-refinement}
+gives
+\[
+    \forall_{\widehat d_0}
+    \left(
+        \widehat d_1^\ast F^\ast C
+    \right)
+    =
+    \forall_{d_{0,\mathbb A'}}
+    \left(
+        d_{1,\mathbb A'}^\ast F^\ast C
+    \right).
+\]
+\end{proof}
+
+\subsection{The indexed derivative adjoint triple}
+\label{subsec:indexed-derivative-adjoint-triple}
+
+For each input category \(\mathbb A\), recall
+\[
+    \operatorname{Gen}_{\partial,\mathbb A}
+    \dashv
+    I_{\partial,\mathbb A}
+    \dashv
+    \operatorname{Safe}_{\partial,\mathbb A}.
+\]
+
+\begin{corollary}[Indexed derivative adjoint triple]
+\label{cor:indexed-derivative-adjoint-triple}
+Over the category whose morphisms are behaviour-exact,
+derivative-covering input functors, the fibrewise adjunctions
+\[
+    \operatorname{Gen}_{\partial}
+    \dashv
+    I_{\partial}
+    \dashv
+    \operatorname{Safe}_{\partial}
+\]
+assemble into indexed adjunctions. Their Beck--Chevalley comparisons are
+invertible.
+\end{corollary}
+
+\begin{proof}
+The invertible comparisons for generated closure and safety are
+Theorems~\ref{thm:generated-closure-commutes-restriction} and
+\ref{thm:safety-core-commutes-restriction}. The inclusion functors commute
+strictly with pullback. Naturality of units and counits follows from
+uniqueness of adjoint mates.
+\end{proof}
+
+\subsection{Restriction of canonical realizations}
+\label{subsec:restriction-canonical-realizations}
+
+Let
+\[
+    V\hookrightarrow\mathbf{Beh}_{\mathbb A,0}
+\]
+be derivative-invariant. Its canonical realization
+\[
+    \iota_{\mathbb A}(V)
+\]
+is the restriction of the canonical behaviour Mealy morphism to \(V\).
+
+\begin{proposition}[Restriction of canonical realizations]
+\label{prop:restriction-canonical-realizations}
+There is a canonical strict isomorphism
+\[
+    F^\ast
+    \iota_{\mathbb A}(V)
+    \cong
+    \iota_{\mathbb A'}
+    (F^\ast V).
+\]
+\end{proposition}
+
+\begin{proof}
+Behaviour exactness identifies the pulled-back canonical behaviour machine
+with the local canonical behaviour machine. Under this identification,
+\(F^\ast V\) is derivative-invariant by strictness of \(F^\sharp\), and the
+restricted transition and output maps coincide.
+\end{proof}
+
+\subsection{Indexed abstraction and realization}
+\label{subsec:indexed-abstraction-realization}
+
+For every \(\mathbb A\), recall the fibrewise adjunction
+\[
+    \operatorname{Beh}_{\mathbb A}
+    \dashv
+    \iota_{\mathbb A}.
+\]
+
+\begin{theorem}[Indexed abstraction--realization adjunction]
+\label{thm:indexed-abstraction-realization-adjunction}
+Over the category of residually effective input functors, the fibrewise
+adjunctions
+\[
+    \operatorname{Beh}_{\mathbb A}
+    \dashv
+    \iota_{\mathbb A}
+\]
+assemble into an indexed adjunction between:
+\begin{enumerate}
+    \item the indexed category of strict Mealy systems;
+    \item the indexed poset of residual behavioural contracts.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The left-adjoint comparison is
+\[
+    F^\ast
+    \operatorname{Beh}_{\mathbb A}(\Phi)
+    \cong
+    \operatorname{Beh}_{\mathbb A'}(F^\ast\Phi)
+\]
+from
+Corollary~\ref{cor:behavioural-abstraction-exact-restriction}.
+The right-adjoint comparison is
+Proposition~\ref{prop:restriction-canonical-realizations}.
+They are mates under the fibrewise adjunctions and satisfy the coherence
+inherited from input restriction and residual restriction.
+\end{proof}
+
+\section{Locality of satisfaction and minimization}
+\label{sec:locality-satisfaction-minimization}
+
+Throughout this section, let
+\[
+    \{F_i:\mathbb A_i\to\mathbb A\}_{i\in I}
+\]
+be a covering family in
+\(\mathcal K_{\mathrm{res}}\).
+
+Every member of such a family is obtained from extensive inclusions and
+residually effective singleton covers by pullback and composition.
+Consequently, each \(F_i\) is behaviour-exact and derivative-covering.
+
+\subsection{Joint reflection of subobject inclusion}
+\label{subsec:joint-reflection-subobject-inclusion}
+
+\begin{lemma}[Local reflection of subobject inclusion]
+\label{lem:local-reflection-subobject-inclusion}
+Let
+\[
+    S,T
+    \hookrightarrow
+    \mathbf{Beh}_{\mathbb A,0}
+\]
+be subobjects. If
+\[
+    F_i^\ast S
+    \leq
+    F_i^\ast T
+\]
+for every \(i\), then
+\[
+    S\leq T.
+\]
+\end{lemma}
+
+\begin{proof}
+For a singleton residually effective cover, pullback along the regular
+epimorphism on the behaviour base reflects subobject inclusion.
+
+For an extensive cover, subobjects decompose componentwise.
+
+The reflection property is preserved under pullback and composition of
+covering families, so it holds for every family in the generated
+pretopology.
+\end{proof}
+
+\subsection{Locality of contract satisfaction}
+\label{subsec:locality-contract-satisfaction-rigorous}
+
+Let
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+and let
+\[
+    V\hookrightarrow\mathbf{Beh}_{\mathbb A,0}
+\]
+be a residual contract.
+
+Recall that
+\[
+    \Phi\models V
+\]
+means
+\[
+    \operatorname{Beh}_{\mathbb A}(\Phi)\leq V.
+\]
+
+\begin{theorem}[Locality of contract satisfaction]
+\label{thm:locality-contract-satisfaction-rigorous}
+The following are equivalent:
+\begin{enumerate}
+    \item
+    \[
+        \Phi\models V;
+    \]
+    \item for every \(i\in I\),
+    \[
+        F_i^\ast\Phi
+        \models
+        F_i^\ast V.
+    \]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+If
+\[
+    \operatorname{Beh}_{\mathbb A}(\Phi)\leq V,
+\]
+then pullback gives
+\[
+    F_i^\ast
+    \operatorname{Beh}_{\mathbb A}(\Phi)
+    \leq
+    F_i^\ast V.
+\]
+Behaviour exactness identifies the left side with
+\[
+    \operatorname{Beh}_{\mathbb A_i}(F_i^\ast\Phi).
+\]
+
+Conversely, local satisfaction gives
+\[
+    F_i^\ast
+    \operatorname{Beh}_{\mathbb A}(\Phi)
+    \leq
+    F_i^\ast V
+\]
+for every \(i\). Apply
+Lemma~\ref{lem:local-reflection-subobject-inclusion}.
+\end{proof}
+
+\begin{remark}[Interpretation as complete local verification]
+\label{rem:complete-local-verification}
+The theorem says that a global behavioural contract may be checked patch by
+patch without losing any global case.
+
+This completeness depends on the cover conditions. Behaviour exactness
+prevents distinct global futures from becoming indistinguishable locally, and
+derivative covering prevents a globally possible input from being omitted
+from every local check.
+\end{remark}
+
+\subsection{Locality of behavioural separatedness}
+\label{subsec:locality-behavioural-separatedness}
+
+Recall that \(\Phi\) is behaviourally separated if
+\[
+    \beta_\Phi:
+    P\to
+    \mathbf{Beh}_{\mathbb A,0}
+\]
+is monic.
+
+\begin{theorem}[Separatedness is interface-local]
+\label{thm:separatedness-interface-local}
+The system \(\Phi\) is behaviourally separated if and only if every local
+restriction
+\[
+    F_i^\ast\Phi
+\]
+is behaviourally separated.
+\end{theorem}
+
+\begin{proof}
+Pullback preserves monomorphisms, so global separatedness implies local
+separatedness.
+
+Conversely,
+Proposition~\ref{prop:naturality-residual-semantics}
+and behaviour exactness identify the local semantic map with the pullback of
+\(\beta_\Phi\), followed by an isomorphism. Hence every local pullback of
+\(\beta_\Phi\) is monic.
+
+Monomorphisms are local for regular-epimorphic and extensive covers. Therefore
+\(\beta_\Phi\) is monic.
+\end{proof}
+
+\subsection{Locality of semantic minimization}
+\label{subsec:locality-semantic-minimization}
+
+Let
+\[
+    \eta_\Phi:
+    \Phi\twoheadrightarrow
+    \operatorname{Beh}_{\mathbb A}(\Phi)
+\]
+be the semantic quotient.
+
+\begin{theorem}[Semantic minimization commutes with local restriction]
+\label{thm:semantic-minimization-local-restriction}
+For every residually effective input functor
+\[
+    F:\mathbb A'\to\mathbb A,
+\]
+there is a canonical isomorphism of semantic quotient factorizations
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+    F^\ast\Phi
+        \arrow[r, two heads, "F^\ast\eta_\Phi"]
+        \arrow[dr, two heads, "\eta_{F^\ast\Phi}"']
+    &
+    F^\ast
+    \operatorname{Beh}_{\mathbb A}(\Phi)
+        \arrow[d, "\cong"]
+    \\
+    {}
+    &
+    \operatorname{Beh}_{\mathbb A'}
+    (F^\ast\Phi).
+\end{tikzcd}
+\]
+\end{theorem}
+
+\begin{proof}
+The semantic quotient is the regular-image factorization of
+\(\beta_\Phi\). Regular images are stable under pullback. Naturality of
+residual semantics and behaviour exactness identify the pulled-back
+factorization with the regular-image factorization of
+\(\beta_{F^\ast\Phi}\).
+\end{proof}
+
+\begin{remark}[Automata-theoretic interpretation]
+\label{rem:local-minimization-interpretation}
+Under behaviour exactness, minimizing globally and then restricting the input
+interface gives the same local automaton as restricting first and minimizing
+locally.
+
+Without behaviour exactness, local restriction can hide distinguishing input
+experiments. Two globally distinct states may then become locally equivalent,
+and local minimization may identify more states than restricted global
+minimization.
+\end{remark}
+
+\begin{corollary}[Local reconstruction of minimal separated quotients]
+\label{cor:local-reconstruction-minimal-separated-quotients}
+The minimal separated quotient of a global system is reconstructed by
+effective descent from the minimal separated quotients of its compatible local
+restrictions.
+\end{corollary}
+
+\subsection{Locality of generated residual theories}
+\label{subsec:locality-generated-residual-theories}
+
+Let
+\[
+    K
+    \hookrightarrow
+    \mathbf{Beh}_{\mathbb A,0}
+\]
+be a behavioural specification. Its derivative-generated theory is
+\[
+    \operatorname{Der}_0(K)
+    :=
+    \operatorname{Gen}_{\partial,\mathbb A}(K).
+\]
+
+\begin{proposition}[Generated theories commute with local restriction]
+\label{prop:generated-theories-local-restriction}
+For every residually effective
+\[
+    F:\mathbb A'\to\mathbb A,
+\]
+there is a canonical isomorphism
+\[
+    F^\ast
+    \operatorname{Der}_0(K)
+    \cong
+    \operatorname{Der}_0
+    (F^\ast K).
+\]
+\end{proposition}
+
+\begin{proof}
+This is
+Theorem~\ref{thm:generated-closure-commutes-restriction}
+applied to \(K\).
+\end{proof}
+
+\subsection{Locality of residual reachability}
+\label{subsec:locality-reachability}
+
+Suppose that \(\Phi\) realizes \(K\). Recall that \(\Phi\) is residually
+generated by \(K\) when
+\[
+    \operatorname{Beh}_{\mathbb A}(\Phi)
+    =
+    \operatorname{Der}_0(K).
+\]
+
+\begin{theorem}[Residual reachability is interface-local]
+\label{thm:reachability-interface-local}
+The realization \(\Phi\) is residually generated by \(K\) if and only if
+every local realization
+\[
+    F_i^\ast\Phi
+\]
+is residually generated by
+\[
+    F_i^\ast K.
+\]
+\end{theorem}
+
+\begin{proof}
+Global equality pulls back to local equality by
+Corollary~\ref{cor:behavioural-abstraction-exact-restriction}
+and
+Proposition~\ref{prop:generated-theories-local-restriction}.
+
+Conversely, local equality gives
+\[
+    F_i^\ast
+    \operatorname{Beh}_{\mathbb A}(\Phi)
+    =
+    F_i^\ast
+    \operatorname{Der}_0(K)
+\]
+for every \(i\). The cover jointly reflects equality of subobjects.
+\end{proof}
+
+\begin{corollary}[Local Myhill--Nerode principle]
+\label{cor:local-myhill-nerode-principle}
+A realization is residually generated and behaviourally separated if and only
+if every restriction to a residual interface cover is residually generated
+and behaviourally separated. Consequently, minimal residual realizations may
+be verified and reconstructed interface-locally.
+\end{corollary}
+
+\section{Trajectory base change}
+\label{sec:trajectory-base-change}
+
+This section imports the temporal execution semantics of
+Chapter~\ref{ch:temporal-trajectories-segal-execution}.
+
+\subsection{Restriction of execution categories}
+\label{subsec:restriction-execution-categories}
+
+Let
+\[
+    F:\mathbb A'\to\mathbb A
+\]
+and
+\[
+    \Phi=(P,\delta_P,\omega_P):
+    \mathbb A\rightsquigarrow\mathbb B.
+\]
+
+The restricted carrier is
+\[
+    P_F=A'_0\times_{A_0}P.
+\]
+
+Define
+\[
+    E_{F,\Phi}:
+    \operatorname{Exec}(F^\ast\Phi)
+    \to
+    \operatorname{Exec}(\Phi)
+\]
+by
+\[
+    E_{F,\Phi}(v',x)=x
+\]
+on objects and
+\[
+    E_{F,\Phi}(a',(v',x))
+    =
+    (F_1a',x)
+\]
+on arrows.
+
+\begin{proposition}[Execution restriction functor]
+\label{prop:execution-restriction-functor-rigorous}
+The displayed maps define an internal functor. Moreover,
+\[
+    I_\Phi E_{F,\Phi}
+    =
+    F^{\mathrm{op}}I_{F^\ast\Phi},
+\]
+and
+\[
+    O_\Phi E_{F,\Phi}
+    =
+    O_{F^\ast\Phi}.
+\]
+\end{proposition}
+
+\begin{proof}
+Source preservation is immediate. Target preservation follows from
+\[
+    \delta_{F^\ast\Phi}(a',(v',x))
+    =
+    \left(
+        s_{A'}a',
+        \delta_\Phi(F_1a',x)
+    \right).
+\]
+Identity and composition preservation follow from functoriality of \(F\).
+The input-labelling equation is immediate, and the output-labelling equation
+follows from
+\[
+    \omega_{F^\ast\Phi}(a',(v',x))
+    =
+    \omega_\Phi(F_1a',x).
+\]
+\end{proof}
+
+\subsection{Cartesian description of execution restriction}
+\label{subsec:cartesian-description-execution-restriction}
+
+\begin{theorem}[Execution-category base change]
+\label{thm:execution-category-base-change}
+There is a canonical pullback isomorphism of internal categories
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+    \operatorname{Exec}(F^\ast\Phi)
+        \arrow[r, "\cong"]
+        \arrow[d]
+    &
+    \operatorname{Exec}(\Phi)
+        \arrow[d, "I_\Phi"]
+    \\
+    \mathbb A'^{\mathrm{op}}
+        \arrow[r, "F^{\mathrm{op}}"']
+    &
+    \mathbb A^{\mathrm{op}}.
+\end{tikzcd}
+\]
+Equivalently,
+\[
+    \operatorname{Exec}(F^\ast\Phi)
+    \cong
+    \mathbb A'^{\mathrm{op}}
+    \times_{\mathbb A^{\mathrm{op}}}
+    \operatorname{Exec}(\Phi).
+\]
+\end{theorem}
+
+\begin{proof}
+On objects, the pullback is
+\[
+    A'_0\times_{A_0}P,
+\]
+which is the carrier of \(F^\ast\Phi\).
+
+On arrows, the pullback is
+\[
+    A'_1
+    \times_{A_1}
+    \left(
+        A_1\times_{A_0}P
+    \right),
+\]
+canonically isomorphic to
+\[
+    A'_1\times_{A'_0}
+    \left(
+        A'_0\times_{A_0}P
+    \right).
+\]
+This is the one-step execution object of \(F^\ast\Phi\).
+
+The source, target, identity, and composition maps agree by the defining
+formulas for input restriction.
+\end{proof}
+
+\subsection{Trajectory base change}
+\label{subsec:trajectory-base-change-theorem}
+
+Define
+\[
+    F^\sharp_{\mathrm{traj}}\mathscr T_\Phi
+\]
+to be the pullback
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+    F^\sharp_{\mathrm{traj}}\mathscr T_\Phi
+        \arrow[r]
+        \arrow[d]
+    &
+    \mathscr T_\Phi
+        \arrow[d, "\operatorname{Path}(I_\Phi)"]
+    \\
+    \operatorname{Path}(\mathbb A'^{\mathrm{op}})
+        \arrow[r, "\operatorname{Path}(F^{\mathrm{op}})"']
+    &
+    \operatorname{Path}(\mathbb A^{\mathrm{op}}).
+\end{tikzcd}
+\]
+
+\begin{theorem}[Trajectory base-change theorem]
+\label{thm:trajectory-base-change}
+There is a canonical isomorphism of labelled trajectory sheaves
+\[
+    \mathscr T_{F^\ast\Phi}
+    \cong
+    F^\sharp_{\mathrm{traj}}\mathscr T_\Phi.
+\]
+At temporal extent \(n\),
+\[
+    \mathscr T_{F^\ast\Phi}(n)
+    \cong
+    N(F^{\mathrm{op}})_n^\ast
+    \mathscr T_\Phi(n).
+\]
+\end{theorem}
+
+\begin{proof}
+Apply the finite-limit-preserving trajectory functor
+\[
+    \operatorname{Path}
+\]
+to the pullback isomorphism of
+Theorem~\ref{thm:execution-category-base-change}.
+Evaluation at \([n]\) gives the degreewise formula.
+\end{proof}
+
+\begin{remark}[Operational meaning of trajectory base change]
+\label{rem:operational-trajectory-base-change}
+A local finite run is exactly a global finite run whose input path has been
+presented through the local interface.
+
+The theorem does not merely compare endpoints. It identifies the complete
+state path and output-comparison path after translating each local input step
+through \(F\).
+\end{remark}
+
+\subsection{Pseudonaturality of trajectory semantics}
+\label{subsec:pseudonaturality-trajectory-semantics}
+
+\begin{proposition}[Pseudonaturality of trajectory base change]
+\label{prop:pseudonaturality-trajectory-base-change}
+The isomorphisms of
+Theorem~\ref{thm:trajectory-base-change}
+are compatible with:
+\begin{enumerate}
+    \item identity input functors;
+    \item composition of input functors;
+    \item strict semantic homomorphisms.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Each comparison is induced by the canonical pullback comparison for execution
+categories. Identity and composition coherence follow from pullback coherence.
+Naturality in strict homomorphisms follows from naturality of
+\(\operatorname{Exec}(f)\).
+\end{proof}
+
+\begin{remark}[Indexed temporal execution]
+\label{rem:indexed-temporal-semantics}
+The execution-trajectory construction is compatible with changing the input
+interface. It therefore forms a pseudonatural family of labelled trajectory
+semantics over \(\mathsf{Inp}\).
+\end{remark}
+
+\section{Descent of finite trajectories}
+\label{sec:descent-finite-trajectories}
+
+Throughout this section, let
+\[
+    p:\mathbb U\to\mathbb A
+\]
+be a nervewise cover.
+
+For trajectory labels it is convenient to write
+\[
+    A_n^\partial
+    :=
+    N(\mathbb A^{\mathrm{op}})_n,
+    \qquad
+    U_n^\partial
+    :=
+    N(\mathbb U^{\mathrm{op}})_n,
+\]
+and
+\[
+    p_n^\partial:
+    U_n^\partial\to A_n^\partial.
+\]
+Reversal of a composable string gives canonical isomorphisms
+\[
+    A_n^\partial\cong A_n,
+    \qquad
+    U_n^\partial\cong U_n.
+\]
+Hence every \(p_n^\partial\) is a regular epimorphism.
+
+\subsection{Degreewise trajectory descent}
+\label{subsec:degreewise-trajectory-descent}
+
+Let
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B.
+\]
+By
+Theorem~\ref{thm:trajectory-base-change},
+\[
+    \mathscr T_{p^\ast\Phi}(n)
+    \cong
+    (p_n^\partial)^\ast
+    \mathscr T_\Phi(n),
+\]
+where the pullback is taken over the input-path label map.
+
+\begin{proposition}[Effective descent of \(n\)-step executions]
+\label{prop:effective-descent-n-step-executions}
+For every \(n\geq0\), the object
+\[
+    \mathscr T_\Phi(n)
+    \to
+    A_n^\partial
+\]
+is reconstructed effectively from
+\[
+    \mathscr T_{p^\ast\Phi}(n)
+    \to
+    U_n^\partial
+\]
+and its overlap identification along
+\[
+    p_n^\partial:
+    U_n^\partial\twoheadrightarrow A_n^\partial.
+\]
+\end{proposition}
+
+\begin{proof}
+The local \(n\)-step execution object is the pullback of the global one along
+\(p_n^\partial\). Since \(p_n^\partial\) is a regular epimorphism, it is an
+effective descent morphism.
+\end{proof}
+
+\subsection{Descent of interval restrictions}
+\label{subsec:descent-interval-restrictions}
+
+Let
+\[
+    \iota:[k]\to[n]
+\]
+be a contiguous interval inclusion. It induces input-path restriction maps
+\[
+    a_\iota^{\mathbb A}:
+    A_n^\partial\to A_k^\partial,
+\]
+and
+\[
+    a_\iota^{\mathbb U}:
+    U_n^\partial\to U_k^\partial.
+\]
+They fit into the commutative square
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+    U_n^\partial
+        \arrow[r, "p_n^\partial"]
+        \arrow[d, "a_\iota^{\mathbb U}"']
+    &
+    A_n^\partial
+        \arrow[d, "a_\iota^{\mathbb A}"]
+    \\
+    U_k^\partial
+        \arrow[r, "p_k^\partial"']
+    &
+    A_k^\partial.
+\end{tikzcd}
+\]
+
+The global trajectory restriction
+\[
+    r_\iota:
+    \mathscr T_\Phi(n)
+    \to
+    \mathscr T_\Phi(k)
+\]
+is equivalently a morphism in the slice
+\(\mathcal E/A_n^\partial\):
+\[
+    \widetilde r_\iota:
+    \mathscr T_\Phi(n)
+    \to
+    (a_\iota^{\mathbb A})^\ast
+    \mathscr T_\Phi(k).
+\]
+
+Likewise, the local restriction is a morphism in
+\(\mathcal E/U_n^\partial\):
+\[
+    \widetilde r_{\iota,\mathbb U}:
+    \mathscr T_{p^\ast\Phi}(n)
+    \to
+    (a_\iota^{\mathbb U})^\ast
+    \mathscr T_{p^\ast\Phi}(k).
+\]
+
+\begin{proposition}[Descent of temporal restrictions]
+\label{prop:descent-temporal-restrictions}
+The local temporal restriction maps descend uniquely to the global temporal
+restriction maps. The descended maps satisfy the identity and composition
+laws of
+\[
+    \mathbf{Int}_{\mathrm{disc}}^{\mathrm{op}}.
+\]
+\end{proposition}
+
+\begin{proof}
+Trajectory base change and the preceding commutative square give a canonical
+identification
+\[
+    (p_n^\partial)^\ast
+    (a_\iota^{\mathbb A})^\ast\mathscr T_\Phi(k)
+    \cong
+    (a_\iota^{\mathbb U})^\ast
+    (p_k^\partial)^\ast\mathscr T_\Phi(k).
+\]
+Thus the local restriction map is compatible descent structure for a morphism
+between two objects of
+\(\mathcal E/A_n^\partial\).
+
+Since \(p_n^\partial\) is an effective descent morphism, the local map
+descends uniquely to
+\[
+    \widetilde r_\iota.
+\]
+
+The identity and composition equations hold after pullback along
+\(p_n^\partial\). Since this pullback functor is faithful, the equations hold
+globally.
+\end{proof}
+
+\subsection{Descent of the trajectory sheaf}
+\label{subsec:descent-trajectory-sheaf}
+
+\begin{theorem}[Effective interface descent of temporal trajectories]
+\label{thm:effective-interface-descent-temporal-trajectories}
+Let
+\[
+    p:\mathbb U\to\mathbb A
+\]
+be a nervewise cover. Compatible local temporal execution sheaves arising
+from a system descent structure reconstruct uniquely to the temporal
+execution sheaf of the descended global system.
+\end{theorem}
+
+\begin{proof}
+Since a nervewise cover is a \(2\)-nerve cover, the local system first
+reconstructs to a global system
+\[
+    \Phi:\mathbb A\rightsquigarrow\mathbb B
+\]
+by
+Theorem~\ref{thm:effective-descent-strict-mealy-systems}.
+
+At every temporal degree, trajectory base change identifies the local
+execution object with the pullback of the corresponding global object.
+Degreewise effective descent is
+Proposition~\ref{prop:effective-descent-n-step-executions}.
+The interval restriction maps descend by
+Proposition~\ref{prop:descent-temporal-restrictions}.
+
+The trajectory sheaf comparisons are finite-limit isomorphisms. Their
+pullbacks are the local trajectory sheaf comparisons, so they are
+isomorphisms globally.
+\end{proof}
+
+\subsection{Descent of Segal-enhanced execution}
+\label{subsec:descent-segal-enhanced-execution}
+
+Let
+\[
+    \varphi:[m]\to[n]
+\]
+be any order-preserving map. It induces
+\[
+    a_\varphi^{\mathbb A}:
+    A_n^\partial\to A_m^\partial.
+\]
+The corresponding simplicial structure map is regarded as a morphism over
+\(A_n^\partial\):
+\[
+    N_+\operatorname{Exec}(\Phi)_n
+    \to
+    (a_\varphi^{\mathbb A})^\ast
+    N_+\operatorname{Exec}(\Phi)_m.
+\]
+
+\begin{theorem}[Descent of Segal-enhanced execution]
+\label{thm:descent-segal-enhanced-execution}
+Under a nervewise cover, the augmented simplicial object
+\[
+    N_+\operatorname{Exec}(\Phi)
+\]
+satisfies effective interface descent degreewise. Its face and degeneracy
+maps are the unique descents of the corresponding local maps.
+\end{theorem}
+
+\begin{proof}
+Every nerve degree is an \(n\)-step execution object and descends along
+\(p_n^\partial\).
+
+For each
+\[
+    \varphi:[m]\to[n],
+\]
+the local simplicial structure map is a morphism in
+\(\mathcal E/U_n^\partial\) from the degree-\(n\) object to the pullback of
+the degree-\(m\) object along \(a_\varphi^{\mathbb U}\). The
+Beck--Chevalley comparison associated with
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+    U_n^\partial
+        \arrow[r, "p_n^\partial"]
+        \arrow[d, "a_\varphi^{\mathbb U}"']
+    &
+    A_n^\partial
+        \arrow[d, "a_\varphi^{\mathbb A}"]
+    \\
+    U_m^\partial
+        \arrow[r, "p_m^\partial"']
+    &
+    A_m^\partial
+\end{tikzcd}
+\]
+identifies its target with the pullback of the corresponding global target.
+It therefore descends uniquely.
+
+The simplicial identities hold locally and are reflected globally by the
+faithfulness of pullback along \(p_n^\partial\). The Segal maps are
+finite-limit comparisons and are isomorphisms because their pullbacks are
+isomorphisms.
+\end{proof}
+
+\begin{corollary}[Effective descent of derived temporal semantics]
+\label{cor:stack-temporal-execution-semantics}
+For every nervewise cover, the trajectory sheaves and augmented execution
+nerves associated with a strict-system descent structure form effective
+descent objects. Their reconstructions are respectively
+\[
+    \mathscr T_\Phi
+\]
+and
+\[
+    N_+\operatorname{Exec}(\Phi),
+\]
+where \(\Phi\) is the descended global system.
+\end{corollary}
+
+This statement concerns temporal semantics derived from strict systems. It
+does not assert that every arbitrary labelled trajectory sheaf is the
+trajectory semantics of a strict Mealy system.
+
+\section{Temporal--interface interchange}
+\label{sec:temporal-interface-interchange-rigorous}
+
+\subsection{Temporal gluing over a common input-path base}
+\label{subsec:temporal-gluing-recalled}
+
+For every system \(\Phi\) and every \(m,n\in\mathbb N\), temporal gluing gives
+\[
+    \mathscr T_\Phi(m+n)
+    \cong
+    \mathscr T_\Phi(m)
+    \times_{\mathscr T_\Phi(0)}
+    \mathscr T_\Phi(n).
+\]
+
+To compare this pullback with interface descent, all terms must first be
+viewed over the common input-path object
+\[
+    A_{m+n}^\partial.
+\]
+
+Let
+\[
+    \rho_m:
+    A_{m+n}^\partial\to A_m^\partial
+\]
+be restriction to the initial \(m\)-segment, and let
+\[
+    \rho_n:
+    A_{m+n}^\partial\to A_n^\partial
+\]
+be restriction to the terminal \(n\)-segment.
+
+Let
+\[
+    \lambda_m:
+    A_{m+n}^\partial\to A_0
+\]
+select the common boundary after \(m\) steps. The terminal-state map of the
+initial segment and the initial-state map of the terminal segment then give
+maps
+\[
+    \rho_m^\ast\mathscr T_\Phi(m)
+    \to
+    \lambda_m^\ast P,
+\]
+and
+\[
+    \rho_n^\ast\mathscr T_\Phi(n)
+    \to
+    \lambda_m^\ast P.
+\]
+
+Thus temporal gluing is the canonical isomorphism in
+\(\mathcal E/A_{m+n}^\partial\):
+\[
+\begin{tikzcd}[column sep=large]
+    \mathscr T_\Phi(m+n)
+        \arrow[r, "\gamma_{m,n}^\Phi", "\cong"']
+    &
+    \rho_m^\ast\mathscr T_\Phi(m)
+    \times_{\lambda_m^\ast P}
+    \rho_n^\ast\mathscr T_\Phi(n).
+\end{tikzcd}
+\]
+
+\subsection{Finite limits and interface reconstruction}
+\label{subsec:finite-limits-descent-reconstruction}
+
+For a regular epimorphism
+\[
+    e:E\twoheadrightarrow X,
+\]
+the pullback functor
+\[
+    e^\ast:\mathcal E/X\to\mathcal E/E
+\]
+is monadic and creates finite limits. Hence the equivalence between objects
+over \(X\) and effective descent structures preserves finite limits.
+
+\begin{proposition}[Finite-limit preservation of interface reconstruction]
+\label{prop:finite-limit-preservation-interface-reconstruction}
+Fix a nerve degree \(r\). Reconstruction along
+\[
+    p_r^\partial:
+    U_r^\partial\twoheadrightarrow A_r^\partial
+\]
+preserves finite-limit diagrams in the slice
+\[
+    \mathcal E/A_r^\partial.
+\]
+
+Consequently, after transporting all terms to a common nerve degree,
+reconstruction preserves:
+\begin{enumerate}
+    \item state-boundary pullbacks;
+    \item path-object pullbacks;
+    \item Segal comparisons;
+    \item temporal gluing pullbacks.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+At the fixed degree \(r\), reconstruction is quasi-inverse to the effective
+descent comparison induced by
+\[
+    (p_r^\partial)^\ast.
+\]
+Since this pullback functor creates finite limits, the descent equivalence
+preserves them.
+\end{proof}
+
+\subsection{The interchange comparison}
+\label{subsec:temporal-interface-interchange-comparison}
+
+Let
+\[
+    p:\mathbb U\to\mathbb A
+\]
+be a nervewise cover, and let
+\[
+    \Phi_{\mathbb U}
+\]
+be a local system with a system descent structure. Let \(\Phi\) be its
+descended global system.
+
+There are two reconstruction procedures:
+\begin{enumerate}
+    \item glue adjacent temporal segments locally and then descend the
+    resulting local execution;
+    \item descend the temporal segments and their common boundary states, then
+    glue globally.
+\end{enumerate}
+
+\begin{theorem}[Temporal--interface interchange]
+\label{thm:temporal-interface-interchange-rigorous}
+For every nervewise cover and every \(m,n\in\mathbb N\), the canonical
+comparison between:
+\begin{enumerate}
+    \item temporal gluing followed by interface descent;
+    \item interface descent followed by temporal gluing;
+\end{enumerate}
+is an isomorphism.
+
+Equivalently, descent carries the local temporal gluing isomorphism to
+\[
+    \mathscr T_\Phi(m+n)
+    \cong
+    \mathscr T_\Phi(m)
+    \times_{\mathscr T_\Phi(0)}
+    \mathscr T_\Phi(n).
+\]
+\end{theorem}
+
+\begin{proof}
+View the temporal gluing diagram in the common slice
+\[
+    \mathcal E/A_{m+n}^\partial
+\]
+as
+\[
+    \mathscr T_\Phi(m+n)
+    \xrightarrow{\cong}
+    \rho_m^\ast\mathscr T_\Phi(m)
+    \times_{\lambda_m^\ast P}
+    \rho_n^\ast\mathscr T_\Phi(n).
+\]
+
+Pullback along
+\[
+    p_{m+n}^\partial:
+    U_{m+n}^\partial\twoheadrightarrow A_{m+n}^\partial
+\]
+carries this diagram to the corresponding local temporal-gluing diagram.
+This follows from trajectory base change and the Beck--Chevalley
+isomorphisms for the prefix, suffix, and boundary maps.
+
+By
+Proposition~\ref{prop:finite-limit-preservation-interface-reconstruction},
+the descent of the local pullback is the displayed global pullback. The
+descended local gluing map and the canonical global gluing map have the same
+pullback along \(p_{m+n}^\partial\). Faithfulness of pullback identifies them.
+\end{proof}
+
+\begin{remark}[Systems-theoretic interpretation of interchange]
+\label{rem:systems-interpretation-interchange}
+Suppose a long execution is divided into temporal segments and the input
+environment is divided into overlapping interface patches.
+
+One may:
+\begin{enumerate}
+    \item assemble the time segments inside each patch and then reconcile the
+    resulting local runs across interfaces; or
+    \item reconcile each time segment across interfaces and then concatenate
+    the resulting global segments.
+\end{enumerate}
+
+The interchange theorem says that these procedures construct the same global
+execution. Thus synchronization across interface descriptions is independent
+of whether it is performed before or after temporal concatenation.
+\end{remark}
+
+\subsection{Segal interchange}
+\label{subsec:segal-interface-interchange}
+
+\begin{theorem}[Segal--interface interchange]
+\label{thm:segal-interface-interchange}
+Interface descent commutes with:
+\begin{enumerate}
+    \item insertion of identity executions;
+    \item contraction of adjacent execution steps;
+    \item all iterated face and degeneracy operations of the execution nerve.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Each face or degeneracy operation is a morphism between execution objects
+after its target has been pulled back to the source nerve degree. These maps
+descend uniquely by
+Theorem~\ref{thm:descent-segal-enhanced-execution}.
+Their unit, associativity, and simplicial coherence equations hold locally
+and are reflected globally.
+\end{proof}
+
+\subsection{Two-dimensional locality}
+\label{subsec:two-dimensional-locality}
+
+\begin{theorem}[Two-dimensional locality of execution]
+\label{thm:two-dimensional-locality-execution}
+The execution semantics of a strict Mealy system has two compatible
+local-to-global structures:
+\begin{enumerate}
+    \item it is a sheaf in the discrete temporal interval variable;
+    \item it satisfies effective reconstruction in the input-interface
+    variable for nervewise covers.
+\end{enumerate}
+These reconstruction procedures commute.
+\end{theorem}
+
+\begin{proof}
+Temporal sheafhood is the temporal gluing theorem of
+Chapter~\ref{ch:temporal-trajectories-segal-execution}.
+Effective interface reconstruction is
+Theorem~\ref{thm:effective-interface-descent-temporal-trajectories}.
+Their compatibility is
+Theorem~\ref{thm:temporal-interface-interchange-rigorous}.
+\end{proof}
+
+\section{Formal examples and obstruction patterns}
+\label{sec:formal-examples-interface-descent}
+
+\subsection{Disconnected input interfaces}
+\label{subsec:example-disconnected-input-interfaces}
+
+Let
+\[
+    \mathbb A
+    =
+    \mathbb A_1\amalg\mathbb A_2.
+\]
+Then
+\[
+    \mathsf{Sys}_{\mathbb B}(\mathbb A)
+    \simeq
+    \mathsf{Sys}_{\mathbb B}(\mathbb A_1)
+    \times
+    \mathsf{Sys}_{\mathbb B}(\mathbb A_2),
+\]
+\[
+    \mathsf{Ctr}_{\mathbb B}(\mathbb A)
+    \cong
+    \mathsf{Ctr}_{\mathbb B}(\mathbb A_1)
+    \times
+    \mathsf{Ctr}_{\mathbb B}(\mathbb A_2),
+\]
+and
+\[
+    \mathscr T_{\Phi_1\amalg\Phi_2}
+    \cong
+    \mathscr T_{\Phi_1}
+    \amalg
+    \mathscr T_{\Phi_2}.
+\]
+
+No overlap compatibility is required because there are no arrows connecting
+the two input components.
+
+\subsection{Object-refinement covers in \(\mathbf{Set}\)}
+\label{subsec:example-object-refinement-cover}
+
+Let \(\mathbb A\) be a small category in \(\mathbf{Set}\), and let
+\[
+    r:U_0\twoheadrightarrow A_0
+\]
+be a surjection.
+
+Define a category \(\mathbb U_r\) by
+\[
+    (\mathbb U_r)_0:=U_0,
+\]
+and
+\[
+    (\mathbb U_r)_1
+    :=
+    U_0
+    \times_{r,A_0,s_A}
+    A_1
+    \times_{t_A,A_0,r}
+    U_0.
+\]
+
+An arrow is a triple
+\[
+    (u,a,v)
+\]
+such that
+\[
+    r(u)=s_A(a),
+    \qquad
+    r(v)=t_A(a).
+\]
+Projection defines
+\[
+    p_r:\mathbb U_r\to\mathbb A
+\]
+by
+\[
+    (p_r)_0=r,
+    \qquad
+    (p_r)_1(u,a,v)=a.
+\]
+
+\begin{proposition}[Object-refinement covers are nervewise]
+\label{prop:object-refinement-covers-nervewise}
+If \(r\) is surjective, then
+\[
+    p_r:\mathbb U_r\to\mathbb A
+\]
+is a nervewise cover.
+\end{proposition}
+
+\begin{proof}
+An \(n\)-simplex of \(N\mathbb A\) is a composable string
+\[
+    a_1,\ldots,a_n
+\]
+with \(n+1\) vertices. Choose a lift under \(r\) of each vertex. These choices
+produce a composable string in \(\mathbb U_r\) mapping to the original
+string. Hence every
+\[
+    (p_r)_n
+\]
+is surjective.
+\end{proof}
+
+Thus strict systems and all finite trajectories descend along object
+refinement.
+
+However, \(p_r\) need not be behaviour-exact. A global arrow entering one
+global object may have several lifts with different local source
+representatives. The local residual slice can therefore contain distinctions
+not present in the global slice, or fail to identify precisely the same
+future experiments. Nervewise trajectory descent and exact residual semantics
+are genuinely different requirements.
+
+\subsection{A residual cover from a discrete fibration}
+\label{subsec:example-residual-cover-discrete-fibration}
+
+Let \(M\) be a monoid, let
+\[
+    \mathbb A=\mathbf BM,
+\]
+and let \(X\) be a nonempty right \(M\)-set.
+
+Define a category
+\[
+    \mathbb U_X
+\]
+whose objects are elements of \(X\), and whose arrows are pairs
+\[
+    (m,x):
+    x\cdot m\to x.
+\]
+Composition is
+\[
+    (m,x)\circ(n,x\cdot m)
+    =
+    (mn,x).
+\]
+Indeed,
+\[
+    (x\cdot m)\cdot n
+    =
+    x\cdot(mn),
+\]
+so the composite has source \(x\cdot(mn)\), target \(x\), and label \(mn\).
+
+Projection defines
+\[
+    p_X:\mathbb U_X\to\mathbf BM
+\]
+by sending every object to the unique object and every arrow
+\((m,x)\) to \(m\).
+
+For every \(x\in X\) and every monoid arrow \(m\), there is a unique lifted
+arrow with target \(x\). Hence \(p_X\) is a discrete fibration.
+
+\begin{proposition}[Discrete-fibration residual cover]
+\label{prop:discrete-fibration-residual-cover}
+The functor
+\[
+    p_X:\mathbb U_X\to\mathbf BM
+\]
+is nervewise covering, universally behaviour-exact for every output category
+\(\mathbb B\), and universally derivative-covering. Hence it is a nervewise
+residually effective cover.
+\end{proposition}
+
+\begin{proof}
+Nonemptiness of \(X\) implies surjectivity on objects. Every finite monoid
+word has a unique lift ending at any chosen \(x\in X\), so every nerve map is
+surjective.
+
+More generally, let
+\[
+    q:\mathbb V\to\mathbb C
+\]
+be any discrete fibration. For every \(v\in V_0\), unique incoming-arrow
+lifting induces an isomorphism
+\[
+    q_{/v}:
+    \mathbb V/v
+    \xrightarrow{\cong}
+    \mathbb C/q_0v.
+\]
+Every arrow entering \(q_0v\) has a unique lift entering \(v\), and the same
+uniqueness determines all morphisms in the slice. Residual precomposition is
+therefore an isomorphism for every output category.
+
+Likewise, the incoming-arrow comparison
+\[
+    \lambda_q:
+    V_1
+    \to
+    V_0\times_{q_0,C_0,t_C}C_1
+\]
+is an isomorphism.
+
+Pullbacks of discrete fibrations are discrete fibrations. Thus these slice and
+incoming-arrow conclusions hold after every base change of \(p_X\).
+Consequently, \(p_X\) is universally behaviour-exact and universally
+derivative-covering.
+\end{proof}
+
+This example satisfies the system, trajectory, and residual reconstruction
+conditions simultaneously.
+
+\subsection{Pairwise compatibility without triple coherence}
+\label{subsec:example-pairwise-no-triple-coherence}
+
+Let
+\[
+    \{\mathbb U_i\to\mathbb A\}_{i=1}^3
+\]
+be a covering family. Suppose local systems
+\[
+    \Phi_i
+\]
+are equipped with pairwise overlap isomorphisms
+\[
+    \vartheta_{12},
+    \qquad
+    \vartheta_{23},
+    \qquad
+    \vartheta_{13}.
+\]
+
+If
+\[
+    \pi_{23}^\ast\vartheta_{23}
+    \circ
+    \pi_{12}^\ast\vartheta_{12}
+    \neq
+    \pi_{13}^\ast\vartheta_{13}
+\]
+on the triple overlap, then the local systems do not define a descent
+structure.
+
+Each pair of local models can then be reconciled, but no globally consistent
+identification of their state spaces exists.
+
+\subsection{Contract descent without implementation descent}
+\label{subsec:example-contract-without-implementation-descent}
+
+Suppose local residual contracts
+\[
+    V_i
+\]
+agree on overlaps. Contract descent determines a unique global contract
+\[
+    V.
+\]
+
+Choose local realizing systems
+\[
+    \Phi_i\models V_i.
+\]
+The systems \(\Phi_i\) need not admit overlap isomorphisms, even though the
+contracts do. Therefore
+\[
+    \text{specification descent}
+    \not\Rightarrow
+    \text{descent of chosen implementations}.
+\]
+
+Conversely, a global system may exist while independently chosen local
+contracts fail to agree on overlaps. This is a specification inconsistency
+rather than an implementation inconsistency.
+
+\subsection{Systems interpretations}
+\label{subsec:systems-interpretations-interface-descent}
+
+An input-interface cover may model:
+\begin{enumerate}
+    \item overlapping sensor views;
+    \item distributed command or port sets;
+    \item local operating modes;
+    \item subsystem boundaries;
+    \item local disturbance models;
+    \item different protocol presentations;
+    \item local controller information;
+    \item overlapping physical and software models.
+\end{enumerate}
+
+For example, consider a controller with startup, normal, degraded, and
+emergency modes. Different engineering teams may model overlapping
+collections of modes.
+
+In that interpretation:
+\begin{enumerate}
+    \item degree-zero coverage means every mode is represented;
+    \item degree-one coverage means every command or mode transition is
+    represented;
+    \item degree-two coverage means every legally successive command pair is
+    jointly represented;
+    \item nervewise coverage means every finite command history is represented;
+    \item behaviour exactness means each local model has exactly the correct
+    future response profiles;
+    \item derivative covering means every globally possible disturbance at a
+    represented mode is included in the local model.
+\end{enumerate}
+
+Failure of descent may indicate:
+\begin{enumerate}
+    \item a missing global state variable;
+    \item incompatible local control laws;
+    \item a hidden interaction invisible on individual patches;
+    \item pairwise agreement without triple coherence;
+    \item a locally consistent but globally unrealizable implementation.
+\end{enumerate}
+
+\section{Comparison, limitations, and later directions}
+\label{sec:comparison-limitations-interface-descent}
+
+\subsection{Temporal and interface locality}
+\label{subsec:comparison-temporal-interface-locality}
+
+The two locality principles act on different variables.
+
+Temporal locality fixes the input category and varies the execution interval:
+\[
+    [k]\to[n].
+\]
+
+Interface locality fixes the temporal shape and varies the input category:
+\[
+    F:\mathbb A'\to\mathbb A.
+\]
+
+The trajectory base-change theorem identifies their interaction, and the
+interchange theorem states that the two local-to-global procedures commute.
+
+\subsection{Hierarchy of exactness conditions}
+\label{subsec:hierarchy-exactness-conditions}
+
+The cover conditions have the following systems meanings:
+\[
+\begin{array}{c|c}
+    \text{condition}
+    &
+    \text{structure visible locally}
+    \\
+    \hline
+    p_0\text{ regular epic}
+    &
+    \text{all input contexts, state carriers, and unit actions}
+    \\
+    p_1\text{ regular epic}
+    &
+    \text{all one-step inputs, transitions, and outputs}
+    \\
+    p_2\text{ regular epic}
+    &
+    \text{all two-step interactions needed for the Mealy laws}
+    \\
+    p_n\text{ regular epic for all }n
+    &
+    \text{all finite input histories}
+    \\
+    p^\sharp\text{ invertible}
+    &
+    \text{exact preservation of residual future behaviour}
+    \\
+    \lambda_p\text{ regular epic}
+    &
+    \text{all global inputs applicable at represented contexts}
+\end{array}
+\]
+
+Accordingly:
+\begin{enumerate}
+    \item system descent does not automatically imply residual descent;
+    \item residual exactness does not automatically imply nervewise trajectory
+    descent;
+    \item behaviour exactness alone does not ensure complete derivative
+    generation or safety checks;
+    \item derivative covering alone does not reconstruct canonical residual
+    behaviours.
+\end{enumerate}
+
+\subsection{Limitations}
+\label{subsec:limitations-interface-descent}
+
+The theory of this chapter is restricted to:
+\begin{enumerate}
+    \item strict Mealy systems and strict semantic homomorphisms;
+    \item variation of the input interface while the output category remains
+    fixed;
+    \item covers internal to a Grothendieck topos;
+    \item finite linear execution trajectories;
+    \item residual contracts expressed as derivative-invariant subobjects.
+\end{enumerate}
+
+It does not yet provide:
+\begin{enumerate}
+    \item effective descent for general lax morphisms or simulations;
+    \item simultaneous descent in both input and output interfaces;
+    \item descent for hybrid or continuous-time trajectory sheaves;
+    \item cubical, pomset, or concurrent execution descent;
+    \item descent of feedback or traced closure;
+    \item a classification of every behaviour-exact input functor;
+    \item obstruction invariants for failed implementation descent;
+    \item an independent characterization of all trajectory sheaves arising
+    from strict Mealy systems.
+\end{enumerate}
+
+\subsection{Later directions}
+\label{subsec:later-directions-interface-descent}
+
+The relative program semantics of later chapters may be organized over varying
+input interfaces. Its diamonds, boxes, and predicate transformers should
+satisfy Beck--Chevalley laws over residually effective covers.
+
+Polynomial response semantics may likewise be organized as an indexed family
+of coalgebraic constructions. Behaviour exactness should then compare local
+and global response profiles.
+
+Concurrency may replace
+\(\mathbf{Int}_{\mathrm{disc}}\) by cubical or partially ordered execution
+shapes. The resulting theory should involve reconstruction simultaneously in
+an interface variable and in a nonlinear execution-shape variable.
+
+Feedback introduces another exactness problem: whether traced closure commutes
+with input restriction and effective descent.
+
+\section{Chapter synthesis}
+\label{sec:interface-descent-chapter-synthesis}
+
+\subsection{System descent}
+\label{subsec:system-descent-summary}
+
+\begin{theorem}[System descent theorem]
+\label{thm:system-descent-summary}
+For fixed output category \(\mathbb B\):
+\begin{enumerate}
+    \item strict Mealy systems form a pseudofunctor
+    \[
+        \mathsf{Sys}_{\mathbb B}:
+        \mathsf{Inp}^{\mathrm{op}}
+        \to
+        \mathbf{Cat};
+    \]
+    \item extensive coproduct decompositions satisfy effective descent;
+    \item every \(2\)-nerve cover
+    \[
+        p:\mathbb U\to\mathbb A
+    \]
+    induces an equivalence
+    \[
+        \mathsf{Sys}_{\mathbb B}(\mathbb A)
+        \simeq
+        \mathsf{Desc}_p
+        \left(
+            \mathsf{Sys}_{\mathbb B}
+        \right);
+    \]
+    \item consequently,
+    \[
+        \mathsf{Sys}_{\mathbb B}
+    \]
+    is a stack for
+    \[
+        \tau_{\mathrm{sys}}.
+    \]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+These are
+Definition~\ref{def:input-indexed-system-pseudofunctor},
+Theorem~\ref{thm:extensive-descent-strict-systems},
+Theorem~\ref{thm:effective-descent-strict-mealy-systems}, and
+Corollary~\ref{cor:stack-strict-mealy-systems}.
+\end{proof}
+
+\subsection{Residual descent}
+\label{subsec:residual-descent-summary}
+
+\begin{theorem}[Residual descent theorem]
+\label{thm:residual-descent-summary}
+For every input functor
+\[
+    F:\mathbb A'\to\mathbb A:
+\]
+\begin{enumerate}
+    \item residual precomposition defines a strict semantic homomorphism
+    \[
+        F^\sharp:
+        F^\ast
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A,\mathbb B}
+        \to
+        \mathbf{Beh}^{\mathrm{can}}_{\mathbb A',\mathbb B};
+    \]
+    \item semantic direct reindexing satisfies
+    \[
+        \operatorname{Beh}_{\mathbb A'}(F^\ast\Phi)
+        =
+        F^\bullet
+        \operatorname{Beh}_{\mathbb A}(\Phi).
+    \]
+\end{enumerate}
+
+For residually effective input functors:
+\begin{enumerate}
+    \setcounter{enumi}{2}
+    \item residual contracts satisfy effective descent;
+    \item generated derivative closure and safety commute with restriction;
+    \item the derivative closure adjoint triple is indexed;
+    \item the abstraction--realization adjunction is indexed.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Strict residual restriction is
+Theorem~\ref{thm:strictness-residual-restriction}.
+The general abstraction formula is
+Theorem~\ref{thm:behavioural-abstraction-arbitrary-restriction}.
+Contract descent is
+Theorem~\ref{thm:effective-descent-residual-contracts}.
+Compatibility of generated closure and safety is
+Theorems~\ref{thm:generated-closure-commutes-restriction} and
+\ref{thm:safety-core-commutes-restriction}.
+The indexed adjunctions are
+Corollary~\ref{cor:indexed-derivative-adjoint-triple} and
+Theorem~\ref{thm:indexed-abstraction-realization-adjunction}.
+\end{proof}
+
+\subsection{Local minimization}
+\label{subsec:local-minimization-summary}
+
+\begin{theorem}[Local minimization theorem]
+\label{thm:local-minimization-summary}
+For every residual interface cover:
+\begin{enumerate}
+    \item contract satisfaction is local;
+    \item behavioural separatedness is local;
+    \item semantic minimization commutes with restriction;
+    \item generated residual theories commute with restriction;
+    \item residual reachability is local;
+    \item minimal residually generated separated realizations may be verified
+    and reconstructed from compatible local restrictions.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+These are
+Theorem~\ref{thm:locality-contract-satisfaction-rigorous},
+Theorem~\ref{thm:separatedness-interface-local},
+Theorem~\ref{thm:semantic-minimization-local-restriction},
+Proposition~\ref{prop:generated-theories-local-restriction},
+Theorem~\ref{thm:reachability-interface-local}, and
+Corollary~\ref{cor:local-myhill-nerode-principle}.
+\end{proof}
+
+\subsection{Two-dimensional locality}
+\label{subsec:two-dimensional-locality-summary}
+
+\begin{theorem}[Temporal--interface locality theorem]
+\label{thm:temporal-interface-locality-summary}
+For strict Mealy systems:
+\begin{enumerate}
+    \item execution categories commute with input base change:
+    \[
+        \operatorname{Exec}(F^\ast\Phi)
+        \cong
+        \mathbb A'^{\mathrm{op}}
+        \times_{\mathbb A^{\mathrm{op}}}
+        \operatorname{Exec}(\Phi);
+    \]
+    \item temporal trajectory formation commutes with input restriction:
+    \[
+        \mathscr T_{F^\ast\Phi}
+        \cong
+        F^\sharp_{\mathrm{traj}}\mathscr T_\Phi;
+    \]
+    \item finite trajectory objects satisfy effective descent along nervewise
+    covers;
+    \item the full Segal-enhanced execution nerve satisfies effective
+    descent;
+    \item temporal gluing and interface descent commute.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Execution base change is
+Theorem~\ref{thm:execution-category-base-change}.
+Trajectory base change is
+Theorem~\ref{thm:trajectory-base-change}.
+Trajectory and Segal descent are
+Theorems~\ref{thm:effective-interface-descent-temporal-trajectories} and
+\ref{thm:descent-segal-enhanced-execution}.
+Interchange is
+Theorems~\ref{thm:temporal-interface-interchange-rigorous} and
+\ref{thm:segal-interface-interchange}.
+\end{proof}
+
+\begin{remark}[Final conceptual summary]
+\label{rem:interface-descent-final-conceptual-summary}
+Categorical automata are local in two independent variables.
+
+They are local in time because finite trajectories form a sheaf on the
+discrete path site.
+
+They are local in the input interface because compatible local state machines
+reconstruct a global state machine whenever the interface cover exposes all
+input contexts, one-step actions, and two-step interactions required by the
+Mealy laws.
+
+The hierarchy of cover conditions has a direct operational meaning:
+\[
+    \text{degrees }0,1,2
+    \quad\text{control reconstruction of the machine rules},
+\]
+\[
+    \text{all nerve degrees}
+    \quad\text{control direct reconstruction of finite runs},
+\]
+\[
+    \text{behaviour exactness}
+    \quad\text{ensures that local futures are exactly global futures
+    restricted},
+\]
+and
+\[
+    \text{derivative covering}
+    \quad\text{ensures that no globally possible input is hidden from a local
+    closure or safety calculation}.
+\]
+
+Under these hypotheses, local verification is complete, local minimization
+agrees with restricted global minimization, and temporal assembly commutes
+with interface assembly.
+
+Hence the same global execution may be reconstructed either by first
+assembling its temporal segments and then integrating its interface-local
+descriptions, or by performing those two constructions in the opposite order.
+\end{remark}

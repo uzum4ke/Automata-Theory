@@ -1,0 +1,5953 @@
+\chapter[Effectful Mealy Morphisms and Finite-Path Feedback]
+{Effectful Mealy Morphisms, Fibred Centrality, and Finite-Path Feedback}
+\label{chap:effectful-mealy-centrality-feedback}
+
+\section{Orientation}
+\label{sec:effectful-orientation}
+
+The Mealy morphisms developed in Chapter~2 are deterministic.  For every
+admissible input--state pair
+\[
+    (a,x)\in A_1\times_{t_A,A_0,p}P,
+\]
+the structure map selects one updated state and one output-comparison arrow.
+The effectful replacement keeps these pieces of data together and places the
+resulting pair inside one computation:
+\[
+    \widehat\Phi:
+    P\circ A
+    \longrightarrow
+    \mathsf K_{A_0\times B_0}(B\circ P).
+\]
+Thus an outcome of processing
+\[
+    a:u\to v=p(x)
+\]
+is a joint state--output value
+\[
+    (x',\beta),
+    \qquad
+    p(x')=u,
+    \qquad
+    \beta:q(x')\to q(x),
+\]
+and different computational branches may contain different updated states and
+different output arrows.
+
+The effect must preserve the external interface of the carrier.  It therefore
+acts in the slice over the interface object rather than merely on the apex of
+a span.  We fix a finitely complete category \(\mathcal E\), with chosen
+pullbacks, and a fibred strong monad
+\[
+    \mathsf K
+\]
+on the codomain fibration
+\[
+    \operatorname{cod}:\mathcal E^{\to}\longrightarrow\mathcal E.
+\]
+For every object \(Z\), this gives a strong monad
+\[
+    \mathsf K_Z:
+    \mathcal E/Z\longrightarrow\mathcal E/Z,
+\]
+and pullback reindexing commutes coherently with these slice monads.
+
+A strong monad carries two canonical orders for combining computations.  They
+need not agree.  Their discrepancy is the obstruction to middle-four
+interchange for effectful maps of spans.  Fibrewise central computations
+commute with all computations in one slice.  Span composition, however,
+reindexes computations to larger interface products.  The correct class for
+the span calculus is therefore the class of computations whose every
+reindexing is fibrewise central.  We call these computations
+\emph{fibred-central}.  They form the largest reindexing-stable part of the
+Kleisli calculus on which the two execution orders agree.
+
+The chapter has five principal constructions.
+
+\begin{enumerate}
+    \item It constructs the indexed Kleisli calculus induced by
+    \(\mathsf K\), including dependent-sum transport, its compatibility with
+    strength, and the resulting projection formula.
+
+    \item It constructs the bicategory of spans with fibred-central effectful
+    2-cells.
+
+    \item It constructs the bicategory of fibred-central effectful Mealy
+    morphisms and effectful simulations.
+
+    \item It constructs a quotient of unpointed state presentations by
+    zigzags of strict state retractions, proves that this quotient is not
+    forced to collapse through the empty presentation, and establishes its
+    universal retract-invariant state-hiding property.
+
+    \item Under the feedback-base conditions of Chapter~9, it lifts homwise
+    sums, the coproduct tensor, finite path objects, and finite hidden-path
+    trace to the effectful setting.
+\end{enumerate}
+
+The unrestricted connected-component quotient by all strict state
+homomorphisms exists, but is unusably coarse in the unpointed setting.  As
+soon as the base has a pullback-stable initial object, the empty state
+presentation maps strictly into every other presentation, so all
+presentations with fixed source and target become connected.  The
+feedback-base conditions of Chapter~9 include pullback stability of the
+empty coproduct and hence make the initial object strict and pullback-stable.
+The replacement used below therefore identifies only presentations connected
+by strict state retractions.
+
+This construction is related to, but distinct from, the pointed
+bisimilarity quotient used to present uniform feedback in effectful-machine
+semantics
+\cite{BonchiDiLavoreRomanEffectfulMealyMachines}.  That construction is
+pointed: a machine carries an initial state, and machine homomorphisms
+preserve that point.  A Mealy morphism in the present manuscript carries an
+unpointed state object.  The universal property established below is
+therefore a universal property for retract-invariant unpointed state hiding,
+not for pointed uniform feedback.
+
+Throughout this chapter, equations involving span composition, pullback,
+dependent sum, and reindexing are read under the canonical chosen pullback
+associators, unitors, Beck--Chevalley isomorphisms, Frobenius isomorphisms,
+and their coherence equations.  As in the preceding chapters, all
+generalized-element formulas denote the corresponding morphism equations out
+of the appropriate pullback objects.
+
+\section{Effects over interfaces}
+\label{sec:effects-over-interfaces}
+
+\subsection{The codomain bifibration}
+\label{subsec:codomain-bifibration-effects}
+
+\begin{definition}[Fibred strong monad]
+\label{def:fibred-strong-monad}
+A \textbf{fibred strong monad} on the codomain fibration consists of a monad
+\[
+    (\mathsf K,\eta,\mu)
+\]
+on \(\mathcal E^{\to}\) lying over the identity functor of \(\mathcal E\),
+such that:
+\begin{enumerate}
+    \item \(\mathsf K\) preserves cartesian arrows;
+
+    \item \(\eta\) and \(\mu\) are vertical natural transformations;
+
+    \item every slice restriction
+    \[
+        \mathsf K_Z:\mathcal E/Z\to\mathcal E/Z
+    \]
+    carries a left strength
+    \[
+        \operatorname{st}^{\ell,Z}_{P,Q}:
+        P\times_Z\mathsf K_ZQ
+        \longrightarrow
+        \mathsf K_Z(P\times_ZQ);
+    \]
+
+    \item the strengths satisfy the strong-monad equations and commute
+    coherently with pullback reindexing.
+\end{enumerate}
+\end{definition}
+
+Thus the monad, its strength, and all reindexing coherence are given once on
+the codomain fibration.  They are not selected independently for each
+interface.
+
+For a morphism
+\[
+    h:W\longrightarrow Z,
+\]
+write
+\[
+    h^*:\mathcal E/Z\longrightarrow\mathcal E/W
+\]
+for pullback.  Postcomposition with \(h\) defines a left adjoint
+\[
+    \Sigma_h:\mathcal E/W\longrightarrow\mathcal E/Z.
+\]
+Thus the codomain fibration is also an opfibration, and there is an
+adjunction
+\[
+    \Sigma_h\dashv h^*.
+\]
+For \(Q\in\mathcal E/W\), write
+\[
+    \nu^h_Q:
+    Q\longrightarrow h^*\Sigma_hQ
+\]
+for the unit of this adjunction.
+
+Fibredness supplies, for every \(Q\in\mathcal E/Z\), an invertible comparison
+\[
+    \varphi_{h,Q}:
+    h^*\mathsf K_ZQ
+    \xrightarrow{\cong}
+    \mathsf K_Wh^*Q,
+\]
+natural in \(h\) and \(Q\), pseudofunctorial in \(h\), and compatible with
+\(\eta\), \(\mu\), and the strengths.
+
+For a Kleisli arrow
+\[
+    f:P\longrightarrow\mathsf K_ZQ,
+\]
+define its reindexing by
+\[
+    h^{*\mathsf K}(f)
+    :=
+    \varphi_{h,Q}\circ h^*f:
+    h^*P\longrightarrow\mathsf K_Wh^*Q.
+\]
+
+\begin{definition}[Dependent-sum transport of effects]
+\label{def:dependent-sum-effect-transport}
+For
+\[
+    h:W\to Z
+\]
+and \(Q\in\mathcal E/W\), define
+\[
+    \kappa_{h,Q}:
+    \Sigma_h\mathsf K_WQ
+    \longrightarrow
+    \mathsf K_Z\Sigma_hQ
+\]
+to be the mate, under \(\Sigma_h\dashv h^*\), of the composite
+\[
+    \mathsf K_WQ
+    \xrightarrow{\mathsf K_W(\nu^h_Q)}
+    \mathsf K_Wh^*\Sigma_hQ
+    \xrightarrow{\varphi_{h,\Sigma_hQ}^{-1}}
+    h^*\mathsf K_Z\Sigma_hQ.
+\]
+\end{definition}
+
+The map \(\kappa_{h,Q}\) moves a computation through the operation that
+forgets the intermediate interface \(W\to Z\).  It is forced by fibredness
+and the adjunction \(\Sigma_h\dashv h^*\).
+
+\begin{proposition}[Functoriality of dependent-sum transport]
+\label{prop:dependent-sum-effect-functoriality}
+Let
+\[
+    W\xrightarrow{h}Z\xrightarrow{g}V
+\]
+be morphisms in \(\mathcal E\).  Under the canonical identifications
+\(\Sigma_{gh}\cong\Sigma_g\Sigma_h\), one has
+\[
+    \kappa_{1_Z,Q}=1_{\mathsf K_ZQ}
+\]
+and
+\[
+    \kappa_{gh,Q}
+    =
+    \kappa_{g,\Sigma_hQ}
+    \circ
+    \Sigma_g(\kappa_{h,Q}).
+\]
+Moreover,
+\begin{align}
+    \kappa_{h,Q}\circ\Sigma_h(\eta^W_Q)
+    &=
+    \eta^Z_{\Sigma_hQ},
+    \label{eq:kappa-unit}
+    \\
+    \kappa_{h,Q}\circ\Sigma_h(\mu^W_Q)
+    &=
+    \mu^Z_{\Sigma_hQ}
+    \circ
+    \mathsf K_Z(\kappa_{h,Q})
+    \circ
+    \kappa_{h,\mathsf K_WQ}.
+    \label{eq:kappa-multiplication}
+\end{align}
+\end{proposition}
+
+\begin{proof}
+Each equation is proved by transposition along the appropriate
+dependent-sum--pullback adjunction.
+
+For the identity equation, the transpose of \(\kappa_{1_Z,Q}\) is
+\[
+    \mathsf K_ZQ
+    \xrightarrow{\mathsf K_Z(\nu^{1_Z}_Q)}
+    \mathsf K_ZQ
+    \xrightarrow{\varphi^{-1}_{1_Z,Q}}
+    \mathsf K_ZQ.
+\]
+Both maps are identities under the chosen identity cleavage, so the mate is
+the identity.
+
+For composition, the unit of the composite adjunction satisfies
+\[
+    \nu^{gh}_Q
+    =
+    h^*(\nu^g_{\Sigma_hQ})\circ\nu^h_Q
+\]
+under the canonical identification
+\[
+    (gh)^*\Sigma_{gh}
+    \cong
+    h^*g^*\Sigma_g\Sigma_h.
+\]
+Substitution into the defining mate of \(\kappa_{gh,Q}\), followed by
+pseudofunctoriality of \(\varphi\), yields the mate of
+\[
+    \kappa_{g,\Sigma_hQ}
+    \circ
+    \Sigma_g(\kappa_{h,Q}).
+\]
+
+For the unit equation, the transpose of the left-hand side is
+\[
+    Q
+    \xrightarrow{\eta^W_Q}
+    \mathsf K_WQ
+    \xrightarrow{\mathsf K_W(\nu^h_Q)}
+    \mathsf K_Wh^*\Sigma_hQ
+    \xrightarrow{\varphi^{-1}}
+    h^*\mathsf K_Z\Sigma_hQ.
+\]
+Naturality of \(\eta\) and compatibility of \(\varphi\) with the monad unit
+identify this with
+\[
+    Q
+    \xrightarrow{\nu^h_Q}
+    h^*\Sigma_hQ
+    \xrightarrow{h^*(\eta^Z)}
+    h^*\mathsf K_Z\Sigma_hQ,
+\]
+which is the transpose of the right-hand side.
+
+For the multiplication equation, transpose both sides.  The transpose of
+the left-hand side is
+\[
+\begin{aligned}
+    \mathsf K_W\mathsf K_WQ
+    &\xrightarrow{\mu^W_Q}
+    \mathsf K_WQ
+    \xrightarrow{\mathsf K_W(\nu^h_Q)}
+    \mathsf K_Wh^*\Sigma_hQ
+    \xrightarrow{\varphi^{-1}}
+    h^*\mathsf K_Z\Sigma_hQ.
+\end{aligned}
+\]
+The transpose of the right-hand side expands to the same map by naturality
+of \(\mu\), compatibility of \(\varphi\) with multiplication, and the monad
+associativity equation.
+\end{proof}
+
+\begin{corollary}[Dependent-sum Kleisli functor]
+\label{cor:dependent-sum-kleisli-functor}
+Every map \(h:W\to Z\) induces a functor
+\[
+    \Sigma_h^{\mathsf K}:
+    \operatorname{Kl}(\mathsf K_W)
+    \longrightarrow
+    \operatorname{Kl}(\mathsf K_Z)
+\]
+which agrees with \(\Sigma_h\) on objects and sends
+\[
+    f:P\longrightarrow\mathsf K_WQ
+\]
+to
+\[
+    \Sigma_h^{\mathsf K}(f)
+    :=
+    \Sigma_hP
+    \xrightarrow{\Sigma_hf}
+    \Sigma_h\mathsf K_WQ
+    \xrightarrow{\kappa_{h,Q}}
+    \mathsf K_Z\Sigma_hQ.
+\]
+\end{corollary}
+
+\begin{proof}
+Equation~\eqref{eq:kappa-unit} gives preservation of Kleisli identities, and
+Equation~\eqref{eq:kappa-multiplication} gives preservation of Kleisli
+composition.
+\end{proof}
+
+\begin{proposition}[Effectful Beck--Chevalley]
+\label{prop:effectful-beck-chevalley}
+Consider a pullback square
+\[
+\begin{tikzcd}
+    W'
+        \arrow[r,"k'"]
+        \arrow[d,"h'"']
+    &
+    W
+        \arrow[d,"h"]
+    \\
+    Z'
+        \arrow[r,"k"']
+    &
+    Z.
+\end{tikzcd}
+\]
+There is a canonical natural isomorphism of Kleisli functors
+\[
+    k^{*\mathsf K}\Sigma_h^{\mathsf K}
+    \xRightarrow{\cong}
+    \Sigma_{h'}^{\mathsf K}k'^{*\mathsf K}.
+\]
+\end{proposition}
+
+\begin{proof}
+Ordinary Beck--Chevalley for the codomain bifibration gives
+\[
+    k^*\Sigma_h
+    \xRightarrow{\cong}
+    \Sigma_{h'}k'^*.
+\]
+To verify that this comparison intertwines the transported Kleisli arrows,
+transpose both possible composites along
+\(\Sigma_{h'}\dashv h'^*\).  The two transposes coincide by the defining mate
+equation for \(\kappa\), pseudofunctoriality of \(\varphi\), and the equality
+of the two pullback composites in the given square.
+\end{proof}
+
+\subsection{Strength and the two Fubini maps}
+\label{subsec:slice-strength-fubini}
+
+Each slice \(\mathcal E/Z\) is cartesian.  Write
+\[
+    \operatorname{st}^{\ell,Z}_{P,Q}:
+    P\times_Z\mathsf K_ZQ
+    \longrightarrow
+    \mathsf K_Z(P\times_ZQ)
+\]
+for the left strength.  The symmetry of the slice product defines the right
+strength
+\[
+    \operatorname{st}^{r,Z}_{P,Q}:
+    \mathsf K_ZP\times_ZQ
+    \longrightarrow
+    \mathsf K_Z(P\times_ZQ).
+\]
+
+\begin{definition}[Slice Fubini maps]
+\label{def:slice-fubini-maps}
+For \(P,Q\in\mathcal E/Z\), define
+\[
+    d^{\ell,Z}_{P,Q},
+    d^{r,Z}_{P,Q}:
+    \mathsf K_ZP\times_Z\mathsf K_ZQ
+    \longrightarrow
+    \mathsf K_Z(P\times_ZQ)
+\]
+by
+\begin{align*}
+    d^{\ell,Z}_{P,Q}
+    &:=
+    \mu^Z_{P\times_ZQ}
+    \circ
+    \mathsf K_Z(\operatorname{st}^{r,Z}_{P,Q})
+    \circ
+    \operatorname{st}^{\ell,Z}_{\mathsf K_ZP,Q},
+    \\
+    d^{r,Z}_{P,Q}
+    &:=
+    \mu^Z_{P\times_ZQ}
+    \circ
+    \mathsf K_Z(\operatorname{st}^{\ell,Z}_{P,Q})
+    \circ
+    \operatorname{st}^{r,Z}_{P,\mathsf K_ZQ}.
+\end{align*}
+\end{definition}
+
+The map \(d^r\) executes the \(P\)-computation before the
+\(Q\)-computation.  The map \(d^\ell\) executes the \(Q\)-computation before
+the \(P\)-computation.  The superscripts record the outer strength in the
+displayed construction rather than the execution order.  Both maps return
+their values in the same ordered product \(P\times_ZQ\).
+
+The two maps are related by the symmetry:
+\[
+    d^{\ell,Z}_{P,Q}
+    =
+    \mathsf K_Z(\tau_{Q,P})
+    \circ
+    d^{r,Z}_{Q,P}
+    \circ
+    \tau_{\mathsf K_ZP,\mathsf K_ZQ},
+\]
+where \(\tau\) denotes the appropriate symmetry in the slice.
+
+\begin{proposition}[Reindexing of Fubini maps]
+\label{prop:fubini-reindexing}
+For every \(h:W\to Z\), the comparison \(\varphi\) identifies
+\[
+    h^*(d^{\ell,Z}_{P,Q})
+\]
+with
+\[
+    d^{\ell,W}_{h^*P,h^*Q},
+\]
+and similarly for \(d^r\).
+\end{proposition}
+
+\begin{proof}
+Pullback preserves the cartesian products in the slices.  Apply the
+reindexing compatibility of the left strength, the induced right strength,
+and the monad multiplication to the two composites of
+Definition~\ref{def:slice-fubini-maps}.
+\end{proof}
+
+For \(h:W\to Z\), \(P\in\mathcal E/W\), and \(R\in\mathcal E/Z\), let
+\[
+    \operatorname{Fr}^{r}_{h;P,R}:
+    \Sigma_h(P\times_Wh^*R)
+    \xrightarrow{\cong}
+    \Sigma_hP\times_ZR
+\]
+denote the right Frobenius isomorphism.  Let
+\[
+    \operatorname{Fr}^{\ell}_{h;R,P}:
+    \Sigma_h(h^*R\times_WP)
+    \xrightarrow{\cong}
+    R\times_Z\Sigma_hP
+\]
+denote its conjugate by the slice symmetries.
+
+\begin{lemma}[Strength compatibility of dependent-sum transport]
+\label{lem:dependent-sum-strength-compatibility}
+Let \(h:W\to Z\).
+
+For \(Q\in\mathcal E/W\) and \(S\in\mathcal E/Z\), one has
+\[
+\begin{aligned}
+&
+\mathsf K_Z(\operatorname{Fr}^{r}_{h;Q,S})
+\circ
+\kappa_{h,Q\times_Wh^*S}
+\circ
+\Sigma_h
+\bigl(
+    \operatorname{st}^{r,W}_{Q,h^*S}
+\bigr)
+\\
+&\qquad=
+\operatorname{st}^{r,Z}_{\Sigma_hQ,S}
+\circ
+\bigl(
+    \kappa_{h,Q}\times_Z1_S
+\bigr)
+\circ
+\operatorname{Fr}^{r}_{h;\mathsf K_WQ,S}.
+\end{aligned}
+\tag{\(\mathrm{St}^r_h\)}
+\]
+
+For \(R\in\mathcal E/Z\) and \(Q\in\mathcal E/W\), one has
+\[
+\begin{aligned}
+&
+\mathsf K_Z(\operatorname{Fr}^{\ell}_{h;R,Q})
+\circ
+\kappa_{h,h^*R\times_WQ}
+\circ
+\Sigma_h
+\bigl(
+    \operatorname{st}^{\ell,W}_{h^*R,Q}
+\bigr)
+\\
+&\qquad=
+\operatorname{st}^{\ell,Z}_{R,\Sigma_hQ}
+\circ
+\bigl(
+    1_R\times_Z\kappa_{h,Q}
+\bigr)
+\circ
+\operatorname{Fr}^{\ell}_{h;R,\mathsf K_WQ}.
+\end{aligned}
+\tag{\(\mathrm{St}^\ell_h\)}
+\]
+\end{lemma}
+
+\begin{proof}
+Transpose the first equation along \(\Sigma_h\dashv h^*\).  Under the
+Frobenius and pullback-product identifications, both transposes have domain
+\[
+    \mathsf K_WQ\times_Wh^*S
+\]
+and codomain
+\[
+    \mathsf K_Wh^*(\Sigma_hQ\times_ZS).
+\]
+The transpose of the left-hand side is obtained by applying the right
+strength and then the mate defining \(\kappa\).  The transpose of the
+right-hand side is obtained by first applying the mate defining
+\(\kappa_{h,Q}\) and then the reindexed right strength.  These are equal by
+the compatibility of \(\varphi\) with strength and naturality of the unit
+\(\nu^h\).
+
+The left-strength equation is proved identically.  Equivalently, it follows
+from the right-strength equation by conjugating with the slice symmetries.
+\end{proof}
+
+\begin{lemma}[Projection formula for effectful dependent sums]
+\label{lem:effectful-projection-formula}
+Let
+\[
+    f:P\to\mathsf K_WQ,
+    \qquad
+    g:R\to\mathsf K_ZS.
+\]
+For \(\varepsilon\in\{\ell,r\}\), put
+\[
+    f\otimes^\varepsilon h^{*\mathsf K}g
+    :=
+    d^{\varepsilon,W}_{Q,h^*S}
+    \circ
+    \bigl(
+        f\times_Wh^{*\mathsf K}g
+    \bigr).
+\]
+Then
+\[
+\begin{aligned}
+&
+\mathsf K_Z(\operatorname{Fr}^{r}_{h;Q,S})
+\circ
+\Sigma_h^{\mathsf K}
+\bigl(
+    f\otimes^\varepsilon h^{*\mathsf K}g
+\bigr)
+\circ
+(\operatorname{Fr}^{r}_{h;P,R})^{-1}
+\\
+&\qquad=
+d^{\varepsilon,Z}_{\Sigma_hQ,S}
+\circ
+\bigl(
+    \Sigma_h^{\mathsf K}f\times_Zg
+\bigr).
+\end{aligned}
+\tag{\(\mathrm{PF}_\varepsilon\)}
+\]
+\end{lemma}
+
+\begin{proof}
+Expand \(d^\varepsilon\) into strengths and multiplication.  Move the first
+strength through \(\Sigma_h\) by
+Lemma~\ref{lem:dependent-sum-strength-compatibility}.  Move the second
+strength through \(\Sigma_h\) by the same lemma, using the left or right
+version as appropriate.  Finally move multiplication through \(\Sigma_h\)
+by Equation~\eqref{eq:kappa-multiplication}.
+
+Equivalently, transpose both sides along \(\Sigma_h\dashv h^*\).  After
+applying \(\varphi\), both transposes have domain
+\[
+    P\times_Wh^*R
+\]
+and codomain
+\[
+    \mathsf K_Wh^*(\Sigma_hQ\times_ZS).
+\]
+The transpose of the left-hand side is
+\[
+\begin{aligned}
+P\times_Wh^*R
+&\xrightarrow{
+    f\times h^{*\mathsf K}g
+}
+\mathsf K_WQ\times_W\mathsf K_Wh^*S
+\\
+&\xrightarrow{
+    d^{\varepsilon,W}
+}
+\mathsf K_W(Q\times_Wh^*S)
+\\
+&\xrightarrow{
+    \mathsf K_W(\nu^h_Q\times 1)
+}
+\mathsf K_W
+\bigl(
+    h^*\Sigma_hQ\times_Wh^*S
+\bigr)
+\\
+&\xrightarrow{\cong}
+\mathsf K_Wh^*(\Sigma_hQ\times_ZS).
+\end{aligned}
+\]
+The transpose of the right-hand side is the same composite by
+Proposition~\ref{prop:fubini-reindexing},
+Lemma~\ref{lem:dependent-sum-strength-compatibility}, and naturality of the
+Frobenius isomorphism.
+\end{proof}
+
+\subsection{Pure parameters in the slice Kleisli calculus}
+\label{subsec:pure-parameter-kleisli-calculus}
+
+For a Kleisli arrow
+\[
+    f:P\longrightarrow\mathsf K_ZQ
+\]
+and an object \(R\in\mathcal E/Z\), define
+\[
+    f\rtimes_ZR
+    :=
+    \operatorname{st}^{r,Z}_{Q,R}
+    \circ
+    (f\times_Z1_R):
+    P\times_ZR
+    \longrightarrow
+    \mathsf K_Z(Q\times_ZR)
+\]
+and
+\[
+    R\ltimes_Zf
+    :=
+    \operatorname{st}^{\ell,Z}_{R,Q}
+    \circ
+    (1_R\times_Zf):
+    R\times_ZP
+    \longrightarrow
+    \mathsf K_Z(R\times_ZQ).
+\]
+
+\begin{proposition}[Pure-parameter Kleisli functors]
+\label{prop:pure-parameter-kleisli-functors}
+For every \(R\in\mathcal E/Z\), the assignments
+\[
+    P\longmapsto P\times_ZR,
+    \qquad
+    f\longmapsto f\rtimes_ZR
+\]
+and
+\[
+    P\longmapsto R\times_ZP,
+    \qquad
+    f\longmapsto R\ltimes_Zf
+\]
+define endofunctors of
+\[
+    \operatorname{Kl}(\mathsf K_Z).
+\]
+
+For every map \(u:R\to R'\) in \(\mathcal E/Z\), the ordinary product maps
+\[
+    1_Q\times_Zu,
+    \qquad
+    u\times_Z1_Q
+\]
+define Kleisli-natural transformations between the corresponding
+pure-parameter functors.
+\end{proposition}
+
+\begin{proof}
+For the right pure-parameter functor, the strength-unit equation gives
+\[
+    \operatorname{st}^{r,Z}_{P,R}
+    \circ
+    (\eta^Z_P\times_Z1_R)
+    =
+    \eta^Z_{P\times_ZR},
+\]
+so Kleisli identities are preserved.
+
+Let
+\[
+    f:P\to\mathsf K_ZQ,
+    \qquad
+    g:Q\to\mathsf K_ZS.
+\]
+Then
+\[
+    g\bullet f
+    =
+    \mu^Z_S
+    \circ
+    \mathsf K_Z(g)
+    \circ
+    f.
+\]
+Expanding
+\[
+    (g\bullet f)\rtimes_ZR
+\]
+and applying naturality of the right strength together with its compatibility
+with \(\mu\) gives
+\[
+    (g\rtimes_ZR)
+    \bullet
+    (f\rtimes_ZR).
+\]
+Thus right pure-parameter extension preserves Kleisli composition.
+
+The proof for left pure-parameter extension is identical using the left
+strength.  Naturality in \(u\) is precisely naturality of the corresponding
+strength.
+\end{proof}
+
+\begin{proposition}[Coherence of pure parameters]
+\label{prop:pure-parameter-coherence}
+The canonical associators, unitors, and symmetries of the slice products give
+coherent Kleisli-natural isomorphisms
+\[
+    (f\rtimes_ZR)\rtimes_ZS
+    \cong
+    f\rtimes_Z(R\times_ZS),
+\]
+\[
+    R\ltimes_Z(S\ltimes_Zf)
+    \cong
+    (R\times_ZS)\ltimes_Zf,
+\]
+and
+\[
+    R\ltimes_Z(f\rtimes_ZS)
+    \cong
+    (R\ltimes_Zf)\rtimes_ZS.
+\]
+\end{proposition}
+
+\begin{proof}
+The first two comparisons are the associativity equations for the right and
+left strengths.  The mixed comparison follows from the standard compatibility
+of the left and right strengths induced by the symmetry of the cartesian
+slice.  Since only one factor is effectful, no exchange of two computations
+occurs.  The coherence diagrams reduce to cartesian coherence and the
+strong-functor coherence of \(\mathsf K_Z\).
+\end{proof}
+
+\section{Central computations}
+\label{sec:central-computations}
+
+\subsection{Fibrewise and fibred centrality}
+\label{subsec:fibred-central-kleisli-arrows}
+
+\begin{definition}[Fibrewise central Kleisli arrow]
+\label{def:fibrewise-central-kleisli-arrow}
+Let \(P,Q\in\mathcal E/Z\).  A Kleisli arrow
+\[
+    f:P\longrightarrow\mathsf K_ZQ
+\]
+is \textbf{fibrewise central} if, for every Kleisli arrow
+\[
+    g:R\longrightarrow\mathsf K_ZS,
+\]
+one has
+\[
+    d^{\ell,Z}_{Q,S}
+    \circ
+    (f\times_Zg)
+    =
+    d^{r,Z}_{Q,S}
+    \circ
+    (f\times_Zg).
+\]
+\end{definition}
+
+By the symmetry relation between \(d^\ell\) and \(d^r\), a fibrewise central
+arrow also commutes with an arbitrary computation when it occurs in the
+second coordinate.
+
+If \(f\) and \(g\) are fibrewise central, write
+\[
+    f\otimes_Zg
+    :=
+    d^{\ell,Z}\circ(f\times_Zg)
+    =
+    d^{r,Z}\circ(f\times_Zg).
+\]
+
+\begin{proposition}[Local closure of central arrows]
+\label{prop:local-central-arrow-closure}
+In every slice \(\mathcal E/Z\):
+\begin{enumerate}
+    \item every pure Kleisli arrow
+    \[
+        \eta^Z_Q\circ u:P\to\mathsf K_ZQ
+    \]
+    is fibrewise central;
+
+    \item fibrewise central arrows are closed under Kleisli composition;
+
+    \item if \(f\) and \(g\) are fibrewise central, then
+    \(f\otimes_Zg\) is fibrewise central;
+
+    \item the fibrewise central arrows form a wide symmetric monoidal
+    subcategory
+    \[
+        \operatorname{Kl}^{\mathrm{loccen}}(\mathsf K_Z)
+        \subseteq
+        \operatorname{Kl}(\mathsf K_Z).
+    \]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+For a pure arrow, the strength-unit equations reduce either Fubini order to
+the image under \(\mathsf K_Z\) of the corresponding ordinary product map.
+Hence the two orders agree.
+
+Let
+\[
+    f:P\to\mathsf K_ZQ,
+    \qquad
+    f':Q\to\mathsf K_ZQ'
+\]
+be fibrewise central, and let
+\[
+    g:R\to\mathsf K_ZS
+\]
+be arbitrary.  Expand the two Fubini composites for
+\[
+    f'\mathbin{\bullet}f
+    =
+    \mu\circ\mathsf K(f')\circ f.
+\]
+In the first expansion, commute \(f\) past \(g\), and then commute \(f'\)
+past \(g\).  The strong-monad associativity equations identify the resulting
+composite with the opposite Fubini expansion.  Thus
+\(f'\mathbin{\bullet}f\) is fibrewise central.
+
+Now let \(f\) and \(g\) be fibrewise central and let
+\[
+    h:T\to\mathsf K_ZU
+\]
+be arbitrary.  To commute \(f\otimes_Zg\) past \(h\), first commute \(g\)
+past \(h\), and then commute \(f\) past \(h\).  Associativity and symmetry of
+the cartesian product, together with the associativity equations for the
+Fubini maps, identify the resulting composite with the opposite execution
+order.  Hence \(f\otimes_Zg\) is central.
+
+The monoidal unit is the terminal object of the slice with its pure identity
+arrow.  The associator, unitors, and symmetry are pure, and the preceding
+closure results make the tensor bifunctorial on the central arrows.
+\end{proof}
+
+Fibrewise centrality alone is not sufficient for span composition, because
+horizontal composition reindexes cells to larger interface products.
+
+\begin{definition}[Fibred-central Kleisli arrow]
+\label{def:fibred-central-kleisli-arrow}
+A Kleisli arrow
+\[
+    f:P\longrightarrow\mathsf K_ZQ
+\]
+is \textbf{fibred-central} if, for every morphism
+\[
+    h:W\to Z,
+\]
+the reindexed Kleisli arrow
+\[
+    h^{*\mathsf K}f:
+    h^*P\longrightarrow\mathsf K_Wh^*Q
+\]
+is fibrewise central.
+
+From this point onward, the unqualified word \textbf{central} means
+fibred-central.
+\end{definition}
+
+Write
+\[
+    \operatorname{Kl}^{\mathrm{cen}}(\mathsf K_Z)
+\]
+for the wide subcategory of \(\operatorname{Kl}(\mathsf K_Z)\) consisting of
+central arrows.
+
+\begin{proposition}[Closure of fibred-central arrows]
+\label{prop:fibred-central-arrow-closure}
+Central arrows satisfy the following closure properties.
+\begin{enumerate}
+    \item Every pure Kleisli arrow is central.
+
+    \item Central arrows are closed under Kleisli composition.
+
+    \item If \(f\) and \(g\) are central, then their common tensor
+    \(f\otimes_Zg\) is central.
+
+    \item Pullback reindexing preserves central arrows.
+
+    \item Dependent-sum transport preserves central arrows: if
+    \[
+        f:P\to\mathsf K_WQ
+    \]
+    is central, then
+    \[
+        \Sigma_h^{\mathsf K}f:
+        \Sigma_hP\to\mathsf K_Z\Sigma_hQ
+    \]
+    is central.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The first three assertions follow by applying
+Proposition~\ref{prop:local-central-arrow-closure} after every reindexing.
+
+For pullback stability, let \(f\) be central over \(Z\), let \(h:W\to Z\),
+and let \(k:V\to W\).  Pseudofunctoriality gives
+\[
+    k^{*\mathsf K}h^{*\mathsf K}f
+    \cong
+    (hk)^{*\mathsf K}f,
+\]
+which is fibrewise central by
+Definition~\ref{def:fibred-central-kleisli-arrow}.
+
+For dependent sums, let \(k:Z'\to Z\), and form the pullback square
+\[
+\begin{tikzcd}
+    W'
+        \arrow[r,"k'"]
+        \arrow[d,"h'"']
+    &
+    W
+        \arrow[d,"h"]
+    \\
+    Z'
+        \arrow[r,"k"']
+    &
+    Z.
+\end{tikzcd}
+\]
+By Proposition~\ref{prop:effectful-beck-chevalley},
+\[
+    k^{*\mathsf K}\Sigma_h^{\mathsf K}f
+    \cong
+    \Sigma_{h'}^{\mathsf K}k'^{*\mathsf K}f.
+\]
+The arrow \(k'^{*\mathsf K}f\) is fibrewise central.  Let
+\[
+    g:R\to\mathsf K_{Z'}S
+\]
+be arbitrary.  Apply
+Lemma~\ref{lem:effectful-projection-formula} to
+\(k'^{*\mathsf K}f\) and \(g\).  The two execution orders for
+\(\Sigma_{h'}^{\mathsf K}k'^{*\mathsf K}f\) and \(g\) are the dependent-sum
+images of the two execution orders for \(k'^{*\mathsf K}f\) and
+\(h'^{*\mathsf K}g\).  Those two orders agree by fibrewise centrality.
+Therefore every reindexing of \(\Sigma_h^{\mathsf K}f\) is fibrewise
+central.
+\end{proof}
+
+\begin{corollary}[Indexed premonoidal centre]
+\label{cor:indexed-premonoidal-centre}
+The assignment
+\[
+    Z\longmapsto
+    \operatorname{Kl}^{\mathrm{cen}}(\mathsf K_Z)
+\]
+is closed under pullback reindexing and dependent-sum transport.  Each fibre
+is symmetric monoidal under the slice product, and the pure Kleisli functor
+\[
+    \mathcal E/Z
+    \longrightarrow
+    \operatorname{Kl}(\mathsf K_Z)
+\]
+corestricts to it.
+\end{corollary}
+
+\section{Effectful maps of spans}
+\label{sec:effectful-maps-of-spans}
+
+For a span
+\[
+    P=
+    \left(
+        X\xleftarrow{p}P\xrightarrow{q}Y
+    \right),
+\]
+write
+\[
+    \overline P
+    :=
+    \langle p,q\rangle:
+    P\longrightarrow X\times Y
+\]
+for the corresponding object of \(\mathcal E/(X\times Y)\).
+
+\begin{definition}[Effectful span cell]
+\label{def:effectful-span-cell}
+Let \(P,Q:X\rightsquigarrow Y\) be parallel spans.  A
+\textbf{\(\mathsf K\)-effectful span cell}
+\[
+    \widehat f:
+    P\Rrightarrow_{\mathsf K}Q
+\]
+is a morphism
+\[
+    \widehat f:
+    \overline P
+    \longrightarrow
+    \mathsf K_{X\times Y}(\overline Q)
+\]
+in \(\mathcal E/(X\times Y)\).
+
+It is \textbf{central} when it is central in the sense of
+Definition~\ref{def:fibred-central-kleisli-arrow}.
+\end{definition}
+
+Vertical composition is Kleisli composition:
+\[
+    \widehat g\bullet\widehat f
+    :=
+    \mu\circ\mathsf K(\widehat g)\circ\widehat f.
+\]
+The vertical identity on \(P\) is
+\[
+    \eta_{\overline P}:
+    \overline P\longrightarrow
+    \mathsf K_{X\times Y}(\overline P).
+\]
+
+\subsection{Ordered horizontal composition}
+\label{subsec:ordered-horizontal-effectful-spans}
+
+Let
+\[
+    P,P':X\rightsquigarrow Y,
+    \qquad
+    Q,Q':Y\rightsquigarrow Z,
+\]
+and let
+\[
+    \widehat f:P\Rrightarrow_{\mathsf K}P',
+    \qquad
+    \widehat g:Q\Rrightarrow_{\mathsf K}Q'.
+\]
+Put
+\[
+    W:=X\times Y\times Z,
+\]
+with projections
+\[
+    \pi_{XY}:W\to X\times Y,
+    \qquad
+    \pi_{YZ}:W\to Y\times Z,
+    \qquad
+    \pi_{XZ}:W\to X\times Z.
+\]
+Define
+\[
+    \widetilde P:=\pi_{XY}^*\overline P,
+    \qquad
+    \widetilde Q:=\pi_{YZ}^*\overline Q,
+\]
+and similarly for \(P'\) and \(Q'\).  Write
+\[
+    \widetilde f
+    :=
+    \pi_{XY}^{*\mathsf K}\widehat f,
+    \qquad
+    \widetilde g
+    :=
+    \pi_{YZ}^{*\mathsf K}\widehat g.
+\]
+
+There are canonical isomorphisms
+\[
+    \Sigma_{\pi_{XZ}}
+    (\widetilde P\times_W\widetilde Q)
+    \cong
+    \overline{Q\circ P}
+\]
+and
+\[
+    \Sigma_{\pi_{XZ}}
+    (\widetilde P'\times_W\widetilde Q')
+    \cong
+    \overline{Q'\circ P'}.
+\]
+
+\begin{definition}[Ordered horizontal composites]
+\label{def:ordered-horizontal-effectful-composites}
+The two ordered horizontal composites
+\[
+    \widehat g\ast_\ell\widehat f,
+    \qquad
+    \widehat g\ast_r\widehat f:
+    Q\circ P
+    \Rrightarrow_{\mathsf K}
+    Q'\circ P'
+\]
+are, under the canonical identifications above,
+\[
+\begin{aligned}
+    \widehat g\ast_\varepsilon\widehat f
+    :=
+    \kappa_{\pi_{XZ}}
+    \circ
+    \Sigma_{\pi_{XZ}}
+    \bigl(
+        d^{\varepsilon,W}
+        \circ
+        (\widetilde f\times_W\widetilde g)
+    \bigr),
+    \qquad
+    \varepsilon\in\{\ell,r\}.
+\end{aligned}
+\]
+\end{definition}
+
+Thus both computations are first pulled to the complete typed interface
+\(X\times Y\times Z\).  They are combined using one of the two Fubini maps,
+and the intermediate \(Y\)-interface is then forgotten by
+\(\Sigma_{\pi_{XZ}}^{\mathsf K}\).
+
+\subsection{Functorial pure whiskering}
+\label{subsec:functorial-pure-whiskering}
+
+Let
+\[
+    Q:Y\rightsquigarrow Z
+\]
+be an ordinary span and let
+\[
+    \widehat f:
+    P\Rrightarrow_{\mathsf K}P'
+\]
+be an effectful cell between spans \(X\rightsquigarrow Y\).
+
+Define the pure left whiskering
+\[
+    Q\blacktriangleright\widehat f
+\]
+by pulling \(\widehat f\) and \(Q\) to \(X\times Y\times Z\), forming
+\[
+    \widetilde f\rtimes_W\widetilde Q,
+\]
+and applying
+\(\Sigma_{\pi_{XZ}}^{\mathsf K}\) under the canonical Frobenius
+identifications.
+
+Dually, for an ordinary span
+\[
+    R:U\rightsquigarrow X,
+\]
+define the pure right whiskering
+\[
+    \widehat f\blacktriangleleft R
+\]
+by pulling to \(U\times X\times Y\), forming the corresponding left
+pure-parameter extension, and applying the relevant dependent-sum transport.
+
+\begin{proposition}[Functoriality of pure span whiskering]
+\label{prop:functorial-pure-span-whiskering}
+For every ordinary span \(Q:Y\rightsquigarrow Z\),
+\[
+    Q\blacktriangleright(-)
+\]
+is a functor between the corresponding Kleisli hom-categories of effectful
+span cells.  For every ordinary span \(R:U\rightsquigarrow X\),
+\[
+    (-)\blacktriangleleft R
+\]
+is likewise a functor.
+
+These functors preserve central cells.
+\end{proposition}
+
+\begin{proof}
+Each whiskering is a composite of:
+\begin{enumerate}
+    \item pullback reindexing;
+    \item one of the pure-parameter Kleisli functors of
+    Proposition~\ref{prop:pure-parameter-kleisli-functors};
+    \item a dependent-sum Kleisli functor;
+    \item canonical Frobenius and pullback identifications.
+\end{enumerate}
+Every constituent is functorial.  Hence the composite preserves Kleisli
+identities and composition.
+
+Pullback reindexing preserves centrality.  Tensoring with a pure arrow
+preserves centrality because pure arrows are central and central arrows are
+closed under their common tensor.  Dependent-sum transport preserves
+centrality by
+Proposition~\ref{prop:fibred-central-arrow-closure}.
+\end{proof}
+
+\begin{proposition}[Coherence of pure span whiskering]
+\label{prop:coherence-pure-span-whiskering}
+There are canonical coherent isomorphisms
+\[
+    R\blacktriangleright
+    (Q\blacktriangleright\widehat f)
+    \cong
+    (R\circ Q)\blacktriangleright\widehat f,
+\]
+\[
+    (\widehat f\blacktriangleleft Q)
+    \blacktriangleleft R
+    \cong
+    \widehat f\blacktriangleleft(Q\circ R),
+\]
+and
+\[
+    (Q\blacktriangleright\widehat f)
+    \blacktriangleleft R
+    \cong
+    Q\blacktriangleright
+    (\widehat f\blacktriangleleft R).
+\]
+They satisfy the pentagon, triangle, and mixed-associativity coherence
+equations.
+\end{proposition}
+
+\begin{proof}
+Pull every cell to the common complete interface product.  Both sides of the
+first comparison apply the same effectful cell \(\widehat f\), retain the two
+pure span parameters, and then forget the same intermediate interfaces.
+The two constructions differ only by:
+\begin{enumerate}
+    \item reassociation of the slice products;
+    \item the order in which the dependent sums are performed;
+    \item the canonical pullback associator.
+\end{enumerate}
+Proposition~\ref{prop:pure-parameter-coherence},
+Proposition~\ref{prop:dependent-sum-effect-functoriality},
+effectful Beck--Chevalley,
+Lemma~\ref{lem:dependent-sum-strength-compatibility}, and Frobenius identify
+the two maps.
+
+The right-whiskering comparison is dual.  For mixed associativity, one pure
+parameter lies on each side of the single effectful cell.  No exchange of two
+computations occurs, and the two composites are identified by mixed
+pure-parameter coherence and the canonical dependent-sum comparison.
+
+The coherence diagrams reduce on the common interface product to coherence
+for cartesian products, the chosen pullback cleavage, Beck--Chevalley,
+Frobenius, and functoriality of dependent-sum transport.
+\end{proof}
+
+\begin{corollary}[Pure whiskering]
+\label{prop:pure-whiskering-effectful-spans}
+If either \(\widehat f\) or \(\widehat g\) is pure, then
+\[
+    \widehat g\ast_\ell\widehat f
+    =
+    \widehat g\ast_r\widehat f.
+\]
+Consequently ordinary span cells act unambiguously on effectful span cells by
+left and right whiskering.
+\end{corollary}
+
+\begin{proof}
+Suppose first that \(\widehat f\) is pure.  Then \(\widetilde f\) is central,
+so the two Fubini maps agree after precomposition with
+\[
+    \widetilde f\times_W\widetilde g.
+\]
+The dependent-sum transport is the same in both definitions.
+
+If \(\widehat g\) is pure, then \(\widetilde g\) is central.  The symmetry
+identity
+\[
+    d^{\ell}_{P,Q}
+    =
+    \mathsf K(\tau_{Q,P})
+    \circ
+    d^{r}_{Q,P}
+    \circ
+    \tau_{\mathsf KP,\mathsf KQ}
+\]
+transports centrality from the first coordinate to the second coordinate.
+Hence the two Fubini composites again agree before dependent-sum transport.
+\end{proof}
+
+\subsection{The interchange obstruction}
+\label{subsec:effectful-interchange-obstruction}
+
+For \(P\to Z\), define the diagonal endospan
+\[
+    D_Z(P)
+    :=
+    \left(
+        Z\xleftarrow{p}P\xrightarrow{p}Z
+    \right).
+\]
+Its object over \(Z\times Z\) is \(\Sigma_{\Delta_Z}P\), where
+\[
+    \Delta_Z:Z\to Z\times Z
+\]
+is the diagonal.
+
+For a Kleisli arrow
+\[
+    f:P\to\mathsf K_ZQ,
+\]
+define
+\[
+    D_Z(f)
+    :=
+    \Sigma_{\Delta_Z}^{\mathsf K}f:
+    D_Z(P)\Rrightarrow_{\mathsf K}D_Z(Q).
+\]
+
+\begin{lemma}[Diagonal recovery of the Fubini maps]
+\label{lem:diagonal-recovery-fubini}
+For Kleisli arrows
+\[
+    f:P\to\mathsf K_ZQ,
+    \qquad
+    g:R\to\mathsf K_ZS,
+\]
+there are canonical identifications
+\[
+    D_Z(R)\circ D_Z(P)
+    \cong
+    D_Z(P\times_ZR)
+\]
+and
+\[
+    D_Z(S)\circ D_Z(Q)
+    \cong
+    D_Z(Q\times_ZS)
+\]
+under which
+\[
+    D_Z(g)\ast_\varepsilon D_Z(f)
+    \cong
+    D_Z
+    \left(
+        d^{\varepsilon,Z}_{Q,S}
+        \circ
+        (f\times_Zg)
+    \right),
+    \qquad
+    \varepsilon\in\{\ell,r\}.
+\]
+Moreover, \(D_Z\) is faithful on Kleisli arrows.
+\end{lemma}
+
+\begin{proof}
+The pullback apex of
+\[
+    D_Z(R)\circ D_Z(P)
+\]
+is \(P\times_ZR\), giving the first canonical identification, and similarly
+for the codomain.
+
+The definition of ordered horizontal composition pulls the two diagonal
+cells to the common interface \(Z\times Z\times Z\).  Beck--Chevalley for the
+two diagonal pullback squares identifies the resulting reindexed objects
+with the pullbacks of \(P,Q,R,S\) over their common \(Z\)-coordinate.
+The projection formula of
+Lemma~\ref{lem:effectful-projection-formula} then identifies the
+dependent-sum transport of the Fubini composite with
+\[
+    \Sigma_{\Delta_Z}^{\mathsf K}
+    \left(
+        d^{\varepsilon,Z}_{Q,S}
+        \circ
+        (f\times_Zg)
+    \right).
+\]
+This is the required diagonal image.
+
+Because \(\Delta_Z\) is monic,
+\[
+    \Delta_Z^*\Sigma_{\Delta_Z}\cong1.
+\]
+Effectful Beck--Chevalley therefore gives
+\[
+    \Delta_Z^{*\mathsf K}
+    \Sigma_{\Delta_Z}^{\mathsf K}
+    \cong1
+\]
+on Kleisli arrows, so \(D_Z\) is faithful.
+\end{proof}
+
+For Kleisli arrows
+\[
+    f:P\to\mathsf K_ZQ,
+    \qquad
+    g:R\to\mathsf K_ZS,
+\]
+write
+\[
+    f\otimes_Z^rg
+    :=
+    d^{r,Z}_{Q,S}\circ(f\times_Zg).
+\]
+Let
+\[
+    j_P:=\eta^Z_P
+\]
+denote the Kleisli identity on \(P\).
+
+\begin{lemma}[Sequential decompositions of the Fubini maps]
+\label{lem:sequential-fubini-decompositions}
+One has
+\[
+    (j_Q\otimes_Z^rg)
+    \bullet
+    (f\otimes_Z^rj_R)
+    =
+    d^{r,Z}_{Q,S}\circ(f\times_Zg)
+\]
+and
+\[
+    (f\otimes_Z^rj_S)
+    \bullet
+    (j_P\otimes_Z^rg)
+    =
+    d^{\ell,Z}_{Q,S}\circ(f\times_Zg).
+\]
+\end{lemma}
+
+\begin{proof}
+The first composite expands as
+\[
+\begin{aligned}
+P\times_ZR
+&\xrightarrow{f\times1}
+\mathsf K_ZQ\times_ZR
+\xrightarrow{\operatorname{st}^{r,Z}}
+\mathsf K_Z(Q\times_ZR)
+\\
+&\xrightarrow{\mathsf K_Z(1\times g)}
+\mathsf K_Z(Q\times_Z\mathsf K_ZS)
+\xrightarrow{\mathsf K_Z(\operatorname{st}^{\ell,Z})}
+\mathsf K_Z\mathsf K_Z(Q\times_ZS)
+\\
+&\xrightarrow{\mu^Z}
+\mathsf K_Z(Q\times_ZS).
+\end{aligned}
+\]
+By naturality of the strengths, this is
+\[
+    d^{r,Z}_{Q,S}\circ(f\times_Zg).
+\]
+
+The second composite expands as
+\[
+\begin{aligned}
+P\times_ZR
+&\xrightarrow{1\times g}
+P\times_Z\mathsf K_ZS
+\xrightarrow{\operatorname{st}^{\ell,Z}}
+\mathsf K_Z(P\times_ZS)
+\\
+&\xrightarrow{\mathsf K_Z(f\times1)}
+\mathsf K_Z(\mathsf K_ZQ\times_ZS)
+\xrightarrow{\mathsf K_Z(\operatorname{st}^{r,Z})}
+\mathsf K_Z\mathsf K_Z(Q\times_ZS)
+\\
+&\xrightarrow{\mu^Z}
+\mathsf K_Z(Q\times_ZS),
+\end{aligned}
+\]
+which is
+\[
+    d^{\ell,Z}_{Q,S}\circ(f\times_Zg).
+\]
+\end{proof}
+
+\begin{theorem}[Effectful span interchange]
+\label{thm:effectful-span-interchange}
+The following conditions are equivalent.
+\begin{enumerate}
+    \item Every slice monad \(\mathsf K_Z\) is commutative:
+    \[
+        d^{\ell,Z}_{P,Q}
+        =
+        d^{r,Z}_{P,Q}
+    \]
+    for all \(Z,P,Q\).
+
+    \item The two ordered horizontal composites agree for all effectful span
+    cells, and unrestricted effectful span cells form a bicategory extending
+    the ordinary bicategory of spans through the monad unit.
+
+    \item Either ordered horizontal composition is bifunctorial on all
+    effectful span cells.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Suppose first that every \(\mathsf K_Z\) is commutative.  Then the two ordered
+horizontal composites agree.  Middle-four interchange follows from
+bifunctoriality of the commutative Kleisli tensor, together with
+functoriality of reindexing and dependent-sum transport.  Associativity
+follows by pulling three cells to the common interface product, applying
+associativity of the commutative Fubini map, and then using functoriality of
+\(\kappa\).  The unit laws follow from the strength-unit equations.  Pure
+cells reproduce ordinary span cells, so the unrestricted cells form the
+claimed bicategory.
+
+The implication from the second condition to the third is immediate.
+
+Assume the third condition, and suppose for definiteness that
+\(\ast_r\) is bifunctorial.  Fix \(Z\).  By
+Lemma~\ref{lem:diagonal-recovery-fubini}, horizontal composition of diagonal
+cells recovers the operation \(\otimes_Z^r\).  Since \(D_Z\) preserves
+vertical Kleisli composition and is faithful, bifunctoriality of
+\(\ast_r\) implies bifunctoriality of \(\otimes_Z^r\).
+
+For arbitrary Kleisli arrows
+\[
+    f:P\to\mathsf K_ZQ,
+    \qquad
+    g:R\to\mathsf K_ZS,
+\]
+bifunctoriality gives
+\[
+\begin{aligned}
+    (j_Q\otimes_Z^rg)
+    \bullet
+    (f\otimes_Z^rj_R)
+    &=
+    (j_Q\bullet f)
+    \otimes_Z^r
+    (g\bullet j_R)
+    \\
+    &=
+    f\otimes_Z^rg,
+\end{aligned}
+\]
+and also
+\[
+\begin{aligned}
+    (f\otimes_Z^rj_S)
+    \bullet
+    (j_P\otimes_Z^rg)
+    &=
+    (f\bullet j_P)
+    \otimes_Z^r
+    (j_S\bullet g)
+    \\
+    &=
+    f\otimes_Z^rg.
+\end{aligned}
+\]
+Lemma~\ref{lem:sequential-fubini-decompositions} therefore yields
+\[
+    d^{r,Z}_{Q,S}\circ(f\times_Zg)
+    =
+    d^{\ell,Z}_{Q,S}\circ(f\times_Zg)
+\]
+for all \(f,g\).
+
+Now take the Kleisli arrows
+\[
+    \varepsilon_P:
+    \mathsf K_ZP\rightsquigarrow P,
+    \qquad
+    \varepsilon_Q:
+    \mathsf K_ZQ\rightsquigarrow Q,
+\]
+represented by the identity maps
+\[
+    1_{\mathsf K_ZP},
+    \qquad
+    1_{\mathsf K_ZQ}.
+\]
+Then
+\[
+    \varepsilon_P\times_Z\varepsilon_Q
+    =
+    1_{\mathsf K_ZP\times_Z\mathsf K_ZQ},
+\]
+so
+\[
+    d^{r,Z}_{P,Q}
+    =
+    d^{\ell,Z}_{P,Q}.
+\]
+Thus \(\mathsf K_Z\) is commutative.  Since \(Z\) was arbitrary, every slice
+monad is commutative.
+
+The argument for \(\ast_\ell\) is symmetric.
+\end{proof}
+
+\subsection{The central effectful span bicategory}
+\label{subsec:central-effectful-span-bicategory}
+
+\begin{proposition}[Central horizontal composition]
+\label{prop:central-horizontal-composition-spans}
+If \(\widehat f\) and \(\widehat g\) are central, then
+\[
+    \widehat g\ast_\ell\widehat f
+    =
+    \widehat g\ast_r\widehat f.
+\]
+Their common value is central.
+\end{proposition}
+
+\begin{proof}
+Centrality is preserved by reindexing, so
+\(\widetilde f\) and \(\widetilde g\) are central in the slice over \(W\).
+Hence their two Fubini composites agree.
+
+Their common tensor is central by
+Proposition~\ref{prop:fibred-central-arrow-closure}, item \(3\).
+Dependent-sum transport preserves centrality by item \(5\) of the same
+proposition.  Therefore the common horizontal composite is central.
+\end{proof}
+
+For central cells, write
+\[
+    \widehat g\ast\widehat f
+\]
+for the common horizontal composite.
+
+\begin{theorem}[The central effectful span bicategory]
+\label{thm:central-effectful-span-bicategory}
+There is a bicategory
+\[
+    \mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)
+\]
+whose:
+\begin{enumerate}
+    \item objects are objects of \(\mathcal E\);
+
+    \item 1-cells are spans in \(\mathcal E\);
+
+    \item 2-cells are central \(\mathsf K\)-effectful span cells;
+
+    \item vertical composition is fibrewise Kleisli composition;
+
+    \item horizontal composition is the common central composite \(\ast\).
+\end{enumerate}
+The associator and unitors are the pure effectful images of the canonical
+pullback associator and unitors of \(\mathbf{Span}(\mathcal E)\).
+\end{theorem}
+
+\begin{proof}
+The hom-categories exist by closure of central arrows under Kleisli
+composition.  Horizontal composition is well-defined and closed by
+Proposition~\ref{prop:central-horizontal-composition-spans}.
+
+For associativity, pull three horizontally composable cells to the common
+interface product
+\[
+    X\times Y\times Z\times T.
+\]
+Because all three reindexed arrows are central, all bracketings and all
+execution orders of their threefold Fubini composite agree.  Both
+parenthesizations of horizontal composition are therefore the dependent-sum
+transport of the same threefold central tensor.  The remaining comparison is
+the canonical pullback associator.
+
+Middle-four interchange follows from bifunctoriality of the monoidal product
+in each local centre, followed by functoriality of reindexing and
+\(\Sigma^{\mathsf K}\).
+
+The unit laws follow from the strength-unit equations and the pullback
+unitors.  Since all coherence 2-cells are pure, the bicategorical coherence
+diagrams reduce to the corresponding diagrams in
+\(\mathbf{Span}(\mathcal E)\).
+\end{proof}
+
+\begin{corollary}[Pure span image]
+\label{cor:pure-span-embedding}
+The assignment
+\[
+    f\longmapsto\eta\circ f
+\]
+extends to an identity-on-objects normal pseudofunctor
+\[
+    J_{\mathsf K}:
+    \mathbf{Span}(\mathcal E)
+    \longrightarrow
+    \mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E).
+\]
+\end{corollary}
+
+\section{Effectful Mealy morphisms}
+\label{sec:effectful-mealy-morphisms}
+
+Fix internal categories
+\[
+    \mathbb A=(A_0,A_1,s_A,t_A,e_A,m_A),
+    \qquad
+    \mathbb B=(B_0,B_1,s_B,t_B,e_B,m_B).
+\]
+Write
+\[
+    \mathcal C_{A,B}
+    :=
+    \mathbf{Span}(\mathcal E)(A_0,B_0)
+    \cong
+    \mathcal E/(A_0\times B_0).
+\]
+As in Chapter~2, put
+\[
+    R_A=-\circ A,
+    \qquad
+    T_B=B\circ-.
+\]
+The internal-category structures make \(R_A\) and \(T_B\) monads on
+\(\mathcal C_{A,B}\), and Chapter~2 constructs a canonical distributive law
+\[
+    \lambda:
+    R_AT_B
+    \Longrightarrow
+    T_BR_A.
+\]
+
+\subsection{Canonical interaction with input and output}
+\label{subsec:canonical-effect-input-output}
+
+The endofunctors \(R_A\) and \(T_B\) are built from pullback and dependent
+sum.  The fibred monad therefore supplies canonical transformations moving
+an effect through either functor.
+
+For \(P\in\mathcal C_{A,B}\), regard the ordinary identity
+\[
+    1_{\mathsf K P}:
+    \mathsf K P\longrightarrow\mathsf K P
+\]
+as the Kleisli arrow
+\[
+    \varepsilon_P:
+    \mathsf K P\rightsquigarrow P.
+\]
+
+\begin{proposition}[Canonical output and input transformations]
+\label{prop:canonical-effect-transformations}
+There are canonical natural transformations
+\[
+    \sigma_B:
+    T_B\mathsf K
+    \Longrightarrow
+    \mathsf KT_B
+\]
+and
+\[
+    \rho_A:
+    R_A\mathsf K
+    \Longrightarrow
+    \mathsf KR_A.
+\]
+The component \(\sigma_{B,P}\) is pure left whiskering of
+\(\varepsilon_P\) by the identity cell on \(B\).  The component
+\(\rho_{A,P}\) is pure right whiskering of \(\varepsilon_P\) by the identity
+cell on \(A\).
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:functorial-pure-span-whiskering}, pure left
+whiskering by \(B\) defines a functor on the relevant Kleisli hom-category.
+Apply it to
+\[
+    \varepsilon_P:\mathsf KP\rightsquigarrow P.
+\]
+The result is an effectful cell
+\[
+    B\circ\mathsf KP
+    \Rrightarrow_{\mathsf K}
+    B\circ P,
+\]
+represented by an ordinary map
+\[
+    T_B\mathsf KP
+    \longrightarrow
+    \mathsf KT_BP.
+\]
+This is \(\sigma_{B,P}\).
+
+Similarly, pure right whiskering by \(A\) sends \(\varepsilon_P\) to an
+effectful cell
+\[
+    \mathsf KP\circ A
+    \Rrightarrow_{\mathsf K}
+    P\circ A,
+\]
+represented by
+\[
+    R_A\mathsf KP
+    \longrightarrow
+    \mathsf KR_AP.
+\]
+This is \(\rho_{A,P}\).
+
+Naturality follows from functoriality of the two pure-whiskering functors.
+\end{proof}
+
+In internal generalized-element notation, \(\sigma_B\) moves a pure output
+arrow into the computation, while \(\rho_A\) moves a pure input arrow into
+the computation:
+\[
+    (\kappa,\beta)
+    \longmapsto
+    \mathsf K(x\mapsto(x,\beta))(\kappa),
+\]
+\[
+    (a,\kappa)
+    \longmapsto
+    \mathsf K(x\mapsto(a,x))(\kappa).
+\]
+
+\begin{theorem}[Canonical iterated distributive laws]
+\label{thm:canonical-iterated-distributive-laws}
+The transformations
+\[
+    \sigma_B:T_B\mathsf K\Rightarrow\mathsf KT_B,
+    \qquad
+    \rho_A:R_A\mathsf K\Rightarrow\mathsf KR_A
+\]
+are distributive laws of monads.  Together with
+\[
+    \lambda:R_AT_B\Rightarrow T_BR_A,
+\]
+they satisfy, under the standing chosen associativity and pullback
+identifications, the Yang--Baxter equation
+\[
+\begin{aligned}
+    (\mathsf K\lambda)
+    \circ
+    (\rho_AT_B)
+    \circ
+    (R_A\sigma_B)
+    &=
+    (\sigma_BR_A)
+    \circ
+    (T_B\rho_A)
+    \circ
+    (\lambda\mathsf K).
+\end{aligned}
+\]
+\end{theorem}
+
+\begin{proof}
+Pure left whiskering by \(B\) defines a functor
+\[
+    \widetilde T_B:
+    \operatorname{Kl}(\mathsf K)
+    \longrightarrow
+    \operatorname{Kl}(\mathsf K).
+\]
+For a Kleisli arrow
+\[
+    f:P\to\mathsf KQ,
+\]
+factor \(f\) in the Kleisli category as
+\[
+    P
+    \xrightarrow{\eta_{\mathsf KQ}\circ f}
+    \mathsf KQ
+    \xrightarrow{\varepsilon_Q}
+    Q.
+\]
+The first factor is pure, and the second is \(\varepsilon_Q\).
+Applying pure left whiskering gives the underlying map
+\[
+    T_BP
+    \xrightarrow{T_Bf}
+    T_B\mathsf KQ
+    \xrightarrow{\sigma_{B,Q}}
+    \mathsf KT_BQ.
+\]
+Thus
+\[
+    \widetilde T_B(f)
+    =
+    \sigma_{B,Q}\circ T_Bf.
+\]
+
+The unit and multiplication cells of \(\mathbb B\) are pure.  By
+Proposition~\ref{prop:coherence-pure-span-whiskering}, their left
+whiskerings define a monad structure on \(\widetilde T_B\), and the monad
+equations reduce to those of \(\mathbb B\).  Hence \(\widetilde T_B\) is a
+lifting of the monad \(T_B\) to \(\operatorname{Kl}(\mathsf K)\).
+By the Kleisli lifting--distributive-law correspondence, \(\sigma_B\) is a
+distributive law.
+
+The same argument with pure right whiskering by \(A\) gives
+\[
+    \widetilde R_A(f)
+    =
+    \rho_{A,Q}\circ R_Af
+\]
+and proves that \(\rho_A\) is a distributive law.
+
+For the Yang--Baxter equation, fix \(P\).  Both sides are maps
+\[
+    R_AT_B\mathsf KP
+    \longrightarrow
+    \mathsf KT_BR_AP.
+\]
+The left-hand side first left-whiskers
+\(\varepsilon_P\) by \(B\), then right-whiskers the result by \(A\), and
+finally applies the canonical span associator \(\lambda\).
+
+The right-hand side first applies \(\lambda\), then right-whiskers
+\(\varepsilon_P\) by \(A\), and finally left-whiskers by \(B\).
+
+By the mixed-associativity comparison of
+Proposition~\ref{prop:coherence-pure-span-whiskering}, both composites
+represent the same effectful span cell
+\[
+    (B\circ\mathsf KP)\circ A
+    \Rrightarrow_{\mathsf K}
+    B\circ(P\circ A),
+\]
+obtained by whiskering the single effectful cell
+\(\varepsilon_P\) on the left by \(B\) and on the right by \(A\).
+Under the standing chosen coherence identifications, this gives the displayed
+Yang--Baxter equation.
+\end{proof}
+
+\subsection{The effectful output-comparison monad}
+\label{subsec:effectful-output-comparison-monad}
+
+\begin{proposition}[Effectful output comparison]
+\label{prop:effectful-output-comparison-monad}
+The composite
+\[
+    H_B^{\mathsf K}
+    :=
+    \mathsf K_{A_0\times B_0}T_B
+\]
+is a monad on \(\mathcal C_{A,B}\).  Its unit is
+\[
+    P
+    \xrightarrow{\eta^T_P}
+    T_BP
+    \xrightarrow{\eta^{\mathsf K}_{T_BP}}
+    \mathsf KT_BP,
+\]
+and its multiplication is
+\[
+\begin{tikzcd}[column sep=large]
+    \mathsf KT_B\mathsf KT_BP
+        \arrow[r,"{\mathsf K\sigma_BT_BP}"]
+    &
+    \mathsf K\mathsf KT_BT_BP
+        \arrow[r,"{\mu^{\mathsf K}T_BT_B}"]
+    &
+    \mathsf KT_BT_BP
+        \arrow[r,"{\mathsf K\mu^T_P}"]
+    &
+    \mathsf KT_BP.
+\end{tikzcd}
+\]
+\end{proposition}
+
+\begin{proof}
+This is the composite-monad construction for the distributive law
+\[
+    \sigma_B:T_B\mathsf K\Rightarrow\mathsf KT_B.
+\]
+\end{proof}
+
+A pure outcome of \(H_B^{\mathsf K}(P)\) is a pair
+\[
+    (x,\beta)
+\]
+with
+\[
+    \beta:q(x)\to b.
+\]
+The state and output-comparison arrow therefore occur inside the same
+computation.
+
+\begin{proposition}[Effectful input distributive law]
+\label{prop:effectful-input-distributive-law}
+Define
+\[
+    \chi:
+    R_AH_B^{\mathsf K}
+    \Longrightarrow
+    H_B^{\mathsf K}R_A
+\]
+by
+\[
+    \chi
+    :=
+    (\mathsf K\lambda)
+    \circ
+    (\rho_AT_B).
+\]
+Then \(\chi\) is a distributive law of the monad \(R_A\) over the monad
+\(H_B^{\mathsf K}\).  Hence \(R_A\) lifts to a monad
+\[
+    \overline R_A^{\mathsf K}
+\]
+on
+\[
+    \operatorname{Kl}(H_B^{\mathsf K}).
+\]
+\end{proposition}
+
+\begin{proof}
+Apply the iterated distributive-law theorem to the three monads
+\[
+    R_A,
+    \qquad
+    T_B,
+    \qquad
+    \mathsf K
+\]
+and the Yang--Baxter equation of
+Theorem~\ref{thm:canonical-iterated-distributive-laws}.
+\end{proof}
+
+\subsection{Definition and algebra presentation}
+\label{subsec:effectful-mealy-definition}
+
+\begin{definition}[Effectful Mealy morphism]
+\label{def:effectful-mealy-morphism}
+A \textbf{\(\mathsf K\)-effectful Mealy morphism}
+\[
+    (P,\widehat\Phi):
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B
+\]
+consists of a carrier span
+\[
+    A_0\xleftarrow{p}P\xrightarrow{q}B_0
+\]
+and an algebra structure for
+\[
+    \overline R_A^{\mathsf K}
+\]
+on \(P\) in
+\[
+    \operatorname{Kl}(H_B^{\mathsf K}).
+\]
+
+Equivalently, it consists of a map
+\[
+    \widehat\Phi:
+    P\circ A
+    \longrightarrow
+    \mathsf K_{A_0\times B_0}(B\circ P)
+\]
+satisfying
+\begin{align}
+    \widehat\Phi\circ\eta^R_P
+    &=
+    \eta^H_P,
+    \label{eq:effectful-mealy-unit}
+    \\
+    \widehat\Phi\circ\mu^R_P
+    &=
+    \mu^H_P
+    \circ
+    H_B^{\mathsf K}(\widehat\Phi)
+    \circ
+    \chi_P
+    \circ
+    R_A(\widehat\Phi).
+    \label{eq:effectful-mealy-multiplication}
+\end{align}
+\end{definition}
+
+\begin{definition}[Central effectful Mealy morphism]
+\label{def:central-effectful-mealy-morphism}
+An effectful Mealy morphism is \textbf{central} when its structure map
+\[
+    \widehat\Phi:
+    P\circ A
+    \longrightarrow
+    \mathsf K(B\circ P)
+\]
+is a central Kleisli arrow in
+\(\mathcal E/(A_0\times B_0)\).
+\end{definition}
+
+\begin{theorem}[Effectful Mealy algebra theorem]
+\label{thm:effectful-mealy-algebra-theorem}
+For a fixed carrier span \(P:A_0\rightsquigarrow B_0\), giving an effectful
+Mealy structure on \(P\) is equivalently giving an algebra for
+\[
+    \overline R_A^{\mathsf K}
+\]
+on \(P\) in
+\[
+    \operatorname{Kl}(H_B^{\mathsf K}).
+\]
+
+If the structure map is central, this algebra is equivalently an oriented
+monad morphism from \(\mathbb A\) to \(\mathbb B\) in the bicategory
+\[
+    \mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E),
+\]
+with carrier \(P\) and structure cell
+\[
+    \widehat\Phi:
+    P\circ A
+    \Rrightarrow_{\mathsf K}
+    B\circ P.
+\]
+\end{theorem}
+
+\begin{proof}
+The first equivalence is the definition of an algebra for the lifted monad:
+an algebra arrow in \(\operatorname{Kl}(H_B^{\mathsf K})\) is an ordinary map
+\[
+    R_AP
+    \longrightarrow
+    H_B^{\mathsf K}P
+\]
+satisfying the two displayed algebra equations.
+
+If \(\widehat\Phi\) is central, it is a 2-cell in
+\(\mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\).  The oriented monad
+unit diagram is precisely
+Equation~\eqref{eq:effectful-mealy-unit}.  Expanding the oriented monad
+multiplication diagram using the distributive law \(\chi\) gives precisely
+Equation~\eqref{eq:effectful-mealy-multiplication}.  Conversely, those two
+equations supply the oriented monad compatibility diagrams.
+\end{proof}
+
+\subsection{Internal component laws}
+\label{subsec:internal-effectful-mealy-laws}
+
+For generalized elements \(u:A_0\) and \(b:B_0\), write
+\[
+    \operatorname{Out}_P(u,b)
+\]
+for the fibre of
+\[
+    B\circ P\longrightarrow A_0\times B_0
+\]
+over \((u,b)\).  Internally its elements are pairs
+\[
+    (x',\beta)
+\]
+satisfying
+\[
+    p(x')=u,
+    \qquad
+    s_B(\beta)=q(x'),
+    \qquad
+    t_B(\beta)=b.
+\]
+
+For an admissible pair
+\[
+    a:u\to v,
+    \qquad
+    p(x)=v,
+\]
+the transition has type
+\[
+    \widehat\Phi(a,x)
+    \in
+    \mathsf K
+    \bigl(
+        \operatorname{Out}_P(u,q(x))
+    \bigr).
+\]
+
+Write
+\[
+    \operatorname{bind}_{\mathsf K}(\kappa,f)
+    :=
+    \mu\circ\mathsf K(f)(\kappa).
+\]
+
+\begin{proposition}[Effectful Mealy component laws]
+\label{prop:effectful-mealy-component-laws}
+Equations~\eqref{eq:effectful-mealy-unit} and
+\eqref{eq:effectful-mealy-multiplication} are equivalent to the following
+internal equations.
+
+The unit law is
+\[
+    \widehat\Phi(e_A(px),x)
+    =
+    \eta^{\mathsf K}
+    \bigl(
+        x,e_B(qx)
+    \bigr).
+\]
+
+For internally composable arrows
+\[
+    a:u\to v,
+    \qquad
+    b:v\to w,
+\]
+and \(p(x)=w\), the multiplication law is
+\[
+\begin{aligned}
+    \widehat\Phi(b\circ a,x)
+    ={}&
+    \operatorname{bind}_{\mathsf K}
+    \Bigl(
+        \widehat\Phi(b,x),
+        (x_b,\beta_b)
+        \longmapsto
+    \\
+    &\qquad
+        \operatorname{bind}_{\mathsf K}
+        \Bigl(
+            \widehat\Phi(a,x_b),
+            (x_a,\beta_a)
+            \longmapsto
+            \eta^{\mathsf K}
+            \bigl(
+                x_a,
+                \beta_b\circ\beta_a
+            \bigr)
+        \Bigr)
+    \Bigr).
+\end{aligned}
+\]
+\end{proposition}
+
+\begin{proof}
+The unit of \(R_A\) inserts the identity input arrow.  The unit of
+\(H_B^{\mathsf K}\) inserts the identity output arrow and then applies
+\(\eta^{\mathsf K}\), giving the first equation.
+
+For multiplication, target-to-source execution first processes
+\[
+    b:v\to w
+\]
+at \(x\), producing
+\[
+    (x_b,\beta_b),
+    \qquad
+    \beta_b:q(x_b)\to q(x).
+\]
+It then processes
+\[
+    a:u\to v
+\]
+at \(x_b\), producing
+\[
+    (x_a,\beta_a),
+    \qquad
+    \beta_a:q(x_a)\to q(x_b).
+\]
+The output-comparison multiplication composes these arrows to
+\[
+    \beta_b\circ\beta_a:
+    q(x_a)\to q(x),
+\]
+and the multiplication of \(\mathsf K\) combines the nested computations.
+\end{proof}
+
+\subsection{Pure effectful Mealy morphisms}
+\label{subsec:pure-effectful-mealy-morphisms}
+
+\begin{proposition}[Pure effectful image]
+\label{prop:pure-effectful-image}
+Every deterministic Mealy morphism
+\[
+    (P,\Phi):
+    \mathbb A\rightsquigarrow\mathbb B
+\]
+determines a central effectful Mealy morphism with the same carrier by
+\[
+    \widehat\Phi
+    :=
+    \eta^{\mathsf K}_{B\circ P}\circ\Phi.
+\]
+\end{proposition}
+
+\begin{proof}
+Apply the pure pseudofunctor
+\[
+    J_{\mathsf K}:
+    \mathbf{Span}(\mathcal E)
+    \to
+    \mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)
+\]
+to the oriented monad morphism \((P,\Phi)\).  Pure Kleisli arrows are
+central.
+\end{proof}
+
+\section{Effectful Mealy simulations}
+\label{sec:effectful-mealy-simulations}
+
+Before defining simulations, we record closure under the Kleisli composition
+of the output-comparison monad.
+
+\begin{proposition}[Central output-comparison composition]
+\label{prop:central-output-comparison-composition}
+Let
+\[
+    f:P\to\mathsf KT_BQ,
+    \qquad
+    g:Q\to\mathsf KT_BR
+\]
+be central as \(\mathsf K\)-Kleisli arrows.  Their
+\(H_B^{\mathsf K}\)-Kleisli composite
+\[
+    g\mathbin{\bullet_H}f
+    :=
+    \mu^H_R
+    \circ
+    H_B^{\mathsf K}(g)
+    \circ
+    f
+\]
+is central.  The \(H_B^{\mathsf K}\)-Kleisli identities are central.
+\end{proposition}
+
+\begin{proof}
+Expand the composite:
+\[
+\begin{aligned}
+P
+&\xrightarrow{f}
+\mathsf KT_BQ
+\xrightarrow{\mathsf K(T_Bg)}
+\mathsf KT_B\mathsf KT_BR
+\\
+&\xrightarrow{\mathsf K(\sigma_BT_BR)}
+\mathsf K\mathsf KT_BT_BR
+\xrightarrow{\mu^{\mathsf K}}
+\mathsf KT_BT_BR
+\xrightarrow{\mathsf K(\mu^T_R)}
+\mathsf KT_BR.
+\end{aligned}
+\]
+Pure left whiskering by \(B\) preserves centrality by
+Proposition~\ref{prop:functorial-pure-span-whiskering}.  Thus the part
+induced by \(g\) is central.  The displayed map is then a Kleisli composite
+of central arrows followed by a pure map, so it is central.  The identity is
+the composite of pure units and is therefore central.
+\end{proof}
+
+Let
+\[
+    (P,\widehat\Phi),
+    (Q,\widehat\Psi):
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B
+\]
+be effectful Mealy morphisms.
+
+\begin{definition}[Effectful Mealy simulation]
+\label{def:effectful-mealy-simulation}
+An \textbf{effectful Mealy simulation}
+\[
+    (P,\widehat\Phi)
+    \Rightarrow
+    (Q,\widehat\Psi)
+\]
+is a morphism
+\[
+    (Q,\widehat\Psi)
+    \longrightarrow
+    (P,\widehat\Phi)
+\]
+of \(\overline R_A^{\mathsf K}\)-algebras in
+\(\operatorname{Kl}(H_B^{\mathsf K})\).
+
+Equivalently, it is a map
+\[
+    \widehat\Theta:
+    Q\longrightarrow\mathsf K(B\circ P)
+\]
+satisfying
+\[
+\begin{aligned}
+&
+\mu^H_P
+\circ
+H_B^{\mathsf K}(\widehat\Theta)
+\circ
+\widehat\Psi
+\\
+&\qquad=
+\mu^H_P
+\circ
+H_B^{\mathsf K}(\widehat\Phi)
+\circ
+\chi_P
+\circ
+R_A(\widehat\Theta).
+\end{aligned}
+\tag{\(\mathrm{Sim}_{\mathsf K}\)}
+\]
+The simulation is \textbf{central} when \(\widehat\Theta\) is central as a
+\(\mathsf K\)-Kleisli arrow.
+\end{definition}
+
+The displayed simulation direction is opposite to the underlying
+algebra-morphism direction, exactly as in Chapter~2.
+
+\begin{proposition}[Component simulation equation]
+\label{prop:effectful-simulation-component-equation}
+Internally, write
+\[
+    \widehat\Theta(y)
+    \in
+    \mathsf K
+    \left\{
+        (x,\alpha)
+        \,\middle|\,
+        \alpha:q_P(x)\to q_Q(y)
+    \right\}.
+\]
+Then \(\widehat\Theta\) is an effectful Mealy simulation if and only if, for
+every admissible \((a,y)\),
+\[
+\begin{aligned}
+&
+\operatorname{bind}_{\mathsf K}
+\Bigl(
+    \widehat\Theta(y),
+    (x_0,\alpha_0)
+    \longmapsto
+    \operatorname{bind}_{\mathsf K}
+    \Bigl(
+        \widehat\Phi(a,x_0),
+        (x,\beta)
+        \longmapsto
+        \eta^{\mathsf K}
+        \bigl(
+            x,
+            \alpha_0\circ\beta
+        \bigr)
+    \Bigr)
+\Bigr)
+\\
+&\qquad=
+\operatorname{bind}_{\mathsf K}
+\Bigl(
+    \widehat\Psi(a,y),
+    (y',\gamma)
+    \longmapsto
+    \operatorname{bind}_{\mathsf K}
+    \Bigl(
+        \widehat\Theta(y'),
+        (x,\alpha)
+        \longmapsto
+        \eta^{\mathsf K}
+        \bigl(
+            x,
+            \gamma\circ\alpha
+        \bigr)
+    \Bigr)
+\Bigr).
+\end{aligned}
+\]
+\end{proposition}
+
+\begin{proof}
+The left-hand side first compares \(y\) with an effectful
+\(P\)-state--output pair \((x_0,\alpha_0)\), then executes \(P\) along \(a\),
+and composes
+\[
+    q_P(x)
+    \xrightarrow{\beta}
+    q_P(x_0)
+    \xrightarrow{\alpha_0}
+    q_Q(y).
+\]
+The right-hand side first executes \(Q\), then compares the updated state,
+and composes
+\[
+    q_P(x)
+    \xrightarrow{\alpha}
+    q_Q(y')
+    \xrightarrow{\gamma}
+    q_Q(y).
+\]
+Expanding \((\mathrm{Sim}_{\mathsf K})\) gives exactly the displayed equality.
+\end{proof}
+
+\begin{definition}[Pure effectful simulation]
+\label{def:pure-effectful-simulation}
+A simulation is \textbf{pure} when it has the form
+\[
+    \widehat\Theta
+    =
+    \eta^{\mathsf K}_{B\circ P}\circ\Theta
+\]
+for an ordinary output-comparison cell
+\[
+    \Theta:Q\longrightarrow B\circ P.
+\]
+\end{definition}
+
+Writing
+\[
+    \Theta(y)
+    =
+    (\theta y,\alpha_y),
+\]
+the component simulation equation reduces to
+\[
+\begin{aligned}
+&
+\operatorname{bind}_{\mathsf K}
+\Bigl(
+    \widehat\Phi(a,\theta y),
+    (x,\beta)
+    \longmapsto
+    \eta^{\mathsf K}
+    \bigl(
+        x,
+        \alpha_y\circ\beta
+    \bigr)
+\Bigr)
+\\
+&\qquad=
+\operatorname{bind}_{\mathsf K}
+\Bigl(
+    \widehat\Psi(a,y),
+    (y',\gamma)
+    \longmapsto
+    \eta^{\mathsf K}
+    \bigl(
+        \theta y',
+        \gamma\circ\alpha_{y'}
+    \bigr)
+\Bigr).
+\end{aligned}
+\]
+
+\begin{proposition}[Vertical composition of simulations]
+\label{prop:vertical-composition-effectful-simulations}
+Let
+\[
+    \widehat\Theta:
+    (P,\widehat\Phi)
+    \Rightarrow
+    (Q,\widehat\Psi)
+\]
+and
+\[
+    \widehat\Lambda:
+    (Q,\widehat\Psi)
+    \Rightarrow
+    (R,\widehat\Xi)
+\]
+be effectful Mealy simulations.  Their displayed vertical composite is
+written
+\[
+    \widehat\Lambda\circ_v\widehat\Theta:
+    (P,\widehat\Phi)
+    \Rightarrow
+    (R,\widehat\Xi).
+\]
+Its representing \(H_B^{\mathsf K}\)-Kleisli arrow is
+\[
+    \widehat\Theta\mathbin{\bullet_H}\widehat\Lambda.
+\]
+Internally,
+\[
+\begin{aligned}
+    (\widehat\Lambda\circ_v\widehat\Theta)(z)
+    ={}&
+    \operatorname{bind}_{\mathsf K}
+    \Bigl(
+        \widehat\Lambda(z),
+        (y,\beta)
+        \longmapsto
+    \\
+    &\qquad
+        \operatorname{bind}_{\mathsf K}
+        \Bigl(
+            \widehat\Theta(y),
+            (x,\alpha)
+            \longmapsto
+            \eta^{\mathsf K}
+            \bigl(
+                x,
+                \beta\circ\alpha
+            \bigr)
+        \Bigr)
+    \Bigr).
+\end{aligned}
+\]
+Central simulations are closed under this composition.
+\end{proposition}
+
+\begin{proof}
+Displayed simulations are opposite to the corresponding algebra morphisms.
+Thus their displayed vertical composite is represented by first applying
+\(\widehat\Lambda\) and then applying \(\widehat\Theta\) in
+\(\operatorname{Kl}(H_B^{\mathsf K})\), namely by
+\[
+    \widehat\Theta\mathbin{\bullet_H}\widehat\Lambda.
+\]
+The component formula is the multiplication of \(H_B^{\mathsf K}\).
+Centrality follows from
+Proposition~\ref{prop:central-output-comparison-composition}.
+\end{proof}
+
+\section{Pipeline composition and the effectful Mealy bicategory}
+\label{sec:effectful-pipeline-bicategory}
+
+Let
+\[
+    (P,\widehat\Phi_P):
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B,
+    \qquad
+    (Q,\widehat\Phi_Q):
+    \mathbb B\rightsquigarrow_{\mathsf K}\mathbb C
+\]
+be central effectful Mealy morphisms.
+
+\subsection{Pipeline composition}
+\label{subsec:central-effectful-pipeline-composition}
+
+The composite carrier is the ordinary pullback span
+\[
+    A_0
+    \xleftarrow{}
+    P\times_{B_0}Q
+    \xrightarrow{}
+    C_0.
+\]
+
+\begin{definition}[Effectful pipeline transition]
+\label{def:effectful-pipeline-transition}
+The transition of the composite
+\[
+    Q\circ P:
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb C
+\]
+is the horizontal composite of the two oriented monad cells in
+\(\mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\).
+
+Internally,
+\[
+\begin{aligned}
+&
+\widehat\Phi_{Q\circ P}(a,(x,y))
+\\
+&\quad=
+\operatorname{bind}_{\mathsf K}
+\Bigl(
+    \widehat\Phi_P(a,x),
+    (x',\beta)
+    \longmapsto
+    \operatorname{bind}_{\mathsf K}
+    \Bigl(
+        \widehat\Phi_Q(\beta,y),
+        (y',\gamma)
+        \longmapsto
+        \eta^{\mathsf K}
+        \bigl(
+            (x',y'),
+            \gamma
+        \bigr)
+    \Bigr)
+\Bigr).
+\end{aligned}
+\]
+\end{definition}
+
+If
+\[
+    \beta:q_P(x')\to q_P(x)=p_Q(y),
+\]
+then \(\beta\) is admissible at \(y\).  Every outcome
+\[
+    (y',\gamma)
+\]
+of the second transition satisfies
+\[
+    p_Q(y')=q_P(x').
+\]
+Hence
+\[
+    (x',y')\in P\times_{B_0}Q.
+\]
+
+\begin{theorem}[Effectful pipeline composition]
+\label{thm:effectful-pipeline-composition}
+Definition~\ref{def:effectful-pipeline-transition} defines a central
+effectful Mealy morphism
+\[
+    Q\circ P:
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb C.
+\]
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:effectful-mealy-algebra-theorem}, the two machines are
+oriented monad morphisms in
+\(\mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\).  Oriented monad
+morphisms compose in every bicategory.  Their pasted structure cell has
+carrier \(Q\circ P\) and expands to the bind formula of
+Definition~\ref{def:effectful-pipeline-transition}.  The oriented monad
+unit and multiplication diagrams for the paste follow from those of the two
+factors and bicategorical interchange.
+
+The composite structure cell is central by
+Proposition~\ref{prop:central-horizontal-composition-spans}.
+\end{proof}
+
+\begin{corollary}[Associativity and identities]
+\label{cor:effectful-pipeline-associativity}
+Effectful pipeline composition is associative up to the canonical pullback
+associator.  The pure images of the deterministic identity Mealy morphisms
+are left and right units.
+\end{corollary}
+
+\subsection{Horizontal composition of simulations}
+\label{subsec:horizontal-composition-effectful-simulations}
+
+Let
+\[
+    \widehat\Theta:
+    (P,\widehat\Phi_P)
+    \Rightarrow
+    (P',\widehat\Phi_{P'})
+\]
+be a central simulation from \(\mathbb A\) to \(\mathbb B\), and let
+\[
+    \widehat\Lambda:
+    (Q,\widehat\Phi_Q)
+    \Rightarrow
+    (Q',\widehat\Phi_{Q'})
+\]
+be a central simulation from \(\mathbb B\) to \(\mathbb C\).
+
+Internally, write
+\[
+    \widehat\Theta(x')
+    \in
+    \mathsf K
+    \left\{
+        (x,\alpha)
+        \,\middle|\,
+        \alpha:q_P(x)\to q_{P'}(x')
+    \right\},
+\]
+\[
+    \widehat\Lambda(y')
+    \in
+    \mathsf K
+    \left\{
+        (y,\beta)
+        \,\middle|\,
+        \beta:q_Q(y)\to q_{Q'}(y')
+    \right\}.
+\]
+
+\begin{definition}[Horizontal composite of simulations]
+\label{def:horizontal-composite-effectful-simulations}
+The horizontal composite
+\[
+    \widehat\Lambda\ast_h\widehat\Theta:
+    Q\circ P
+    \Rightarrow
+    Q'\circ P'
+\]
+is represented internally by
+\[
+\begin{aligned}
+&
+(\widehat\Lambda\ast_h\widehat\Theta)(x',y')
+\\
+&=
+\operatorname{bind}_{\mathsf K}
+\Bigl(
+    \widehat\Theta(x'),
+    (x,\alpha)
+    \longmapsto
+    \operatorname{bind}_{\mathsf K}
+    \Bigl(
+        \widehat\Lambda(y'),
+        (y,\beta)
+        \longmapsto
+\\
+&\hspace{8em}
+        \operatorname{bind}_{\mathsf K}
+        \Bigl(
+            \widehat\Phi_Q(\alpha,y),
+            (y_1,\gamma)
+            \longmapsto
+            \eta^{\mathsf K}
+            \bigl(
+                (x,y_1),
+                \beta\circ\gamma
+            \bigr)
+        \Bigr)
+    \Bigr)
+\Bigr).
+\end{aligned}
+\]
+\end{definition}
+
+The arrow
+\[
+    \alpha:q_P(x)\to q_{P'}(x')=p_{Q'}(y')=p_Q(y)
+\]
+is executed by the downstream machine \(Q\).  Its updated state \(y_1\)
+satisfies
+\[
+    p_Q(y_1)=q_P(x),
+\]
+so
+\[
+    (x,y_1)\in P\times_{B_0}Q.
+\]
+
+\begin{proposition}[Horizontal simulation law]
+\label{prop:horizontal-effectful-simulation-law}
+The map of
+Definition~\ref{def:horizontal-composite-effectful-simulations} is a central
+effectful Mealy simulation.  Horizontal composition preserves vertical
+identities and satisfies middle-four interchange with respect to
+\(\circ_v\).
+\end{proposition}
+
+\begin{proof}
+Paste the comparison cell \(\widehat\Theta\), the transition cell of \(Q\)
+evaluated on its output comparison, and the comparison cell
+\(\widehat\Lambda\) in
+\(\mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\).  The component of
+the resulting paste is exactly the displayed bind expression.
+
+The pasted cell satisfies the simulation equation because it is the
+horizontal composite of algebra-morphism cells between oriented monad
+morphisms.  Equivalently, expanding both sides and applying the simulation
+equations for \(\widehat\Theta\) and \(\widehat\Lambda\), followed by the
+Mealy multiplication equation for \(Q\), yields the same central
+four-computation paste.
+
+The component is built from reindexing, central tensor, Kleisli composition,
+pure whiskering, and dependent-sum transport.  Each operation preserves
+centrality.
+
+Preservation of identities and middle-four interchange are inherited from
+the corresponding laws in
+\(\mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\), with the displayed
+simulation direction reversed relative to algebra morphisms.
+\end{proof}
+
+\begin{theorem}[The central effectful Mealy bicategory]
+\label{thm:central-effectful-mealy-bicategory}
+There is a bicategory
+\[
+    \mathbf{Mly}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)
+\]
+whose:
+\begin{enumerate}
+    \item objects are internal categories in \(\mathcal E\);
+
+    \item 1-cells are central \(\mathsf K\)-effectful Mealy morphisms;
+
+    \item 2-cells are central effectful Mealy simulations.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+For fixed \(\mathbb A,\mathbb B\), the hom-category is the opposite of the
+category of \(\overline R_A^{\mathsf K}\)-algebras and central algebra
+morphisms in \(\operatorname{Kl}(H_B^{\mathsf K})\).  Vertical closure is
+Proposition~\ref{prop:central-output-comparison-composition}.  Horizontal
+composition of 1-cells is
+Theorem~\ref{thm:effectful-pipeline-composition}, and horizontal composition
+of 2-cells is
+Proposition~\ref{prop:horizontal-effectful-simulation-law}.
+
+The associator and unitors are induced by the pure pullback associator and
+unitors.  Their coherence follows from the corresponding coherence in
+\(\mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\).
+\end{proof}
+
+\begin{theorem}[Deterministic image]
+\label{thm:deterministic-effectful-pseudofunctor}
+The pure construction extends to a normal pseudofunctor
+\[
+    J_{\mathsf K}^{\mathrm{Mly}}:
+    \mathbf{Mly}(\mathcal E)
+    \longrightarrow
+    \mathbf{Mly}^{\mathrm{cen}}_{\mathsf K}(\mathcal E).
+\]
+It is the identity on internal categories and carriers and applies the monad
+unit to transition and simulation cells.
+\end{theorem}
+
+\begin{proof}
+Apply the pure pseudofunctor
+\[
+    J_{\mathsf K}:
+    \mathbf{Span}(\mathcal E)
+    \to
+    \mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)
+\]
+to internal-category monads, oriented monad morphisms, and their simulation
+cells.  Preservation of horizontal composition follows from the
+strength-unit equations.  Identity cells are sent to Kleisli identities, so
+the pseudofunctor is normal.
+\end{proof}
+
+No local faithfulness assertion is made: the monad unit need not reflect
+equality of ordinary span cells.
+
+\section{Strict state presentations}
+\label{sec:effectful-strict-state-presentations}
+
+Simulation 2-cells compare machines while allowing output-comparison arrows.
+For presentation changes that act only on the state carrier, the relevant
+maps are stricter.
+
+\begin{definition}[Strict state homomorphism]
+\label{def:strict-effectful-state-homomorphism}
+Let
+\[
+    (P,\widehat\Phi),
+    (Q,\widehat\Psi):
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B
+\]
+be central effectful Mealy morphisms.  A \textbf{strict state homomorphism}
+\[
+    h:
+    (P,\widehat\Phi)
+    \longrightarrow
+    (Q,\widehat\Psi)
+\]
+is a map of carrier spans
+\[
+    h:P\longrightarrow Q
+\]
+satisfying
+\[
+    \mathsf K(B\circ h)
+    \circ
+    \widehat\Phi
+    =
+    \widehat\Psi
+    \circ
+    (h\circ A).
+\]
+\end{definition}
+
+Internally,
+\[
+    \mathsf K
+    \bigl(
+        (x',\beta)
+        \mapsto
+        (hx',\beta)
+    \bigr)
+    \bigl(
+        \widehat\Phi(a,x)
+    \bigr)
+    =
+    \widehat\Psi(a,hx).
+\]
+
+A strict state homomorphism \(h:P\to Q\) determines a pure effectful
+simulation in the opposite displayed direction
+\[
+    (Q,\widehat\Psi)
+    \Rightarrow
+    (P,\widehat\Phi)
+\]
+whose output-comparison component is the identity.
+
+\begin{proposition}[Composition of strict state homomorphisms]
+\label{prop:strict-homomorphism-composition}
+Strict state homomorphisms form a category for every fixed pair
+\((\mathbb A,\mathbb B)\).  Pipeline composition sends
+\[
+    h:P\to P',
+    \qquad
+    k:Q\to Q'
+\]
+to the pullback map
+\[
+    h\times k:
+    P\times_{B_0}Q
+    \longrightarrow
+    P'\times_{B_0}Q'.
+\]
+\end{proposition}
+
+\begin{proof}
+Identity maps satisfy the strict transition equation.  If
+\[
+    P\xrightarrow{h}Q\xrightarrow{k}R
+\]
+are strict, then
+\[
+\begin{aligned}
+\mathsf K(B\circ kh)\widehat\Phi
+&=
+\mathsf K(B\circ k)
+\mathsf K(B\circ h)
+\widehat\Phi
+\\
+&=
+\mathsf K(B\circ k)
+\widehat\Psi(h\circ A)
+\\
+&=
+\widehat\Xi(k\circ A)(h\circ A)
+\\
+&=
+\widehat\Xi((kh)\circ A).
+\end{aligned}
+\]
+Thus strict maps compose.
+
+For pipeline composition, apply \(h\) to the updated upstream state and
+\(k\) to the updated downstream state.  The two strict transition equations
+rewrite the two stages of the bind expression, and naturality of Kleisli
+extension identifies the resulting composite with the transition of
+\(P'\) followed by that of \(Q'\).
+\end{proof}
+
+\begin{theorem}[The bicategory of strict presentations]
+\label{thm:strict-presentation-bicategory}
+There is a bicategory
+\[
+    \mathbf{Pres}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)
+\]
+whose objects and 1-cells are those of
+\(\mathbf{Mly}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\), and whose 2-cells are
+strict state homomorphisms in their covariant carrier direction.
+\end{theorem}
+
+\begin{proof}
+Vertical composition is
+Proposition~\ref{prop:strict-homomorphism-composition}.  Horizontal
+composition is the pullback map \(h\times k\).  Functoriality of pullback
+gives middle-four interchange.
+
+The canonical pullback associator
+\[
+    (P\times_{B_0}Q)\times_{C_0}R
+    \xrightarrow{\cong}
+    P\times_{B_0}(Q\times_{C_0}R)
+\]
+preserves all carrier projections.  Both sides execute the same three
+transition cells in the same order, so the associator satisfies the strict
+transition equation.  The same argument applies to the pullback unitors.
+Their coherence is inherited from the ordinary span bicategory.
+\end{proof}
+
+\subsection{Collapse of unrestricted presentation connectedness}
+\label{subsec:collapse-unrestricted-state-connectedness}
+
+The connected-component quotient of
+\(\mathbf{Pres}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\) is too coarse under
+the conditions needed for feedback.
+
+\begin{proposition}[Empty effectful presentation]
+\label{prop:empty-effectful-presentation}
+Suppose that \(\mathcal E\) has a pullback-stable initial object \(0\).
+For every pair of internal categories \(\mathbb A,\mathbb B\), the empty
+carrier span
+\[
+    A_0\longleftarrow0\longrightarrow B_0
+\]
+carries a unique central effectful Mealy structure
+\[
+    \mathbf 0_{\mathbb A,\mathbb B}:
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B.
+\]
+Moreover, there is a unique strict state homomorphism
+\[
+    \mathbf 0_{\mathbb A,\mathbb B}
+    \longrightarrow
+    (P,\widehat\Phi)
+\]
+for every central effectful Mealy morphism
+\[
+    (P,\widehat\Phi):
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B.
+\]
+\end{proposition}
+
+\begin{proof}
+Pullback stability of \(0\) gives
+\[
+    0\circ A\cong0,
+    \qquad
+    B\circ0\cong0.
+\]
+There is therefore a unique map
+\[
+    \widehat\Phi_0:
+    0\longrightarrow
+    \mathsf K_{A_0\times B_0}(0).
+\]
+The Mealy unit and multiplication equations have initial domain, so they
+hold.  After arbitrary reindexing, the domain remains initial, and the two
+centrality composites are maps out of an initial object.  Hence
+\(\widehat\Phi_0\) is central.
+
+For any carrier \(P\), there is a unique span map
+\[
+    0\to P.
+\]
+Its strict transition equation is an equality between two maps out of an
+initial object, so it is strict.
+\end{proof}
+
+\begin{theorem}[Degeneracy of unrestricted strict-map connectedness]
+\label{thm:degeneracy-unrestricted-strict-uniformity}
+Suppose that \(\mathcal E\) has a pullback-stable initial object.  Then every
+two central effectful Mealy morphisms with the same source and target are
+connected by a finite zigzag of strict state homomorphisms.
+
+Consequently, the connected-component quotient of
+\[
+    \mathbf{Pres}^{\mathrm{cen}}_{\mathsf K}
+    (\mathbb A,\mathbb B)
+\]
+is a singleton for every \(\mathbb A,\mathbb B\).
+\end{theorem}
+
+\begin{proof}
+For any two presentations \(P,Q\),
+Proposition~\ref{prop:empty-effectful-presentation} gives a zigzag
+\[
+    P
+    \longleftarrow
+    \mathbf0_{\mathbb A,\mathbb B}
+    \longrightarrow
+    Q.
+\]
+Thus every pair lies in the same connected component.
+\end{proof}
+
+In particular, invariance under all strict state homomorphisms cannot produce
+a nontrivial unpointed state-hiding semantics in a feedback span base.
+
+\subsection{Strict state retractions}
+\label{subsec:strict-state-retractions}
+
+\begin{definition}[Strict state retraction]
+\label{def:strict-state-retraction}
+A strict state homomorphism
+\[
+    h:
+    (P,\widehat\Phi)
+    \longrightarrow
+    (Q,\widehat\Psi)
+\]
+is a \textbf{strict state retraction} if there exists a strict state
+homomorphism
+\[
+    s:
+    (Q,\widehat\Psi)
+    \longrightarrow
+    (P,\widehat\Phi)
+\]
+such that
+\[
+    h\circ s=1_Q.
+\]
+The map \(s\) is called a \textbf{strict section} of \(h\).
+\end{definition}
+
+\begin{proposition}[Closure of strict state retractions]
+\label{prop:closure-strict-state-retractions}
+Strict state retractions are closed under identity, vertical composition, and
+pipeline composition.
+\end{proposition}
+
+\begin{proof}
+Every identity is a retraction with itself as section.
+
+Let
+\[
+    P\xrightarrow{h}Q\xrightarrow{k}R
+\]
+be strict state retractions with strict sections
+\[
+    s:Q\to P,
+    \qquad
+    t:R\to Q.
+\]
+Then \(s\circ t\) is strict and
+\[
+    (k\circ h)\circ(s\circ t)
+    =
+    k\circ(h\circ s)\circ t
+    =
+    k\circ t
+    =
+    1_R.
+\]
+Thus \(k\circ h\) is a strict state retraction.
+
+Now let
+\[
+    h:P\to P',
+    \qquad
+    k:Q\to Q'
+\]
+be strict state retractions with strict sections \(s\) and \(t\).
+Their horizontal composite is
+\[
+    h\times k:
+    P\times_{B_0}Q
+    \longrightarrow
+    P'\times_{B_0}Q'.
+\]
+It has strict section
+\[
+    s\times t:
+    P'\times_{B_0}Q'
+    \longrightarrow
+    P\times_{B_0}Q,
+\]
+and
+\[
+    (h\times k)\circ(s\times t)
+    =
+    (h\circ s)\times(k\circ t)
+    =
+    1.
+\]
+\end{proof}
+
+\begin{theorem}[The bicategory of retractive presentations]
+\label{thm:retractive-presentation-bicategory}
+There is a locally wide sub-bicategory
+\[
+    \mathbf{RetPres}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)
+    \subseteq
+    \mathbf{Pres}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)
+\]
+with the same objects and 1-cells, and whose 2-cells are the strict state
+retractions.
+\end{theorem}
+
+\begin{proof}
+Closure under vertical and horizontal composition is
+Proposition~\ref{prop:closure-strict-state-retractions}.  The associator and
+unitors of
+\(\mathbf{Pres}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\)
+are strict state isomorphisms, hence strict state retractions.  The
+bicategorical coherence equations are inherited from the strict-presentation
+bicategory.
+\end{proof}
+
+\begin{definition}[Retractive presentation equivalence]
+\label{def:retractive-presentation-equivalence}
+Two central effectful Mealy morphisms with the same source and target are
+\textbf{retractively presentation-equivalent}, written
+\[
+    (P,\widehat\Phi)
+    \sim_{\mathrm{ret}}
+    (Q,\widehat\Psi),
+\]
+if they are connected by a finite zigzag of strict state retractions.
+
+Equivalently,
+\(\sim_{\mathrm{ret}}\) is the connected-component relation in the
+hom-category
+\[
+    \mathbf{RetPres}^{\mathrm{cen}}_{\mathsf K}
+    (\mathbb A,\mathbb B).
+\]
+\end{definition}
+
+\begin{proposition}[Isolation of the empty retractive class]
+\label{prop:empty-retractive-class-isolated}
+Suppose that the initial object \(0\) of \(\mathcal E\) is strict.  If a
+strict state retraction has either the empty presentation as its domain or
+the empty presentation as its codomain, then its other endpoint also has
+initial carrier.
+
+Consequently, a finite zigzag of strict state retractions connects an empty
+presentation only to presentations with initial carrier.
+\end{proposition}
+
+\begin{proof}
+Suppose first that
+\[
+    h:P\longrightarrow0
+\]
+is a strict state retraction.  Its underlying carrier map is a morphism
+\(P\to0\).  Since \(0\) is strict, this map is an isomorphism and
+\(P\cong0\).
+
+Suppose instead that
+\[
+    h:0\longrightarrow P
+\]
+is a strict state retraction.  A strict section of \(h\) is in particular a
+carrier map
+\[
+    P\longrightarrow0.
+\]
+Strictness of \(0\) again gives \(P\cong0\).
+
+The zigzag statement follows by induction on its length.
+\end{proof}
+
+\begin{corollary}[Noncollapse in a feedback span base]
+\label{cor:retractive-quotient-noncollapse}
+Let \(\mathcal E\) be a feedback span base.  Then the initial object is
+strict.  Hence the empty presentation cannot be retractively
+presentation-equivalent to a presentation with noninitial carrier.
+
+In particular, if \(A_0\not\cong0\), then the empty endopresentation of
+\(\mathbb A\) and the identity presentation of \(\mathbb A\) determine
+distinct classes.
+\end{corollary}
+
+\begin{proof}
+The initial object is the empty coproduct.  Pullback stability of the empty
+coproduct says that for every map \(X\to0\), the canonical map
+\[
+    0\longrightarrow X
+\]
+obtained by pulling back the empty coproduct decomposition is an isomorphism.
+Thus \(0\) is strict.
+
+The remaining statements follow from
+Proposition~\ref{prop:empty-retractive-class-isolated}.  The identity
+presentation has carrier \(A_0\), so it cannot lie in the empty class when
+\(A_0\) is noninitial.
+\end{proof}
+
+\begin{theorem}[Retractive state-presentation quotient]
+\label{thm:retractive-state-presentation-quotient}
+Retractive presentation equivalence is a congruence for identities and
+pipeline composition.  There is therefore a category
+\[
+    \mathbf{Mly}^{\mathrm{cen},\mathrm{ret}}_{\mathsf K}(\mathcal E)
+\]
+whose objects are internal categories and whose morphisms are
+\(\sim_{\mathrm{ret}}\)-classes of central effectful Mealy morphisms.
+\end{theorem}
+
+\begin{proof}
+Horizontal composition in
+\(\mathbf{RetPres}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\)
+carries strict state retractions to strict state retractions and therefore
+carries zigzags to zigzags.
+
+The canonical associators and unitors are strict state isomorphisms and hence
+strict state retractions.  Their endpoints therefore belong to the same
+connected component.  Consequently composition on connected components is
+strictly associative and unital.
+\end{proof}
+
+\section{Retract-invariant state hiding}
+\label{sec:retract-invariant-state-hiding}
+
+Let
+\[
+    \operatorname{Cat}_1(\mathcal E)
+\]
+denote the ordinary category whose objects are internal categories in
+\(\mathcal E\) and whose morphisms are internal functors.  Natural
+transformations are not retained at this categorical level.
+
+Every internal functor
+\[
+    F:\mathbb A\longrightarrow\mathbb B
+\]
+determines a pure stateless effectful Mealy morphism, written
+\[
+    J^{\mathrm{st}}_{\mathsf K}(F):
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B.
+\]
+Its carrier is the map-representable span \(F_0!\), and its arrow map is
+inserted by \(\eta^{\mathsf K}\).
+
+\begin{definition}[Typed retract-invariant state-hiding interpretation]
+\label{def:retract-invariant-state-hiding-interpretation}
+Let \(\mathcal D\) be a category.  A
+\textbf{typed retract-invariant state-hiding interpretation} of central
+effectful Mealy presentations in \(\mathcal D\) consists of:
+\begin{enumerate}
+    \item a functor
+    \[
+        J:\operatorname{Cat}_1(\mathcal E)\longrightarrow\mathcal D;
+    \]
+
+    \item for every central effectful Mealy presentation
+    \[
+        (P,\widehat\Phi):
+        \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B,
+    \]
+    a morphism
+    \[
+        \operatorname{hide}_P(\widehat\Phi):
+        J\mathbb A\longrightarrow J\mathbb B.
+    \]
+\end{enumerate}
+These data satisfy the following equations.
+
+\begin{enumerate}
+    \item \textbf{Pure presentations.}
+    For every internal functor \(F:\mathbb A\to\mathbb B\),
+    \[
+        \operatorname{hide}_{F_0!}
+        \bigl(
+            \widehat\Phi_{J^{\mathrm{st}}_{\mathsf K}(F)}
+        \bigr)
+        =
+        J(F).
+    \]
+
+    \item \textbf{Tightening.}
+    Let
+    \[
+        L:\mathbb A'\to\mathbb A,
+        \qquad
+        R:\mathbb B\to\mathbb B'
+    \]
+    be internal functors.  Then
+    \[
+\begin{aligned}
+&
+\operatorname{hide}_{R_0!\circ P\circ L_0!}
+\Bigl(
+    \widehat\Phi_{
+        J^{\mathrm{st}}_{\mathsf K}(R)
+        \circ
+        (P,\widehat\Phi)
+        \circ
+        J^{\mathrm{st}}_{\mathsf K}(L)
+    }
+\Bigr)
+\\
+&\qquad=
+J(R)
+\circ
+\operatorname{hide}_P(\widehat\Phi)
+\circ
+J(L).
+\end{aligned}
+    \]
+
+    \item \textbf{Joining.}
+    For composable presentations
+    \[
+        (P,\widehat\Phi_P),
+        \qquad
+        (Q,\widehat\Phi_Q),
+    \]
+    \[
+        \operatorname{hide}_{Q\circ P}
+        (\widehat\Phi_{Q\circ P})
+        =
+        \operatorname{hide}_Q(\widehat\Phi_Q)
+        \circ
+        \operatorname{hide}_P(\widehat\Phi_P).
+    \]
+
+    \item \textbf{Retract invariance.}
+    If
+    \[
+        h:
+        (P,\widehat\Phi)
+        \longrightarrow
+        (Q,\widehat\Psi)
+    \]
+    is a strict state retraction, then
+    \[
+        \operatorname{hide}_P(\widehat\Phi)
+        =
+        \operatorname{hide}_Q(\widehat\Psi).
+    \]
+\end{enumerate}
+\end{definition}
+
+The joining equation hides two successive state carriers as their composite
+span.  Tightening transports a hidden presentation along external internal
+functors.  Retract invariance says that the interpreted external process is
+unchanged when a presentation is replaced by a strict retract.
+
+The tightening equation follows from the pure-presentation and joining
+equations, but it is retained explicitly because it records the intended
+typed covariance of the state-hiding interpretation.
+
+\begin{proposition}[Canonical retract-invariant state hiding]
+\label{prop:canonical-retract-invariant-state-hiding}
+The quotient category
+\[
+    \mathbf{Mly}^{\mathrm{cen},\mathrm{ret}}_{\mathsf K}(\mathcal E)
+\]
+carries a canonical typed retract-invariant state-hiding interpretation.  The
+functor
+\[
+    J^{\mathrm{st}}_{\mathsf K}:
+    \operatorname{Cat}_1(\mathcal E)
+    \longrightarrow
+    \mathbf{Mly}^{\mathrm{cen},\mathrm{ret}}_{\mathsf K}(\mathcal E)
+\]
+sends an internal functor to the class of its pure stateless effectful Mealy
+morphism, and
+\[
+    \operatorname{hide}_P(\widehat\Phi)
+    :=
+    [(P,\widehat\Phi)]_{\mathrm{ret}}.
+\]
+\end{proposition}
+
+\begin{proof}
+Pure stateless presentations compose as internal functors.  Tightening and
+joining are the corresponding composition equations in the quotient.
+Retract invariance holds because the endpoints of a strict state retraction
+lie in the same connected component of the retractive-presentation
+hom-category.
+\end{proof}
+
+\begin{theorem}[Universal retractive state-presentation quotient]
+\label{thm:universal-retractive-state-presentation-quotient}
+Let \(\mathcal D\) carry a typed retract-invariant state-hiding
+interpretation \((J,\operatorname{hide})\).  There is a unique functor
+\[
+    \overline J:
+    \mathbf{Mly}^{\mathrm{cen},\mathrm{ret}}_{\mathsf K}(\mathcal E)
+    \longrightarrow
+    \mathcal D
+\]
+such that
+\[
+    \overline J\circ J^{\mathrm{st}}_{\mathsf K}
+    =
+    J
+\]
+and
+\[
+    \overline J
+    \bigl(
+        [(P,\widehat\Phi)]_{\mathrm{ret}}
+    \bigr)
+    =
+    \operatorname{hide}_P(\widehat\Phi).
+\]
+\end{theorem}
+
+\begin{proof}
+Define
+\[
+    \overline J(\mathbb A)
+    :=
+    J\mathbb A
+\]
+on objects and
+\[
+    \overline J
+    \bigl(
+        [(P,\widehat\Phi)]_{\mathrm{ret}}
+    \bigr)
+    :=
+    \operatorname{hide}_P(\widehat\Phi)
+\]
+on morphisms.
+
+Retract invariance identifies the endpoints of every strict state retraction
+and therefore every finite zigzag of such retractions, so the definition is
+well-defined.
+
+The pure-presentation equation gives
+\[
+    \overline J
+    \bigl(
+        J^{\mathrm{st}}_{\mathsf K}(F)
+    \bigr)
+    =
+    J(F).
+\]
+The joining equation gives
+\[
+\begin{aligned}
+\overline J
+\bigl(
+    [(Q,\widehat\Phi_Q)]_{\mathrm{ret}}
+    \circ
+    [(P,\widehat\Phi_P)]_{\mathrm{ret}}
+\bigr)
+&=
+\operatorname{hide}_{Q\circ P}
+(\widehat\Phi_{Q\circ P})
+\\
+&=
+\operatorname{hide}_Q(\widehat\Phi_Q)
+\circ
+\operatorname{hide}_P(\widehat\Phi_P).
+\end{aligned}
+\]
+The identity equation is the pure-presentation equation for the identity
+internal functor.  Thus \(\overline J\) is a functor.
+
+Every morphism in the quotient is represented by a presentation.  Hence any
+functor preserving the state-hiding interpretation must have the displayed
+value on every morphism, proving uniqueness.
+\end{proof}
+
+\begin{corollary}[Retractive presentation congruence]
+\label{cor:retractive-presentation-congruence}
+Retractive presentation equivalence is the smallest composition congruence on
+central effectful Mealy morphisms that identifies the endpoints of every
+strict state retraction.
+\end{corollary}
+
+\begin{proof}
+The relation is generated by finite zigzags of strict state retractions and
+is a composition congruence by
+Theorem~\ref{thm:retractive-state-presentation-quotient}.  Every composition
+congruence identifying the endpoints of each strict state retraction
+therefore identifies the endpoints of every generating zigzag.
+\end{proof}
+
+\begin{proposition}[Unpointed presentations do not determine pointed feedback]
+\label{prop:unpointed-not-pointed-feedback}
+The unpointed state presentations used in this chapter do not determine the
+pointed uniform-feedback operation of
+\cite{BonchiDiLavoreRomanEffectfulMealyMachines}, even in
+\(\mathbf{Set}\).
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+    S=\{0,1\},
+    \qquad
+    X=1,
+    \qquad
+    Y=\{0,1\},
+\]
+and define
+\[
+    f:S\times X\longrightarrow S\times Y
+\]
+by
+\[
+    f(s,*)=(s,s).
+\]
+With initial state \(0\), pointed feedback produces the constant output
+\(0\).  With initial state \(1\), it produces the constant output \(1\).
+The underlying unpointed state object and transition map are identical.
+Therefore the unpointed presentation does not determine the pointed
+feedback process.
+\end{proof}
+
+\section{Effectful finite-path feedback}
+\label{sec:effectful-finite-path-feedback}
+
+Assume throughout this section that \(\mathcal E\) is a feedback span base in
+the sense of Definition~9.2.1.  Thus the finite and countable coproducts used
+below are disjoint and pullback-stable, and the required countable
+reindexing isomorphisms are available.
+
+We distinguish:
+\[
+    +
+\]
+for the coproduct tensor, which changes source and target interfaces, from
+\[
+    \boxplus
+\]
+for the homwise coproduct of parallel spans, machines, cells, and
+presentations.
+
+\subsection{Homwise sums of effectful span cells}
+\label{subsec:homwise-sums-effectful-cells}
+
+Let \((P_i)_{i\in I}\) and \((Q_i)_{i\in I}\) be finite or countable families
+of parallel spans from \(X\) to \(Y\), and let
+\[
+    \widehat f_i:
+    P_i\Rrightarrow_{\mathsf K}Q_i
+\]
+be effectful cells.  Define
+\[
+    \boxplus_{i\in I}\widehat f_i:
+    \boxplus_{i\in I}P_i
+    \Rrightarrow_{\mathsf K}
+    \boxplus_{i\in I}Q_i
+\]
+by the copairing whose \(i\)-th component is
+\[
+    P_i
+    \xrightarrow{\widehat f_i}
+    \mathsf K(Q_i)
+    \xrightarrow{\mathsf K(\iota_i)}
+    \mathsf K
+    \left(
+        \coprod_{j\in I}Q_j
+    \right).
+\]
+
+\begin{proposition}[Central homwise sums of span cells]
+\label{prop:central-homwise-sums}
+If every \(\widehat f_i\) is central, then
+\[
+    \boxplus_i\widehat f_i
+\]
+is central.
+
+For aligned composable families,
+\[
+    \left(
+        \boxplus_i\widehat g_i
+    \right)
+    \bullet
+    \left(
+        \boxplus_i\widehat f_i
+    \right)
+    =
+    \boxplus_i
+    \left(
+        \widehat g_i\bullet\widehat f_i
+    \right).
+\]
+
+Horizontal composition is bilinear:
+\[
+    \widehat g
+    \ast
+    \left(
+        \boxplus_i\widehat f_i
+    \right)
+    \cong
+    \boxplus_i
+    \left(
+        \widehat g\ast\widehat f_i
+    \right),
+\]
+\[
+    \left(
+        \boxplus_j\widehat g_j
+    \right)
+    \ast
+    \widehat f
+    \cong
+    \boxplus_j
+    \left(
+        \widehat g_j\ast\widehat f
+    \right).
+\]
+Consequently,
+\[
+    \left(
+        \boxplus_j\widehat g_j
+    \right)
+    \ast
+    \left(
+        \boxplus_i\widehat f_i
+    \right)
+    \cong
+    \boxplus_{i,j}
+    \left(
+        \widehat g_j\ast\widehat f_i
+    \right).
+\]
+\end{proposition}
+
+\begin{proof}
+After arbitrary reindexing, pullback stability gives
+\[
+    \left(
+        \coprod_iP_i
+    \right)
+    \times R
+    \cong
+    \coprod_i(P_i\times R).
+\]
+Restricting the two centrality composites along the \(i\)-th coproduct
+injection gives the centrality equation for \(\widehat f_i\), followed by the
+same pure target injection.  Since the coproduct injections are jointly
+epimorphic, the two composites agree.
+
+Compatibility with vertical composition follows by restricting to each
+summand, using naturality of \(\mu\), and applying the Kleisli composition
+equation there.
+
+For horizontal composition, pullback distributes over the coproducts.
+Hence the composite carrier decomposes into the indicated summands.  On each
+summand, the transition cell is the corresponding horizontal composite.
+The canonical coproduct reindexing gives the displayed isomorphisms.
+\end{proof}
+
+\subsection{Homwise sums of effectful Mealy presentations}
+\label{subsec:homwise-sums-effectful-mealy}
+
+Let
+\[
+    (P_i,\widehat\Phi_i):
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B
+\]
+be a finite or countable family of parallel central effectful Mealy
+morphisms.  Put
+\[
+    P:=\coprod_iP_i
+\]
+with the induced span legs.  Pullback stability gives canonical
+isomorphisms
+\[
+    P\circ A
+    \cong
+    \coprod_i(P_i\circ A),
+    \qquad
+    B\circ P
+    \cong
+    \coprod_i(B\circ P_i).
+\]
+
+Define
+\[
+    \boxplus_i\widehat\Phi_i:
+    P\circ A
+    \longrightarrow
+    \mathsf K(B\circ P)
+\]
+by the copairing whose \(i\)-th restriction is
+\[
+    P_i\circ A
+    \xrightarrow{\widehat\Phi_i}
+    \mathsf K(B\circ P_i)
+    \xrightarrow{\mathsf K(B\circ\iota_i)}
+    \mathsf K(B\circ P).
+\]
+
+\begin{proposition}[Homwise sums of effectful Mealy morphisms]
+\label{prop:homwise-sums-effectful-mealy}
+The pair
+\[
+    \boxplus_i(P_i,\widehat\Phi_i)
+    :=
+    \left(
+        \coprod_iP_i,
+        \boxplus_i\widehat\Phi_i
+    \right)
+\]
+is a central effectful Mealy morphism
+\[
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B.
+\]
+
+Let
+\[
+    \widehat\Theta_i:
+    (P_i,\widehat\Phi_i)
+    \Rightarrow
+    (Q_i,\widehat\Psi_i)
+\]
+be a family of central effectful simulations.  Their homwise sum is the map
+\[
+    \boxplus_i\widehat\Theta_i:
+    \coprod_iQ_i
+    \longrightarrow
+    \mathsf K
+    \left(
+        B\circ\coprod_iP_i
+    \right)
+\]
+whose \(i\)-th restriction is
+\[
+    Q_i
+    \xrightarrow{\widehat\Theta_i}
+    \mathsf K(B\circ P_i)
+    \xrightarrow{\mathsf K(B\circ\iota_i)}
+    \mathsf K
+    \left(
+        B\circ\coprod_jP_j
+    \right).
+\]
+This is a central effectful simulation
+\[
+    \boxplus_i(P_i,\widehat\Phi_i)
+    \Rightarrow
+    \boxplus_i(Q_i,\widehat\Psi_i).
+\]
+
+For vertically composable aligned families,
+\[
+    \left(
+        \boxplus_i\widehat\Lambda_i
+    \right)
+    \circ_v
+    \left(
+        \boxplus_i\widehat\Theta_i
+    \right)
+    =
+    \boxplus_i
+    \left(
+        \widehat\Lambda_i\circ_v\widehat\Theta_i
+    \right).
+\]
+Identity simulations are preserved.
+\end{proposition}
+
+\begin{proof}
+The effectful Mealy unit equation for
+\(\boxplus_i\widehat\Phi_i\) can be checked after restriction to every
+summand \(P_i\circ A\).  On that summand it is the unit equation for
+\(\widehat\Phi_i\), followed by the corresponding pure coproduct injection.
+Joint epimorphy of the coproduct injections gives the global equation.
+
+The multiplication equation is checked similarly.  Pullback stability
+decomposes the iterated input-transition object into the summands belonging
+to the \(P_i\).  Restriction to the \(i\)-th summand gives the multiplication
+equation for \(\widehat\Phi_i\).  No cross-summand state transition occurs,
+because the carrier injections preserve both interface legs.
+
+Centrality follows from
+Proposition~\ref{prop:central-homwise-sums}.
+
+For simulations, restrict the simulation equation for
+\(\boxplus_i\widehat\Theta_i\) to \(Q_i\circ A\).  Both sides reduce to the
+simulation equation for \(\widehat\Theta_i\), followed by the same pure
+injection into the total target carrier.  Hence the equation holds globally.
+Centrality again follows from
+Proposition~\ref{prop:central-homwise-sums}.
+
+The vertical-composition equation follows by restriction to each summand and
+Proposition~\ref{prop:central-homwise-sums}.  Identity simulations are
+copairings of the summandwise identities.
+\end{proof}
+
+\begin{proposition}[Pipeline distributivity over homwise sums]
+\label{prop:pipeline-distributes-homwise-sums}
+Let
+\[
+    P_i:
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B,
+    \qquad
+    Q:
+    \mathbb B\rightsquigarrow_{\mathsf K}\mathbb C
+\]
+be central effectful Mealy morphisms.  There is a canonical strict state
+isomorphism
+\[
+    Q\circ\left(\boxplus_iP_i\right)
+    \xrightarrow{\cong}
+    \boxplus_i(Q\circ P_i).
+\]
+Similarly, for
+\[
+    P:
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B,
+    \qquad
+    Q_j:
+    \mathbb B\rightsquigarrow_{\mathsf K}\mathbb C,
+\]
+there is a canonical strict state isomorphism
+\[
+    \left(\boxplus_jQ_j\right)\circ P
+    \xrightarrow{\cong}
+    \boxplus_j(Q_j\circ P).
+\]
+Consequently,
+\[
+    \left(\boxplus_jQ_j\right)
+    \circ
+    \left(\boxplus_iP_i\right)
+    \xrightarrow{\cong}
+    \boxplus_{i,j}(Q_j\circ P_i).
+\]
+
+The same comparisons are natural with respect to central simulations and
+strict state homomorphisms.
+\end{proposition}
+
+\begin{proof}
+For the first comparison, pullback stability gives
+\[
+    \left(
+        \coprod_iP_i
+    \right)
+    \times_{B_0}Q
+    \cong
+    \coprod_i
+    \left(
+        P_i\times_{B_0}Q
+    \right).
+\]
+Under this carrier isomorphism, the pipeline transition restricts on the
+\(i\)-th summand to the pipeline transition of \(Q\circ P_i\).  Hence the
+carrier isomorphism satisfies the strict transition equation.
+
+The second comparison is identical, and the double-family comparison is
+their composite.  Naturality follows from naturality of the
+pullback--coproduct comparison and the summandwise definitions of simulation
+and strict-map composition.
+\end{proof}
+
+\subsection{The coproduct tensor}
+\label{subsec:effectful-coproduct-tensor}
+
+Let
+\[
+    \Phi:
+    \mathbb A\rightsquigarrow_{\mathsf K}\mathbb B,
+    \qquad
+    \Psi:
+    \mathbb C\rightsquigarrow_{\mathsf K}\mathbb D
+\]
+be central effectful Mealy morphisms with carriers \(P\) and \(Q\).
+
+There are canonical block decompositions
+\[
+    (P+Q)\circ(A+C)
+    \cong
+    (P\circ A)+(Q\circ C),
+\]
+\[
+    (B+D)\circ(P+Q)
+    \cong
+    (B\circ P)+(D\circ Q).
+\]
+The mixed terms are initial because the coproduct internal categories have no
+cross-summand arrows.
+
+Let
+\[
+    j_{AB}:
+    A_0\times B_0
+    \longrightarrow
+    (A_0+C_0)\times(B_0+D_0)
+\]
+and
+\[
+    j_{CD}:
+    C_0\times D_0
+    \longrightarrow
+    (A_0+C_0)\times(B_0+D_0)
+\]
+be the diagonal block inclusions.
+
+\begin{definition}[Coproduct tensor of effectful Mealy morphisms]
+\label{def:coproduct-tensor-effectful-mealy}
+The coproduct tensor
+\[
+    \Phi+\Psi:
+    \mathbb A+\mathbb C
+    \rightsquigarrow_{\mathsf K}
+    \mathbb B+\mathbb D
+\]
+has carrier \(P+Q\).  Its transition map is the copairing of the two
+dependent-sum transports
+\[
+    \Sigma_{j_{AB}}^{\mathsf K}\widehat\Phi,
+    \qquad
+    \Sigma_{j_{CD}}^{\mathsf K}\widehat\Psi
+\]
+under the canonical block decompositions above.
+\end{definition}
+
+\begin{theorem}[Coproduct symmetric monoidal effectful Mealy bicategory]
+\label{thm:central-effectful-coproduct-monoidal-bicategory}
+There is a symmetric monoidal bicategory
+\[
+    \left(
+        \mathbf{Mly}^{\mathrm{cen},+}_{\mathsf K,\omega}(\mathcal E),
+        +,
+        0
+    \right)
+\]
+whose underlying bicategory is
+\(\mathbf{Mly}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)\) and whose tensor is
+the chosen coproduct tensor.
+\end{theorem}
+
+\begin{proof}
+Dependent-sum transport preserves centrality, and homwise coproduct preserves
+centrality.  Therefore the transition of
+\(\Phi+\Psi\) is central.
+
+The Mealy unit and multiplication equations can be checked after restriction
+to the two diagonal blocks.  They then reduce respectively to the equations
+for \(\Phi\) and \(\Psi\).  The mixed blocks are initial.
+
+For pipeline composition, pullback stability gives
+\[
+    (P+Q)\times_{B_0+D_0}(P'+Q')
+    \cong
+    (P\times_{B_0}P')
+    +
+    (Q\times_{D_0}Q').
+\]
+Under this isomorphism, the two pipeline transitions agree on both summands.
+Thus coproduct is pseudofunctorial.
+
+The tensor of simulations is defined by the same blockwise copairing.
+Vertical and horizontal functoriality follow from
+Propositions~\ref{prop:central-homwise-sums} and
+\ref{prop:homwise-sums-effectful-mealy}.  The coproduct associator, unitors,
+and symmetry are pure, and their coherence reduces to coproduct coherence in
+\(\mathcal E\).
+\end{proof}
+
+Passing to isomorphism classes in the hom-categories gives a symmetric
+monoidal category, written
+\[
+    \left(
+        \operatorname{Mly}^{\mathrm{cen},+}_{\mathsf K,\omega,0}
+        (\mathcal E),
+        +,
+        0
+    \right).
+\]
+
+\subsection{Effectful path objects}
+\label{subsec:effectful-path-objects}
+
+Let
+\[
+    U:
+    \mathbb C\rightsquigarrow_{\mathsf K}\mathbb C
+\]
+be a central effectful Mealy endomorphism.  Define
+\[
+    U^{[0]}:=1_{\mathbb C},
+    \qquad
+    U^{[n+1]}:=U^{[n]}\circ U.
+\]
+
+\begin{definition}[Effectful finite-path object]
+\label{def:effectful-finite-path-object}
+The \textbf{effectful finite-path Mealy morphism} generated by \(U\) is
+\[
+    \operatorname{Path}_{\mathsf K}(U)
+    :=
+    \boxplus_{n\geq0}U^{[n]}.
+\]
+Its canonical generator is the one-length coproduct injection
+\[
+    \iota_1:
+    U
+    \longrightarrow
+    \operatorname{Path}_{\mathsf K}(U).
+\]
+\end{definition}
+
+Its carrier is the coproduct of the finite composite carriers.  On the
+\(n\)-th summand, its transition is the \(n\)-fold central pipeline
+composite.  Path witnesses remain explicit in the carrier, while the effects
+generated along a fixed path are combined by the multiplication of
+\(\mathsf K\).
+
+\begin{lemma}[Homwise coproducts of strict presentations]
+\label{lem:strict-presentation-homwise-coproducts}
+For a finite or countable family
+\[
+    (U_i)_{i\in I}
+\]
+of parallel central effectful Mealy morphisms, the homwise sum
+\[
+    \boxplus_{i\in I}U_i
+\]
+is their coproduct in
+\[
+    \operatorname{Pres}^{\mathrm{cen}}_{\mathsf K}
+    (\mathbb A,\mathbb B).
+\]
+The coproduct injection
+\[
+    U_i\longrightarrow\boxplus_jU_j
+\]
+is a strict state homomorphism.
+
+A carrier map
+\[
+    h:
+    \boxplus_iU_i
+    \longrightarrow
+    V
+\]
+is a strict state homomorphism if and only if every restriction
+\[
+    h_i:
+    U_i
+    \longrightarrow
+    V
+\]
+is a strict state homomorphism.
+\end{lemma}
+
+\begin{proof}
+A carrier map from the coproduct carrier is equivalently a family of carrier
+maps from its summands.  Pullback stability of the coproduct decomposes the
+transition object of \(\boxplus_iU_i\) into the corresponding transition
+objects of the \(U_i\).
+
+The transition equation for the \(i\)-th coproduct injection restricts to the
+identity transition equation on \(U_i\), so each injection is strict.
+
+Restricting the strict transition equation for \(h\) along the \(i\)-th
+coproduct injection gives the strict transition equation for \(h_i\).
+Conversely, if every \(h_i\) is strict, the two sides of the strict transition
+equation for \(h\) agree after restriction to every summand.  Since the
+coproduct injections are jointly epimorphic, the two sides agree globally.
+The ordinary coproduct universal property of the carrier then gives the
+required coproduct in the strict-presentation hom-category.
+\end{proof}
+
+\begin{proposition}[Effectful path multiplication]
+\label{prop:effectful-path-multiplication}
+Finite-length concatenation induces a strict state homomorphism
+\[
+    \operatorname{mult}_U:
+    \operatorname{Path}_{\mathsf K}(U)
+    \circ
+    \operatorname{Path}_{\mathsf K}(U)
+    \longrightarrow
+    \operatorname{Path}_{\mathsf K}(U)
+\]
+whose restriction to the \((m,n)\)-summand is
+\[
+    U^{[m]}\circ U^{[n]}
+    \xrightarrow{\cong}
+    U^{[m+n]}
+    \xrightarrow{\iota_{m+n}}
+    \operatorname{Path}_{\mathsf K}(U).
+\]
+Together with the zero-length inclusion
+\[
+    \operatorname{unit}_U:
+    1_{\mathbb C}
+    \longrightarrow
+    \operatorname{Path}_{\mathsf K}(U),
+\]
+this makes
+\(\operatorname{Path}_{\mathsf K}(U)\) a monoid object in
+\[
+    \operatorname{Pres}^{\mathrm{cen}}_{\mathsf K}
+    (\mathbb C,\mathbb C)
+\]
+under pipeline composition.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:pipeline-distributes-homwise-sums},
+\[
+\operatorname{Path}_{\mathsf K}(U)
+\circ
+\operatorname{Path}_{\mathsf K}(U)
+\cong
+\boxplus_{m,n\geq0}
+\left(
+    U^{[m]}\circ U^{[n]}
+\right).
+\]
+The canonical associators identify each summand with \(U^{[m+n]}\).
+Both sides of the strict transition equation on this summand are the same
+\((m+n)\)-fold ordered pipeline transition, differing only by the canonical
+pullback associator.  Thus each summand map is strict, and
+Lemma~\ref{lem:strict-presentation-homwise-coproducts} makes their copairing
+strict.
+
+The monoid equations are read using the canonical pipeline associator and
+unitors.  On every length summand, associativity reduces to
+\[
+    (m+n)+r=m+(n+r)
+\]
+and the coherence of the pipeline associator.  The zero-length summand is the
+pipeline unit.
+\end{proof}
+
+\begin{theorem}[Free effectful path monoid]
+\label{thm:free-effectful-path-monoid}
+The monoid
+\[
+    \operatorname{Path}_{\mathsf K}(U)
+\]
+with generator
+\[
+    \iota_1:
+    U\to\operatorname{Path}_{\mathsf K}(U)
+\]
+is the free monoid on \(U\) in
+\[
+    \operatorname{Pres}^{\mathrm{cen}}_{\mathsf K}
+    (\mathbb C,\mathbb C).
+\]
+Explicitly, for every monoid object \(M\) in this endomorphism category,
+restriction along \(\iota_1\) induces a natural bijection
+\[
+\operatorname{Mon}
+\left(
+    \operatorname{Path}_{\mathsf K}(U),
+    M
+\right)
+\cong
+\operatorname{Pres}^{\mathrm{cen}}_{\mathsf K}
+(\mathbb C,\mathbb C)(U,M).
+\]
+\end{theorem}
+
+\begin{proof}
+Let \(M\) have multiplication \(\mu_M\) and unit \(\eta_M\), and let
+\[
+    f:U\to M
+\]
+be a strict state homomorphism.  Define
+\[
+    f_0:=\eta_M
+\]
+and recursively
+\[
+    f_{n+1}
+    :=
+    \mu_M
+    \circ
+    (f_n\circ f):
+    U^{[n+1]}\to M.
+\]
+Every \(f_n\) is strict by closure under pipeline composition.  By
+Lemma~\ref{lem:strict-presentation-homwise-coproducts}, their copairing gives
+a unique strict state homomorphism
+\[
+    f^\sharp:
+    \operatorname{Path}_{\mathsf K}(U)
+    \longrightarrow
+    M.
+\]
+The recursive definition gives the monoid equations on each length summand,
+using
+Proposition~\ref{prop:pipeline-distributes-homwise-sums}
+and the canonical pipeline associators and unitors.  Hence
+\(f^\sharp\) is a monoid morphism, and its restriction to the one-length
+summand is \(f\).
+
+Conversely, let
+\[
+    g:
+    \operatorname{Path}_{\mathsf K}(U)
+    \longrightarrow
+    M
+\]
+be a monoid morphism whose restriction to the one-length summand is \(f\).
+The unit equation forces its zero-length component to be \(f_0\), and the
+multiplication equation forces its \((n+1)\)-length component to be
+\[
+    \mu_M\circ(f_n\circ f).
+\]
+Induction gives equality with \(f_n\) on every summand.  The coproduct
+universal property from
+Lemma~\ref{lem:strict-presentation-homwise-coproducts} therefore gives
+\(g=f^\sharp\).
+
+The two assignments are inverse and natural in \(M\).
+\end{proof}
+
+Under the contravariant displayed-simulation convention, the same carrier
+maps appear in the opposite direction.  The monoid statement therefore
+belongs naturally to the covariant strict-presentation category.
+
+\subsection{Block decomposition and trace}
+\label{subsec:effectful-block-trace}
+
+Let
+\[
+    \Phi:
+    \mathbb A+\mathbb C
+    \rightsquigarrow_{\mathsf K}
+    \mathbb B+\mathbb C
+\]
+be a central effectful Mealy morphism.  Pullback along the source and target
+coproduct injections produces four blocks
+\[
+    \Phi_{AB},
+    \qquad
+    \Phi_{AC},
+    \qquad
+    \Phi_{CB},
+    \qquad
+    \Phi_{CC}.
+\]
+The first index records the source summand, and the second records the target
+summand.
+
+\begin{proposition}[Effectful block restriction]
+\label{prop:effectful-block-restriction}
+Each of the four blocks is a central effectful Mealy morphism of the indicated
+type.
+
+Block restriction also sends:
+\begin{enumerate}
+    \item a central effectful simulation to central simulations between the
+    corresponding blocks;
+
+    \item a strict state homomorphism to strict state homomorphisms between
+    the corresponding blocks;
+
+    \item a strict state retraction, together with any chosen strict section,
+    to blockwise strict state retractions and blockwise strict sections.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Pull back the carrier and transition map along the corresponding source and
+target block inclusions.  Fibredness gives
+\[
+    j^*\mathsf K(Q)
+    \cong
+    \mathsf K(j^*Q).
+\]
+Because the coproduct internal categories contain no cross-summand arrows,
+an output-comparison arrow whose target lies in one summand has its source in
+the same summand.  Therefore the transition restricts to the selected block.
+The Mealy equations are preserved by pullback.  Centrality is preserved
+because central arrows are stable under reindexing.
+
+The same pullback construction restricts a simulation equation to each
+block, giving a block simulation.  A strict carrier map preserves both
+interface legs, so it maps each carrier block into the corresponding block.
+Pulling back its strict transition equation gives the blockwise strict
+transition equation.
+
+Finally, if
+\[
+    h\circ s=1,
+\]
+then pulling this equality back to any block gives
+\[
+    h_{XY}\circ s_{XY}=1.
+\]
+Thus block restriction preserves chosen retraction data.
+\end{proof}
+
+\begin{definition}[Effectful coproduct trace]
+\label{def:effectful-coproduct-trace}
+Define
+\[
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(\Phi)
+    :=
+    \Phi_{AB}
+    \boxplus
+    \Phi_{CB}
+    \circ
+    \operatorname{Path}_{\mathsf K}(\Phi_{CC})
+    \circ
+    \Phi_{AC}.
+\]
+Equivalently,
+\[
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(\Phi)
+    =
+    \Phi_{AB}
+    \boxplus
+    \boxplus_{n\geq0}
+    \left(
+        \Phi_{CB}
+        \circ
+        \Phi_{CC}^{[n]}
+        \circ
+        \Phi_{AC}
+    \right).
+\]
+\end{definition}
+
+The first summand is direct visible execution.  The \(n\)-th hidden summand
+enters the hidden interface, performs \(n\) hidden steps, and exits.  Effects
+are sequenced along the hidden path in their edge order.
+
+\begin{lemma}[Decorated hidden-path normal form]
+\label{lem:decorated-hidden-path-normal-form}
+Every expression built from:
+\begin{enumerate}
+    \item pipeline composition;
+
+    \item homwise coproduct;
+
+    \item coproduct tensor;
+
+    \item coproduct symmetries;
+
+    \item finitely many applications of
+    \(\operatorname{Tr}^{(-)}_{\mathsf K}\);
+\end{enumerate}
+admits a canonical expansion as a homwise coproduct indexed by finite
+hidden-interface paths.
+
+For each path, the corresponding effectful transition is the ordered
+pipeline composite of the block transitions decorating its edges.
+Canonical reindexings of hidden paths induce pure strict isomorphisms between
+the corresponding effectful summands.
+\end{lemma}
+
+\begin{proof}
+Proceed by structural induction.
+
+Pipeline composition concatenates path expressions.
+Proposition~\ref{prop:pipeline-distributes-homwise-sums} yields the coproduct
+indexed by pairs of paths, and the canonical concatenation reindexing sends
+each pair to its concatenated path.  The transition on that summand is the
+ordered pipeline composite.
+
+Homwise coproduct forms the disjoint union of the path families without
+changing their external interfaces.  Coproduct tensor forms the disjoint
+union of path families in separate interface blocks.  Coproduct symmetry
+renames visible and hidden summands and preserves the edge order.
+
+An application of trace replaces the hidden endomorphism block by
+\[
+    \boxplus_{n\geq0}\Phi_{CC}^{[n]},
+\]
+so it inserts all finite hidden paths in that block.
+
+The required countable reindexing isomorphisms exist by the feedback-base
+conditions.  On corresponding summands, the transition maps are the same
+ordered list of central pipeline transitions, up to the canonical pullback
+associators and unitors.  These coherence maps are pure strict
+isomorphisms.
+\end{proof}
+
+\begin{theorem}[Effectful traced Mealy category]
+\label{thm:effectful-traced-mealy-category}
+The symmetric monoidal category
+\[
+    \left(
+        \operatorname{Mly}^{\mathrm{cen},+}_{\mathsf K,\omega,0}
+        (\mathcal E),
+        +,
+        0
+    \right)
+\]
+is traced.  Its trace is
+\[
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}
+\]
+from Definition~\ref{def:effectful-coproduct-trace}.
+\end{theorem}
+
+\begin{proof}
+We verify the Joyal--Street--Verity trace equations by decorated hidden-path
+normal forms.
+
+\textbf{Naturality.}
+Precomposition and postcomposition by visible morphisms affect only the
+first and last visible edges of every path.  Bilinearity of composition over
+homwise coproducts gives
+\[
+    g\circ
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(\Phi)
+    \circ f
+    =
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}
+    \bigl(
+        (g+1_{\mathbb C})
+        \circ
+        \Phi
+        \circ
+        (f+1_{\mathbb C})
+    \bigr).
+\]
+
+\textbf{Dinaturality.}
+Let
+\[
+    \Phi:
+    \mathbb A+\mathbb C
+    \rightsquigarrow_{\mathsf K}
+    \mathbb B+\mathbb D
+\]
+and
+\[
+    g:\mathbb D\rightsquigarrow_{\mathsf K}\mathbb C.
+\]
+A hidden path on the left-hand side
+\[
+    \operatorname{Tr}^{\mathbb C}
+    \bigl(
+        (1_{\mathbb B}+g)\circ\Phi
+    \bigr)
+\]
+has ordered edge sequence
+\[
+    \Phi_{AD},
+    \ g,
+    \ \Phi_{CD},
+    \ g,
+    \ \ldots,
+    \ \Phi_{CB}.
+\]
+The corresponding path on the right-hand side
+\[
+    \operatorname{Tr}^{\mathbb D}
+    \bigl(
+        \Phi\circ(1_{\mathbb A}+g)
+    \bigr)
+\]
+has exactly the same ordered sequence, with the cuts between hidden steps
+placed differently.  The two path families are canonically bijective, and
+Lemma~\ref{lem:decorated-hidden-path-normal-form} identifies the decorated
+summands.
+
+\textbf{Vanishing over \(0\).}
+There are no nontrivial hidden \(0\)-paths.  The trace formula reduces to the
+visible block, giving
+\[
+    \operatorname{Tr}^{0}_{\mathsf K}(\Phi)
+    =
+    \Phi.
+\]
+
+\textbf{Double vanishing.}
+A finite path through
+\[
+    \mathbb C+\mathbb D
+\]
+is equivalently a finite list of maximal \(\mathbb C\)-segments and
+\(\mathbb D\)-segments.  The feedback-base reindexing by finite lists gives
+the canonical bijection between
+\[
+    \operatorname{Tr}^{\mathbb C+\mathbb D}_{\mathsf K}(\Phi)
+\]
+and the iterated trace
+\[
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}
+    \left(
+        \operatorname{Tr}^{\mathbb D}_{\mathsf K}(\Phi)
+    \right).
+\]
+The reindexing preserves the ordered edge sequence, so corresponding
+effectful transitions agree.
+
+\textbf{Superposing.}
+A path in
+\[
+    \Phi+\Psi
+\]
+lies entirely in one coproduct component.  The traced path family is
+therefore the disjoint union of the path family of \(\Phi\) and the
+untraced component \(\Psi\).  Hence
+\[
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(\Phi)
+    +
+    \Psi
+    =
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}
+    (\Phi+\Psi)
+\]
+under the canonical symmetry and associativity isomorphisms.
+
+\textbf{Yanking.}
+For the coproduct symmetry
+\[
+    \sigma_{\mathbb C,\mathbb C}:
+    \mathbb C+\mathbb C
+    \longrightarrow
+    \mathbb C+\mathbb C,
+\]
+the direct visible block is initial, the entrance and exit blocks are
+identities, and the hidden loop block is initial.  Only the zero-length
+hidden path contributes, so
+\[
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}
+    (\sigma_{\mathbb C,\mathbb C})
+    =
+    1_{\mathbb C}.
+\]
+
+All comparisons used above are pure invertible effectful simulations.
+Passing to isomorphism classes makes the trace equations literal.
+\end{proof}
+
+\subsection{Trace on simulations}
+\label{subsec:effectful-trace-simulations-uniformity}
+
+Let
+\[
+    \widehat\Theta:
+    \Phi\Rightarrow\Psi
+\]
+be a central effectful simulation between
+\[
+    \Phi,\Psi:
+    \mathbb A+\mathbb C
+    \rightsquigarrow_{\mathsf K}
+    \mathbb B+\mathbb C.
+\]
+By Proposition~\ref{prop:effectful-block-restriction}, block restriction gives
+simulations
+\[
+    \widehat\Theta_{AB},
+    \qquad
+    \widehat\Theta_{AC},
+    \qquad
+    \widehat\Theta_{CB},
+    \qquad
+    \widehat\Theta_{CC}.
+\]
+
+Define
+\[
+    \widehat\Theta_{CC}^{[0]}
+    :=
+    1_{1_{\mathbb C}},
+\]
+and recursively
+\[
+    \widehat\Theta_{CC}^{[n+1]}
+    :=
+    \widehat\Theta_{CC}^{[n]}
+    \ast_h
+    \widehat\Theta_{CC}.
+\]
+
+\begin{definition}[Trace of an effectful simulation]
+\label{def:trace-effectful-simulation}
+Define
+\[
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}
+    (\widehat\Theta)
+    :=
+    \widehat\Theta_{AB}
+    \boxplus
+    \boxplus_{n\geq0}
+    \left(
+        \widehat\Theta_{CB}
+        \ast_h
+        \widehat\Theta_{CC}^{[n]}
+        \ast_h
+        \widehat\Theta_{AC}
+    \right).
+\]
+\end{definition}
+
+\begin{theorem}[Hom-category effectful trace]
+\label{thm:hom-category-effectful-trace}
+The assignments of
+Definitions~\ref{def:effectful-coproduct-trace} and
+\ref{def:trace-effectful-simulation} define functors on the hom-categories.
+The trace coherence equations are witnessed by canonical invertible central
+effectful simulations.
+\end{theorem}
+
+\begin{proof}
+Block restriction, horizontal composition, and homwise sums preserve central
+simulations by
+Propositions~\ref{prop:effectful-block-restriction},
+\ref{prop:horizontal-effectful-simulation-law}, and
+\ref{prop:homwise-sums-effectful-mealy}.  Thus the displayed trace is a
+central simulation.
+
+For vertically composable simulations
+\[
+    \widehat\Theta:\Phi\Rightarrow\Psi,
+    \qquad
+    \widehat\Lambda:\Psi\Rightarrow\Xi,
+\]
+middle-four interchange gives, by induction,
+\[
+    (\widehat\Lambda\circ_v\widehat\Theta)_{CC}^{[n]}
+    =
+    \widehat\Lambda_{CC}^{[n]}
+    \circ_v
+    \widehat\Theta_{CC}^{[n]}.
+\]
+The same equation holds for the entrance, exit, and visible blocks.  Taking
+the homwise coproduct over all hidden lengths and using the vertical
+composition equation of
+Proposition~\ref{prop:homwise-sums-effectful-mealy} gives
+\[
+    \operatorname{Tr}
+    (\widehat\Lambda\circ_v\widehat\Theta)
+    =
+    \operatorname{Tr}(\widehat\Lambda)
+    \circ_v
+    \operatorname{Tr}(\widehat\Theta).
+\]
+Identity simulations are preserved similarly.
+
+The coherence simulations are the pure images of the decorated hidden-path
+reindexing isomorphisms from
+Lemma~\ref{lem:decorated-hidden-path-normal-form}.
+\end{proof}
+
+\subsection{Trace on the retractive presentation quotient}
+\label{subsec:trace-retractive-presentation-quotient}
+
+\begin{proposition}[Coproduct stability of strict state retractions]
+\label{prop:coproduct-stability-strict-state-retractions}
+If
+\[
+    h:\Phi\to\Phi',
+    \qquad
+    k:\Psi\to\Psi'
+\]
+are strict state retractions, then
+\[
+    h+k:
+    \Phi+\Psi
+    \longrightarrow
+    \Phi'+\Psi'
+\]
+is a strict state retraction.
+\end{proposition}
+
+\begin{proof}
+Let \(s\) and \(t\) be strict sections of \(h\) and \(k\).  The strict
+transition equation for \(h+k\) and for \(s+t\) can be checked after
+restriction to the two coproduct summands.  Moreover,
+\[
+    (h+k)\circ(s+t)
+    =
+    (h\circ s)+(k\circ t)
+    =
+    1.
+\]
+\end{proof}
+
+\begin{proposition}[Trace preserves strict state homomorphisms]
+\label{prop:trace-preserves-strict-state-homomorphisms}
+A strict state homomorphism
+\[
+    h:\Phi\longrightarrow\Psi
+\]
+induces a strict state homomorphism
+\[
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(h):
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(\Phi)
+    \longrightarrow
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(\Psi).
+\]
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:effectful-block-restriction}, restrict \(h\) to the
+four blocks.  Form the iterated strict maps
+\[
+    h_{CC}^{[n]}:
+    \Phi_{CC}^{[n]}
+    \longrightarrow
+    \Psi_{CC}^{[n]}.
+\]
+On the \(n\)-th hidden summand, use
+\[
+    h_{CB}
+    \circ
+    h_{CC}^{[n]}
+    \circ
+    h_{AC}.
+\]
+Together with \(h_{AB}\), these maps copair to
+\[
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(h).
+\]
+The strict transition equation holds on every summand and therefore on their
+coproduct by
+Lemma~\ref{lem:strict-presentation-homwise-coproducts}.
+\end{proof}
+
+\begin{proposition}[Trace preserves strict state retractions]
+\label{prop:trace-preserves-strict-state-retractions}
+If
+\[
+    h:\Phi\longrightarrow\Psi
+\]
+is a strict state retraction, then
+\[
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(h):
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(\Phi)
+    \longrightarrow
+    \operatorname{Tr}^{\mathbb C}_{\mathsf K}(\Psi)
+\]
+is a strict state retraction.
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+    s:\Psi\longrightarrow\Phi
+\]
+be a strict section, so that
+\[
+    h\circ s=1_\Psi.
+\]
+By Proposition~\ref{prop:effectful-block-restriction}, each \(s_{XY}\) is a
+strict section of \(h_{XY}\).  By
+Proposition~\ref{prop:trace-preserves-strict-state-homomorphisms},
+\(\operatorname{Tr}(s)\) is strict.
+
+On the visible summand,
+\[
+    h_{AB}\circ s_{AB}=1.
+\]
+On the \(n\)-th hidden-path summand, functoriality of pipeline composition
+gives
+\[
+\begin{aligned}
+&
+\left(
+    h_{CB}\circ h_{CC}^{[n]}\circ h_{AC}
+\right)
+\circ
+\left(
+    s_{CB}\circ s_{CC}^{[n]}\circ s_{AC}
+\right)
+\\
+&\qquad=
+1.
+\end{aligned}
+\]
+Compatibility of homwise coproducts with vertical composition therefore
+gives
+\[
+    \operatorname{Tr}(h)
+    \circ
+    \operatorname{Tr}(s)
+    =
+    1_{\operatorname{Tr}(\Psi)}.
+\]
+Thus \(\operatorname{Tr}(h)\) is a strict state retraction.
+\end{proof}
+
+\begin{theorem}[Traced retractive state-presentation quotient]
+\label{thm:traced-retractive-state-presentation-quotient}
+The category
+\[
+    \mathbf{Mly}^{\mathrm{cen},\mathrm{ret}}_{\mathsf K}(\mathcal E)
+\]
+inherits a coproduct symmetric monoidal structure and a finite-hidden-path
+trace.
+
+The canonical connected-component projection from
+\[
+    \mathbf{RetPres}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)
+\]
+to the locally discrete bicategory determined by
+\[
+    \mathbf{Mly}^{\mathrm{cen},\mathrm{ret}}_{\mathsf K}(\mathcal E)
+\]
+preserves coproduct and trace.
+\end{theorem}
+
+\begin{proof}
+Proposition~\ref{prop:coproduct-stability-strict-state-retractions} shows
+that retractive presentation equivalence is a congruence for the coproduct
+tensor.
+Proposition~\ref{prop:trace-preserves-strict-state-retractions} shows that it
+is a congruence for trace.
+
+For every Joyal--Street--Verity trace equation, the decorated hidden-path
+normal-form comparison of
+Lemma~\ref{lem:decorated-hidden-path-normal-form} is a pure strict state
+isomorphism and therefore a strict state retraction.  Hence the two sides of
+each trace equation lie in the same connected component of the relevant
+retractive-presentation hom-category.
+
+The coproduct associator, unitors, and symmetry are likewise pure strict state
+isomorphisms.  Therefore the symmetric monoidal and trace equations hold in
+the retractive state-presentation quotient.
+\end{proof}
+
+\section{The one-object specialization}
+\label{sec:one-object-effectful-mealy}
+
+Let \(M\) and \(N\) be monoid objects in \(\mathcal E\), regarded as
+one-object internal categories with the convention
+\[
+    b\circ a=ba.
+\]
+Since
+\[
+    \mathbf{Span}(\mathcal E)(1,1)
+    \simeq
+    \mathcal E/1
+    \simeq
+    \mathcal E,
+\]
+a carrier is an object \(P\), and an effectful Mealy morphism has an
+underlying map
+\[
+    \widehat\Phi:
+    M\times P
+    \longrightarrow
+    \mathsf K_1(P\times N).
+\]
+
+\begin{proposition}[One-object effectful Mealy morphisms]
+\label{prop:one-object-effectful-mealy}
+A one-object effectful Mealy morphism
+\[
+    M\rightsquigarrow_{\mathsf K}N
+\]
+is equivalently an object \(P\) and a map
+\[
+    \widehat\Phi:
+    M\times P
+    \to
+    \mathsf K_1(P\times N)
+\]
+satisfying
+\[
+    \widehat\Phi(1_M,x)
+    =
+    \eta^{\mathsf K}(x,1_N)
+\]
+and
+\[
+\begin{aligned}
+    \widehat\Phi(mn,x)
+    ={}&
+    \operatorname{bind}_{\mathsf K}
+    \Bigl(
+        \widehat\Phi(m,x),
+        (x_1,u)
+        \longmapsto
+    \\
+    &\qquad
+        \operatorname{bind}_{\mathsf K}
+        \Bigl(
+            \widehat\Phi(n,x_1),
+            (x_2,v)
+            \longmapsto
+            \eta^{\mathsf K}
+            (x_2,uv)
+        \Bigr)
+    \Bigr).
+\end{aligned}
+\]
+\end{proposition}
+
+\begin{proof}
+In the one-object case,
+\[
+    R_M(P)=M\times P,
+    \qquad
+    T_N(P)=P\times N.
+\]
+Apply Proposition~\ref{prop:effectful-mealy-component-laws} and the standing
+one-object multiplication convention.
+\end{proof}
+
+A central one-object machine is one for which
+\[
+    M\times P
+    \longrightarrow
+    \mathsf K_1(P\times N)
+\]
+is fibred-central.  If every slice monad
+\[
+    \mathsf K_Z
+\]
+is commutative, then every one-object effectful Mealy morphism is central.
+Commutativity of \(\mathsf K_1\) alone implies only fibrewise centrality in
+the terminal slice.
+
+An effectful simulation \(P\Rightarrow Q\) is a map
+\[
+    Q\longrightarrow\mathsf K_1(P\times N)
+\]
+satisfying the one-object specialization of
+Proposition~\ref{prop:effectful-simulation-component-equation}.  Pipeline
+composition is the bind formula of
+Definition~\ref{def:effectful-pipeline-transition}.
+
+\section{The stateless specialization}
+\label{sec:stateless-effectful-mealy}
+
+Let
+\[
+    F_0:A_0\longrightarrow B_0
+\]
+be a morphism, regarded as the map-representable carrier span
+\[
+    A_0
+    \xleftarrow{1_{A_0}}
+    A_0
+    \xrightarrow{F_0}
+    B_0.
+\]
+Then
+\[
+    P\circ A\cong A_1
+\]
+as the object
+\[
+    \left(
+        A_1
+        \xrightarrow{\langle s_A,F_0t_A\rangle}
+        A_0\times B_0
+    \right),
+\]
+while
+\[
+    B\circ P
+    \cong
+    A_0\times_{F_0,B_0,s_B}B_1
+\]
+as the object
+\[
+    \left(
+        A_0\times_{F_0,B_0,s_B}B_1
+        \xrightarrow{\langle\pi_1,t_B\pi_2\rangle}
+        A_0\times B_0
+    \right).
+\]
+
+\begin{proposition}[Stateless effectful Mealy morphisms]
+\label{prop:stateless-effectful-mealy}
+A stateless effectful Mealy morphism with object map \(F_0\) is equivalently
+a map in \(\mathcal E/(A_0\times B_0)\)
+\[
+\widehat F_1:
+\left(
+    A_1,
+    \langle s_A,F_0t_A\rangle
+\right)
+\longrightarrow
+\mathsf K_{A_0\times B_0}
+\left(
+    A_0\times_{F_0,B_0,s_B}B_1,
+    \langle\pi_1,t_B\pi_2\rangle
+\right)
+\]
+satisfying the effectful identity and composition equations.
+\end{proposition}
+
+\begin{proof}
+Substitute the map-representable carrier into
+Definition~\ref{def:effectful-mealy-morphism}.  The updated state is forced
+to be \(s_Aa\).  The remaining output is an effectful \(B\)-arrow
+\[
+    F_0(s_Aa)\longrightarrow F_0(t_Aa).
+\]
+The Mealy algebra equations become the effectful preservation equations for
+identities and composition.
+\end{proof}
+
+Under the pure image, an internal functor
+\[
+    F:\mathbb A\longrightarrow\mathbb B
+\]
+produces
+\[
+    \widehat F_1(a)
+    =
+    \eta^{\mathsf K}
+    \bigl(
+        s_Aa,
+        F_1a
+    \bigr).
+\]
+
+Every internal natural transformation
+\[
+    \alpha:F\Rightarrow G
+\]
+determines, by application of \(\eta^{\mathsf K}\), a pure effectful
+simulation between the corresponding pure stateless effectful Mealy
+morphisms.  The converse is not asserted: the monad unit need not reflect
+equality of ordinary output-comparison cells.
+
+\section{Examples of internal effects}
+\label{sec:examples-internal-effects}
+
+\subsection{The identity effect}
+\label{subsec:identity-effect-example}
+
+Take
+\[
+    \mathsf K_Z
+    =
+    \operatorname{Id}_{\mathcal E/Z}
+\]
+for every \(Z\).  The two Fubini maps are identities, every computation is
+central, and
+\[
+    \mathbf{Mly}^{\mathrm{cen}}_{\mathsf K}(\mathcal E)
+    \cong
+    \mathbf{Mly}(\mathcal E).
+\]
+The component laws reduce to the deterministic transition and output
+equations.
+
+\subsection{Reader effects}
+\label{subsec:reader-effects}
+
+Assume that \(\mathcal E\) is locally cartesian closed, and fix
+\(R\in\mathcal E\).  For every \(Z\), put
+\[
+    R_Z
+    :=
+    (Z\times R\xrightarrow{\pi_Z}Z).
+\]
+
+\begin{definition}[Fibred reader monad]
+\label{def:fibred-reader-monad}
+Define
+\[
+    \mathsf{Reader}_{R,Z}(P)
+    :=
+    P^{R_Z}
+\]
+in the cartesian closed slice \(\mathcal E/Z\).
+\end{definition}
+
+The unit is the transpose of
+\[
+    P\times_ZR_Z\to P,
+\]
+and multiplication is internally
+\[
+    \mu(F)(r)=F(r)(r).
+\]
+Pullback reindexing preserves the slice exponentials and their evaluation
+maps, so these monads assemble into a fibred strong monad.
+
+\begin{proposition}[Centrality of reader effects]
+\label{prop:reader-effects-central}
+The fibred reader monad is commutative.  Hence every reader-effectful Mealy
+morphism and simulation is central.
+\end{proposition}
+
+\begin{proof}
+Internally in \(\mathcal E/Z\), both Fubini maps send
+\[
+    (f,g):
+    P^{R_Z}\times_ZQ^{R_Z}
+\]
+to
+\[
+    r\longmapsto(f(r),g(r)).
+\]
+Thus
+\[
+    d^\ell=d^r.
+\]
+\end{proof}
+
+A reader-effectful transition has the internal form
+\[
+    \widehat\Phi(a,x):
+    R\longrightarrow
+    \operatorname{Out}_P(s_Aa,qx).
+\]
+Every stage of sequential execution is evaluated at the same reader value.
+
+\subsection{Writer effects}
+\label{subsec:writer-effects}
+
+Let
+\[
+    \mathbb W=(W,e_W,m_W)
+\]
+be a monoid object of \(\mathcal E\).  For each \(Z\), put
+\[
+    W_Z:=(Z\times W\to Z).
+\]
+
+\begin{definition}[Fibred writer monad]
+\label{def:fibred-writer-monad}
+Define
+\[
+    \mathsf{Writer}_{W,Z}(P)
+    :=
+    W_Z\times_ZP.
+\]
+The unit is
+\[
+    p\longmapsto(e_W,p),
+\]
+and multiplication is
+\[
+    (w,(v,p))
+    \longmapsto
+    (m_W(w,v),p).
+\]
+\end{definition}
+
+Pullback preserves these products, so the writer monads form a fibred strong
+monad.
+
+Assume that \(\mathcal E\) is cartesian closed.  Let
+\[
+    \lambda,\rho:W\longrightarrow W^W
+\]
+be the transposes of left and right multiplication:
+\[
+    \lambda(w)(v)=m_W(w,v),
+    \qquad
+    \rho(w)(v)=m_W(v,w).
+\]
+Define the internal centre by the equalizer
+\[
+\begin{tikzcd}
+    Z(W)
+        \arrow[r,hook,"z_W"]
+    &
+    W
+        \arrow[r,shift left=.7ex,"\lambda"]
+        \arrow[r,shift right=.7ex,"\rho"']
+    &
+    W^W.
+\end{tikzcd}
+\]
+
+\begin{proposition}[Central writer computations]
+\label{prop:central-writer-computations}
+A writer Kleisli arrow
+\[
+    f:P\longrightarrow W_Z\times_ZQ
+\]
+is fibrewise central if and only if its writer component
+\[
+    w_f:P\longrightarrow W
+\]
+factors through
+\[
+    z_W:Z(W)\hookrightarrow W.
+\]
+Such a factorization is stable under reindexing, so fibrewise and fibred
+centrality coincide for writer arrows.
+
+The full writer monad is commutative if and only if \(W\) is a commutative
+monoid object.
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+    g:R\longrightarrow W_Z\times_ZS
+\]
+have writer component \(w_g\).  The two Fubini maps produce writer values
+\[
+    m_W(w_f,w_g)
+    \quad\text{and}\quad
+    m_W(w_g,w_f).
+\]
+Equality for every \(g\) is equivalent, internally, to
+\[
+    m_W(w_f(p),v)
+    =
+    m_W(v,w_f(p))
+\]
+for every \(v\in W\).  This is precisely the equality
+\[
+    \lambda w_f=\rho w_f,
+\]
+and therefore precisely factorization through the equalizer \(Z(W)\).
+
+Pullback preserves the equalizer and the displayed factorization, so the
+criterion is reindexing-stable.  The monad is commutative exactly when the
+identity \(W\to W\) factors through \(Z(W)\), equivalently when
+\(\lambda=\rho\).
+\end{proof}
+
+A central writer-effectful transition produces
+\[
+    (w,x',\beta)
+\]
+with \(w\) in the internal centre of \(W\).  Sequential execution multiplies
+writer values in execution order and composes output arrows.
+
+\subsection{Partiality}
+\label{subsec:partiality-effect}
+
+Assume that \(\mathcal E\) has pullback-stable finite coproducts.  The
+terminal object of \(\mathcal E/Z\) is
+\[
+    1_Z=(Z\xrightarrow{1_Z}Z).
+\]
+
+\begin{definition}[Fibred lift monad]
+\label{def:fibred-lift-monad}
+Define
+\[
+    \mathsf L_Z(P)
+    :=
+    P+_Z1_Z
+\]
+in \(\mathcal E/Z\).  The unit is the left coproduct injection, and
+multiplication
+\[
+    (P+_Z1_Z)+_Z1_Z
+    \longrightarrow
+    P+_Z1_Z
+\]
+is the identity on \(P\) and the codiagonal on the two failure summands.
+\end{definition}
+
+Since coproducts in the slice are computed by coproducts in \(\mathcal E\),
+one has concretely
+\[
+    \mathsf L_Z(P)
+    =
+    \bigl(
+        P+Z\xrightarrow{[p,1_Z]}Z
+    \bigr).
+\]
+When the coproducts are disjoint, this object decomposes into a success
+summand and a failure summand in the expected way.  Failure retains the
+external interface \(Z\).
+
+\begin{proposition}[Centrality of partiality]
+\label{prop:partiality-central}
+The fibred lift monad is commutative.  Hence every partial effectful Mealy
+morphism and simulation is central.
+\end{proposition}
+
+\begin{proof}
+The product of two lifted computations decomposes into four summands:
+success--success, success--failure, failure--success, and failure--failure.
+On the success--success summand, both Fubini maps return the same ordered
+pair.  On every other summand, both return the failure value over the current
+interface.  Hence
+\[
+    d^\ell=d^r.
+\]
+\end{proof}
+
+A partial transition either returns a typed pair \((x',\beta)\) or the
+failure point over the same external interface.  Identity inputs succeed, and
+a composite succeeds exactly when both constituent transitions succeed.
+
+\subsection{Exception effects}
+\label{subsec:exception-effects}
+
+Let \(E\in\mathcal E\), and assume pullback-stable finite coproducts.  Put
+\[
+    E_Z:=(Z\times E\to Z)
+\]
+and define
+\[
+    \mathsf{Exc}_{E,Z}(P)
+    :=
+    P+_ZE_Z.
+\]
+The unit inserts a successful value.  Multiplication keeps the first
+exception encountered in execution order.
+
+\begin{proposition}[Commutativity criterion for exceptions]
+\label{prop:exception-commutativity}
+If
+\[
+    E\longrightarrow1
+\]
+is subterminal, then the fibred exception monad is commutative.
+
+Conversely, commutativity implies
+\[
+    \iota_E\pi_1
+    =
+    \iota_E\pi_2:
+    E\times E\longrightarrow1+E,
+\]
+where \(\iota_E:E\to1+E\) is the exception injection.  Consequently, when
+the relevant coproduct injections are monic, and in particular in a feedback
+span base, the fibred exception monad is commutative if and only if
+\(E\to1\) is subterminal.
+\end{proposition}
+
+\begin{proof}
+If \(E\) is subterminal, any two exception values in the same context agree.
+Therefore the order in which failing computations are executed is
+irrelevant, and the two Fubini maps agree.
+
+Conversely, apply commutativity to the two generic exception computations
+over \(E\times E\).  One Fubini map returns the first exception and the other
+returns the second.  Equality gives
+\[
+    \iota_E\pi_1
+    =
+    \iota_E\pi_2:
+    E\times E\to1+E.
+\]
+If \(\iota_E\) is monic, this implies
+\[
+    \pi_1=\pi_2:
+    E\times E\to E,
+\]
+which is equivalent to subterminality of \(E\to1\).  In a feedback span base,
+disjointness of coproducts makes the coproduct injections monic.
+\end{proof}
+
+For a general exception object, the central exception computations are
+exactly those satisfying
+Definition~\ref{def:fibred-central-kleisli-arrow}.
+
+\subsection{State effects}
+\label{subsec:state-effects}
+
+Assume that \(\mathcal E\) is locally cartesian closed, and fix a store object
+\(S\).  Put
+\[
+    S_Z:=(Z\times S\to Z).
+\]
+
+\begin{definition}[Fibred state monad]
+\label{def:fibred-state-monad}
+Define
+\[
+    \mathsf{State}_{S,Z}(P)
+    :=
+    (S_Z\times_ZP)^{S_Z}
+\]
+in \(\mathcal E/Z\).
+\end{definition}
+
+Internally, an element is a state transformer
+\[
+    S\longrightarrow S\times P.
+\]
+The unit returns its value without changing the store, and multiplication
+sequences the outer and inner state transformations.  Reindexing preserves
+the products and slice exponentials, so these monads form a fibred strong
+monad.
+
+The two Fubini maps are the two execution orders for store transformations.
+Thus a state-effectful transition is central precisely when it commutes with
+every store computation after every reindexing.
+
+\begin{proposition}[Central state computations in \(\mathbf{Set}\)]
+\label{prop:central-state-computations-set}
+Let \(\mathcal E=\mathbf{Set}\), and let \(S\) be nonempty.  A Kleisli map
+\[
+    f:P\longrightarrow(S\times Q)^S
+\]
+is central if and only if it is pure.  Equivalently, there is a unique map
+\[
+    \overline f:P\longrightarrow Q
+\]
+such that
+\[
+    f(p)(s)
+    =
+    (s,\overline f(p))
+\]
+for every \(p\in P\) and \(s\in S\).
+\end{proposition}
+
+\begin{proof}
+Write
+\[
+    f(p)(s)
+    =
+    (u_p(s),x_p(s)).
+\]
+Let an arbitrary comparison computation be
+\[
+    g(r)(s)
+    =
+    (v_r(s),y_r(s)).
+\]
+Centrality gives
+\[
+    v_r(u_p(s))
+    =
+    u_p(v_r(s)),
+\]
+\[
+    x_p(s)
+    =
+    x_p(v_r(s)),
+\]
+and
+\[
+    y_r(u_p(s))
+    =
+    y_r(s).
+\]
+
+First take a comparison computation with domain \(1\), returned value in
+\(S\), and
+\[
+    g(*)(s)=(s,s).
+\]
+Its returned-value component is \(1_S\), so the third equation gives
+\[
+    u_p(s)=s.
+\]
+
+Now fix \(t\in S\), and choose a computation whose store-update component is
+the constant map
+\[
+    v(s)=t.
+\]
+The second equation gives
+\[
+    x_p(s)=x_p(t).
+\]
+Since \(s,t\) are arbitrary, \(x_p\) is constant.  Define its value to be
+\(\overline f(p)\).  This proves that \(f\) is pure.  The converse follows
+because pure Kleisli arrows are central.
+\end{proof}
+
+\subsection{Set-based branching and quantitative effects}
+\label{subsec:set-based-branching-effects}
+
+Now specialize to
+\[
+    \mathcal E=\mathbf{Set}.
+\]
+For a Set-monad \(K\), define the associated fibred monad on a family
+\(P\to Z\) by
+\[
+    (\mathsf K_ZP)_z
+    =
+    K(P_z).
+\]
+Equivalently,
+\[
+    \mathsf K_Z(P)
+    =
+    \coprod_{z\in Z}K(P_z)
+    \longrightarrow
+    Z.
+\]
+
+\begin{proposition}[Fibrewise Set construction]
+\label{prop:fibrewise-set-construction}
+Every strong monad \(K\) on \(\mathbf{Set}\) induces a fibred strong monad on
+the codomain fibration by fibrewise application.  If \(K\) is commutative,
+every effectful Mealy morphism and simulation for this fibred monad is
+central.
+\end{proposition}
+
+\begin{proof}
+Pullback of a family is reindexing of its fibres.  Fibrewise application of
+\(K\) commutes strictly with this reindexing.  The monad operations and
+strength are defined on each fibre.  If the two Fubini maps of \(K\) agree,
+they agree in every fibre and therefore in every slice.
+\end{proof}
+
+\subsubsection{Nondeterminism}
+
+For the finite-powerset monad \(\mathcal P_{\mathrm f}\), an effectful
+transition is a finite set of typed outcomes:
+\[
+    \widehat\Phi(a,x)
+    \subseteq
+    \operatorname{Out}_P(s_Aa,qx).
+\]
+The component laws are
+\[
+    \widehat\Phi(e_A(px),x)
+    =
+    \{(x,e_B(qx))\}
+\]
+and
+\[
+\begin{aligned}
+\widehat\Phi(b\circ a,x)
+=
+\bigl\{
+    (x_a,\beta_b\circ\beta_a)
+    \,\big|\,
+    &(x_b,\beta_b)\in\widehat\Phi(b,x),
+    \\
+    &(x_a,\beta_a)\in\widehat\Phi(a,x_b)
+\bigr\}.
+\end{aligned}
+\]
+The finite-powerset and full-powerset monads are commutative, so all such
+machines are central.
+
+\subsubsection{Probability and subprobability}
+
+For the finite-distribution monad \(\mathcal D_{\mathrm f}\),
+\(\widehat\Phi(a,x)\) is a finitely supported probability distribution on
+typed pairs \((x',\beta)\).  The identity input has the Dirac distribution at
+\[
+    (x,e_B(qx)).
+\]
+For composable \(a,b\),
+\[
+\begin{aligned}
+&
+\widehat\Phi(b\circ a,x)(x_a,\gamma)
+\\
+&\quad=
+\sum_{\substack{
+    x_b,\beta_b,\beta_a\\
+    \beta_b\circ\beta_a=\gamma
+}}
+\widehat\Phi(b,x)(x_b,\beta_b)
+\widehat\Phi(a,x_b)(x_a,\beta_a).
+\end{aligned}
+\]
+This is the typed Chapman--Kolmogorov convolution.
+
+The finite-distribution and finite-subdistribution monads are commutative.
+The subdistribution monad permits loss of mass and therefore models failure
+or nontermination.
+
+\subsubsection{Semiring-weighted effects}
+
+Let \(R\) be a semiring, and let \(\mathsf W_R(X)\) be the set of finitely
+supported functions \(X\to R\).  If
+\[
+    w_{a,x}(x',\beta)\in R
+\]
+is the weight of an outcome, then
+\[
+\begin{aligned}
+w_{b\circ a,x}(x_a,\gamma)
+=
+\sum_{\substack{
+    x_b,\beta_b,\beta_a\\
+    \beta_b\circ\beta_a=\gamma
+}}
+w_{b,x}(x_b,\beta_b)
+w_{a,x_b}(x_a,\beta_a).
+\end{aligned}
+\]
+
+\begin{proposition}[Central weighted computations]
+\label{prop:central-weighted-computations}
+A finitely supported \(R\)-weighted computation is central if and only if all
+of its coefficients lie in the multiplicative centre
+\[
+    Z(R)
+    =
+    \{r\in R\mid rs=sr\text{ for every }s\in R\}.
+\]
+Hence the weighted monad is commutative exactly when multiplication in
+\(R\) is commutative.
+\end{proposition}
+
+\begin{proof}
+For outcomes with coefficients \(r\) and \(s\), the two Fubini maps assign
+coefficients
+\[
+    rs
+    \quad\text{and}\quad
+    sr.
+\]
+If every coefficient of the first computation is central, these agree for
+every second computation.
+
+Conversely, compare with a singleton-supported computation of arbitrary
+coefficient \(s\).  Equality at each ordered pair of support points forces
+every coefficient \(r\) of the first computation to satisfy
+\[
+    rs=sr.
+\]
+\end{proof}
+
+The Boolean semiring recovers finite nondeterminism, the natural-number
+semiring counts executions with multiplicity, and commutative coefficient
+semirings yield fully central weighted Mealy bicategories.
+
+\section{Chapter summary}
+\label{sec:effectful-chapter-summary}
+
+This chapter constructed effectful Mealy morphisms from a fibred strong monad
+on the codomain fibration of a finitely complete category.
+
+\begin{enumerate}
+    \item Every interface object \(Z\) carries a slice monad
+    \[
+        \mathsf K_Z,
+    \]
+    and every map \(h:W\to Z\) induces a dependent-sum Kleisli functor
+    \[
+        \Sigma_h^{\mathsf K}:
+        \operatorname{Kl}(\mathsf K_W)
+        \to
+        \operatorname{Kl}(\mathsf K_Z).
+    \]
+
+    \item The dependent-sum transport satisfies functoriality,
+    Beck--Chevalley, compatibility with left and right strength, and the
+    effectful projection formula.
+
+    \item The strength gives two Fubini maps
+    \[
+        d^\ell,d^r:
+        \mathsf KP\times\mathsf KQ
+        \to
+        \mathsf K(P\times Q).
+    \]
+    Their discrepancy is exactly the obstruction to unrestricted
+    middle-four interchange.
+
+    \item Pure parameters define genuine left and right Kleisli functors.
+    After reindexing and dependent-sum transport, these give functorial pure
+    whiskering of effectful span cells and the coherence needed for the
+    canonical distributive laws.
+
+    \item Fibrewise central arrows commute with every computation in one
+    slice.  Fibred-central arrows are those whose every reindexing is
+    fibrewise central.  They are closed under Kleisli composition, central
+    tensor, reindexing, and dependent-sum transport.
+
+    \item Objects of \(\mathcal E\), spans, and central effectful span cells
+    form the bicategory
+    \[
+        \mathbf{Span}^{\mathrm{cen}}_{\mathsf K}(\mathcal E).
+    \]
+
+    \item Unrestricted effectful span cells form a bicategory if and only if
+    every slice monad is commutative.  The converse follows from a direct
+    middle-four calculation using the two sequential decompositions of the
+    Fubini maps.
+
+    \item Pure whiskering constructs canonical distributive laws
+    \[
+        T_B\mathsf K\Rightarrow\mathsf KT_B,
+        \qquad
+        R_A\mathsf K\Rightarrow\mathsf KR_A.
+    \]
+    Together with the input--output distributive law of Chapter~2, they
+    satisfy Yang--Baxter compatibility by mixed associativity of pure
+    whiskering.
+
+    \item An effectful Mealy morphism is an algebra for the lifted input
+    monad, with structure
+    \[
+        P\circ A
+        \longrightarrow
+        \mathsf K(B\circ P).
+    \]
+    A central such structure is equivalently an oriented monad morphism in
+    the central effectful span bicategory.
+
+    \item Central effectful Mealy morphisms and central effectful simulations
+    form the bicategory
+    \[
+        \mathbf{Mly}^{\mathrm{cen}}_{\mathsf K}(\mathcal E).
+    \]
+
+    \item Strict state homomorphisms form a covariant presentation
+    bicategory.  Under a pullback-stable initial object, the connected
+    component quotient generated by all strict state homomorphisms collapses
+    every hom-category.
+
+    \item Strict state retractions form a locally wide presentation
+    bicategory.  In a feedback span base, the empty retractive class is
+    isolated from every noninitial carrier, so the empty presentation no
+    longer forces the quotient to collapse.
+
+    \item The connected-component quotient
+    \[
+        \mathbf{Mly}^{\mathrm{cen},\mathrm{ret}}_{\mathsf K}(\mathcal E)
+    \]
+    is universal for typed retract-invariant unpointed state hiding.
+
+    \item The retractive state-hiding quotient is distinct from pointed
+    uniform feedback: an initial state is not part of the present Mealy
+    data.
+
+    \item When \(\mathcal E\) is a feedback span base, homwise sums of
+    effectful Mealy morphisms and simulations exist, preserve centrality, and
+    distribute over pipeline composition.
+
+    \item Coproduct lifts to a symmetric monoidal structure on central
+    effectful Mealy morphisms.
+
+    \item For a central effectful endomorphism \(U\),
+    \[
+        \operatorname{Path}_{\mathsf K}(U)
+        =
+        \boxplus_{n\geq0}U^{[n]}
+    \]
+    is the free path monoid in the category of strict state presentations.
+
+    \item The finite hidden-path trace is
+    \[
+        \operatorname{Tr}^{\mathbb C}_{\mathsf K}(\Phi)
+        =
+        \Phi_{AB}
+        \boxplus
+        \Phi_{CB}
+        \circ
+        \operatorname{Path}_{\mathsf K}(\Phi_{CC})
+        \circ
+        \Phi_{AC}.
+    \]
+    It acts functorially on simulations, preserves strict state
+    homomorphisms and strict state retractions, and descends to the retractive
+    state-presentation quotient.
+
+    \item Reader, writer, partiality, exception, state, nondeterministic,
+    probabilistic, subprobabilistic, and semiring-weighted effects arise
+    internally from the same fibred construction.
+\end{enumerate}
+
+The structural relation established in the chapter is
+\[
+    \boxed{
+    \begin{gathered}
+        \text{fibred strong effects}
+        \quad+\quad
+        \text{reindexing-stable centrality}
+        \quad+\quad
+        \text{span-carried state}
+        \\
+        =
+        \text{composable effectful Mealy systems with finite-path feedback}.
+    \end{gathered}
+    }
+\]
